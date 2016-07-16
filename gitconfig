@@ -1,0 +1,48 @@
+[user]
+  name = Diego Alvarez
+  email = diego.alvarez@hootsuite.com
+[merge]
+  conflictstyle = diff3
+  tool = diffmerge
+[diff]
+  tool = diffmerge
+  compactionHeuristic = true
+[help]
+  autocorrect = 1
+[push]
+  default = simple
+[alias]
+    ca = commit -a
+    cs = commit
+    lg = log -p
+    who = shortlog -s --
+    hist = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
+    ls = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
+    ll = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+    #http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
+[core]
+  excludesfile = /Users/diegoa/.gitignore_global
+	commentchar = @
+[difftool "sourcetree"]
+	cmd = /Applications/DiffMerge.app/Contents/MacOS/DiffMerge --nosplash \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/DiffMerge.app/Contents/MacOS/DiffMerge --merge --result=\"$MERGED\" \"$LOCAL\" \"$BASE\" \"$REMOTE\"
+	trustExitCode = true
+[branch]
+	autosetuprebase = always
+[filter "lfs"]
+  clean = git-lfs clean %f
+  smudge = git-lfs smudge %f
+  required = true
+[pager]
+  #diff = diff-so-fancy | less --tabs=1,5 -RFX
+  #show = diff-so-fancy | less --tabs=1,5 -RFX
+  log = diff-highlight | less
+  show = diff-highlight | less
+  diff = diff-highlight | less
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22

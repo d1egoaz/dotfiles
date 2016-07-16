@@ -1,0 +1,22 @@
+.DS_Store
+.tags
+tags
+.ensime
+.ensime_cache/
+
+# Ignore IDEA project files
+*.iml
+.idea/
+
+# Ignore generated stuff
+*/target
+/target
+*/project/target
+*/project/project/target
+.vagrant
+
+# Ignore OSX stuff
+.DS_Store
+TAGS/
+
+.tern-port
