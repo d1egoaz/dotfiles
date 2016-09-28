@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp -*-
+; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -13,14 +13,17 @@
    '(
      ansible
      (auto-completion :variables
-                      auto-completion-return-key-behavior nil
+                      ;; auto-completion-return-key-behavior nil
                       auto-completion-tab-key-behavior 'complete
                       auto-completion-enable-company-help-tooltip t
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t)
      (ibuffer :variables ibuffer-group-buffers-by 'projects)
-     (colors :variables colors-enable-nyan-cat-progress-bar t)
-     command-log deft emacs-lisp evil-commentary
+     ;; (colors :variables colors-enable-nyan-cat-progress-bar nil)
+     command-log
+     deft
+     emacs-lisp
+     evil-commentary
      emoji
      (git :variables
           ;; See commit counts for all branches and tags
@@ -28,11 +31,14 @@
           magit-diff-refine-hunk 'all
           git-magit-status-fullscreen t)
      github
+     gtags
      helm
      html
      javascript
      (markdown :variables markdown-live-preview-engine 'vmd)
      nlinum
+     nginx
+     plantuml
      php
      osx
      org
@@ -44,11 +50,12 @@
      spacemacs-language
      spacemacs-ui-visual
      spell-checking
-     syntax-checking
+     (syntax-checking :variables
+                      syntax-checking-enable-by-default t)
      (scala :variables
-            scala-auto-insert-asterisk-in-comments t
-            scala-auto-start-ensime nil
-            scala-enable-eldoc-mode nil)
+           scala-auto-insert-asterisk-in-comments t
+           scala-auto-start-ensime nil
+           scala-enable-eldoc-mode nil)
      react
      restclient ;; https://github.com/pashky/restclient.el
      (version-control :variables
@@ -62,18 +69,19 @@
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
-
-   ;; A list of packages that will not be install and loaded.
-   dotspacemacs-excluded-packages '()
-   ;; Defines the behaviour of Spacemacs when downloading packages.
-   ;; Possible values are `used', `used-but-keep-unused' and `all'. `used' will
-   ;; download only explicitly used packages and remove any unused packages as
-   ;; well as their dependencies. `used-but-keep-unused' will download only the
-   ;; used packages but won't delete them if they become unused. `all' will
-   ;; download all the packages regardless if they are used or not and packages
-   ;; won't be deleted by Spacemacs. (default is `used')
-   dotspacemacs-download-packages 'used))
+   dotspacemacs-additional-packages '(beacon)
+   ;; A list of packages that cannot be updated.
+   dotspacemacs-frozen-packages '()
+   ;; A list of packages that will not be installed and loaded.
+   dotspacemacs-excluded-packages '(rainbow-delimiters)
+   ;; Defines the behaviour of Spacemacs when installing packages.
+   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; `used-only' installs only explicitly used packages and uninstall any
+   ;; unused packages as well as their unused dependencies.
+   ;; `used-but-keep-unused' installs only the used packages but won't uninstall
+   ;; them if they become unused. `all' installs *all* packages supported by
+   ;; Spacemacs and never uninstall them. (default is `used-only')
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   ;; This setq-default sexp is an exhaustive list of all the supported
