@@ -72,7 +72,10 @@ test -e ~/.exports && source ~/.exports
 test -e ~/.aliases && source ~/.aliases
 
 # RBENV
-eval "$(rbenv init -)"
+#eval "$(rbenv init -)"
 
-source ~/.nvm/nvm.sh
-nvm use 0.12.9
+#source ~/.nvm/nvm.sh
+#nvm use 0.12.9
+     echo
+echo ">>>"
+echo "nvm is disabled!"
