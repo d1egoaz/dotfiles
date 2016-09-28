@@ -97,8 +97,14 @@
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
-   ;; when the current branch is not `develop'. (default t)
-   dotspacemacs-check-for-update t
+   ;; when the current branch is not `develop'. Note that checking for
+   ;; new versions works via git commands, thus it calls GitHub services
+   ;; whenever you start Emacs. (default nil)
+   dotspacemacs-check-for-update nil
+   ;; If non-nil, a form that evaluates to a package directory. For example, to
+   ;; use different package directories for different Emacs versions, set this
+   ;; to `emacs-version'.
+   dotspacemacs-elpa-subdirectory nil
    ;; One of `vim', `emacs' or `hybrid'.
    ;; `hybrid' is like `vim' except that `insert state' is replaced by the
    ;; `hybrid state' with `emacs' key bindings. The value can also be a list
@@ -284,15 +290,43 @@
 (defun dotspacemacs/user-init ()
   (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
   (push '(ensime . "melpa-stable") package-pinned-packages)
+  ;; monokai atom one dark colors
+  (setq ;; atom onedark colors
+        monokai-use-variable-pitch nil ;; org mode monospace font
+        monokai-height-plus-1 1.0
+        monokai-height-plus-2 1.0
+        monokai-height-plus-3 1.0
+        monokai-height-plus-4 1.0
+        monokai-height-minus-1 1.0
+        monokai-fg             "#ABB2BF"
+        monokai-bg             "#282C34"
+
+        ;; highlights and comments
+        ;; monokai-comments       "#F8F8F0"
+        ;; monokai-emphasis       "#282C34"
+        ;; monokai-highlight      "#FFB269"
+        ;; monokai-highlight-alt  "#66D9EF"
+        ;; monokai-highlight-line "#1B1D1E"
+        ;; monokai-linum          "#F8F8F0"
+
+        ;; colours
+        monokai-blue           "#61AFEF"
+        monokai-cyan           "#56B6C2"
+        monokai-green          "#98C379"
+        monokai-gray           "#3E4451"
+        monokai-violet         "#C678DD"
+        monokai-red            "#E06C75"
+        monokai-orange         "#D19A66"
+        monokai-yellow         "#E5C07B")
 )
 
 (defun dotspacemacs/user-config ()
 
   ;; For complex scala files
-  (setq max-lisp-eval-depth 50000)
-  (setq max-specpdl-size 5000)
+  ;; (setq max-lisp-eval-depth 50000)
+  ;; (setq max-specpdl-size 5000)
 
-  ;; Disable smartparens for most pairs, my editing style doesn't play well with it
+  ;; Disable smartparens for most pairs
   (eval-after-load 'smartparens
     '(progn
        (sp-pair "(" nil :actions :rem)
@@ -516,4 +550,5 @@
 
   (setq flycheck-scalastyle-jar "/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar")
   (setq flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml")
+  (beacon-mode 1)
 )
