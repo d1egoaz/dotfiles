@@ -121,13 +121,16 @@
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 'official
-   ;; List of items to show in the startup buffer. If nil it is disabled.
-   ;; Possible values are: `recents' `bookmarks' `projects' `agenda' `todos'.
-   ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects)
-   ;; Number of recent files to show in the startup buffer. Ignored if
-   ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
-   dotspacemacs-startup-recent-list-size 5
+   ;; List of items to show in startup buffer or an association list of
+   ;; the form `(list-type . list-size)`. If nil then it is disabled.
+   ;; Possible values for list-type are:
+   ;; `recents' `bookmarks' `projects' `agenda' `todos'."
+   ;; List sizes may be nil, in which case
+   ;; `spacemacs-buffer-startup-lists-length' takes effect.
+   dotspacemacs-startup-lists '((recents . 15)
+                                (projects . 7))
+   ;; True if the home buffer should respond to resize events.
+   dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
@@ -191,7 +194,7 @@
    ;; Size (in MB) above which spacemacs will prompt to open the large file
    ;; literally to avoid performance issues. Opening a file literally means that
    ;; no major mode or minor modes are active. (default is 1)
-   dotspacemacs-large-file-size 1
+   dotspacemacs-large-file-size 2
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
@@ -207,9 +210,14 @@
    ;; define the position to display `helm', options are `bottom', `top',
    ;; `left', or `right'. (default 'bottom)
    dotspacemacs-helm-position 'bottom
+   ;; Controls fuzzy matching in helm. If set to `always', force fuzzy matching
+   ;; in all non-asynchronous sources. If set to `source', preserve individual
+   ;; source settings. Else, disable fuzzy matching in all sources.
+   ;; (default 'always)
+   dotspacemacs-helm-use-fuzzy 'always
    ;; If non nil the paste micro-state is enabled. When enabled pressing `p`
    ;; several times cycle between the kill ring content. (default nil)
-   dotspacemacs-enable-paste-micro-state t
+   dotspacemacs-enable-paste-transient-state t
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
    dotspacemacs-which-key-delay 0.4
@@ -253,7 +261,7 @@
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers t
+   dotspacemacs-line-numbers 'relative
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -268,7 +276,7 @@
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
    dotspacemacs-highlight-delimiters 'all
-   ;; If non nil advises quit functions to keep server open when quitting.
+   ;; If non nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
    dotspacemacs-persistent-server nil
    ;; List of search tool executable names. Spacemacs uses the first installed
@@ -338,8 +346,10 @@
 
   (setq powerline-default-separator 'arrow)
 
+  ;; Evil
   ;; http://spacemacs.brianthicks.com/2015/12/01/stop-cursor-creep/
-  (setq evil-move-cursor-back nil)
+  (setq evil-move-cursor-back nil
+        evil-shift-round nil)
 
   ;; whitespace mode
   (global-whitespace-mode)
@@ -350,19 +360,19 @@
 
   ;; Backups
   (setq
-    make-backup-files nil ;; <- DISABLED
-    backup-directory-alist '(("" . "~/emacs_backups/per-save"))
+    backup-directory-alist '((".*" . "~/emacs_backups/per-save"))
     auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
     backup-by-copying t
     version-control t
     delete-old-versions t
     delete-by-moving-to-trash t
-    kept-new-versions 9
-    kept-old-versions 6
+    kept-new-versions 6
+    kept-old-versions 2
     vc-make-backup-files t
     auto-save-default t
     auto-save-timeout 20
     auto-save-interval 200
+    make-backup-files t ;; <- DISABLED
   )
 
   ;; Settings
@@ -393,7 +403,7 @@
   (define-key evil-motion-state-map [down] 'undefined)
 
   ;; indentguide indicator
-  (spacemacs/toggle-indent-guide-globally-on)
+  ;; (spacemacs/toggle-indent-guide-globally-on)
 
   ;; column indicator
   (add-hook 'scala-mode-hook 'fci-mode)
@@ -406,7 +416,7 @@
   ;; avy
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
 
- ;; (set-background-color "#1d1f21")
+ ;; (set-background-color "#303340")
   ;; (set-background-color "#282C34")
   ;; (set-foreground-color "#CED1CF")
   ;; (set-face-background 'hl-line "#333333") ;; highlight line
@@ -466,9 +476,23 @@
   (add-hook 'git-timemachine-mode-hook (lambda () (ensime-mode 0)))
 
   ;; org-mode
-  (setq org-src-fontify-natively t
-        org-startup-with-inline-images t)
-  (add-hook 'org-mode-hook 'visual-line-mode) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
+  (with-eval-after-load 'org
+    (setq org-src-fontify-natively t
+          org-startup-with-inline-images t
+          org-download-method 'directory
+          org-download-image-dir "~/OneDrive/deft/images"
+          org-download-heading-lvl nil
+          org-download-screenshot-method "screencapture -i %s"
+          org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"
+          org-confirm-babel-evaluate nil
+          org-default-notes-file "/Users/diegoa/OneDrive/deft/TODO.org"
+          org-agenda-files '("/Users/diegoa/OneDrive/deft/TODO.org"))
+    (add-hook 'org-mode-hook 'visual-line-mode) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
+
+    ;; plantuml additional config
+    (setq puml-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
+    (add-to-list
+     'org-src-lang-modes '("plantuml" . puml)))
 
   ;; Scroll compilation output to first error
   (setq compilation-scroll-output t)
@@ -548,7 +572,57 @@
   (spacemacs/toggle-truncate-lines-on)
   (spacemacs/toggle-automatic-symbol-highlight-on)
 
-  (setq flycheck-scalastyle-jar "/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar")
-  (setq flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml")
+  ;; flycheck - scala
+  (setq flycheck-scalastyle-jar "/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar"
+        flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
+        flycheck-check-syntax-automatically '(save mode-enabled))
+
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              ;; turn off `linum-mode' when there are more than 5000 lines
+              (if (and (> (buffer-size)
+                          (* 1000 80)))
+                  (linum-mode -1))))
+
+  (dumb-jump-mode)
+
+  ;; Shell
+  shell-default-term-shell "/bin/zsh"
+
+  ;; underscore as part of the word
+  (modify-syntax-entry ?_ "w")
+
+  (setq tramp-default-method "ssh")
+
+  ;; tramp
+  (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+  (tramp-parse-sconfig "~/.ssh/config")
+  (tramp-parse-shosts "~/.ssh/known_hosts")
+
+  ;; (setq tramp-ssh-controlmaster-options
+  ;;       "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+  (setq spacemacs-useful-buffers-regexp '("\\*\\(ansi-term\\|eshell\\|shell\\|terminal.+\\)\\*"
+                                          "\\*scratch\\*"
+                                          "\\*magit.*"
+                                          "\\*deft\\*"))
+  ;; beacon Never lose your cursor again
+  (setq-default
+   beacon-blink-when-focused t
+   beacon-blink-when-point-moves-vertically 5)
+
   (beacon-mode 1)
 )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (beacon seq yaml-mode xterm-color ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org tagedit sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters quelpa puml-mode popwin play-routes-mode phpunit phpcbf php-extras php-auto-yasnippets persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc jinja2-mode jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags general-close flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-quickhelp company-emoji command-log-mode column-enforce-mode color-identifiers-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile ansible-doc ansible aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
