@@ -12,7 +12,7 @@
                (ensime-edit-definition))
     (projectile-find-tag)))
 
-(defun d1egoaz-scala/align-dependencies ()
+(defun edd/align-dependencies ()
   (align-regexp (region-beginning) (region-end) "\\(\\s-+\\)\\(%%?\\|\"\\)" 1 1 't))
 
 
@@ -20,7 +20,7 @@
       '(("^import com\\.hootsuite\\." . "1") ("^import scala\\." . "6") ("^import java\\." . "7") ("^import javax\\." . "8") ("^import " . "5")))
 
 
-(defun edd-scala-sort-imports ()
+(defun edd/scala-sort-imports ()
   "Sorts imports according to rules, which are cons pairs of regexp to order"
   (interactive)
   (save-excursion
@@ -50,7 +50,7 @@
         (while (search-forward-regexp "^\\([0-9]\\)import\\b" nil 't)
           (replace-match "import"))))))
 
-(defun edd-scala-ignore-style (start end)
+(defun edd/scala-ignore-style (start end)
   "Ignore a scalastyle rule. If region is active it will be
    wrapped in a scalastyle:off/scalastyle:on comment pair. If not, a
    scalastyle:ignore comment will be used."

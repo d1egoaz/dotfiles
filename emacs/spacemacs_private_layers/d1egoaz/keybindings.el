@@ -14,7 +14,9 @@
   "oc" 'general-close
   "oh" 'helm-eshell-history
   "or" 'indent-region
-  "oad" 'd1egoaz-scala/align-dependencies
+  "osd" 'edd/align-dependencies
+  "osi" 'edd/scala-sort-imports
+  "osg" 'edd/scala-ignore-style
 )
 
 (define-key flyspell-mode-map (kbd "C-;") nil)
