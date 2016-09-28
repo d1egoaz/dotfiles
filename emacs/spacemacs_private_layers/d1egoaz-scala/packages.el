@@ -7,7 +7,7 @@
 
 (defconst d1egoaz-scala-packages
   '(
-    ensime
+    ;; ensime
     play-routes-mode))
 
 (defun d1egoaz-scala/init-play-routes-mode ()
