@@ -17,14 +17,6 @@ PATH="$PATH:$JAVA_HOME/bin"
 # my utils
 PATH="~/bin:$PATH"
 
-# DOCKER
-export DOCKER_TLS_VERIFY=1
-export DOCKER_IP=192.168.99.100
-export DOCKER_HOST=tcp://$DOCKER_IP:2376
-export DOCKER_CERT_PATH=/Users/diegoa/.boot2docker/certs/boot2docker-vm
-
-export PATH MANPATH DOCKER_IP DOCKER_HOST
-
 # ansible
 export ANSIBLE_TRANSPORT=ssh
 export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -o ControlPath=/tmp/a-%h-%p-%r"
@@ -32,6 +24,3 @@ export ANSIBLE_NOCOWS=1
 
 PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 export PATH
-
-#docker-machine
-eval $(timeout 3 docker-machine env dev 2>/dev/null)
