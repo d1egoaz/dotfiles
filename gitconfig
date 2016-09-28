@@ -23,6 +23,7 @@
 [core]
   excludesfile = /Users/diegoa/.gitignore_global
 	commentchar = @
+	ignorecase = false
 [difftool "sourcetree"]
 	cmd = /Applications/DiffMerge.app/Contents/MacOS/DiffMerge --nosplash \"$LOCAL\" \"$REMOTE\"
 	path = 
