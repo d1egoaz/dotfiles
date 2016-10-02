@@ -611,7 +611,13 @@
    beacon-blink-when-point-moves-vertically 5)
 
   (beacon-mode 1)
+
+  ;; *scratch* is immortal
+  (add-hook 'kill-buffer-query-functions
+            (lambda () (not (member (buffer-name) '("*scratch*" "scratch.el")))))
+
 )
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

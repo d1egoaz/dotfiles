@@ -17,7 +17,11 @@
   "osd" 'edd/align-dependencies
   "osi" 'edd/scala-sort-imports
   "osg" 'edd/scala-ignore-style
+  "glh" 'git-link-homepage
 )
 
 (define-key flyspell-mode-map (kbd "C-;") nil)
 (global-set-key (kbd "C-;") 'general-close) ;; smart add close ]}
+
+(global-unset-key (kbd "C-j"))
+(global-unset-key (kbd "C-k"))
