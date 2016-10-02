@@ -465,11 +465,11 @@
           )
         ;; ensime-completion-style 'company
         ;; ensime-sem-high-enabled-p nil ;; disable semantic highlighting
-        ensime-tooltip-hints t ;; disable type-inspecting tooltips
-        ensime-tooltip-type-hints t ;; disable typeinspecting tooltips
-        ensime-graphical-tooltips t
+        ensime-tooltip-hints nil ;; disable type-inspecting tooltips
+        ensime-tooltip-type-hints nl ;; disable typeinspecting tooltips
+        ensime-graphical-tooltips nil
         ensime-auto-generate-config t
-        ensime-use-helm t
+        ;; ensime-use-helm t, currently broken https://github.com/syl20bnr/spacemacs/issues/7237
         )
 
   ;; the compiler sees duplicate symbol definitions
