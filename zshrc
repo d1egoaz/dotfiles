@@ -70,3 +70,4 @@ test -e ~/.aliases && source ~/.aliases
      echo
 echo ">>>"
 echo "nvm is disabled!"
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

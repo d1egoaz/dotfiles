@@ -33,7 +33,7 @@ for file in $files; do
     echo "Backing up $file"
     cp -L ~/.$file ~/$olddir/ && rm ~/.$file
     echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file ~/.$file
+    ln -sf $dir/$file ~/.$file
     echo " "
 done
 
