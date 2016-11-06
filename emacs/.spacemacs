@@ -411,9 +411,6 @@
   (define-key evil-motion-state-map [up] 'undefined)
   (define-key evil-motion-state-map [down] 'undefined)
 
-  ;; indentguide indicator
-  ;; (spacemacs/toggle-indent-guide-globally-on)
-
   ;; column indicator
   (add-hook 'scala-mode-hook #'fci-mode)
 
@@ -425,24 +422,6 @@
   ;; avy
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
 
- ;; (set-background-color "#303340")
-  ;; (set-background-color "#282C34")
-  ;; (set-foreground-color "#CED1CF")
-  ;; (set-face-background 'hl-line "#333333") ;; highlight line
-  ;; (set-face-attribute 'fringe nil :background "#272822" :foreground "green") ;; column before line numbers column
-  ;; (set-face-attribute 'linum nil :background "#212026" :foreground "#44505c") ;; line numbers column
-  ;; (set-face-attribute 'nlinum-relative-current-face nil :background "#212026" :foreground "#c56ec3") ;; current line number
-
-  ;; (set-face-attribute 'font-lock-comment-face nil :foreground "#969896") ;; comments
-  ;; (set-face-attribute 'font-lock-comment-delimiter-face nil :foreground "#969896") ;; comments
-  ;; (set-face-attribute 'font-lock-string-face nil :foreground "#B5BD68") ;; string
-  ;; (set-face-attribute 'font-lock-type-face nil :background "#292E34" :foreground "#28CCDE") ;; types
-  ;; (set-face-attribute 'font-lock-function-name-face nil  :foreground "#A6E22E") ;; functions without background-color
-  ;; ;; (set-face-attribute 'font-lock-variable-name-face nil :background "#362E26" :foreground "#FD971F") ;; variables
-  ;; (set-face-attribute 'font-lock-variable-name-face nil :foreground "#f0c674") ;; variables without background-color
-  ;; (set-face-attribute 'font-lock-keyword-face nil :foreground "#81a2be") ;; keyword
-  ;; (set-face-attribute 'font-lock-builtin-face nil :foreground "#cc6666") ;; built in
-  ;; (set-face-attribute 'region nil :background "#666") ;; selected region background color
   (custom-set-faces
    '(rainbow-delimiters-depth-1-face ((t (:foreground "#4f97d7"))))
    '(rainbow-delimiters-depth-2-face ((t (:foreground "#bc6ec5"))))
@@ -450,7 +429,7 @@
    '(rainbow-delimiters-depth-4-face ((t (:foreground "#67b11d"))))
    )
 
- (custom-set-faces
+  (custom-set-faces
    '(web-mode-html-tag-face ((t (:foreground "#a6e22e")))))
 
   (setq hl-paren-colors '("yellow" "green" "cyan" "white"))
@@ -468,19 +447,15 @@
           org-confirm-babel-evaluate nil
           org-default-notes-file "/Users/diegoa/OneDrive/deft/TODO.org"
           org-agenda-files '("/Users/diegoa/OneDrive/deft/TODO.org"))
-    (add-hook 'org-mode-hook 'visual-line-mode) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
+    (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 
   ;; Scroll compilation output to first error
   (setq compilation-scroll-output t)
   (setq compilation-scroll-output 'first-error)
 
-  (add-hook 'conf-unix-mode-hook 'spacemacs/toggle-line-numbers-on)
-  (add-hook 'restclient-mode-hook 'spacemacs/toggle-line-numbers-on)
   (add-to-list 'auto-mode-alist '("\\.proto\\'" . prog-mode))
   (add-to-list 'auto-mode-alist '("\\.apib\\'" . markdown-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-mode))
 
-  ;; js-mode
   (setq-default
    ;; js2-mode
    js2-basic-offset 2
@@ -539,7 +514,7 @@
                     '("github.hootops.com" git-link-commit-github))))
 
   ;; magit diff
-  ;; (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
+  (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
 
   ;; google translate
   (setq google-translate-default-source-language "en")
@@ -547,13 +522,6 @@
 
   (spacemacs/toggle-truncate-lines-on)
   (spacemacs/toggle-automatic-symbol-highlight-on)
-
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              ;; turn off `linum-mode' when there are more than 5000 lines
-              (if (and (> (buffer-size)
-                          (* 1000 80)))
-                  (linum-mode -1))))
 
   (dumb-jump-mode)
 
@@ -563,15 +531,15 @@
   ;; underscore as part of the word
   (modify-syntax-entry ?_ "w")
 
-  (setq tramp-default-method "ssh")
 
   ;; tramp
-  (eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
-  (tramp-parse-sconfig "~/.ssh/config")
-  (tramp-parse-shosts "~/.ssh/known_hosts")
+  (eval-after-load 'tramp
+    '(progn
+      (setenv "SHELL" "/bin/bash")
+      ;; (tramp-default-method "ssh")
+      (tramp-parse-sconfig "~/.ssh/config")
+      (tramp-parse-shosts "~/.ssh/known_hosts")))
 
-  ;; (setq tramp-ssh-controlmaster-options
-  ;;       "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
   (setq spacemacs-useful-buffers-regexp '("\\*\\(ansi-term\\|eshell\\|shell\\|terminal.+\\)\\*"
                                           "\\*scratch\\*"
                                           "\\*magit.*"
@@ -605,18 +573,3 @@
   ;; persistent-scratch
   (persistent-scratch-setup-default)
 )
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (beacon seq yaml-mode xterm-color ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org tagedit sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters quelpa puml-mode popwin play-routes-mode phpunit phpcbf php-extras php-auto-yasnippets persp-mode pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc jinja2-mode jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags general-close flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-quickhelp company-emoji command-log-mode column-enforce-mode color-identifiers-mode coffee-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile ansible-doc ansible aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
