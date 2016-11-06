@@ -56,6 +56,7 @@
            scala-auto-insert-asterisk-in-comments t
            scala-auto-start-ensime nil
            scala-enable-eldoc-mode nil)
+     terraform
      react
      restclient ;; https://github.com/pashky/restclient.el
      (version-control :variables
