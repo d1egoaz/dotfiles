@@ -51,9 +51,10 @@
      spacemacs-ui-visual
      spell-checking
      (syntax-checking :variables
-                      syntax-checking-enable-by-default t)
+                      flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
+                      flycheck-check-syntax-automatically '(save mode-enabled))
      (scala :variables
-           scala-auto-insert-asterisk-in-comments t
+            scala-auto-insert-asterisk-in-comments t
            scala-auto-start-ensime nil
            scala-enable-eldoc-mode nil)
      terraform
@@ -407,7 +408,7 @@
   ;; (spacemacs/toggle-indent-guide-globally-on)
 
   ;; column indicator
-  (add-hook 'scala-mode-hook 'fci-mode)
+  (add-hook 'scala-mode-hook #'fci-mode)
 
   ;; Turn off smart-paren auto-highlighting
   (setq sp-highlight-pair-overlay nil)
@@ -447,34 +448,6 @@
 
   (setq hl-paren-colors '("yellow" "green" "cyan" "white"))
   (setq hl-paren-background-colors '("black" "black" "black" "light pink"))
-
-
-  ;; ensime
-  ;; https://github.com/ensime/ensime-server/issues/1036
-  (setq ensime-sem-high-faces
-        '(
-          ;; (implicitConversion nil)
-          ;; (var . (:foreground "#ff2222"))
-          ;; (varField . (:foreground "#ff3333"))
-          ;; (functionCall . (:foreground "#de935f"))
-          ;; (object . (:foreground "#9f8cbb"))
-          ;; (operator . (:foreground "yellow"))
-          ;; (package . (:foreground "yellow"))
-          ;; (deprecated . (:strike-through "#a9b7c6"))
-          ;; (implicitConversion nil)
-          ;; (implicitParams nil)
-          )
-        ;; ensime-completion-style 'company
-        ;; ensime-sem-high-enabled-p nil ;; disable semantic highlighting
-        ensime-tooltip-hints nil ;; disable type-inspecting tooltips
-        ensime-tooltip-type-hints nl ;; disable typeinspecting tooltips
-        ensime-graphical-tooltips nil
-        ensime-auto-generate-config t
-        ;; ensime-use-helm t, currently broken https://github.com/syl20bnr/spacemacs/issues/7237
-        )
-
-  ;; the compiler sees duplicate symbol definitions
-  (add-hook 'git-timemachine-mode-hook (lambda () (ensime-mode 0)))
 
   ;; org-mode
   (with-eval-after-load 'org
@@ -568,11 +541,6 @@
   (spacemacs/toggle-truncate-lines-on)
   (spacemacs/toggle-automatic-symbol-highlight-on)
 
-  ;; flycheck - scala
-  (setq flycheck-scalastyle-jar "/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar"
-        flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
-        flycheck-check-syntax-automatically '(save mode-enabled))
-
   (add-hook 'prog-mode-hook
             (lambda ()
               ;; turn off `linum-mode' when there are more than 5000 lines
@@ -612,6 +580,23 @@
   (add-hook 'kill-buffer-query-functions
             (lambda () (not (member (buffer-name) '("*scratch*" "scratch.el")))))
 
+  ;; ensime
+  ;; (require 'ensime)
+  ;; https://github.com/syl20bnr/spacemacs/issues/6578
+  (setq ensime-sem-high-faces
+        '(
+          (implicitConversion nil)
+          (implicitParams nil)
+        )
+        ensime-tooltip-hints nil ;; disable type-inspecting tooltips
+        ensime-tooltip-type-hints nil ;; disable typeinspecting tooltips
+        ensime-graphical-tooltips nil
+        ensime-auto-generate-config t
+        ;; ensime-use-helm t, currently broken https://github.com/syl20bnr/spacemacs/issues/7237
+        )
+
+  ;; persistent-scratch
+  (persistent-scratch-setup-default)
 )
 
 (custom-set-variables
