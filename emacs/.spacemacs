@@ -38,7 +38,7 @@
      (markdown :variables markdown-live-preview-engine 'vmd)
      nlinum
      nginx
-     plantuml
+     (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
      php
      osx
      org
@@ -488,11 +488,6 @@
           org-default-notes-file "/Users/diegoa/OneDrive/deft/TODO.org"
           org-agenda-files '("/Users/diegoa/OneDrive/deft/TODO.org"))
     (add-hook 'org-mode-hook 'visual-line-mode) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
-
-    ;; plantuml additional config
-    (setq puml-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
-    (add-to-list
-     'org-src-lang-modes '("plantuml" . puml)))
 
   ;; Scroll compilation output to first error
   (setq compilation-scroll-output t)
