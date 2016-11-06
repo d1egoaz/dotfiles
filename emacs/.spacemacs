@@ -71,7 +71,8 @@
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(beacon)
+   dotspacemacs-additional-packages '(beacon
+                                      persistent-scratch)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -550,10 +551,6 @@
    beacon-blink-when-point-moves-vertically 5)
 
   (beacon-mode 1)
-
-  ;; *scratch* is immortal
-  (add-hook 'kill-buffer-query-functions
-            (lambda () (not (member (buffer-name) '("*scratch*" "scratch.el")))))
 
   ;; ensime
   ;; (require 'ensime)
