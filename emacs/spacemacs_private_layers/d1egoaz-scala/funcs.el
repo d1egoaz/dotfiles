@@ -13,6 +13,11 @@
     (dumb-jump-go)
     (projectile-find-tag)))
 
+
+(defun diego-scala/scalafmt-file ()
+  (interactive)
+  (shell-command-to-string (concat "~/bin/dscalafmt.sh " buffer-file-name)))
+
 (defun edd-scala/align-dependencies ()
   (align-regexp (region-beginning) (region-end) "\\(\\s-+\\)\\(%%?\\|\"\\)" 1 1 't))
 

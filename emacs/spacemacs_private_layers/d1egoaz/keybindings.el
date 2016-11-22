@@ -15,8 +15,9 @@
   "oh" 'helm-eshell-history
   "or" 'indent-region
   "osd" 'edd/align-dependencies
-  "osi" 'edd/scala-sort-imports
-  "osg" 'edd/scala-ignore-style
+  "osi" 'edd-scala/sort-imports
+  "osg" 'edd-scala/ignore-style
+  "osf" 'diego-scala/scalafmt-file
   "opf" 'project-find-file
   "glh" 'git-link-homepage
 )

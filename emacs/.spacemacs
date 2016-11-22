@@ -32,6 +32,7 @@
           git-magit-status-fullscreen t)
      github
      gtags
+     haskell
      helm
      html
      javascript
@@ -271,7 +272,7 @@
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers `relative
+   dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -290,9 +291,9 @@
    ;; (default nil)
    dotspacemacs-persistent-server nil
    ;; List of search tool executable names. Spacemacs uses the first installed
-   ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
-   ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
+   ;; (default '("rg" "ag" "pt" "ack" "grep"))
+   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
@@ -309,15 +310,16 @@
   (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
   (push '(ensime . "melpa-stable") package-pinned-packages)
   ;; monokai atom one dark colors
+  ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
   (setq ;; atom onedark colors
         monokai-use-variable-pitch nil ;; org mode monospace font
-        monokai-height-plus-1 1.0
-        monokai-height-plus-2 1.0
-        monokai-height-plus-3 1.0
-        monokai-height-plus-4 1.0
-        monokai-height-minus-1 1.0
-        monokai-fg             "#ABB2BF"
-        monokai-bg             "#282C34"
+        monokai-height-minus-1 0.8
+        monokai-height-plus-1 1.1
+        monokai-height-plus-2 1.15
+        monokai-height-plus-3 1.2
+        monokai-height-plus-4 1.3
+        monokai-foreground     "#ABB2BF"
+        ;; monokai-bg             "#282C34"
 
         ;; highlights and comments
         ;; monokai-comments       "#F8F8F0"
@@ -327,7 +329,7 @@
         ;; monokai-highlight-line "#1B1D1E"
         ;; monokai-linum          "#F8F8F0"
 
-        ;; colours
+        ;; colors
         monokai-blue           "#61AFEF"
         monokai-cyan           "#56B6C2"
         monokai-green          "#98C379"
@@ -447,11 +449,17 @@
           org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"
           org-confirm-babel-evaluate nil
           org-default-notes-file "/Users/diegoa/OneDrive/deft/TODO.org"
-          org-agenda-files '("/Users/diegoa/OneDrive/deft/TODO.org"))
+          org-agenda-files '("/Users/diegoa/OneDrive/deft/TODO.org")
+    )
+    (custom-set-faces
+     '(org-block-background
+       ((t (:background "#272822"))))
+     '(org-block
+       ((t (:background "#272822")))))
+
     (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 
   ;; Scroll compilation output to first error
-  (setq compilation-scroll-output t)
   (setq compilation-scroll-output 'first-error)
 
   (add-to-list 'auto-mode-alist '("\\.proto\\'" . prog-mode))
@@ -560,9 +568,9 @@
           (implicitConversion nil)
           (implicitParams nil)
         )
-        ensime-tooltip-hints nil ;; disable type-inspecting tooltips
-        ensime-tooltip-type-hints nil ;; disable typeinspecting tooltips
-        ensime-graphical-tooltips nil
+        ensime-tooltip-hints t
+        ensime-tooltip-type-hints t
+        ensime-graphical-tooltips t
         ensime-auto-generate-config t
         ;; ensime-use-helm t, currently broken https://github.com/syl20bnr/spacemacs/issues/7237
         )
@@ -570,3 +578,17 @@
   ;; persistent-scratch
   (persistent-scratch-setup-default)
 )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (company git-commit with-editor restclient-helm ob-restclient company-restclient know-your-http-well yaml-mode xterm-color which-key web-mode vmd-mode use-package paradox orgit org org-projectile org-plus-contrib neotree js2-refactor info+ hl-todo helm-ag general-close flyspell-correct-helm flyspell-correct eyebrowse evil-surround evil-mc diff-hl company-emoji auto-complete sbt-mode iedit smartparens highlight flycheck git-gutter helm helm-core projectile gh magit async yasnippet dash zenburn-theme ws-butler window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen toc-org terraform-mode tagedit sql-indent spinner spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient restart-emacs quelpa pug-mode popwin play-routes-mode plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persp-mode persistent-scratch pcre2el pbcopy osx-trash osx-dictionary org-present org-pomodoro org-download org-bullets open-junk-file ob-http noflet nlinum-relative nginx-mode multiple-cursors multi-term move-text monokai-theme mmm-mode marshal markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum logito livid-mode link-hint less-css-mode launchctl json-mode js-doc jinja2-mode indent-guide ido-vertical-mode ibuffer-projectile hydra hungry-delete htmlize highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags flycheck-pos-tip flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump drupal-mode diminish deft company-web company-tern company-statistics company-quickhelp command-log-mode column-enforce-mode coffee-mode clean-aindent-mode bind-key beacon auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atom-one-dark-theme ansible-doc ansible aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -17,7 +17,8 @@ tags
 
 # Ignore OSX stuff
 .DS_Store
-TAGS/
+TAGS
+TAGS
 
 .tern-port
 
