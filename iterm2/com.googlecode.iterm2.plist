@@ -697,7 +697,7 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>1349 505 918 495 1080 313 1920 1057 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1080 317 955 1053 1080 313 1920 1057 </string>
+	<string>110 1037 970 860 0 0 1080 1897 </string>
 	<key>NeverWarnAboutShortLivedSessions_9941FFB1-A4D6-45F4-8B9C-D880523151D2</key>
 	<true/>
 	<key>New Bookmarks</key>
@@ -1732,7 +1732,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>630C3F99-76A0-4410-BA76-C284DFE6DD17</string>
 	<key>NoSyncLastTipTime</key>
-	<real>501009722.884417</real>
+	<real>502246145.71571797</real>
 	<key>NoSyncPermissionToShowTip</key>
 	<true/>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
@@ -1752,6 +1752,18 @@
 		<string>0009</string>
 		<string>0010</string>
 		<string>0011</string>
+		<string>0012</string>
+		<string>0013</string>
+		<string>0014</string>
+		<string>0015</string>
+		<string>0016</string>
+		<string>0017</string>
+		<string>0018</string>
+		<string>0019</string>
+		<string>0020</string>
+		<string>0021</string>
+		<string>0022</string>
+		<string>0023</string>
 	</array>
 	<key>OnlyWhenMoreTabs</key>
 	<false/>
@@ -1833,7 +1845,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2016-11-16T17:19:54Z</date>
+	<date>2016-11-30T19:01:05Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
@@ -1843,7 +1855,7 @@
 	<key>ShowBookmarkName</key>
 	<false/>
 	<key>ShowFullScreenTabBar</key>
-	<true/>
+	<false/>
 	<key>ShowPaneTitles</key>
 	<true/>
 	<key>SmartPlacement</key>

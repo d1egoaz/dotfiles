@@ -9,17 +9,22 @@
 
 ;; File bindings
 (spacemacs/set-leader-keys
-  "og" 'd1egoaz-scala/ensime-edit-definition-with-fallback
-  "osh" 'highlight-symbol-at-point
-  "oc" 'general-close
-  "oh" 'helm-eshell-history
-  "or" 'indent-region
-  "osd" 'edd/align-dependencies
-  "osi" 'edd-scala/sort-imports
-  "osg" 'edd-scala/ignore-style
-  "osf" 'diego-scala/scalafmt-file
-  "opf" 'project-find-file
+  ;; general
   "glh" 'git-link-homepage
+  "oc" 'general-close
+  "od" 'diego/delete-last-character-end-of-line
+  "og" 'dumb-jump-go
+  "oh" 'highlight-symbol-at-point
+  ;; "oh" 'helm-eshell-history
+  "opf" 'project-find-file
+  "or" 'indent-region
+  ;; scala
+  "oss" 'sbt-command
+  "osd" 'edd-scala/align-dependencies
+  "osf" 'diego-scala/scalafmt-file
+  "osg" 'edd-scala/ignore-style
+  "osi" 'edd-scala/sort-imports
+  "osl" 'sbt-run-previous-command
 )
 
 (define-key flyspell-mode-map (kbd "C-;") nil)
