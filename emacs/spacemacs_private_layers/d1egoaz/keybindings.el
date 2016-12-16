@@ -23,6 +23,7 @@
   "osd" 'edd-scala/align-dependencies
   "osf" 'diego-scala/scalafmt-file
   "osg" 'edd-scala/ignore-style
+  "osh" 'sbt-hydra
   "osi" 'edd-scala/sort-imports
   "osl" 'sbt-run-previous-command
 )
