@@ -7,11 +7,11 @@
 
 (defconst d1egoaz-packages
   '(
-    general-close
+    syntactic-close
     ))
 
-(defun d1egoaz/init-general-close ()
-  (use-package general-close
+(defun d1egoaz/init-syntactic-close ()
+  (use-package syntactic-close
     :ensure t))
 
 ;;; packages.el ends here

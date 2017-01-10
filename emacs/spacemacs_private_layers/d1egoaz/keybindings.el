@@ -11,7 +11,7 @@
 (spacemacs/set-leader-keys
   ;; general
   "glh" 'git-link-homepage
-  "oc" 'general-close
+  "oc" 'syntactic-close
   "od" 'diego/delete-last-character-end-of-line
   "og" 'dumb-jump-go
   "oh" 'highlight-symbol-at-point
@@ -28,8 +28,10 @@
   "osl" 'sbt-run-previous-command
 )
 
-(define-key flyspell-mode-map (kbd "C-;") nil)
-(global-set-key (kbd "C-;") 'general-close) ;; smart add close ]}
+(with-eval-after-load 'flyspell
+  (define-key flyspell-mode-map (kbd "C-;") nil)
+  (global-set-key (kbd "C-;") 'syntactic-close) ;; smart add close ]}
+)
 
 (global-unset-key (kbd "C-j"))
 (global-unset-key (kbd "C-k"))
