@@ -1,0 +1,11 @@
+@-moz-document regexp("^https?://((gist|guides|help|raw|status|developer).)?github(.hootops)?.com((?!generated_pages/preview).)*$") {
+code {
+    color: #b5c182 !important;
+}
+.markdown-format code {
+    color: #b5c182 !important;
+}
+p {
+    font-family: -apple-system, ".SFNSText-Regular", "San Francisco" !important;
+}
+}

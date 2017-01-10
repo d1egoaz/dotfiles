@@ -1,0 +1,6 @@
+.blob-code,
+.blob-code-inner,
+pre,
+code {
+    font-family: Hack, monospace !important;
+}
