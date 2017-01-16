@@ -24,7 +24,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git ruby brew scala sublime gitignore jruby autojump urltools git-flow docker boot2docker battery)
+plugins=(git scala sublime gitignore autojump urltools docker)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -64,10 +64,9 @@ test -e ~/.aliases && source ~/.aliases
 
 # RBENV
 #eval "$(rbenv init -)"
-
 #source ~/.nvm/nvm.sh
 #nvm use 0.12.9
-     echo
-echo ">>>"
-echo "nvm is disabled!"
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# echo ">>>"
+# echo "nvm is disabled!"
+
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

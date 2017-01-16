@@ -1,2 +1,0 @@
-no-hosts
-addn-hosts=/etc/dnsmasq.d/hosts/hosts_name.hosts

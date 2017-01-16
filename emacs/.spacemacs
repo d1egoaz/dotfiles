@@ -78,8 +78,7 @@
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(beacon
-                                      persistent-scratch
+   dotspacemacs-additional-packages '(persistent-scratch
                                       protobuf-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -99,7 +98,8 @@
    ;; `used-but-keep-unused' installs only the used packages but won't uninstall
    ;; them if they become unused. `all' installs *all* packages supported by
    ;; Spacemacs and never uninstall them. (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-only)
+)
 
 (defun dotspacemacs/init ()
   ;; This setq-default sexp is an exhaustive list of all the supported
@@ -161,8 +161,8 @@
                          spacemacs-light)
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
-   ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
-   ;; size to make separators look not too crappy.
+   ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
+   ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Hack"
                                :size 14
                                :weight normal
@@ -318,11 +318,14 @@
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup 'changed
-   ))
+   )
+)
 
 (defun dotspacemacs/user-init ()
+  ;; ensime stable
   (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
   (push '(ensime . "melpa-stable") package-pinned-packages)
+
   ;; monokai atom one dark colors
   ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
   (setq ;; atom onedark colors
@@ -352,6 +355,14 @@
         monokai-red            "#E06C75"
         monokai-orange         "#D19A66"
         monokai-yellow         "#E5C07B")
+
+  (if (eq system-type 'gnu/linux)
+      (setq-default dotspacemacs-default-font '("Hack"
+                                                :size 27
+                                                :weight normal
+                                                :width normal
+                                                :powerline-scale 1.1)))
+
 )
 
 (defun dotspacemacs/user-config ()
@@ -359,7 +370,6 @@
   ;; For complex scala files
   (setq max-lisp-eval-depth 50000)
   (setq max-specpdl-size 5000)
-
 
   (setq powerline-default-separator 'arrow)
 
@@ -372,7 +382,7 @@
   (global-whitespace-mode)
 
   ;; deft
-  (setq deft-directory "~/OneDrive/deft")
+  (setq deft-directory "~/onedrive/deft")
   (setq create-lockfiles nil) ;; disable .#file.ext creation
 
   ;; Backups
@@ -452,21 +462,24 @@
     (setq org-src-fontify-natively t
           org-startup-with-inline-images t
           org-download-method 'directory
-          org-download-image-dir "~/OneDrive/deft/images"
+          org-download-image-dir "~/onedrive/deft/images"
           org-download-heading-lvl nil
           org-download-screenshot-method "screencapture -i %s"
           org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"
           org-confirm-babel-evaluate nil
-          org-default-notes-file "/Users/diegoa/OneDrive/deft/TODO.org"
-          org-agenda-files '("/Users/diegoa/OneDrive/deft/TODO.org")
-          org-capture-templates '(
-                                  ("n" "Note" entry (file+headline "/Users/diegoa/OneDrive/deft/notes.org" "Notes")
+          org-default-notes-file "~/onedrive/deft/TODO.org"
+          org-agenda-files (list "~/onedrive/deft/new-todo.org")
+          org-agenda-span 10
+          org-agenda-start-day "-3d"
+          org-capture-templates '(("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
                                    "* Note %?\n%T")
-                                  ("l" "Link" entry (file+headline "/Users/diegoa/OneDrive/deft/links.org" "Links")
+                                  ("l" "Link" entry (file+headline "~/onedrive/deft/links.org" "Links")
                                    "* %? %^L %^g \n%T" :prepend t)
-                                  ("t" "To Do Item" entry (file+headline "/Users/diegoa/OneDrive/deft/TODO.org" "To Do Items")
+                                  ;; ("t" "To Do Item" entry (file+headline "~/onedrive/deft/TODO.org" "To Do Items")
+                                  ;;  "* %?\n%T" :prepend t)
+                                  ("t" "Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Todo Items")
                                    "* %?\n%T" :prepend t)
-                                  ("j" "Journal" entry (file+datetree "/Users/diegoa/OneDrive/deft/jounal.org")
+                                  ("j" "Journal" entry (file+datetree "~/onedrive/deft/jounal.org")
                                    "* %?\nEntered on %U\n  %i\n  %a"))
     )
     (custom-set-faces
@@ -536,13 +549,6 @@
                                           "\\*magit.*"
                                           "\\*sbt.*"
                                           "\\*deft\\*"))
-  ;; beacon Never lose your cursor again
-  (setq-default
-   beacon-blink-when-focused t
-   beacon-blink-when-point-moves-vertically 5)
-
-  (beacon-mode 1)
-
   ;; ensime
   ;; (require 'ensime)
   ;; https://github.com/syl20bnr/spacemacs/issues/6578
@@ -587,7 +593,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (syntactic-close general-close yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode hcl-mode tagedit sql-indent spacemacs-theme spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs pug-mode protobuf-mode popwin play-routes-mode plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox spinner osx-trash osx-dictionary orgit org-projectile org-present org org-pomodoro alert log4e gntp org-plus-contrib org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nlinum nginx-mode neotree multi-term move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode skewer-mode simple-httpd link-hint less-css-mode launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc intero info+ indent-guide ido-vertical-mode ibuffer-projectile hydra hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile helm-hoogle helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets haml-mode google-translate golden-ratio gnuplot gitignore-mode github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md flyspell-correct-helm flyspell-correct flycheck-pos-tip flycheck-haskell flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit magit magit-popup git-commit with-editor evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight eshell-z eshell-prompt-extras esh-help ensime sbt-mode scala-mode emmet-mode elisp-slime-nav dumb-jump f drupal-mode php-mode diminish diff-hl deft company-web web-completion-data company-tern s dash-functional tern company-statistics company-restclient restclient know-your-http-well company-quickhelp pos-tip company-ghci company-ghc ghc haskell-mode company-cabal company command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map bind-key beacon seq auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup quelpa package-build monokai-theme))))
+    (syntactic-close play-routes-mode yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs quelpa pug-mode protobuf-mode popwin plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc intero info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-ghci company-ghc company-cabal command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
