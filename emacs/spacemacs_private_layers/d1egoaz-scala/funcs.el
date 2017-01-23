@@ -16,7 +16,10 @@
 
 (defun diego-scala/scalafmt-file ()
   (interactive)
-  (shell-command-to-string (concat "~/bin/dscalafmt.sh " buffer-file-name)))
+  (let ((str (concat "scalafmt -f " buffer-file-name " --config=" user-home-directory ".scalafmt.conf -i --exclude ensime")))
+    (message str)
+    (shell-command-to-string str))
+  (message "scalafmt done"))
 
 (defun edd-scala/align-dependencies ()
   (interactive)
