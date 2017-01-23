@@ -37,9 +37,10 @@ install_zsh
 
 
 ###################################################
+sudo apt install zsh zsh-syntax-highlighting
 
 sudo apt install vim tree autojump cowsay httpie httpry maven nmap speedtest-cli unrar youtube-dl rbenv ruby-build -y
-sudo apt install gstreamer0.10-plugins-ugly gxine libdvdread4 totem-mozilla icedax tagtool easytag id3tool lame nautilus-script-audio-convert libmad0 mpg321 gstreamer1.0-libav -y
+sudo apt install gstreamer1.0-plugins-ugly gxine libdvdread4 icedax tagtool easytag id3tool lame nautilus-script-audio-convert libmad0 mpg321 gstreamer1.0-libav -y
 sudo apt install ubuntu-restricted-extras -y
 
 # archive management apps
@@ -48,11 +49,11 @@ sudo apt install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudevi
 # clipboard management
 sudo apt install xclip -y
 
-# Jpn
+# Vpn
 sudo apt install network-manager-vpnc network-manager-vpnc-gnome -y
 
-# clipmboard manager
-sudo apt install clipit -y
+# clipboard manager
+sudo apt install clipit caffeine -y
 
 # chrome
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
@@ -77,8 +78,7 @@ sudo apt install pdfshuffler -y
 sudo apt install indicator-cpufreq indicator-multiload -y
 
 # classic menu
-sudo apt-add-repository ppa:diesch/testing -y
-sudo apt update && sudo apt-get install classicmenu-indicator -y
+sudo apt-get install classicmenu-indicator -y
 
 # ubuntu after install, http://www.unixmen.com/ubuntu-install-automate-installation-popular-softwares-ubuntu-14-0413-1013-0412-1012-04/
 sudo add-apt-repository ppa:thefanclub/ubuntu-after-install
