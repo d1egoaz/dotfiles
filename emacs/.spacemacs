@@ -327,6 +327,8 @@ values."
 )
 
 (defun dotspacemacs/user-init ()
+  (load "~/onedrive/deft/emacs-secrets.el" t)
+
   ;; ensime stable
   (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
   (push '(ensime . "melpa-stable") package-pinned-packages)
@@ -464,20 +466,23 @@ values."
 
   ;; org-mode
   (with-eval-after-load 'org
-    (setq org-src-fontify-natively t
-          org-startup-with-inline-images t
-          org-download-method 'directory
-          org-download-image-dir "~/onedrive/deft/images"
-          org-download-heading-lvl nil
-          org-download-screenshot-method "screencapture -i %s"
-          org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"
-          org-confirm-babel-evaluate nil
-          org-default-notes-file "~/onedrive/deft/TODO.org"
-          org-agenda-files (list "~/onedrive/deft/new-todo.org")
+    (setq
+          org-agenda-files (list "~/onedrive/deft/new-todo.org" "~/onedrive/deft/schedule.org")
           org-agenda-span 10
           org-agenda-start-day "-3d"
-          org-capture-templates '(("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
-                                   "* Note %?\n%T")
+          org-confirm-babel-evaluate nil
+          org-default-notes-file "~/onedrive/deft/TODO.org"
+          org-download-heading-lvl nil
+          org-download-image-dir "~/onedrive/deft/images"
+          org-download-method 'directory
+          org-download-screenshot-method "screencapture -i %s"
+          org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"
+          org-refile-targets (quote ((nil :maxlevel . 9)
+                                     (org-agenda-files :maxlevel . 9)))
+          org-src-fontify-natively t
+          org-startup-with-inline-images t
+          org-capture-templates '(("n" "Next task" entry (file+headline "~/onedrive/deft/notes.org" "Tasks")
+                                   "** NEXT %? \nDEADLINE: %t")
                                   ("l" "Link" entry (file+headline "~/onedrive/deft/links.org" "Links")
                                    "* %? %^L %^g \n%T" :prepend t)
                                   ;; ("t" "To Do Item" entry (file+headline "~/onedrive/deft/TODO.org" "To Do Items")
@@ -486,6 +491,9 @@ values."
                                    "* %?\n%T" :prepend t)
                                   ("j" "Journal" entry (file+datetree "~/onedrive/deft/jounal.org")
                                    "* %?\nEntered on %U\n  %i\n  %a"))
+          org-gcal-client-id secret-org-gcal-client-id
+          org-gcal-client-secret secret-org-gcal-client-secret
+          org-gcal-file-alist '(("diego.alvarez@hootsuite.com" . "~/onedrive/deft/schedule.org"))
     )
     (custom-set-faces
      '(org-block-background
@@ -598,7 +606,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (hcl-mode powerline spinner org alert log4e gntp nlinum markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode hydra parent-mode projectile request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck pkg-info epl flx magit magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight sbt-mode scala-mode f php-mode diminish web-completion-data s dash-functional tern restclient know-your-http-well pos-tip ghc haskell-mode company bind-key yasnippet packed dash helm avy helm-core async auto-complete popup package-build syntactic-close play-routes-mode yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs quelpa pug-mode protobuf-mode popwin plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc intero info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-ghci company-ghc company-cabal command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (org-gcal request-deferred deferred hcl-mode powerline spinner org alert log4e gntp nlinum markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode hydra parent-mode projectile request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck pkg-info epl flx magit magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight sbt-mode scala-mode f php-mode diminish web-completion-data s dash-functional tern restclient know-your-http-well pos-tip ghc haskell-mode company bind-key yasnippet packed dash helm avy helm-core async auto-complete popup package-build syntactic-close play-routes-mode yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs quelpa pug-mode protobuf-mode popwin plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc intero info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-ghci company-ghc company-cabal command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

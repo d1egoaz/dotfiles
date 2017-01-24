@@ -8,10 +8,16 @@
 (defconst d1egoaz-packages
   '(
     syntactic-close
+    org-gcal
     ))
 
 (defun d1egoaz/init-syntactic-close ()
   (use-package syntactic-close
     :ensure t))
+
+(defun d1egoaz/init-org-gcal ()
+  "Initialize org-gcal"
+  (use-package org-gcal)
+  )
 
 ;;; packages.el ends here
