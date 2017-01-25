@@ -494,6 +494,8 @@ values."
           org-gcal-client-id secret-org-gcal-client-id
           org-gcal-client-secret secret-org-gcal-client-secret
           org-gcal-file-alist '(("diego.alvarez@hootsuite.com" . "~/onedrive/deft/schedule.org"))
+          spaceline-org-clock-p t
+
     )
     (custom-set-faces
      '(org-block-background
