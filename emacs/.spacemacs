@@ -489,7 +489,7 @@ values."
                                   ;;  "* %?\n%T" :prepend t)
                                   ("t" "Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Todo Items")
                                    "* %?\n%T" :prepend t)
-                                  ("j" "Journal" entry (file+datetree "~/onedrive/deft/jounal.org")
+                                  ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
                                    "* %?\nEntered on %U\n  %i\n  %a" :clock-in t :clock-resume t))
           org-gcal-client-id secret-org-gcal-client-id
           org-gcal-client-secret secret-org-gcal-client-secret
