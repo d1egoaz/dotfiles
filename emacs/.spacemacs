@@ -342,7 +342,7 @@ values."
         monokai-height-plus-2 1.15
         monokai-height-plus-3 1.2
         monokai-height-plus-4 1.3
-        monokai-foreground     "#ABB2BF"
+        monokai-foreground     "#CCD0D8"
         monokai-background     "#282C34"
 
         ;; highlights and comments
@@ -354,14 +354,15 @@ values."
         ;; monokai-linum          "#F8F8F0"
 
         ;; colors
-        monokai-blue           "#61AFEF"
-        monokai-cyan           "#56B6C2"
-        monokai-green          "#98C379"
-        monokai-gray           "#3E4451"
-        monokai-violet         "#C678DD"
-        monokai-red            "#E06C75"
-        monokai-orange         "#D19A66"
-        monokai-yellow         "#E5C07B")
+        ;; monokai-blue           "#61AFEF"
+        ;; monokai-cyan           "#56B6C2"
+        ;; monokai-green          "#98C379"
+        ;; monokai-gray           "#3E4451"
+        ;; monokai-violet         "#C678DD"
+        ;; monokai-red            "#E06C75"
+        ;; monokai-orange         "#D19A66"
+        ;; monokai-yellow         "#E5C07B"
+        )
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
