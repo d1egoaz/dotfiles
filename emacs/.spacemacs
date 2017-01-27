@@ -482,14 +482,16 @@ values."
                                      (org-agenda-files :maxlevel . 9)))
           org-src-fontify-natively t
           org-startup-with-inline-images t
-          org-capture-templates '(("n" "Next task" entry (file+headline "~/onedrive/deft/notes.org" "Tasks")
+          org-capture-templates '(("n" "Next task" entry (file+headline "~/onedrive/deft/new-todo.org" "Tasks")
                                    "** NEXT %? \nDEADLINE: %t")
                                   ("l" "Link" entry (file+headline "~/onedrive/deft/links.org" "Links")
                                    "* %? %^L %^g \n%T" :prepend t)
-                                  ;; ("t" "To Do Item" entry (file+headline "~/onedrive/deft/TODO.org" "To Do Items")
-                                  ;;  "* %?\n%T" :prepend t)
-                                  ("t" "Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Todo Items")
+                                  ("t" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
                                    "* %?\n%T" :prepend t)
+                                  ("p" "Personal - Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Personal Todo Items")
+                                   "* %?\n  CREATED: %T" :prepend t)
+                                  ("w" "Work - Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Work Todo Items")
+                                   "* %?\n  CREATED: %T" :prepend t)
                                   ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
                                    "* %?\nEntered on %U\n  %i\n  %a" :clock-in t :clock-resume t))
           org-gcal-client-id secret-org-gcal-client-id
