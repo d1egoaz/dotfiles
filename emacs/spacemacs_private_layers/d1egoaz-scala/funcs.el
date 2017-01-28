@@ -25,42 +25,6 @@
   (interactive)
   (align-regexp (region-beginning) (region-end) "\\(\\s-+\\)\\(%%?\\|\"\\)" 1 1 't))
 
-(setq edd-scala-sort-imports-rules
-      '(("^import com\\.hootsuite\\." . "1") ("^import scala\\." . "6") ("^import java\\." . "7") ("^import javax\\." . "8") ("^import " . "5")))
-
-
-(defun edd-scala/sort-imports ()
-  "Sorts imports according to rules, which are cons pairs of regexp to order"
-    (interactive)
-    (save-excursion
-      (beginning-of-buffer)
-      (let ((importre "^import\\b")
-            (blankre  "^$"))
-        (search-forward-regexp "^package\\b")
-        (search-forward-regexp importre)
-        (beginning-of-line)
-        (let ((start (point)))
-          (while (looking-at-p importre)
-            (forward-line))
-          (end-of-line)
-          (let ((end (point)))
-            (mapcar
-             (lambda (pair)
-               (progn
-                 (goto-char start)
-                 (while (< (point) end)
-                   (let ((rule (car pair))
-                         (ord (cdr pair)))
-                     (when
-                         (search-forward-regexp rule end 't)
-                       (replace-match (concat ord "\\&")))
-                     (forward-line)))))
-             edd-scala-sort-imports-rules)
-            (sort-lines nil start end)
-            (goto-char start)
-            (while (search-forward-regexp "^\\([0-9]\\)import\\b" nil 't)
-              (replace-match "import")))))))
-
 (defun edd-scala/ignore-style (start end)
   "Ignore a scalastyle rule. If region is active it will be
    wrapped in a scalastyle:off/scalastyle:on comment pair. If not, a
