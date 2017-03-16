@@ -580,21 +580,6 @@ values."
                                           "\\*magit.*"
                                           "\\*sbt.*"
                                           "\\*deft\\*"))
-  ;; ensime
-  (require 'ensime)
-  ;; https://github.com/syl20bnr/spacemacs/issues/6578
-  (setq ensime-sem-high-faces '(
-                                (param :slant italic)
-                                (object . font-lock-constant-face)
-                                (implicitConversion nil)
-                                (implicitParams nil))
-
-        ensime-tooltip-hints t
-        ensime-tooltip-type-hints t
-        ensime-graphical-tooltips t
-        ensime-auto-generate-config t
-        ;; ensime-use-helm t, currently broken https://github.com/syl20bnr/spacemacs/issues/7237
-        )
 
   ;; persistent-scratch
   (persistent-scratch-setup-default)
@@ -624,13 +609,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (request-deferred deferred org-plus-contrib font-lock+ highlight evil flycheck haskell-mode go-mode alert projectile magit magit-popup git-commit yasnippet php-mode helm helm-core js2-mode rainbow-mode rainbow-identifiers color-identifiers-mode zenburn-theme yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit syntactic-close sql-indent spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs pug-mode protobuf-mode popwin play-routes-mode plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-gcal org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magithub magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc intero info+ indent-guide ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate golden-ratio go-guru go-eldoc gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-go company-ghci company-ghc company-cabal command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atom-one-dark-theme all-the-icons aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  '(ensime-sem-high-enabled-p nil)
  )
 )
