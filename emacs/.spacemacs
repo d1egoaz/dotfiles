@@ -366,7 +366,7 @@ values."
         )
 
   (custom-set-faces
-   '(font-lock-variable-name-face ((t (:foreground "#23AB6C0", :background "#292e34"))))
+   '(font-lock-variable-name-face ((t (:foreground "#23AB6C", :background "#292e34"))))
    '(font-lock-function-name-face ((t (:foreground "#96B265", :background "#293235"))))
    '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
    '(font-lock-comment-face ((t (:foreground "#58626E"))))
