@@ -11,6 +11,7 @@
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     go
      (auto-completion :variables
                       ;; auto-completion-return-key-behavior nil
                       auto-completion-tab-key-behavior 'complete
@@ -18,7 +19,7 @@
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t)
      (ibuffer :variables ibuffer-group-buffers-by 'projects)
-     ;; (colors :variables colors-enable-nyan-cat-progress-bar nil)
+     (colors :variables colors-enable-nyan-cat-progress-bar nil)
      command-log
      deft
      emacs-lisp
@@ -79,7 +80,8 @@
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(persistent-scratch
-                                      protobuf-mode)
+                                      protobuf-mode
+                                      all-the-icons)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -342,27 +344,38 @@ values."
         monokai-height-plus-2 1.15
         monokai-height-plus-3 1.2
         monokai-height-plus-4 1.3
-        monokai-foreground     "#CCD0D8"
+        monokai-foreground     "#b2b2b2"
         monokai-background     "#282C34"
 
         ;; highlights and comments
-        ;; monokai-comments       "#F8F8F0"
+        ;; monokai-comments       "#a5a5a5"
         ;; monokai-emphasis       "#282C34"
         ;; monokai-highlight      "#FFB269"
-        ;; monokai-highlight-alt  "#66D9EF"
-        ;; monokai-highlight-line "#1B1D1E"
-        ;; monokai-linum          "#F8F8F0"
+        monokai-highlight-alt  "#66D9EF"
+        monokai-highlight-line "#1B1D1E"
 
         ;; colors
-        ;; monokai-blue           "#61AFEF"
-        ;; monokai-cyan           "#56B6C2"
-        ;; monokai-green          "#98C379"
-        ;; monokai-gray           "#3E4451"
-        ;; monokai-violet         "#C678DD"
-        ;; monokai-red            "#E06C75"
-        ;; monokai-orange         "#D19A66"
-        ;; monokai-yellow         "#E5C07B"
+        monokai-blue           "#61AFEF"
+        monokai-cyan           "#56B6C2"
+        monokai-green          "#98C379"
+        monokai-gray           "#3E4451"
+        monokai-violet         "#a8a1de"
+        monokai-red            "#E06C75"
+        monokai-orange         "#D19A66"
+        monokai-yellow         "#E5C07B"
         )
+
+  (custom-set-faces
+   '(font-lock-variable-name-face ((t (:foreground "#23AB6C0", :background "#292e34"))))
+   '(font-lock-function-name-face ((t (:foreground "#96B265", :background "#293235"))))
+   '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
+   '(font-lock-comment-face ((t (:foreground "#58626E"))))
+   '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
+   '(font-lock-type-face ((t (:foreground "#7dbaed"))))
+   '(highlight-numbers-number ((t (:foreground "#BF7D56"))))
+   '(font-lock-string-face ((t (:foreground "#e4e597")))))
+   ;; '(font-lock-string-face ((t (:foreground "#2d9574")))))
+
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
@@ -568,7 +581,7 @@ values."
                                           "\\*sbt.*"
                                           "\\*deft\\*"))
   ;; ensime
-  ;; (require 'ensime)
+  (require 'ensime)
   ;; https://github.com/syl20bnr/spacemacs/issues/6578
   (setq ensime-sem-high-faces '(
                                 (param :slant italic)
@@ -597,6 +610,8 @@ values."
 
   (add-hook 'text-mode-hook 'flyspell-mode)
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+  (setq neo-theme 'icons)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
@@ -611,7 +626,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (zenburn-theme atom-one-dark-theme org-gcal request-deferred deferred hcl-mode powerline spinner org alert log4e gntp nlinum markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode hydra parent-mode projectile request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck pkg-info epl flx magit magit-popup git-commit with-editor iedit anzu evil goto-chg undo-tree highlight sbt-mode scala-mode f php-mode diminish web-completion-data s dash-functional tern restclient know-your-http-well pos-tip ghc haskell-mode company bind-key yasnippet packed dash helm avy helm-core async auto-complete popup package-build syntactic-close play-routes-mode yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit sql-indent spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs quelpa pug-mode protobuf-mode popwin plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc intero info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-ghci company-ghc company-cabal command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (request-deferred deferred org-plus-contrib font-lock+ highlight evil flycheck haskell-mode go-mode alert projectile magit magit-popup git-commit yasnippet php-mode helm helm-core js2-mode rainbow-mode rainbow-identifiers color-identifiers-mode zenburn-theme yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit syntactic-close sql-indent spaceline smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs pug-mode protobuf-mode popwin play-routes-mode plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-gcal org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode markdown-toc magithub magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-mode js2-refactor js-doc intero info+ indent-guide ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate golden-ratio go-guru go-eldoc gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav dumb-jump drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-go company-ghci company-ghc company-cabal command-log-mode column-enforce-mode coffee-mode cmm-mode clean-aindent-mode bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atom-one-dark-theme all-the-icons aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

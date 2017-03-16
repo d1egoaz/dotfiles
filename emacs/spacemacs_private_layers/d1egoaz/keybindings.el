@@ -24,6 +24,8 @@
   "osf" 'diego-scala/scalafmt-file
   "osg" 'edd-scala/ignore-style
   "osh" 'sbt-hydra
+  "oo" 'sbt-hydra
+  "of" 'diego-scala/scalafmt-file
   "osl" 'sbt-run-previous-command
 )
 
