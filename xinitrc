@@ -15,5 +15,4 @@ xmodmap -e "add Control = $spare_modifier"
 xmodmap -e "keycode any = space"
 
 # Finally use xcape to cause the space bar to generate a space when tapped.
-xcape -e "$spare_modifier=space"
-
+xcape -e "$spare_modifier=space" -t 500
