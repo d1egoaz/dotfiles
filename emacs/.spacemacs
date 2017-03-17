@@ -367,15 +367,13 @@ values."
 
   (custom-set-faces
    '(font-lock-variable-name-face ((t (:foreground "#23AB6C", :background "#292e34"))))
-   '(font-lock-function-name-face ((t (:foreground "#96B265", :background "#293235"))))
+   '(font-lock-function-name-face ((t (:foreground "#00FF00", :background "#293235"))))
    '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
    '(font-lock-comment-face ((t (:foreground "#58626E"))))
    '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
    '(font-lock-type-face ((t (:foreground "#7dbaed"))))
    '(highlight-numbers-number ((t (:foreground "#BF7D56"))))
    '(font-lock-string-face ((t (:foreground "#e4e597")))))
-   ;; '(font-lock-string-face ((t (:foreground "#2d9574")))))
-
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
@@ -609,6 +607,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-  '(ensime-sem-high-enabled-p nil)
+  ;; '(ensime-sem-high-enabled-p nil)
+ '(ensime-sem-high-faces
+   '(
+     (class . (:foreground "#7dbaed"))
+     (trait . (:foreground "#469ee6"))
+     ))
  )
 )
