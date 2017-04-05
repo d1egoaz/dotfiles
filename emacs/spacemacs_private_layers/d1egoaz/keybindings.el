@@ -37,3 +37,7 @@
 
 (global-unset-key (kbd "C-j"))
 (global-unset-key (kbd "C-k"))
+
+
+(with-eval-after-load 'evil
+  (global-set-key (kbd "C-i") 'evil-jump-forward))
