@@ -1,5 +1,5 @@
 #!/bin/sh
-
+setxkbmap -layout us
 setxkbmap -option caps:swapescape
 
 # Map an unused modifier's keysym to the spacebar's keycode and make it a
