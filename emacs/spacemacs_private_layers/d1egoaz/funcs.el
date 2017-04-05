@@ -14,3 +14,19 @@
   (save-excursion
     (move-end-of-line 1)
     (delete-backward-char 1)))
+
+(with-eval-after-load 'hydra
+  (defhydra hydra-zoom (global-map "<f2>")
+    "zoom"
+    ("g" text-scale-increase "in")
+    ("l" text-scale-decrease "out"))
+
+  (defhydra diego/hydra-dumb-jump (:color pink)
+    "Dumb Jump"
+    ("g" dumb-jump-go "Go")
+    ("b" dumb-jump-back "Back")
+    ("f" dumb-jump-quick-look "Look")
+    ("e" dumb-jump-go-prefer-external "External")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("q" nil "Quit" :color blue))
+)

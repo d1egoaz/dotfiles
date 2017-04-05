@@ -14,6 +14,7 @@
   "oc" 'syntactic-close
   "od" 'diego/delete-last-character-end-of-line
   "og" 'dumb-jump-go
+  "oj" 'diego/hydra-dumb-jump/body
   "oh" 'highlight-symbol-at-point
   ;; "oh" 'helm-eshell-history
   "opf" 'project-find-file
