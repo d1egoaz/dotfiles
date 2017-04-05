@@ -595,6 +595,7 @@ values."
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
   (setq neo-theme 'icons)
+  (setq mouse-yank-at-point t) ;; middle-clicking pastes at the current location instead of moving the mouse
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
