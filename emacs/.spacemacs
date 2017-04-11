@@ -596,6 +596,7 @@ values."
 
   (setq neo-theme 'icons)
   (setq mouse-yank-at-point t) ;; middle-clicking pastes at the current location instead of moving the mouse
+  (global-set-key (kbd "<key-4660>") 'ignore) ;; http://emacsredux.com/blog/2013/11/12/a-crazy-productivity-boost-remap-return-to-control/
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
