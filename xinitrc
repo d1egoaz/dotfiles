@@ -1,16 +1,11 @@
 #!/bin/sh
 
 # reset kbd, xcape
-setxkbmap -layout us
-pkill xcape
+#setxkbmap -layout us
+#pkill xcape
 
 # 1.ubuntu tweak, caps lock as control
 
 # 2. caps as ctrol + escape
 xcape -e 'Control_L=Escape'
 
-# http://emacsredux.com/blog/2013/11/12/a-crazy-productivity-boost-remap-return-to-control/
-xmodmap -e 'keycode 36 = 0x1234'
-xmodmap -e 'add control = 0x1234'
-xmodmap -e 'keycode any = Return'
-xcape -e '0x1234=Return'
