@@ -81,7 +81,8 @@
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(persistent-scratch
                                       protobuf-mode
-                                      all-the-icons)
+                                      all-the-icons
+                                      disable-mouse)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -603,6 +604,17 @@ values."
         `(("." . ,(concat spacemacs-cache-directory "undo"))))
   (unless (file-exists-p (concat spacemacs-cache-directory "undo"))
     (make-directory (concat spacemacs-cache-directory "undo")))
+
+  (global-disable-mouse-mode)
+  (evil-make-overriding-map disable-mouse-mode-map)
+  ;; dummy
+  (defun silence ()
+    (interactive))
+
+  ;; don't jump the cursor around in the window on clicking
+  (define-key evil-motion-state-map [down-mouse-1] 'silence)
+  ;; also avoid any '<mouse-1> is undefined' when setting to 'undefined
+  (define-key evil-motion-state-map [mouse-1] 'silence)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
