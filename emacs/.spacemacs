@@ -52,9 +52,9 @@
      spacemacs-language
      ;; spacemacs-layouts
      spacemacs-misc ;; dumb-jump
+     spacemacs-navigation
      spacemacs-org
-     spacemacs-ui
-     spacemacs-ui-visual
+     spacemacs-visual
      spell-checking
      (syntax-checking :variables
                       flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
