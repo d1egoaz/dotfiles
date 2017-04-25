@@ -7,12 +7,10 @@
 
 (defun diego-scala/ensime-edit-definition-with-fallback () ;; based on https://github.com/fommil/dotfiles/blob/master/.emacs.d/init.el#L620
   "Variant of `ensime-edit-definition' with ctags if ENSIME is not available."
-  (interactive)
+  (interactive "P")
   (unless (and (ensime-connection-or-nil)
                (ensime-edit-definition))
-    (dumb-jump-go)
-    (projectile-find-tag)))
-
+    (dumb-jump-go)))
 
 (defun diego-scala/scalafmt-file ()
   (interactive)
