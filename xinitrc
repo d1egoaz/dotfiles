@@ -14,3 +14,5 @@ synclient PalmDetect=1
 #syndaemon -i 0.5 -t -K -R -d # t enable mouse move
 syndaemon -i 0.5 -K -R -d
 
+xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Natural Scrolling Enabled" 0
+
