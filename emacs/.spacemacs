@@ -482,6 +482,12 @@ values."
 
   ;; org-mode
   (with-eval-after-load 'org
+    (if (eq system-type 'darwin)
+        (setq org-download-screenshot-method "screencapture -i %s"
+              org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"))
+    (if (eq system-type 'gnu/linux)
+        (setq org-download-screenshot-method "import  %s"
+              org-plantuml-jar-path "/opt/plantuml/plantuml.jar"))
     (setq
           org-agenda-files (list "~/onedrive/deft/new-todo.org" "~/onedrive/deft/schedule.org")
           org-agenda-span 10
@@ -491,8 +497,6 @@ values."
           org-download-heading-lvl nil
           org-download-image-dir "~/onedrive/deft/images"
           org-download-method 'directory
-          org-download-screenshot-method "screencapture -i %s"
-          org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"
           org-refile-targets (quote ((nil :maxlevel . 9)
                                      (org-agenda-files :maxlevel . 9)))
           org-src-fontify-natively t
