@@ -42,8 +42,7 @@
      osx
      org
      (shell :variables
-            shell-default-shell 'eshell
-            shell-default-term-shell "/usr/local/bin/zsh")
+            shell-default-shell 'eshell)
      sql
      spacemacs-completion
      spacemacs-editing
@@ -569,9 +568,6 @@ values."
 
   (spacemacs/toggle-truncate-lines-on)
   (spacemacs/toggle-automatic-symbol-highlight-on)
-
-  ;; Shell
-  shell-default-term-shell "/bin/zsh"
 
   ;; tramp
   (eval-after-load 'tramp

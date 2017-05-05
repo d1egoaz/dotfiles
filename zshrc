@@ -24,9 +24,12 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(archlinux git scala sublime gitignore autojump urltools docker vi-mode)
+plugins=(archlinux git scala sublime gitignore autojump urltools docker vi-mode history-substring-search zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
+
+bindkey '^k' history-substring-search-up
+bindkey '^j' history-substring-search-down
 
 # Customize to your needs...
 DIRSTACKDIR="$HOME/.cache/zsh"
@@ -70,5 +73,8 @@ test -e ~/.aliases_hs && source ~/.aliases_hs
 # echo ">>>"
 # echo "nvm is disabled!"
 
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+  source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+else
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi

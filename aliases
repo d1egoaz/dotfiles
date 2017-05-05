@@ -49,10 +49,6 @@ alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 
-# Shortcuts
-alias vi="echo 'use vim'"
-alias diegoalvarez="vim"
-
 # Empty the Trash on all mounted volumes and the main HDD
 alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; rm -rfv ~/.Trash"
 
@@ -72,3 +68,10 @@ alias gr2='git ca -m "tmp" && git rebase -i HEAD~2'
 
 # ansible
 alias ansible-playbook-fix='ansible-playbook --extra-vars="basedir=/Users/diegoa/dev/ansible-playbooks/"'
+
+#emacsclient
+alias emacs='emacsclient -nc'
+
+# Shortcuts
+alias vi='emacs'
+alias vim='emacs'
