@@ -1,13 +1,4 @@
 
-;; @fommil
-(defun d1egoaz/indent-buffer ()
-  "Indent the entire buffer."
-  (interactive)
-  (save-excursion
-    (delete-trailing-whitespace)
-    (indent-region (point-min) (point-max) nil)
-    (untabify (point-min) (point-max))))
-
 (defun diego/delete-last-character-end-of-line ()
   "Delete last character in line"
   (interactive)
@@ -28,5 +19,15 @@
     ("f" dumb-jump-quick-look "Look")
     ("e" dumb-jump-go-prefer-external "External")
     ("o" dumb-jump-go-other-window "Other window")
-    ("q" nil "Quit" :color blue))
-)
+    ("q" nil "Quit" :color blue)))
+
+(defun diego/insert-ticket-prefix ()
+  "Inserts a prefix containing the number of the Jira ticket from the branch name"
+  (let* ((result  (re-search-forward "\\(pub\\|plat\\)-\\([0-9]+\\).*$" nil t))
+          (s (concat (match-string 1) "-" (match-string 2))))
+    (goto-char (point-min))
+    (if (and result
+              (not (string-match (concat "\\[" s "\\]") (buffer-string))))
+        (insert (concat "[" (upcase s) "] "))
+      (unless (string-match (concat "\\[.*\\]") (buffer-string))
+        (insert (concat "[TICKET] "))))))

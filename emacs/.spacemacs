@@ -617,6 +617,8 @@ values."
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil
           ensime-startup-notification nil))
+
+  (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
