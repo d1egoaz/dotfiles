@@ -41,7 +41,8 @@
      php
      osx
      org
-     (shell :variables shell-default-term-shell "/usr/bin/zsh")
+     (shell :variables shell-default-term-shell "/usr/local/bin/zsh");; "/usr/bin/zsh"))) TODO: unix/osx config
+     ruby
      sql
      spacemacs-completion
      spacemacs-editing
@@ -461,6 +462,8 @@ values."
             (lambda () (modify-syntax-entry ?_ "w")))
   (add-hook 'emacs-lisp-mode-hook
             (lambda () (modify-syntax-entry ?- "w")))
+  (add-hook 'ruby-mode-hook
+            (lambda () (modify-syntax-entry ?_ "w")))
 
   ;; avy
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
