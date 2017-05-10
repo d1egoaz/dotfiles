@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: println(s">>>")
+# key:  println
+# --
+println(s">>> ${1:_}:${3:_}${2:_}")$0
