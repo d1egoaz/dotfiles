@@ -43,6 +43,7 @@
      org
      (shell :variables shell-default-term-shell "/usr/local/bin/zsh");; "/usr/bin/zsh"))) TODO: unix/osx config
      ruby
+     shell-scripts
      sql
      spacemacs-completion
      spacemacs-editing
