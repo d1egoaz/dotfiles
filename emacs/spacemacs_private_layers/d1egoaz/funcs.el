@@ -30,4 +30,4 @@
               (not (string-match (concat "\\[" s "\\]") (buffer-string))))
         (insert (concat "[" (upcase s) "] "))
       (unless (string-match (concat "\\[.*\\]") (buffer-string))
-        (insert (concat "[TICKET] "))))))
+        (insert (concat ""))))))
