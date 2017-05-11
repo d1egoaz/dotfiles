@@ -1,5 +1,3 @@
-[[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
-
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
@@ -9,22 +7,15 @@ ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="in-fino-veritas"
 
-# Set to this to use case-sensitive completion
-# CASE_SENSITIVE="true"
-
-# Comment this out to disable bi-weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
-
 # Uncomment to change how often before auto-updates occur? (in days)
 export UPDATE_ZSH_DAYS=7
 
-# Uncomment following line if you want red dots to be displayed while waiting for completion
-COMPLETION_WAITING_DOTS="true"
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(archlinux git scala sublime gitignore autojump urltools docker vi-mode history-substring-search zsh-syntax-highlighting)
+if [ $EMACS ]; then
+  unsetopt zle # disables zsh line editor
+  plugins=(git autojump history-substring-search)
+else
+  plugins=(archlinux git scala autojump urltools vi-mode history-substring-search zsh-syntax-highlighting)
+fi
 
 source $ZSH/oh-my-zsh.sh
 
@@ -72,9 +63,3 @@ test -e ~/.aliases_hs && source ~/.aliases_hs
 #nvm use 0.12.9
 # echo ">>>"
 # echo "nvm is disabled!"
-
-if [[ "$OSTYPE" =~ ^darwin ]]; then
-  source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-else
-  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
