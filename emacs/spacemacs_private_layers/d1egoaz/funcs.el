@@ -22,12 +22,16 @@
     ("q" nil "Quit" :color blue)))
 
 (defun diego/insert-ticket-prefix ()
+  (interactive)
   "Inserts a prefix containing the number of the Jira ticket from the branch name"
-  (let* ((result  (re-search-forward "\\(pub\\|plat\\)-\\([0-9]+\\).*$" nil t))
+  ;; (let* ((result  (re-search-forward "\\(pub\\|plat\\)-\\([0-9]+\\).*$" nil t))
+  (let* ((result  (re-search-forward "\\([a-zA-Z]+\\)-\\([0-9]+\\).*$" nil t))
           (s (concat (match-string 1) "-" (match-string 2))))
     (goto-char (point-min))
     (if (and result
               (not (string-match (concat "\\[" s "\\]") (buffer-string))))
         (insert (concat "[" (upcase s) "] "))
-      (unless (string-match (concat "\\[.*\\]") (buffer-string))
-        (insert (concat ""))))))
+      ;; enable to insert another string when branch doesn't match a Jira ticket
+      ;; (unless (string-match (concat "\\[.*\\]") (buffer-string))
+      ;;   (insert (concat "my commit message")))
+      )))
