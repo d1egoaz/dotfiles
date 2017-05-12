@@ -18,33 +18,30 @@
                       auto-completion-enable-company-help-tooltip t
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t)
-     (ibuffer :variables ibuffer-group-buffers-by 'projects)
-     (colors :variables colors-enable-nyan-cat-progress-bar nil)
      command-log
      deft
      emacs-lisp
      evil-commentary
-     (git :variables
-          ;; See commit counts for all branches and tags
-          magit-refs-show-commit-count 'all
+     (git :packages not git-messenger magit-gitflow smeargle
+          :variables
+          magit-refs-show-commit-count 'all ;; See commit counts for all branches and tags
           magit-diff-refine-hunk 'all
           git-magit-status-fullscreen t)
-     github
-     haskell
+     (github :packages not gist github-clone magithub)
+     ;; haskell
      helm
-     html
-     javascript
-     (markdown :variables markdown-live-preview-engine 'vmd)
+     ;; html
+     ;; javascript
+     (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      nlinum
      nginx
      (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
-     php
-     osx
-     org
-     (shell :variables shell-default-term-shell "/usr/local/bin/zsh");; "/usr/bin/zsh"))) TODO: unix/osx config
-     ruby
-     shell-scripts
-     sql
+     ;; php
+     (osx :packages not osx-dictionary)
+     (org :packages not emoji-cheat-sheet-plus mu4e)
+     shell
+     ;; ruby
+     (shell-scripts :packages not fish-mode)
      spacemacs-completion
      spacemacs-editing
      spacemacs-editing-visual
@@ -63,8 +60,7 @@
             scala-auto-insert-asterisk-in-comments t
             scala-auto-start-ensime nil
             scala-enable-eldoc-mode nil)
-     terraform
-     react
+     ;; react
      restclient ;; https://github.com/pashky/restclient.el
      (version-control :variables
                       version-control-diff-side 'right
@@ -90,8 +86,8 @@
                                     evil-nerd-commenter
                                     evil-numbers
                                     rainbow-delimiters
-                                    ;; smartparens
                                     smooth-scrolling
+                                    gtags
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
