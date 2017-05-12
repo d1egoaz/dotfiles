@@ -11,7 +11,6 @@
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     go
      (auto-completion :variables
                       ;; auto-completion-return-key-behavior nil
                       auto-completion-tab-key-behavior 'complete
@@ -28,6 +27,7 @@
           magit-diff-refine-hunk 'all
           git-magit-status-fullscreen t)
      (github :packages not gist github-clone magithub)
+     go
      ;; haskell
      helm
      ;; html
@@ -35,6 +35,7 @@
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      nlinum
      nginx
+     (php :packages not php-extras)
      (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
      ;; php
      (osx :packages not osx-dictionary)
