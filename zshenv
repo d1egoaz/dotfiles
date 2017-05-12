@@ -22,3 +22,8 @@ export PATH
 export ANSIBLE_TRANSPORT=ssh
 export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -o ControlPath=/tmp/a-%h-%p-%r"
 export ANSIBLE_NOCOWS=1
+
+# go
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin

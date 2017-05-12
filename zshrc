@@ -50,9 +50,6 @@ setopt pushdminus
 # disable history expansion for commands
 unsetopt histverify
 
-# load exports
-test -e ~/.exports && source ~/.exports
-
 # load aliases
 test -e ~/.aliases && source ~/.aliases
 test -e ~/.aliases_hs && source ~/.aliases_hs
