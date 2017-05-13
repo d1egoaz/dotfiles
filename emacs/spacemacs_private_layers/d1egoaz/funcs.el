@@ -25,13 +25,17 @@
   (interactive)
   "Inserts a prefix containing the number of the Jira ticket from the branch name"
   ;; (let* ((result  (re-search-forward "\\(pub\\|plat\\)-\\([0-9]+\\).*$" nil t))
-  (let* ((result  (re-search-forward "\\([a-zA-Z]+\\)-\\([0-9]+\\).*$" nil t))
-          (s (concat (match-string 1) "-" (match-string 2))))
+  (let* ((result (re-search-forward "\\([a-zA-Z]+\\)-\\([0-9]+\\)\\(.*\\)$" nil t))
+         (ticket (concat (upcase (concat (match-string 1) "-" (match-string 2)))
+                         " -"
+                         (capitalize (replace-regexp-in-string "_"
+                                                               " "
+                                                               (concat (match-string 3) ""))))))
     (goto-char (point-min))
     (if (and result
-              (not (string-match (concat "\\[" s "\\]") (buffer-string))))
-        (insert (concat "[" (upcase s) "] "))
-      ;; enable to insert another string when branch doesn't match a Jira ticket
+             (not (string-match (concat "\\[" ticket "\\]") (buffer-string))))
+        (insert ticket)
+      ;; enable to add a custom message when branch name it doesn't match a Jira ticket
       ;; (unless (string-match (concat "\\[.*\\]") (buffer-string))
-      ;;   (insert (concat "my commit message")))
+      ;;   (insert (concat "my custom message")))
       )))
