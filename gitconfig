@@ -1,38 +1,33 @@
-[user]
-  name = Diego Alvarez
-  email = diego.alvarez@hootsuite.com
 [merge]
   conflictstyle = diff3
   tool = diffmerge
 [diff]
   tool = diffmerge
   compactionHeuristic = true
+
+[core]
+  excludesfile = ~/.gitignore_global
+  commentchar = @
+  ignorecase = false
+[commit]
+  gpgsign = true
+
 [help]
   autocorrect = 1
-[push]
-  default = simple
 [alias]
-    ca = commit -a
-    co = checkout
-    cs = commit
-    lg = log -p
-    who = shortlog -s --
-    hist = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
-    ls = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
-    ll = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
-    # Checkout a pull request from origin (of a github repository)
-    pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
+  ca = commit -a
+  co = checkout
+  cs = commit
+  lg = log -p
+  who = shortlog -s --
+  hist = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
+  ls = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
+  ll = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+  pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
 
-    #http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
-[core]
-	excludesfile = /Users/diegoa/.gitignore_global
-	commentchar = @
-	ignorecase = false
-[branch]
-	autosetuprebase = always
-[filter "lfs"]
-  clean = git-lfs clean %f
-  smudge = git-lfs smudge %f
-  required = true
-[commit]
-	gpgsign = true
+[includeIf "gitdir:~/dev/work/"]
+  path = .gitconfig-work
+[includeIf "gitdir:~/dotfiles/"]
+  path = .gitconfig-personal
+[includeIf "gitdir:~/dev/personal/"]
+  path = .gitconfig-personal
