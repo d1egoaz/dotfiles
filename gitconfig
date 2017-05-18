@@ -15,14 +15,6 @@
 [help]
   autocorrect = 1
 [alias]
-  ca = commit -a
-  co = checkout
-  cs = commit
-  lg = log -p
-  who = shortlog -s --
-  hist = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
-  ls = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --graph --date=short --decorate
-  ll = log --pretty=format:"%C(yellow)%h\\ %Cgreen%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
   pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
 
 [includeIf "gitdir:~/dev/work/"]
