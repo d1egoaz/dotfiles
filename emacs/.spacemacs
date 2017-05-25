@@ -40,7 +40,7 @@
      ;; php
      (osx :packages not osx-dictionary)
      (org :packages not emoji-cheat-sheet-plus mu4e)
-     shell
+     (shell :variables shell-default-shell 'eshell)
      ;; ruby
      (shell-scripts :packages not fish-mode)
      spacemacs-completion
