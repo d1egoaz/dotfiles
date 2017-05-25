@@ -9,7 +9,6 @@ synclient PalmDetect=1
 syndaemon -i 0.5 -K -R -d
 
 setxkbmap -layout us -option 'caps:swapescape' -option 'altwin:ctrl_alt_win'
-# xcape -e 'Control_L=Escape;Control_R=Escape'
 xcape -e 'Control_L=Control_L|Shift_R|c'
 xcape -e 'Control_R=Control_R|Shift_R|v'
 
