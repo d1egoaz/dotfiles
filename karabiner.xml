@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<root>
+
+	<devicevendordef>
+		<vendorname>Microsoft</vendorname>
+		<vendorid>0x045e</vendorid>
+	</devicevendordef>
+
+	<deviceproductdef>
+		<productname>Sculpt</productname>
+		<productid>0x07a5</productid>
+	</deviceproductdef>
+
+	<item>
+		<name>Remap Sculpt</name>
+		<appendix>This maps the Microsoft Sculpt's keys</appendix>
+
+		<identifier>sculpt.alt_to_command</identifier>
+
+		<device_only>DeviceVendor::Microsoft, DeviceProduct::Sculpt</device_only>
+
+		<autogen>
+			--KeyToKey--
+			KeyCode::OPTION_L,
+
+			KeyCode::CONTROL_L
+		</autogen>
+		<autogen>
+			--KeyToKey--
+			KeyCode::OPTION_R,
+
+			KeyCode::CONTROL_R
+		</autogen>
+		<autogen>
+			--KeyToKey--
+			KeyCode::COMMAND_L,
+			KeyCode::OPTION_L
+		</autogen>
+		<autogen>
+			--KeyToKey--
+			KeyCode::CONTROL_L,
+			KeyCode::COMMAND_L
+		</autogen>
+		<autogen>
+			--KeyToKey--
+			KeyCode::PC_APPLICATION,
+			KeyCode::OPTION_R
+		</autogen>
+		<autogen>
+			--KeyToKey--
+			KeyCode::CONTROL_R,
+			KeyCode::COMMAND_R
+		</autogen>
+
+		<autogen>
+			__KeyToKey__
+			KeyCode::C, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_SHIFT,
+			KeyCode::C, ModifierFlag::COMMAND_L
+		</autogen>
+
+		<autogen>
+			__KeyToKey__
+			KeyCode::V, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL | MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_SHIFT,
+			KeyCode::V, ModifierFlag::COMMAND_L
+		</autogen>
+
+    <!-- preserve physical command-tab -->
+    <autogen>
+      __KeyToKey__
+      KeyCode::TAB, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+      KeyCode::TAB, ModifierFlag::COMMAND_L,
+    </autogen>
+
+
+
+	</item>
+	<item>
+		<name>Home Row Arrow Keys: Control + Shift + HJKL</name>
+		<identifier>private.coolaj86_cmd_shift_homerowarrows</identifier>
+		<autogen>
+			__KeyToKey__
+			KeyCode::K,
+			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
+			KeyCode::CURSOR_UP
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::H,
+			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
+			KeyCode::CURSOR_LEFT
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::J,
+			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
+			KeyCode::CURSOR_DOWN
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::L,
+			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
+			KeyCode::CURSOR_RIGHT
+		</autogen>
+	</item>
+
+	<item>
+		<name>F1,F2,F3,F4 to copy-paste-cut-undo, clear screen </name>
+		<identifier>private.f1f2f3f4f5</identifier>
+		<not>EMACS</not>
+		<autogen>
+			__KeyToKey__
+			KeyCode::F1,
+			KeyCode::C, ModifierFlag::COMMAND_L
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::F2,
+			KeyCode::V, ModifierFlag::COMMAND_L
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::F3,
+			KeyCode::X, ModifierFlag::COMMAND_L
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::F4,
+			KeyCode::Z, ModifierFlag::COMMAND_L
+		</autogen>
+		<autogen>
+			__KeyToKey__
+			KeyCode::F5,
+			KeyCode::K, ModifierFlag::COMMAND_L
+		</autogen>
+	</item>
+
+</root>
