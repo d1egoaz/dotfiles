@@ -14,7 +14,14 @@
 
 (defun diego-scala/scalafmt-file ()
   (interactive)
-  (let ((str (concat "scalafmt -f " buffer-file-name " --config=" user-home-directory ".scalafmt.conf -i --exclude ensime")))
+  (let ((str (concat "scalafmt -f " buffer-file-name " --config=" user-home-directory ".scalafmt.conf -i")))
+    (message str)
+    (shell-command-to-string str))
+  (message "scalafmt done"))
+
+(defun diego-scala/scalafix-file ()
+  (interactive)
+  (let ((str (concat "scalafix -f " buffer-file-name " --config=" user-home-directory ".scalafix.conf -i")))
     (message str)
     (shell-command-to-string str))
   (message "scalafmt done"))

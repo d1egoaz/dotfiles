@@ -23,10 +23,12 @@
   "oss" 'sbt-command
   "osd" 'edd-scala/align-dependencies
   "osf" 'diego-scala/scalafmt-file
+  "osx" 'diego-scala/scalafix-file
   "osg" 'edd-scala/ignore-style
   "osh" 'sbt-hydra
   "oo" 'sbt-hydra
   "of" 'diego-scala/scalafmt-file
+  "ox" 'diego-scala/scalafix-file
   "osl" 'sbt-run-previous-command
 )
 
