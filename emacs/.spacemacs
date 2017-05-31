@@ -78,10 +78,7 @@
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(persistent-scratch
                                       protobuf-mode
-                                      all-the-icons
-                                      sublimity
-                                      (minimap :local (recipe :fetcher github :repo "br0ns/minimap"))
-                                      )
+                                      all-the-icons)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -654,15 +651,6 @@ values."
           ensime-startup-notification nil))
 
   (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
-
-  ;; minimap
-  (setq minimap-window-location 'right
-        minimap-recenter-type 'free)
-
-  (custom-set-faces
-   '(minimap-active-region-background ((t (:background "#383838")))))
-  (minimap-mode t)
-
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
