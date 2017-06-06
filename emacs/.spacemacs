@@ -656,6 +656,25 @@ values."
           ensime-startup-notification nil))
 
   (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
+
+  (defun unimacs-company-define-backends (modes-backends-cons)
+    (let ((modes    (car modes-backends-cons))
+          (backends (cdr modes-backends-cons)))
+      (dolist (mode modes)
+        (let* ((modename (symbol-name mode))
+               (funcname (concat "company-backends-for-" modename))
+               (func (intern funcname))
+               (hook (intern (concat modename "-hook"))))
+          (setf (symbol-function func)
+                `(lambda ()
+                   (set (make-local-variable 'company-backends)
+                        ',backends)))
+          (add-hook hook func)))))
+  ;; company: If ensime is on, use ensime and yasnippet. Otherwise, use dabbrev and yasnippet.
+  (unimacs-company-define-backends
+   '((ensime-mode) . ((ensime-company :with company-yasnippet)
+                      (company-dabbrev-code :with company-dabbrev company-yasnippet)
+                      company-files)))
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
