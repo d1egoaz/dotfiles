@@ -1,6 +1,8 @@
 # -*- mode: snippet -*-
 # Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name : case class T(arg: A)
-# key: caseclass
+# name: itshould
+# key: itshould
 # --
-case class ${1:Name}(${2:arg}: $0)
+it should "$1" in {
+  $0
+}

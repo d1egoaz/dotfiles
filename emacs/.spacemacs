@@ -657,6 +657,7 @@ values."
 
   (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
 
+  ;; enable yasnippets on scala/ensime
   (defun unimacs-company-define-backends (modes-backends-cons)
     (let ((modes    (car modes-backends-cons))
           (backends (cdr modes-backends-cons)))
@@ -675,6 +676,7 @@ values."
    '((ensime-mode) . ((ensime-company :with company-yasnippet)
                       (company-dabbrev-code :with company-dabbrev company-yasnippet)
                       company-files)))
+  (setq yas-triggers-in-field t)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()

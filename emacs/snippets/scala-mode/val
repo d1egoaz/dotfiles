@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name : case class T(arg: A)
-# key: caseclass
+# name: val
+# key: val
 # --
-case class ${1:Name}(${2:arg}: $0)
+val ${1:name}: ${2:T} = ${0:value}
