@@ -169,7 +169,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Hack"
-                               :size 14
+                               :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -414,7 +414,7 @@ values."
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
-                                                :size 27
+                                                :size 24
                                                 :weight normal
                                                 :width normal
                                                 :powerline-scale 1.1)))
