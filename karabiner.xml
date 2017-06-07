@@ -32,9 +32,10 @@
 			KeyCode::CONTROL_R
 		</autogen>
 		<autogen>
-			--KeyToKey--
+			__KeyOverlaidModifier__
 			KeyCode::COMMAND_L,
-			KeyCode::OPTION_L
+			KeyCode::OPTION_L,
+			KeyCode::C, ModifierFlag::COMMAND_L
 		</autogen>
 		<autogen>
 			--KeyToKey--
@@ -42,9 +43,10 @@
 			KeyCode::COMMAND_L
 		</autogen>
 		<autogen>
-			--KeyToKey--
+			__KeyOverlaidModifier__
 			KeyCode::PC_APPLICATION,
-			KeyCode::OPTION_R
+			KeyCode::OPTION_R,
+			KeyCode::V, ModifierFlag::COMMAND_L
 		</autogen>
 		<autogen>
 			--KeyToKey--
@@ -74,64 +76,13 @@
 
 
 	</item>
-	<item>
-		<name>Home Row Arrow Keys: Control + Shift + HJKL</name>
-		<identifier>private.coolaj86_cmd_shift_homerowarrows</identifier>
-		<autogen>
-			__KeyToKey__
-			KeyCode::K,
-			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
-			KeyCode::CURSOR_UP
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::H,
-			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
-			KeyCode::CURSOR_LEFT
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::J,
-			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
-			KeyCode::CURSOR_DOWN
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::L,
-			ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
-			KeyCode::CURSOR_RIGHT
-		</autogen>
-	</item>
-
-	<item>
-		<name>F1,F2,F3,F4 to copy-paste-cut-undo, clear screen </name>
-		<identifier>private.f1f2f3f4f5</identifier>
-		<not>EMACS</not>
-		<autogen>
-			__KeyToKey__
-			KeyCode::F1,
-			KeyCode::C, ModifierFlag::COMMAND_L
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::F2,
-			KeyCode::V, ModifierFlag::COMMAND_L
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::F3,
-			KeyCode::X, ModifierFlag::COMMAND_L
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::F4,
-			KeyCode::Z, ModifierFlag::COMMAND_L
-		</autogen>
-		<autogen>
-			__KeyToKey__
-			KeyCode::F5,
-			KeyCode::K, ModifierFlag::COMMAND_L
-		</autogen>
-	</item>
+    <item>
+      <name>Option_L+HJKL to Up/Down/Left/Right</name>
+      <identifier>private.extra_cursor_optionL_jkhl</identifier>
+      <autogen>__KeyToKey__ KeyCode::K, ModifierFlag::OPTION_L, KeyCode::CURSOR_UP</autogen>
+      <autogen>__KeyToKey__ KeyCode::J, ModifierFlag::OPTION_L, KeyCode::CURSOR_DOWN</autogen>
+      <autogen>__KeyToKey__ KeyCode::H, ModifierFlag::OPTION_L, KeyCode::CURSOR_LEFT</autogen>
+      <autogen>__KeyToKey__ KeyCode::L, ModifierFlag::OPTION_L, KeyCode::CURSOR_RIGHT</autogen>
+    </item>
 
 </root>
