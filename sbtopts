@@ -48,3 +48,8 @@
 #-java-home <path>
 -Dfile.encoding=UTF8
 -J-Dsbt.override.build.repos=true
+
+-J-Xmx4G
+-J-XX:+UseConcMarkSweepGC
+-J-XX:+CMSClassUnloadingEnabled
+-J-XX:MaxMetaspaceSize=1024M
