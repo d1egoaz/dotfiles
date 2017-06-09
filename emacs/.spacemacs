@@ -80,7 +80,8 @@
    dotspacemacs-additional-packages '(persistent-scratch
                                       protobuf-mode
                                       all-the-icons
-                                      tldr)
+                                      tldr
+                                      flycheck-vale)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -169,7 +170,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Hack"
-                               :size 13
+                               :size 14
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -677,6 +678,9 @@ values."
                       (company-dabbrev-code :with company-dabbrev company-yasnippet)
                       company-files)))
   (setq yas-triggers-in-field t)
+
+  ;; vale
+  (flycheck-vale-setup)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
@@ -695,5 +699,18 @@ This function is called at the very end of Spacemacs initialization."
      (trait :foreground "#469ee6"))))
  '(package-selected-packages
    (quote
-    (nlinum deferred origami skewer-mode simple-httpd multiple-cursors haml-mode web-completion-data dash-functional tern tldr font-lock+ rainbow-delimiters evil-numbers evil-mc evil-lisp-state company-php ac-php-core xcscope sublimity minimap godoctor company-shell gh markdown-mode dash restclient password-generator flycheck-bashate evil-lion editorconfig memoize git-commit eclim flycheck alert org-plus-contrib async s smartparens company magit-popup php-mode helm diminish sbt-mode scala-mode evil helm-core which-key syntactic-close json-mode dumb-jump magit with-editor yasnippet js2-mode zenburn-theme yaml-mode xterm-color ws-butler winum web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit string-inflection sql-indent smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs rainbow-mode rainbow-identifiers pug-mode protobuf-mode popwin play-routes-mode plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-gcal org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode meghanada markdown-toc magithub magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-snatcher json-reformat js2-refactor js-doc intero info+ indent-guide ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets groovy-mode groovy-imports gradle-mode google-translate golden-ratio go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-go company-ghci company-ghc company-emacs-eclim company-cabal command-log-mode column-enforce-mode color-identifiers-mode coffee-mode cmm-mode clean-aindent-mode browse-at-remote bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atom-one-dark-theme all-the-icons aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (flycheck-vale evil-org nlinum deferred origami skewer-mode simple-httpd multiple-cursors haml-mode web-completion-data dash-functional tern tldr font-lock+ rainbow-delimiters evil-numbers evil-mc evil-lisp-state company-php ac-php-core xcscope sublimity minimap godoctor company-shell gh markdown-mode dash restclient password-generator flycheck-bashate evil-lion editorconfig memoize git-commit eclim flycheck alert org-plus-contrib async s smartparens company magit-popup php-mode helm diminish sbt-mode scala-mode evil helm-core which-key syntactic-close json-mode dumb-jump magit with-editor yasnippet js2-mode zenburn-theme yaml-mode xterm-color ws-butler winum web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe uuidgen use-package toc-org terraform-mode tagedit string-inflection sql-indent smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restclient-helm restart-emacs rainbow-mode rainbow-identifiers pug-mode protobuf-mode popwin play-routes-mode plantuml-mode phpunit phpcbf php-extras php-auto-yasnippets persistent-scratch pcre2el pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-gcal org-download org-bullets open-junk-file ob-restclient ob-http noflet nlinum-relative nginx-mode neotree multi-term move-text monokai-theme mmm-mode meghanada markdown-toc magithub magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode link-hint less-css-mode launchctl json-snatcher json-reformat js2-refactor js-doc intero info+ indent-guide ibuffer-projectile hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-hoogle helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets groovy-mode groovy-imports gradle-mode google-translate golden-ratio go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-haskell flx-ido fill-column-indicator expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-matchit evil-magit evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-commentary evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help ensime emmet-mode elisp-slime-nav drupal-mode diff-hl deft company-web company-tern company-statistics company-restclient company-quickhelp company-go company-ghci company-ghc company-emacs-eclim company-cabal command-log-mode column-enforce-mode color-identifiers-mode coffee-mode cmm-mode clean-aindent-mode browse-at-remote bind-map auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atom-one-dark-theme all-the-icons aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
+ '(font-lock-comment-face ((t (:foreground "#58626E"))))
+ '(font-lock-function-name-face ((t (:foreground "#00FF00"))))
+ '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
+ '(font-lock-string-face ((t (:foreground "#e4e597"))))
+ '(font-lock-type-face ((t (:foreground "#7dbaed"))))
+ '(font-lock-variable-name-face ((t (:foreground "#9acb9b"))))
+ '(highlight-numbers-number ((t (:foreground "#BF7D56")))))
 )
