@@ -118,6 +118,11 @@
       KeyCode::O, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
       KeyCode::O, ModifierFlag::COMMAND_L,
     </autogen>
+    <autogen>
+      __KeyToKey__
+      KeyCode::Q, MODIFIERFLAG_EITHER_LEFT_OR_RIGHT_CONTROL,
+      KeyCode::Q, ModifierFlag::COMMAND_L,
+    </autogen>
 
   </item>
 
