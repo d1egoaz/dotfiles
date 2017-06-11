@@ -81,7 +81,8 @@
                                       protobuf-mode
                                       all-the-icons
                                       tldr
-                                      flycheck-vale)
+                                      flycheck-vale
+                                      evil-goggles)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -683,6 +684,11 @@ values."
 
   ;; vale
   (flycheck-vale-setup)
+  ;; evil-goggles
+  (evil-goggles-mode)
+  (evil-goggles-use-diff-faces)
+  (setq evil-goggles-enable-paste nil)
+
 )
 
 (defun dotspacemacs/emacs-custom-settings ()

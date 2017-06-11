@@ -7,6 +7,7 @@
   xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Natural Scrolling Enabled" 0
 
 ** Trackpoint speed
+  https://bbs.archlinux.org/viewtopic.php?id=224995
 
   https://askubuntu.com/questions/37824/what-is-the-best-way-to-configure-a-thinkpads-trackpoint/553926
 
