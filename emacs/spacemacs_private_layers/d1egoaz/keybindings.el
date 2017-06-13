@@ -11,25 +11,23 @@
 (spacemacs/set-leader-keys
   ;; general
   "glh" 'git-link-homepage
-  "oc" 'syntactic-close
-  "od" 'diego/delete-last-character-end-of-line
-  "og" 'dumb-jump-go
-  "oj" 'diego/hydra-dumb-jump/body
-  "oh" 'highlight-symbol-at-point
-  ;; "oh" 'helm-eshell-history
+  "jj"  'avy-goto-char-timer
+  "oc"  'syntactic-close
+  "od"  'diego/delete-last-character-end-of-line
+  "of"  'diego-scala/scalafmt-file
+  "og"  'dumb-jump-go
+  "oh"  'highlight-symbol-at-point
+  "oo"  'sbt-hydra
   "opf" 'project-find-file
-  "or" 'indent-region
-  ;; scala
-  "oss" 'sbt-command
+  "or"  'indent-region
   "osd" 'edd-scala/align-dependencies
   "osf" 'diego-scala/scalafmt-file
-  "osx" 'diego-scala/scalafix-file
   "osg" 'edd-scala/ignore-style
   "osh" 'sbt-hydra
-  "oo" 'sbt-hydra
-  "of" 'diego-scala/scalafmt-file
-  "ox" 'diego-scala/scalafix-file
   "osl" 'sbt-run-previous-command
+  "oss" 'sbt-command
+  "osx" 'diego-scala/scalafix-file
+  "ox"  'diego-scala/scalafix-file
 )
 
 (with-eval-after-load 'flyspell
@@ -42,4 +40,5 @@
 
 
 (with-eval-after-load 'evil
-  (global-set-key (kbd "C-i") 'evil-jump-forward))
+  (global-set-key (kbd "C-i") 'evil-jump-forward)
+  (global-set-key (kbd "C-o") 'evil-jump-backward))

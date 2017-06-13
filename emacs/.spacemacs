@@ -506,6 +506,8 @@ values."
 
   ;; avy
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
+  ;; used for avy-goto-char-timer
+  (setq avy-timeout-seconds 0.3)
 
   (custom-set-faces
    '(rainbow-delimiters-depth-1-face ((t (:foreground "#4f97d7"))))
@@ -689,6 +691,7 @@ values."
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces)
   (setq evil-goggles-enable-paste nil)
+
 
 )
 
