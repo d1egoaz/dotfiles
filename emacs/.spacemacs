@@ -16,7 +16,8 @@
                       auto-completion-tab-key-behavior 'complete
                       auto-completion-enable-company-help-tooltip t
                       auto-completion-enable-help-tooltip t
-                      auto-completion-enable-sort-by-usage t)
+                      auto-completion-enable-sort-by-usage t
+                      auto-completion-enable-snippets-in-popup t)
      command-log
      deft
      emacs-lisp
