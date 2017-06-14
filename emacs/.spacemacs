@@ -387,7 +387,7 @@ values."
         monokai-height-plus-3 1.2
         monokai-height-plus-4 1.3
         monokai-foreground     "#b2b2b2"
-        monokai-background     "#282C34"
+        monokai-background     "#1e1e1e"
 
         ;; highlights and comments
         ;; monokai-comments       "#a5a5a5"
