@@ -393,8 +393,6 @@ values."
         ;; monokai-comments       "#a5a5a5"
         ;; monokai-emphasis       "#282C34"
         ;; monokai-highlight      "#FFB269"
-        monokai-highlight-alt  "#66D9EF"
-        monokai-highlight-line "#1B1D1E"
 
         ;; colors
         monokai-blue           "#61AFEF"
@@ -414,12 +412,14 @@ values."
    '(font-lock-comment-face ((t (:foreground "#58626E"))))
    '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
    '(font-lock-type-face ((t (:foreground "#7dbaed"))))
-   '(highlight-numbers-number ((t (:foreground "#BF7D56"))))
-   '(font-lock-string-face ((t (:foreground "#e4e597")))))
+   '(highlight-numbers-number ((t (:foreground "#e4e597"))))
+   '(font-lock-string-face ((t (:foreground "#CB855B"))))
+   '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
+   )
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
-                                                :size 24
+                                                :size 31
                                                 :weight normal
                                                 :width normal
                                                 :powerline-scale 1.1)))

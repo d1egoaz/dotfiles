@@ -5,11 +5,11 @@
 ;; This file is not part of GNU Emacs.
 ;;; License: GPLv3
 
-(defun diego-scala/ensime-edit-definition-with-fallback () ;; based on https://github.com/fommil/dotfiles/blob/master/.emacs.d/init.el#L620
+(defun diego-scala/ensime-edit-definition-with-fallback (arg) ;; based on https://github.com/fommil/dotfiles/blob/master/.emacs.d/init.el#L620
   "Variant of `ensime-edit-definition' with ctags if ENSIME is not available."
   (interactive "P")
   (unless (and (ensime-connection-or-nil)
-               (ensime-edit-definition))
+               (ensime-edit-definition arg))
     (dumb-jump-go)))
 
 (defun diego-scala/scalafmt-file ()
