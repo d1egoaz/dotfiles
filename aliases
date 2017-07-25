@@ -69,8 +69,3 @@ alias gr2='git ca -m "tmp" && git rebase -i HEAD~2'
 # ansible
 alias ansible-playbook-fix='ansible-playbook --extra-vars="basedir=/Users/diegoa/dev/ansible-playbooks/"'
 
-#emacsclient
-alias emacs='em.sh'
-
-# Shortcuts
-alias vim='emacs'
