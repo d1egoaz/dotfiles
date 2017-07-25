@@ -14,7 +14,7 @@ if [ $EMACS ]; then
   unsetopt zle # disables zsh line editor
   plugins=(git autojump history-substring-search)
 else
-  plugins=(archlinux git scala autojump urltools vi-mode history-substring-search zsh-syntax-highlighting)
+  plugins=(archlinux git scala autojump urltools vi-mode history-substring-search zsh-syntax-highlighting kubectl)
 fi
 
 source $ZSH/oh-my-zsh.sh
