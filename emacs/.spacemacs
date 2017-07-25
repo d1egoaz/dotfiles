@@ -11,7 +11,8 @@
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     (auto-completion :variables
+     (auto-completion :packages not hippie-exp
+                      :variables
                       ;; auto-completion-return-key-behavior nil
                       auto-completion-tab-key-behavior 'complete
                       auto-completion-enable-company-help-tooltip t
@@ -20,7 +21,7 @@
                       auto-completion-enable-snippets-in-popup t)
      command-log
      deft
-     emacs-lisp
+     ;; emacs-lisp
      evil-commentary
      (git :packages not git-messenger magit-gitflow smeargle
           :variables
@@ -28,23 +29,22 @@
           magit-diff-refine-hunk 'all
           git-magit-status-fullscreen t)
      (github :packages not gist github-clone magithub)
-     go
-     haskell
-     helm
+     ;; go
+     ;; haskell
+     ;; helm
+     ivy
      ;; html
      ;; javascript
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      nlinum
-     nginx
+     ;; nginx
      (php :packages not php-extras)
      (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
-     ;; php
-     react
+     ;; react
      (osx :packages not osx-dictionary)
      (org :packages not emoji-cheat-sheet-plus mu4e)
      (shell :variables shell-default-shell 'eshell)
      ;; ruby
-     (shell-scripts :packages not fish-mode)
      spacemacs-completion
      spacemacs-editing
      spacemacs-editing-visual
