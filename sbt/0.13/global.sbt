@@ -1,9 +1,9 @@
 import org.ensime.EnsimeKeys._
-import scalariform.formatter.preferences._
+// import scalariform.formatter.preferences._
 
-import org.ensime.EnsimeCoursierKeys._
-ensimeServerVersion in ThisBuild := "2.0.0-SNAPSHOT" // or "1.0.1"
-ensimeProjectServerVersion in ThisBuild := "2.0.0-SNAPSHOT" // or "1.0.1"
+// import org.ensime.EnsimeCoursierKeys._
+// ensimeServerVersion in ThisBuild := "2.0.0-SNAPSHOT" // or "1.0.1"
+// ensimeProjectServerVersion in ThisBuild := "2.0.0-SNAPSHOT" // or "1.0.1"
 ensimeJavaFlags in ThisBuild += "-Xmx4G"
 
 cancelable in Global := true
