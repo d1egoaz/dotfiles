@@ -50,7 +50,7 @@
      spacemacs-editing-visual
      spacemacs-evil
      spacemacs-language
-     ;; spacemacs-layouts
+     spacemacs-layouts
      spacemacs-misc ;; dumb-jump
      spacemacs-navigation
      spacemacs-org
