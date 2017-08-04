@@ -694,9 +694,6 @@ It should only modify the values of Spacemacs settings."
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces)
   (setq evil-goggles-enable-paste nil)
-
-  ;; https://github.com/ensime/emacs-sbt-mode/issues/115
-  (defconst ansi-color-regexp ansi-color-control-seq-regexp)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
