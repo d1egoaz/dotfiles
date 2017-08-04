@@ -54,9 +54,11 @@ unsetopt histverify
 test -e ~/.aliases && source ~/.aliases
 test -e ~/.aliases_hs && source ~/.aliases_hs
 
-# RBENV
-#eval "$(rbenv init -)"
-#source ~/.nvm/nvm.sh
-#nvm use 0.12.9
-# echo ">>>"
-# echo "nvm is disabled!"
+if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
+  if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+      ssh-agent > /tmp/.ssh-agent-thing
+  fi
+  if [[ "$SSH_AGENT_PID" == "" ]]; then
+      eval "$(</tmp/.ssh-agent-thing)"
+  fi
+fi
