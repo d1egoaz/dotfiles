@@ -21,7 +21,7 @@
                       auto-completion-enable-snippets-in-popup t)
      command-log
      deft
-     ;; emacs-lisp
+     emacs-lisp
      evil-commentary
      (git :packages not git-messenger magit-gitflow smeargle
           :variables
@@ -31,8 +31,8 @@
      (github :packages not gist github-clone magithub)
      ;; go
      ;; haskell
-     ;; helm
-     ivy
+     helm
+     ;; ivy
      ;; html
      ;; javascript
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
@@ -695,7 +695,8 @@ It should only modify the values of Spacemacs settings."
   (evil-goggles-use-diff-faces)
   (setq evil-goggles-enable-paste nil)
 
-
+  ;; https://github.com/ensime/emacs-sbt-mode/issues/115
+  (defconst ansi-color-regexp ansi-color-control-seq-regexp)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
