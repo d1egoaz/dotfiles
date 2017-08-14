@@ -4,7 +4,8 @@
 
 (defun dotspacemacs/layers ()
   (setq-default
-   dotspacemacs-distribution 'spacemacs-base
+   ;; dotspacemacs-distribution 'spacemacs-base
+   dotspacemacs-distribution 'spacemacs
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
@@ -375,14 +376,15 @@ It should only modify the values of Spacemacs settings."
   ;; ensime stable
   ;; (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
   ;; (push '(ensime . "melpa-stable") package-pinned-packages)
+  ;; ensime unstable 2.x
   (push '("melpa" . "melpa.org/packages/") configuration-layer--elpa-archives)
   (push '(ensime . "melpa") package-pinned-packages)
   (push '(sbt-mode . "melpa") package-pinned-packages)
   (push '(scala-mode . "melpa") package-pinned-packages)
 
-  ;; monokai atom one dark colors
+  ;; monokai + one dark theme
   ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
-  (setq ;; atom onedark colors
+  (setq
         monokai-use-variable-pitch nil ;; org mode monospace font
         monokai-height-minus-1 0.8
         monokai-height-plus-1 1.1
@@ -392,12 +394,7 @@ It should only modify the values of Spacemacs settings."
         monokai-foreground     "#b2b2b2"
         monokai-background     "#1e1e1e"
 
-        ;; highlights and comments
-        ;; monokai-comments       "#a5a5a5"
-        ;; monokai-emphasis       "#282C34"
-        ;; monokai-highlight      "#FFB269"
-
-        ;; colors
+        ;; primary colors
         monokai-blue           "#61AFEF"
         monokai-cyan           "#56B6C2"
         monokai-green          "#98C379"
@@ -405,8 +402,7 @@ It should only modify the values of Spacemacs settings."
         monokai-violet         "#a8a1de"
         monokai-red            "#E06C75"
         monokai-orange         "#D19A66"
-        monokai-yellow         "#E5C07B"
-        )
+        monokai-yellow         "#E5C07B")
 
   (custom-set-faces
    '(font-lock-variable-name-face ((t (:foreground "#9acb9b"))))
@@ -418,7 +414,16 @@ It should only modify the values of Spacemacs settings."
    '(highlight-numbers-number ((t (:foreground "#e4e597"))))
    '(font-lock-string-face ((t (:foreground "#CB855B"))))
    '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
-   )
+
+   '(rainbow-delimiters-depth-1-face ((t (:foreground "#4f97d7"))))
+   '(rainbow-delimiters-depth-2-face ((t (:foreground "#bc6ec5"))))
+   '(rainbow-delimiters-depth-3-face ((t (:foreground "#2d9574"))))
+   '(rainbow-delimiters-depth-4-face ((t (:foreground "#67b11d"))))
+   '(web-mode-html-tag-face ((t (:foreground "#a6e22e")))))
+
+  (setq hl-paren-colors '("yellow" "green" "cyan" "white")
+        hl-paren-background-colors '("black" "black" "black" "light pink"))
+
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
@@ -430,20 +435,20 @@ It should only modify the values of Spacemacs settings."
 )
 
 (defun dotspacemacs/user-config ()
-
   ;; For complex scala files
-  (setq max-lisp-eval-depth 50000)
-  (setq max-specpdl-size 5000)
+  ;; (setq max-lisp-eval-depth 50000)
+  ;; (setq max-specpdl-size 5000)
 
-  (setq powerline-default-separator 'arrow)
-
-  ;; Evil
-  ;; http://spacemacs.brianthicks.com/2015/12/01/stop-cursor-creep/
-  (setq evil-move-cursor-back nil
-        evil-shift-round nil)
+  ;; ************** GLOBALS **************
 
   ;; whitespace mode
-  (global-whitespace-mode)
+  (global-whitespace-mode) ;; Toggle whitespace visualization globally.
+
+  ;; Enable auto-completion.
+  (global-company-mode)
+
+  ;; Scroll compilation output to first error
+  (setq compilation-scroll-output 'first-error)
 
   ;; deft
   (setq deft-directory "~/onedrive/deft")
@@ -481,9 +486,52 @@ It should only modify the values of Spacemacs settings."
      fill-column 110
   )
 
-  ;; Enable auto-completion.
-  (global-company-mode)
 
+  ;; avy
+  (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
+  ;; used for avy-goto-char-timer
+  (setq avy-timeout-seconds 0.3)
+
+  (add-to-list 'auto-mode-alist '("\\.proto\\'" . prog-mode))
+  (add-to-list 'auto-mode-alist '("\\.apib\\'" . markdown-mode))
+
+  (setq large-file-warning-threshold nil) ;; ignore TAGS too file warning
+
+  ;; google translate
+  (setq google-translate-default-source-language "en")
+  (setq google-translate-default-target-language "es")
+
+  (spacemacs/toggle-truncate-lines-on)
+  (spacemacs/toggle-automatic-symbol-highlight-on)
+
+  (setq spacemacs-useful-buffers-regexp '("\\*\\(ansi-term\\|eshell\\|shell\\|terminal.+\\)\\*"
+                                          "\\*scratch\\*"
+                                          "\\*magit.*"
+                                          "\\*sbt.*"
+                                          "\\*deft\\*"
+                                          "\\*ansi-term.*"
+                                          ))
+
+  ;; persistent-scratch
+  (persistent-scratch-setup-default)
+
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+  (setq neo-theme 'icons)
+
+  (setq undo-tree-auto-save-history t
+        undo-tree-history-directory-alist
+        `(("." . ,(concat spacemacs-cache-directory "undo"))))
+  (unless (file-exists-p (concat spacemacs-cache-directory "undo"))
+    (make-directory (concat spacemacs-cache-directory "undo")))
+
+  (setq golden-ratio-mode 1)
+
+  ;; ************** EVIL **************
+  ;; http://spacemacs.brianthicks.com/2015/12/01/stop-cursor-creep/
+  (setq evil-move-cursor-back nil
+        evil-shift-round nil)
   ;; Disable arrows keys in evil mode
   (define-key evil-insert-state-map [left] 'undefined)
   (define-key evil-insert-state-map [right] 'undefined)
@@ -494,38 +542,62 @@ It should only modify the values of Spacemacs settings."
   (define-key evil-motion-state-map [up] 'undefined)
   (define-key evil-motion-state-map [down] 'undefined)
 
+  ;; Remap paste key to be able to paste copied text multiple times
+  ;; https://github.com/robbyoconnor/spacemacs/blob/develop/doc/FAQ.org#remap-paste-key-to-be-able-to-paste-copied-text-multiple-times
+  (defun evil-paste-after-from-0 ()
+    (interactive)
+    (let ((evil-this-register ?0))
+      (call-interactively 'evil-paste-after)))
+  (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
+
+  ;; evil-goggles
+  (evil-goggles-mode)
+  (evil-goggles-use-diff-faces)
+  (setq evil-goggles-enable-paste nil)
+
+  ;; ************** MOUSE **************
+  (defun nothing())
+  (define-key evil-normal-state-map (kbd "<down-mouse-1>") 'nothing)
+  (dolist (mouse '("<down-mouse-1>" "<mouse-1>"))
+    (global-unset-key (kbd mouse)))
+
+  (setq mouse-yank-at-point t) ;; middle-clicking pastes at the current location instead of moving the mouse
+
+  ;; ************** SCALA **************
   ;; column indicator
   (add-hook 'scala-mode-hook #'fci-mode)
-  ;; (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
-  ;; (global-fci-mode 1)
+
+  (with-eval-after-load 'ensime
+    (setq ensime-startup-snapshot-notification nil
+          ensime-startup-notification nil))
 
   ;; Include underscores and hyphen in word motions
-  (add-hook 'scala-mode-hook
-            (lambda () (modify-syntax-entry ?_ "w")))
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda () (modify-syntax-entry ?- "w")))
-  (add-hook 'ruby-mode-hook
-            (lambda () (modify-syntax-entry ?_ "w")))
+  (add-hook 'scala-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
+  (add-hook 'emacs-lisp-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))
+  (add-hook 'ruby-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
-  ;; avy
-  (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
-  ;; used for avy-goto-char-timer
-  (setq avy-timeout-seconds 0.3)
+  ;; enable yasnippets on scala/ensime
+  (defun unimacs-company-define-backends (modes-backends-cons)
+    (let ((modes    (car modes-backends-cons))
+          (backends (cdr modes-backends-cons)))
+      (dolist (mode modes)
+        (let* ((modename (symbol-name mode))
+               (funcname (concat "company-backends-for-" modename))
+               (func (intern funcname))
+               (hook (intern (concat modename "-hook"))))
+          (setf (symbol-function func)
+                `(lambda ()
+                   (set (make-local-variable 'company-backends)
+                        ',backends)))
+          (add-hook hook func)))))
+  ;; company: If ensime is on, use ensime and yasnippet. Otherwise, use dabbrev and yasnippet.
+  (unimacs-company-define-backends
+   '((ensime-mode) . ((ensime-company :with company-yasnippet)
+                      (company-dabbrev-code :with company-dabbrev company-yasnippet)
+                      company-files)))
+  (setq yas-triggers-in-field t)
 
-  (custom-set-faces
-   '(rainbow-delimiters-depth-1-face ((t (:foreground "#4f97d7"))))
-   '(rainbow-delimiters-depth-2-face ((t (:foreground "#bc6ec5"))))
-   '(rainbow-delimiters-depth-3-face ((t (:foreground "#2d9574"))))
-   '(rainbow-delimiters-depth-4-face ((t (:foreground "#67b11d"))))
-   )
-
-  (custom-set-faces
-   '(web-mode-html-tag-face ((t (:foreground "#a6e22e")))))
-
-  (setq hl-paren-colors '("yellow" "green" "cyan" "white"))
-  (setq hl-paren-background-colors '("black" "black" "black" "light pink"))
-
-  ;; org-mode
+  ;; ************** ORG-MODE **************
   (with-eval-after-load 'org
     (if (eq system-type 'darwin)
         (setq org-download-screenshot-method "screencapture -i %s"
@@ -562,21 +634,26 @@ It should only modify the values of Spacemacs settings."
           org-gcal-client-secret secret-org-gcal-client-secret
           org-gcal-file-alist '(("diego.alvarez@hootsuite.com" . "~/onedrive/deft/schedule.org"))
           spaceline-org-clock-p t
-
     )
-    (custom-set-faces
-     '(org-block-background
-       ((t (:background "#272822"))))
-     '(org-block
-       ((t (:background "#272822")))))
 
     (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 
-  ;; Scroll compilation output to first error
-  (setq compilation-scroll-output 'first-error)
+  ;; ************** GIT / MAGIT**************
+  ;; github
+  (setq git-link-default-branch "master")
+  (eval-after-load "git-link"
+    '(progn
+       (add-to-list 'git-link-remote-alist
+                    '("github.hootops.com" git-link-github))
+       (add-to-list 'git-link-commit-remote-alist
+                    '("github.hootops.com" git-link-commit-github))))
 
-  (add-to-list 'auto-mode-alist '("\\.proto\\'" . prog-mode))
-  (add-to-list 'auto-mode-alist '("\\.apib\\'" . markdown-mode))
+  (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
+
+  ;; magit diff
+  (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
+
+  ;; ************** WEB-MODE **************
 
   (setq-default
    ;; js2-mode
@@ -594,106 +671,12 @@ It should only modify the values of Spacemacs settings."
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
-  (setq large-file-warning-threshold nil) ;; ignore TAGS too file warning
-
-  ;; github
-  (setq git-link-default-branch "master")
-  (eval-after-load "git-link"
-    '(progn
-       (add-to-list 'git-link-remote-alist
-                    '("github.hootops.com" git-link-github))
-       (add-to-list 'git-link-commit-remote-alist
-                    '("github.hootops.com" git-link-commit-github))))
-
-  ;; magit diff
-  (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
-
-  ;; google translate
-  (setq google-translate-default-source-language "en")
-  (setq google-translate-default-target-language "es")
-
-  (spacemacs/toggle-truncate-lines-on)
-  (spacemacs/toggle-automatic-symbol-highlight-on)
-
   ;; tramp
   (eval-after-load 'tramp
     '(progn
       (setenv "SHELL" "/bin/bash")
-      ;; (tramp-default-method "ssh")
       (tramp-parse-sconfig "~/.ssh/config")
       (tramp-parse-shosts "~/.ssh/known_hosts")))
-
-  (setq spacemacs-useful-buffers-regexp '("\\*\\(ansi-term\\|eshell\\|shell\\|terminal.+\\)\\*"
-                                          "\\*scratch\\*"
-                                          "\\*magit.*"
-                                          "\\*sbt.*"
-                                          "\\*deft\\*"
-                                          "\\*ansi-term.*"
-                                          ))
-
-  ;; persistent-scratch
-  (persistent-scratch-setup-default)
-
-  ;; Remap paste key to be able to paste copied text multiple times
-  ;; https://github.com/robbyoconnor/spacemacs/blob/develop/doc/FAQ.org#remap-paste-key-to-be-able-to-paste-copied-text-multiple-times
-  (defun evil-paste-after-from-0 ()
-    (interactive)
-    (let ((evil-this-register ?0))
-      (call-interactively 'evil-paste-after)))
-
-  (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
-
-  (add-hook 'text-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
-  (setq neo-theme 'icons)
-  (setq mouse-yank-at-point t) ;; middle-clicking pastes at the current location instead of moving the mouse
-  (global-set-key (kbd "<key-4660>") 'ignore) ;; http://emacsredux.com/blog/2013/11/12/a-crazy-productivity-boost-remap-return-to-control/
-
-  (setq undo-tree-auto-save-history t
-        undo-tree-history-directory-alist
-        `(("." . ,(concat spacemacs-cache-directory "undo"))))
-  (unless (file-exists-p (concat spacemacs-cache-directory "undo"))
-    (make-directory (concat spacemacs-cache-directory "undo")))
-
-  (defun nothing())
-  (define-key evil-normal-state-map (kbd "<down-mouse-1>") 'nothing)
-  (dolist (mouse '("<down-mouse-1>" "<mouse-1>"))
-    (global-unset-key (kbd mouse)))
-
-  (with-eval-after-load 'ensime
-    (setq ensime-startup-snapshot-notification nil
-          ensime-startup-notification nil))
-
-  (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
-
-  ;; enable yasnippets on scala/ensime
-  (defun unimacs-company-define-backends (modes-backends-cons)
-    (let ((modes    (car modes-backends-cons))
-          (backends (cdr modes-backends-cons)))
-      (dolist (mode modes)
-        (let* ((modename (symbol-name mode))
-               (funcname (concat "company-backends-for-" modename))
-               (func (intern funcname))
-               (hook (intern (concat modename "-hook"))))
-          (setf (symbol-function func)
-                `(lambda ()
-                   (set (make-local-variable 'company-backends)
-                        ',backends)))
-          (add-hook hook func)))))
-  ;; company: If ensime is on, use ensime and yasnippet. Otherwise, use dabbrev and yasnippet.
-  (unimacs-company-define-backends
-   '((ensime-mode) . ((ensime-company :with company-yasnippet)
-                      (company-dabbrev-code :with company-dabbrev company-yasnippet)
-                      company-files)))
-  (setq yas-triggers-in-field t)
-
-  ;; vale
-  (flycheck-vale-setup)
-  ;; evil-goggles
-  (evil-goggles-mode)
-  (evil-goggles-use-diff-faces)
-  (setq evil-goggles-enable-paste nil)
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
