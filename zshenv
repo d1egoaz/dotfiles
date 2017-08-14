@@ -6,7 +6,7 @@ export LC_ALL="en_US.UTF-8"
 
 # JAVA
 if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
-  export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
+  export JAVA_HOME="/usr/lib/jvm/default"
 else
   export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8/Contents/Home"
 fi
