@@ -415,10 +415,6 @@ It should only modify the values of Spacemacs settings."
    '(font-lock-string-face ((t (:foreground "#CB855B"))))
    '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
 
-   '(rainbow-delimiters-depth-1-face ((t (:foreground "#4f97d7"))))
-   '(rainbow-delimiters-depth-2-face ((t (:foreground "#bc6ec5"))))
-   '(rainbow-delimiters-depth-3-face ((t (:foreground "#2d9574"))))
-   '(rainbow-delimiters-depth-4-face ((t (:foreground "#67b11d"))))
    '(web-mode-html-tag-face ((t (:foreground "#a6e22e")))))
 
   (setq hl-paren-colors '("yellow" "green" "cyan" "white")
@@ -527,6 +523,9 @@ It should only modify the values of Spacemacs settings."
     (make-directory (concat spacemacs-cache-directory "undo")))
 
   (setq golden-ratio-mode 1)
+
+  (setq hl-paren-background-colors '("#00ff00" "#Ffff00" "#87cefa" "#Ff00ff"))
+  (setq hl-paren-colors '("black" "black" "black" "black"))
 
   ;; ************** EVIL **************
   ;; http://spacemacs.brianthicks.com/2015/12/01/stop-cursor-creep/
