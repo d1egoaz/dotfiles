@@ -30,6 +30,7 @@
           git-magit-status-fullscreen t)
      (github :packages not gist github-clone magithub)
      ;; go
+     gtags
      ;; haskell
      helm
      ;; ivy
@@ -93,7 +94,6 @@
                                     evil-numbers
                                     rainbow-delimiters
                                     smooth-scrolling
-                                    gtags
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -422,7 +422,7 @@ It should only modify the values of Spacemacs settings."
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Hack"
-                                                :size 31
+                                                :size 29
                                                 :weight normal
                                                 :width normal
                                                 :powerline-scale 1.1)))
@@ -477,8 +477,8 @@ It should only modify the values of Spacemacs settings."
      ;; Avy
      avy-all-windows 'all-frames
      ;; column indicator
-     fci-rule-column 120
-     fill-column 120
+     fci-rule-column 110
+     fill-column 110
   )
 
   ;; Enable auto-completion.
