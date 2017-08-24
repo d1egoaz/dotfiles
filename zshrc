@@ -62,3 +62,12 @@ if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
       eval "$(</tmp/.ssh-agent-thing)"
   fi
 fi
+
+function ediff() {
+  if [ "X${2}" = "X" ]; then
+    echo "USAGE: ediff <FILE 1> <FILE 2>"
+  else
+    # The --eval flag takes lisp code and evaluates it with EMACS
+    emacs --eval "(ediff-files \"$1\" \"$2\")"
+  fi
+}
