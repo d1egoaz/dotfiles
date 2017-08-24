@@ -422,7 +422,7 @@ It should only modify the values of Spacemacs settings."
 
 
   (if (eq system-type 'gnu/linux)
-      (setq-default dotspacemacs-default-font '("Hack"
+      (setq-default dotspacemacs-default-font '("Dejavu Sans Mono"
                                                 :size 29
                                                 :weight normal
                                                 :width normal
