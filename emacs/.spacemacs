@@ -482,7 +482,6 @@ It should only modify the values of Spacemacs settings."
      fill-column 110
   )
 
-
   ;; avy
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
   ;; used for avy-goto-char-timer
@@ -565,6 +564,9 @@ It should only modify the values of Spacemacs settings."
   ;; ************** SCALA **************
   ;; column indicator
   (add-hook 'scala-mode-hook #'fci-mode)
+
+  ;; (add-hook 'scala-mode-hook #'(lambda () (add-to-list 'projectile-globally-ignored-directories ".lib-src")))
+  (add-hook 'scala-mode-hook #'(lambda () (setq-local eldoc-documentation-function #'ggtags-eldoc-function)))
 
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil
