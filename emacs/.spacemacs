@@ -678,6 +678,9 @@ It should only modify the values of Spacemacs settings."
       (setenv "SHELL" "/bin/bash")
       (tramp-parse-sconfig "~/.ssh/config")
       (tramp-parse-shosts "~/.ssh/known_hosts")))
+
+  (if (eq system-type 'darwin)
+    (defconst ansi-color-regexp ansi-color-control-seq-regexp))
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
