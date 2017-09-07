@@ -521,7 +521,7 @@ It should only modify the values of Spacemacs settings."
   (unless (file-exists-p (concat spacemacs-cache-directory "undo"))
     (make-directory (concat spacemacs-cache-directory "undo")))
 
-  (setq golden-ratio-mode 1)
+  (golden-ratio-mode)
 
   (setq hl-paren-background-colors '("#00ff00" "#Ffff00" "#87cefa" "#Ff00ff"))
   (setq hl-paren-colors '("black" "black" "black" "black"))
@@ -681,6 +681,7 @@ It should only modify the values of Spacemacs settings."
 
   (if (eq system-type 'darwin)
     (defconst ansi-color-regexp ansi-color-control-seq-regexp))
+  (message ">>> done loading init file <<<")
 )
 
 (defun dotspacemacs/emacs-custom-settings ()
