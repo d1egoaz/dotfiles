@@ -568,6 +568,35 @@ It should only modify the values of Spacemacs settings."
   ;; (add-hook 'scala-mode-hook #'(lambda () (add-to-list 'projectile-globally-ignored-directories ".lib-src")))
   (add-hook 'scala-mode-hook #'(lambda () (setq-local eldoc-documentation-function #'ggtags-eldoc-function)))
 
+  ;; (setq prettify-symbols-alist scala-prettify-symbols-alist)
+  (defconst my-scala-prettify-symbols
+    '(
+      ("::" . ?⸬)
+      ("->" . ?→)
+      ("<-" . ?←)
+      ("=>" . ?⇒)
+      ("<=" . ?≤)
+      (">=" . ?≥)
+      ("==" . ?≡)
+      ("!=" . ?≢)
+      ("Boolean" . ?𝔹)
+      ("Int" . ?ℤ)
+      ("Double" . ?Ⓓ) ;; Ð
+      ("Long" . ?Ⓛ);; Ŀ ℒ
+      ("String" . ?Ⓢ) ;; Ŝ Ş https://unicode-table.com/en/#24C1
+      ("Nil" . ?∅)
+      ("sum" . ?∑)
+      ("contains" . ?∍)
+      ("forall" . ?∀)
+      ("exists" . ?∃)
+      ;; ("map" . ?∘)
+      )
+    "d1egoaz prettify scala symbols")
+
+  (add-hook 'scala-mode-hook #'(lambda () (setq-local prettify-symbols-alist my-scala-prettify-symbols)))
+  (global-prettify-symbols-mode +1)
+  (setq prettify-symbols-unprettify-at-point 'right-edge)
+
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil
           ensime-startup-notification nil))
