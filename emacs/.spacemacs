@@ -20,6 +20,7 @@
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t)
+     colors
      command-log
      deft
      emacs-lisp
@@ -415,11 +416,9 @@ It should only modify the values of Spacemacs settings."
    '(font-lock-string-face ((t (:foreground "#CB855B"))))
    '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
 
-   '(web-mode-html-tag-face ((t (:foreground "#a6e22e")))))
-
-  (setq hl-paren-colors '("yellow" "green" "cyan" "white")
-        hl-paren-background-colors '("black" "black" "black" "light pink"))
-
+   '(web-mode-html-tag-face ((t (:foreground "#a6e22e"))))
+   '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
+   )
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("Dejavu Sans Mono"
@@ -523,8 +522,12 @@ It should only modify the values of Spacemacs settings."
 
   (golden-ratio-mode)
 
-  (setq hl-paren-background-colors '("#00ff00" "#Ffff00" "#87cefa" "#Ff00ff"))
+  (setq hl-paren-background-colors '("#00ff00" "#Ffff00" "cyan" "#Ff00ff"))
   (setq hl-paren-colors '("black" "black" "black" "black"))
+
+  (setq evil-insert-state-cursor '((bar . 2) "#ff00ff")
+        evil-normal-state-cursor '(box "#ff00ff"))
+
 
   ;; ************** EVIL **************
   ;; http://spacemacs.brianthicks.com/2015/12/01/stop-cursor-creep/
