@@ -430,6 +430,11 @@ It should only modify the values of Spacemacs settings."
 )
 
 (defun dotspacemacs/user-config ()
+  ;; Mitigate Bug#28350 (security) in Emacs 25.2 and earlier.
+  (eval-after-load "enriched"
+    '(defun enriched-decode-display-prop (start end &optional param)
+       (list start end)))
+
   ;; For complex scala files
   ;; (setq max-lisp-eval-depth 50000)
   ;; (setq max-specpdl-size 5000)
