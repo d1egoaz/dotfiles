@@ -23,3 +23,5 @@
   path = .gitconfig-personal
 [includeIf "gitdir:~/dev/personal/"]
   path = .gitconfig-personal
+[magit]
+	hideCampaign = true
