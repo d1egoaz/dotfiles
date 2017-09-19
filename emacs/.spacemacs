@@ -56,7 +56,7 @@
      nlinum
      ;; nginx
      (php :packages not php-extras)
-     (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar")
+     (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/1.2017.16/libexec/plantuml.jar")
      ;; react
      (osx :packages not osx-dictionary)
      (org :packages not emoji-cheat-sheet-plus mu4e)
@@ -655,7 +655,7 @@ It should only modify the values of Spacemacs settings."
   (with-eval-after-load 'org
     (if (eq system-type 'darwin)
         (setq org-download-screenshot-method "screencapture -i %s"
-              org-plantuml-jar-path "/usr/local/Cellar/plantuml/8046/plantuml.8046.jar"))
+              org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2017.16/libexec/plantuml.jar"))
     (if (eq system-type 'gnu/linux)
         (setq org-download-screenshot-method "import  %s"
               org-plantuml-jar-path "/opt/plantuml/plantuml.jar"))
