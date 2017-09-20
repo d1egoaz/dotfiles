@@ -366,7 +366,7 @@ It should only modify the values of Spacemacs settings."
    ;; %n - Narrow if appropriate
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
-   dotspacemacs-frame-title-format "Mode: %m, Project: %t, Buffer: %a"
+   dotspacemacs-frame-title-format "Project: %t, Buffer: %a"
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
    dotspacemacs-icon-title-format nil
@@ -589,7 +589,10 @@ It should only modify the values of Spacemacs settings."
   ;; column indicator
   (add-hook 'scala-mode-hook #'fci-mode)
 
-  ;; (add-hook 'scala-mode-hook #'(lambda () (add-to-list 'projectile-globally-ignored-directories ".lib-src")))
+  (add-hook 'scala-mode-hook #'(lambda () (setq projectile-globally-ignored-directories
+                                           (append
+                                            '("lib" "lib-src" ".lib-src")
+                                            projectile-globally-ignored-directories))))
   (add-hook 'scala-mode-hook #'(lambda () (setq-local eldoc-documentation-function #'ggtags-eldoc-function)))
 
   ;; (setq prettify-symbols-alist scala-prettify-symbols-alist)
