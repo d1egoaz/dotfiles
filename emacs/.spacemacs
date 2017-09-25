@@ -599,8 +599,8 @@ It should only modify the values of Spacemacs settings."
   (defconst my-scala-prettify-symbols
     '(
       ("::" . ?⸬)
-      ("->" . ?→)
-      ("<-" . ?←)
+      ("->" . ?🡺);;→
+      ("<-" . ?🡸);;←
       ("=>" . ?⇒)
       ("<=" . ?≤)
       (">=" . ?≥)
@@ -613,9 +613,9 @@ It should only modify the values of Spacemacs settings."
       ("String" . ?Ⓢ) ;; Ŝ Ş https://unicode-table.com/en/#24C1
       ("Nil" . ?∅)
       ("sum" . ?∑)
-      ("contains" . ?∍)
+      ;; ("contains" . ?∍)
       ("forall" . ?∀)
-      ("exists" . ?∃)
+      ;; ("exists" . ?∃)
       ;; ("map" . ?∘)
       )
     "d1egoaz prettify scala symbols")
