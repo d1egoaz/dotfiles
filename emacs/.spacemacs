@@ -5,7 +5,7 @@
 (defun dotspacemacs/layers ()
   (setq-default
    ;; dotspacemacs-distribution 'spacemacs-base
-   dotspacemacs-distribution 'spacemacs
+   dotspacemacs-distribution 'spacemacs-base
    ;; Lazy installation of layers (i.e. layers are installed only when a file
    ;; with a supported type is opened). Possible values are `all', `unused'
    ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
@@ -26,16 +26,15 @@
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     (auto-completion :packages not hippie-exp
-                      :variables
-                      ;; auto-completion-return-key-behavior nil
-                      auto-completion-tab-key-behavior 'complete
-                      auto-completion-enable-company-help-tooltip t
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-enable-sort-by-usage t
-                      auto-completion-enable-snippets-in-popup t)
-     colors
-     command-log
+     auto-completion
+     ;; (auto-completion :packages not hippie-exp
+     ;;                  :variables
+     ;;                  ;; auto-completion-return-key-behavior nil
+     ;;                  auto-completion-tab-key-behavior 'complete
+     ;;                  auto-completion-enable-company-help-tooltip t
+     ;;                  auto-completion-enable-help-tooltip t
+     ;;                  auto-completion-enable-sort-by-usage t
+     ;;                  auto-completion-enable-snippets-in-popup t)
      deft
      emacs-lisp
      evil-commentary
@@ -55,23 +54,25 @@
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      nlinum
      ;; nginx
-     (php :packages not php-extras)
+     (php :packages not php-extras php-auto-yasnippets phpcbf phpunit company-php)
      (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/1.2017.16/libexec/plantuml.jar")
      ;; react
      (osx :packages not osx-dictionary)
-     (org :packages not emoji-cheat-sheet-plus mu4e)
+     (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
      (shell :variables shell-default-shell 'eshell)
      ;; ruby
      spacemacs-completion
-     spacemacs-editing
-     spacemacs-editing-visual
-     spacemacs-evil
+     (spacemacs-editing :packages avy origami undo-tree)
+     (spacemacs-editing-visual :packages highlight-numbers)
+     (spacemacs-evil :packages evil-anzu evil-args evil-ediff evil-exchange evil-iedit-state evil-mc evil-search-highlight-persist evil-surround)
      spacemacs-language
-     spacemacs-layouts
+     ;; spacemacs-layouts
      spacemacs-misc ;; dumb-jump
-     spacemacs-navigation
+     ;; (spacemacs-modeline :packages spaceline)
+     (spacemacs-navigation :packages auto-highlight-symbol golden-ratio neotree restart-emacs winum)
      spacemacs-org
-     spacemacs-visual
+     ;; spacemacs-purpose ;;https://github.com/syl20bnr/spacemacs/tree/develop/layers/%2Bspacemacs/spacemacs-purpose
+     (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
      spell-checking
      (syntax-checking :variables
                       flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
@@ -82,10 +83,8 @@
             scala-enable-eldoc-mode nil)
      ;; react
      restclient ;; https://github.com/pashky/restclient.el
-     (version-control :variables
-                      version-control-diff-side 'right
-                      version-control-diff-tool 'diff-hl
-                      version-control-global-margin t)
+     (version-control :packages not git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+
+                      :variables version-control-global-margin nil)
      yaml
      ;; My personal layers
      d1egoaz
@@ -99,7 +98,6 @@
                                       protobuf-mode
                                       all-the-icons
                                       tldr
-                                      flycheck-vale
                                       evil-goggles)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -110,6 +108,14 @@
                                     evil-numbers
                                     rainbow-delimiters
                                     smooth-scrolling
+                                    vim-empty-lines
+                                    savehist
+                                    ;; java layer
+                                    meghanada
+                                    company-emacs-eclim
+                                    eclim
+                                    flycheck-eclim
+                                    java-mode
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -161,7 +167,7 @@ It should only modify the values of Spacemacs settings."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner nil
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -285,7 +291,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-loading-progress-bar t
    ;; If non-nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup nil
+   dotspacemacs-fullscreen-at-startup t
    ;; If non-nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
@@ -530,9 +536,6 @@ It should only modify the values of Spacemacs settings."
   ;; persistent-scratch
   (persistent-scratch-setup-default)
 
-  (add-hook 'text-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
   (setq neo-theme 'icons)
 
   (setq undo-tree-auto-save-history t
@@ -587,7 +590,7 @@ It should only modify the values of Spacemacs settings."
 
   ;; ************** SCALA **************
   ;; column indicator
-  (add-hook 'scala-mode-hook #'fci-mode)
+  ;; (add-hook 'scala-mode-hook #'fci-mode)
 
   (add-hook 'scala-mode-hook #'(lambda () (setq projectile-globally-ignored-directories
                                            (append
