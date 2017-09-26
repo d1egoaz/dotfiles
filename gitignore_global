@@ -26,3 +26,5 @@ TAGS
 GPATH
 GRTAGS
 GTAGS
+scala_lib_source
+.lib-src
