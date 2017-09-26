@@ -606,11 +606,11 @@ It should only modify the values of Spacemacs settings."
       (">=" . ?≥)
       ("==" . ?≡)
       ("!=" . ?≢)
-      ("Boolean" . ?𝔹)
-      ("Int" . ?ℤ)
-      ("Double" . ?Ⓓ) ;; Ð
-      ("Long" . ?Ⓛ);; Ŀ ℒ
-      ("String" . ?Ⓢ) ;; Ŝ Ş https://unicode-table.com/en/#24C1
+      ;; ("Boolean" . ?𝔹)
+      ;; ("Int" . ?ℤ)
+      ;; ("Double" . ?Ⓓ) ;; Ð
+      ;; ("Long" . ?Ⓛ);; Ŀ ℒ
+      ;; ("String" . ?Ⓢ) ;; Ŝ Ş https://unicode-table.com/en/#24C1
       ("Nil" . ?∅)
       ("sum" . ?∑)
       ;; ("contains" . ?∍)
