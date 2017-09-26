@@ -60,7 +60,6 @@
      (osx :packages not osx-dictionary)
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
      (shell :variables shell-default-shell 'eshell)
-     ;; ruby
      spacemacs-completion
      (spacemacs-editing :packages avy origami undo-tree)
      (spacemacs-editing-visual :packages highlight-numbers)
@@ -634,7 +633,6 @@ It should only modify the values of Spacemacs settings."
   ;; Include underscores and hyphen in word motions
   (add-hook 'scala-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
   (add-hook 'emacs-lisp-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))
-  (add-hook 'ruby-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
   ;; enable yasnippets on scala/ensime
   (defun unimacs-company-define-backends (modes-backends-cons)
@@ -712,24 +710,6 @@ It should only modify the values of Spacemacs settings."
 
   ;; magit diff
   (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
-
-  ;; ************** WEB-MODE **************
-
-  (setq-default
-   ;; js2-mode
-   js2-basic-offset 2
-   ;; web-mode
-   css-indent-offset 2
-   web-mode-markup-indent-offset 2
-   web-mode-css-indent-offset 2
-   web-mode-code-indent-offset 2
-   web-mode-attr-indent-offset 2)
-
-  ;; 2 space indent also for element's attributes, concatenations and contiguous function calls:
-  (with-eval-after-load 'web-mode
-    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
   ;; tramp
   (eval-after-load 'tramp
