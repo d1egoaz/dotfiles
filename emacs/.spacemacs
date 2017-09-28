@@ -106,6 +106,7 @@
                                     evil-nerd-commenter
                                     evil-numbers
                                     rainbow-delimiters
+                                    ;; bad boys, cpu consumers
                                     smooth-scrolling
                                     vim-empty-lines
                                     savehist
@@ -720,6 +721,11 @@ It should only modify the values of Spacemacs settings."
 
   (if (eq system-type 'darwin)
     (defconst ansi-color-regexp ansi-color-control-seq-regexp))
+
+  ;; avoid file changed on disk checking?
+  ;; (global-auto-revert-mode -1)
+  (setq revert-without-query '(".*"))
+
   (message ">>> done loading init file <<<")
 )
 
