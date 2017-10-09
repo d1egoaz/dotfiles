@@ -9,6 +9,7 @@
   '(
     syntactic-close
     org-gcal
+    smartparens
     ))
 
 (defun d1egoaz/init-syntactic-close ()
@@ -20,4 +21,8 @@
   (use-package org-gcal)
   )
 
+(defun d1egoaz/init-smartparens ()
+  "Initialize org-gcal"
+  (use-package org-gcal)
+  )
 ;;; packages.el ends here

@@ -80,9 +80,10 @@
             scala-auto-insert-asterisk-in-comments t
             scala-auto-start-ensime nil
             scala-enable-eldoc-mode nil)
+     (treemacs :variables treemacs-use-follow-mode t)
      ;; react
      restclient ;; https://github.com/pashky/restclient.el
-     (version-control :packages not git-gutter git-gutter+ git-gutter-fringe git-gutter-fringe+
+     (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
                       :variables version-control-global-margin nil)
      yaml
      ;; My personal layers
