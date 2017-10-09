@@ -194,8 +194,8 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Hackdiego"
-                               :size 15
+   dotspacemacs-default-font '("Menlo"
+                               :size 16
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -393,7 +393,6 @@ It should only modify the values of Spacemacs settings."
    ))
 
 (defun dotspacemacs/user-init ()
-  (load "~/onedrive/deft/emacs-secrets.el" t)
   (setq custom-file "~/.emacs.d/custom.el")
   (load custom-file)
 
@@ -599,141 +598,6 @@ It should only modify the values of Spacemacs settings."
                                             projectile-globally-ignored-directories))))
   (add-hook 'scala-mode-hook #'(lambda () (setq-local eldoc-documentation-function #'ggtags-eldoc-function)))
 
-  ;; some characters won't render in my custom font, copy/pasted this from some font mapping on internet
-  (defconst my-scala-prettify-symbols
-    '(
-             ("!!"   . ?)
-             ("!="   . ?)
-             ("!>"   . ?)
-             ("#("   . ?)
-             ("#_"   . ?)
-             ("#{"   . ?)
-             ("#?"   . ?)
-             ("#>"   . ?)
-             ("%="   . ?)
-             ("%>"   . ?)
-             ("<~"   . ?)
-             ("&%"   . ?)
-             ("&&"   . ?)
-             ("&*"   . ?)
-             ("&+"   . ?)
-             ("&-"   . ?)
-             ("&/"   . ?)
-             ("&="   . ?)
-             ("&&&"  . ?)
-             ("&>"   . ?)
-             ("$>"   . ?)
-             ("~>"   . ?)
-             ("***"  . ?)
-             ("*="   . ?)
-             ("*/"   . ?)
-             ("*>"   . ?)
-             ("++"   . ?)
-             ("+++"  . ?)
-             ("+="   . ?)
-             ("+>"   . ?)
-             ("--"   . ?)
-             ("-<"   . ?)
-             ("-<<"  . ?)
-             ("-="   . ?)
-             ("->>"  . ?)
-             ("---"  . ?)
-             ("-->"  . ?)
-             (".."   . ?)
-             ("..."  . ?)
-             ("..<"  . ?)
-             (".>"   . ?)
-             (".~"   . ?)
-             (".="   . ?)
-             ("/*"   . ?)
-             ("//"   . ?)
-             ("/>"   . ?)
-             ("/="   . ?)
-             ("/=="  . ?)
-             ("///"  . ?)
-             ("/**"  . ?)
-             ("::"   . ?)
-             (":="   . ?)
-             (":≡"   . ?)
-             (":>"   . ?)
-             (":=>"  . ?)
-             ("<$>"  . ?)
-             ("<*"   . ?)
-             ("<*>"  . ?)
-             ("<+>"  . ?)
-             ("<-"   . ?)
-             ("<<"   . ?)
-             ("<<<"  . ?)
-             ("<<="  . ?)
-             ("<="   . ?)
-             ("<=>"  . ?)
-             ("<>"   . ?)
-             ("<|>"  . ?)
-             ("<<-"  . ?)
-             ("<|"   . ?)
-             ("<=<"  . ?)
-             ("<~~"  . ?)
-             ("<<~"  . ?)
-             ("<$"   . ?)
-             ("<+"   . ?)
-             ("<!>"  . ?)
-             ("<@>"  . ?)
-             ("<#>"  . ?)
-             ("<%>"  . ?)
-             ("<^>"  . ?)
-             ("<&>"  . ?)
-             ("<?>"  . ?)
-             ("<.>"  . ?)
-             ("</>"  . ?)
-             ("<\>"  . ?)
-             ("<\">" . ?)
-             ("<:>"  . ?)
-             ("<<^"  . ?)
-             ("<^"   . ?)
-             ("<&"   . ?)
-             ("<?"   . ?)
-             ("<."   . ?)
-             ("</"   . ?)
-             ("<\\"  . ?)
-             ("<\""  . ?)
-             ("<:"   . ?)
-             ("<->"  . ?)
-             ("<!--" . ?)
-             ("<--"  . ?)
-             ("≡:≡"  . ?)
-             (">>-"  . ?)
-             (">>="  . ?)
-             (">>>"  . ?)
-             (">=>"  . ?)
-             (">>^"  . ?)
-             ("=>"   . ?)
-             ("||"   . ?)
-             (">="   . ?)
-             ("="    . ?)
-             ("==>"  . ?)
-             ("=~"   . ?)
-             ("~="   . ?)
-             ("~>"   . ?)
-             ("^="   . ?)
-             ("^."   . ?)
-             ("^?"   . ?)
-             ("^.."  . ?)
-             ("@>"   . ?)
-             ("|>"   . ?)
-             ("|||"  . ?)
-             ("|+|"  . ?)
-             ("~="   . ?)
-             ("~~>"  . ?)
-             ("~>>"  . ?)
-      )
-    "d1egoaz prettify scala symbols")
-
-  (setq prettify-symbols-unprettify-at-point 'right-edge)
-  (add-hook 'prog-mode-hook #'(lambda () (setq-local prettify-symbols-alist my-scala-prettify-symbols)))
-  (add-hook 'text-mode-hook #'(lambda () (setq-local prettify-symbols-alist my-scala-prettify-symbols)))
-  (add-hook 'org-mode-hook #'(lambda () (setq-local prettify-symbols-alist my-scala-prettify-symbols)))
-  (global-prettify-symbols-mode +1)
-
   (with-eval-after-load 'ensime
     (setq ensime-startup-snapshot-notification nil
           ensime-startup-notification nil))
@@ -796,9 +660,9 @@ It should only modify the values of Spacemacs settings."
                                    "* %?\n  CREATED: %T" :prepend t)
                                   ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
                                    "* %?\nEntered on %U\n  %i\n  %a" :clock-in t :clock-resume t))
-          org-gcal-client-id secret-org-gcal-client-id
-          org-gcal-client-secret secret-org-gcal-client-secret
-          org-gcal-file-alist '(("diego.alvarez@hootsuite.com" . "~/onedrive/deft/schedule.org"))
+          ;; org-gcal-client-id secret-org-gcal-client-id
+          ;; org-gcal-client-secret secret-org-gcal-client-secret
+          ;; org-gcal-file-alist '(("diego.alvarez@hootsuite.com" . "~/onedrive/deft/schedule.org"))
           spaceline-org-clock-p t
     )
 
@@ -826,24 +690,17 @@ It should only modify the values of Spacemacs settings."
       (tramp-parse-sconfig "~/.ssh/config")
       (tramp-parse-shosts "~/.ssh/known_hosts")))
 
-  (if (eq system-type 'darwin)
-    (defconst ansi-color-regexp ansi-color-control-seq-regexp))
+  ;; (if (eq system-type 'darwin)
+  ;;   (defconst ansi-color-regexp ansi-color-control-seq-regexp))
 
   ;; avoid file changed on disk checking?
   ;; (global-auto-revert-mode -1)
   (setq revert-without-query '(".*"))
 
-  (message ">>> done loading init file <<<")
   ;; make electric-pair-mode work on more brackets
   (setq electric-pair-pairs '(
                               (?\" . ?\")
                               (?\{ . ?\})
                               ) )
-)
-
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
+  (message ">>> done loading init file <<<")
 )
