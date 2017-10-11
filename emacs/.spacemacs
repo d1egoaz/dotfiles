@@ -583,10 +583,18 @@ It should only modify the values of Spacemacs settings."
   ;; ************** MOUSE **************
   (defun nothing())
   (define-key evil-normal-state-map (kbd "<down-mouse-1>") 'nothing)
-  (dolist (mouse '("<down-mouse-1>" "<mouse-1>"))
+  (dolist (mouse '("<mouse-1>" "<mouse-2>" "<mouse-3>"
+                   "<up-mouse-1>" "<up-mouse-2>" "<up-mouse-3>"
+                   "<down-mouse-1>" "<down-mouse-2>" "<down-mouse-3>"
+                   "<drag-mouse-1>" "<drag-mouse-2>" "<drag-mouse-3>"
+                   "<mouse-4>" "<mouse-5>"
+                   "<up-mouse-4>" "<up-mouse-5>"
+                   "<down-mouse-4>" "<down-mouse-5>"
+                   "<drag-mouse-4>" "<drag-mouse-5>"
+                   "<wheel-up>" "<wheel-down>" "<wheel-left>" "<wheel-right>"))
     (global-unset-key (kbd mouse)))
 
-  (setq mouse-yank-at-point t) ;; middle-clicking pastes at the current location instead of moving the mouse
+  (fset 'evil-visual-update-x-selection 'ignore)
 
   ;; ************** SCALA **************
   ;; column indicator
