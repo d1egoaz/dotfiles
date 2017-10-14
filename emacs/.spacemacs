@@ -448,6 +448,12 @@ It should only modify the values of Spacemacs settings."
                                                 :weight normal
                                                 :width normal
                                                 :powerline-scale 1.1)))
+  (if (eq system-type 'windows-nt)
+      (setq-default dotspacemacs-default-font '("Meslo LG S DZ"
+                                                :size 29
+                                                :weight normal
+                                                :width normal
+                                                :powerline-scale 1.1)))
 
 )
 
