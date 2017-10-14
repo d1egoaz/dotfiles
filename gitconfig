@@ -10,7 +10,7 @@
   commentchar = @
   ignorecase = false
 [commit]
-  gpgsign = true
+  gpgsign = false
 
 [help]
   autocorrect = 1
@@ -24,4 +24,9 @@
 [includeIf "gitdir:~/dev/personal/"]
   path = .gitconfig-personal
 [magit]
-	hideCampaign = true
+  hideCampaign = true
+[user]
+  name = Diego Alvarez
+  email = diego.alvarez.zuluaga@gmail.com
+[push]
+  default = simple
