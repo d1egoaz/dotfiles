@@ -443,10 +443,14 @@ It should only modify the values of Spacemacs settings."
    )
 
   (if (eq system-type 'gnu/linux)
-      (setq-default dotspacemacs-default-font '("Hackdiego"
+      (setq-default dotspacemacs-default-font '("Meslo LG S DZ"
                                                 :size 29
                                                 :weight normal
-                                                :width normal
+                                                ;; :width normal
+                                                ;; :weight bold
+                                                :width ultra-expanded
+                                                ;; :antialias 1
+                                                ;; :height 150
                                                 :powerline-scale 1.1)))
   (if (eq system-type 'windows-nt)
       (setq-default dotspacemacs-default-font '("Meslo LG S DZ"
