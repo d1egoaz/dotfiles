@@ -716,6 +716,7 @@ It should only modify the values of Spacemacs settings."
   (setq revert-without-query '(".*"))
 
   ;; make electric-pair-mode work on more brackets
+  (electric-pair-mode 1)
   (setq electric-pair-pairs '(
                               (?\" . ?\")
                               (?\{ . ?\})

@@ -36,3 +36,6 @@ alias cleanupdstore="find . -name '*.DS_Store' -type f -ls -delete"
 alias gs='git status -s'
 alias gd='git diff'
 alias gpu='git pull'
+
+# copy working directory
+alias cwd='pwd | tr -d "\r\n" | xclip -selection clipboard'
