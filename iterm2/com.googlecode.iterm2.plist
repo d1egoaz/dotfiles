@@ -475,6 +475,14 @@
 	<real>1</real>
 	<key>GlobalKeyMap</key>
 	<dict>
+		<key>0x4b-0x60000</key>
+		<dict>
+			<key>Action</key>
+			<integer>25</integer>
+			<key>Text</key>
+			<string>Clear Buffer
+Clear Buffer</string>
+		</dict>
 		<key>0x66-0x140000</key>
 		<dict>
 			<key>Action</key>
@@ -482,31 +490,52 @@
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0x9-0x40000</key>
+		<key>0x68-0x100000</key>
 		<dict>
 			<key>Action</key>
-			<integer>32</integer>
+			<integer>2</integer>
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0xf700-0x2c0000</key>
-		<dict>
-			<key>Action</key>
-			<integer>31</integer>
-			<key>Text</key>
-			<string></string>
-		</dict>
-		<key>0xf701-0x2c0000</key>
+		<key>0x6a-0x100000</key>
 		<dict>
 			<key>Action</key>
 			<integer>30</integer>
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0xf702-0x240000</key>
+		<key>0x6a-0x140000</key>
 		<dict>
 			<key>Action</key>
-			<integer>2</integer>
+			<integer>28</integer>
+			<key>Text</key>
+			<string>9941FFB1-A4D6-45F4-8B9C-D880523151D2</string>
+		</dict>
+		<key>0x6b-0x100000</key>
+		<dict>
+			<key>Action</key>
+			<integer>31</integer>
+			<key>Text</key>
+			<string></string>
+		</dict>
+		<key>0x6c-0x100000</key>
+		<dict>
+			<key>Action</key>
+			<integer>0</integer>
+			<key>Text</key>
+			<string></string>
+		</dict>
+		<key>0x6c-0x140000</key>
+		<dict>
+			<key>Action</key>
+			<integer>29</integer>
+			<key>Text</key>
+			<string>9941FFB1-A4D6-45F4-8B9C-D880523151D2</string>
+		</dict>
+		<key>0x9-0x40000</key>
+		<dict>
+			<key>Action</key>
+			<integer>32</integer>
 			<key>Text</key>
 			<string></string>
 		</dict>
@@ -535,13 +564,6 @@
 		<dict>
 			<key>Action</key>
 			<integer>33</integer>
-			<key>Text</key>
-			<string></string>
-		</dict>
-		<key>0xf703-0x240000</key>
-		<dict>
-			<key>Action</key>
-			<integer>0</integer>
 			<key>Text</key>
 			<string></string>
 		</dict>
@@ -701,9 +723,9 @@
 	<key>NSWindow Frame NSFontPanel</key>
 	<string>650 110 724 391 0 0 1440 878 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>432 243 918 485 0 0 1440 878 </string>
+	<string>754 395 958 451 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>239 239 970 452 0 0 1440 878 </string>
+	<string>196 361 1210 502 0 0 1920 1080 </string>
 	<key>NeverWarnAboutShortLivedSessions_9941FFB1-A4D6-45F4-8B9C-D880523151D2</key>
 	<true/>
 	<key>New Bookmarks</key>
@@ -1825,7 +1847,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2017-10-11T04:48:37Z</date>
+	<date>2017-10-12T16:17:10Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
