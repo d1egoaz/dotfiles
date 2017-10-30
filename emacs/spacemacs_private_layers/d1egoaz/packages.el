@@ -10,6 +10,8 @@
     syntactic-close
     org-gcal
     smartparens
+    kubernetes
+    kubernetes-evil
     ))
 
 (defun d1egoaz/init-syntactic-close ()
@@ -24,5 +26,13 @@
 (defun d1egoaz/init-smartparens ()
   "Initialize org-gcal"
   (use-package org-gcal)
+  )
+
+(defun d1egoaz/init-kubernetes ()
+  (use-package kubernetes)
+  )
+
+(defun d1egoaz/init-kubernetes-evil ()
+  (use-package kubernetes-evil)
   )
 ;;; packages.el ends here

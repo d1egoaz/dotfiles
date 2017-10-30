@@ -65,7 +65,7 @@
      (spacemacs-editing-visual :packages highlight-numbers)
      (spacemacs-evil :packages evil-anzu evil-args evil-ediff evil-exchange evil-iedit-state evil-mc evil-search-highlight-persist evil-surround)
      spacemacs-language
-     ;; spacemacs-layouts
+     spacemacs-layouts
      spacemacs-misc ;; dumb-jump
      ;; (spacemacs-modeline :packages spaceline)
      (spacemacs-navigation :packages auto-highlight-symbol golden-ratio neotree restart-emacs winum)
