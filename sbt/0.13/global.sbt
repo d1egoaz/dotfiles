@@ -11,3 +11,7 @@ ensimeJavaFlags in ThisBuild := Seq("-Xss2m", "-Xmx3g", "-XX:MaxMetaspaceSize=10
 ensimeIgnoreScalaMismatch in ThisBuild := true
 
 cancelable in Global := true
+
+// import scalafix.sbt.ScalafixPlugin.autoImport._
+// sbtfixSettings // enable semanticdb-sbt for sbt metabuilds.
+
