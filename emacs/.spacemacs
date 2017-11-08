@@ -53,6 +53,7 @@
      ;; javascript
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      nlinum
+     neotree
      ;; nginx
      (php :packages not php-extras php-auto-yasnippets phpcbf phpunit company-php)
      (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/1.2017.16/libexec/plantuml.jar")
@@ -143,7 +144,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-elpa-https t
    ;; Maximum allowed time in seconds to contact an ELPA repository.
+   ;; (default 5)
    dotspacemacs-elpa-timeout 5
+   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; (default nil)
+   dotspacemacs-verify-spacelpa-archives nil
    ;; If non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
@@ -400,7 +405,7 @@ It should only modify the values of Spacemacs settings."
   ;; (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
   ;; (push '(ensime . "melpa-stable") package-pinned-packages)
   ;; ensime unstable 2.x
-  (push '("melpa" . "melpa.org/packages/") configuration-layer--elpa-archives)
+  ;; (push '("melpa" . "melpa.org/packages/") configuration-layer--elpa-archives)
   (push '(ensime . "melpa") package-pinned-packages)
   (push '(sbt-mode . "melpa") package-pinned-packages)
   (push '(scala-mode . "melpa") package-pinned-packages)
