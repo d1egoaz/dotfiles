@@ -25,8 +25,5 @@
   path = .gitconfig-personal
 [magit]
   hideCampaign = true
-[user]
-  name = Diego Alvarez
-  email = diego.alvarez.zuluaga@gmail.com
 [push]
   default = simple
