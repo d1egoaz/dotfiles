@@ -14,7 +14,7 @@
 
 (defun diego-scala/scalafmt-file ()
   (interactive)
-  (let ((str (concat "scalafmt -f " buffer-file-name " --config=" user-home-directory ".scalafmt.conf -i")))
+  (let ((str (concat "scalafmt -f \"" buffer-file-name "\" --config=" user-home-directory ".scalafmt.conf -i")))
     (message str)
     (shell-command-to-string str))
   (message "scalafmt done"))
