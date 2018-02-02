@@ -42,6 +42,7 @@
           :variables
           magit-refs-show-commit-count 'all ;; See commit counts for all branches and tags
           magit-diff-refine-hunk 'all
+          magit-revision-show-gravatars nil
           git-magit-status-fullscreen t)
      (github :packages not gist github-clone magithub)
      ;; go
@@ -99,7 +100,8 @@
                                       protobuf-mode
                                       all-the-icons
                                       tldr
-                                      evil-goggles)
+                                      evil-goggles
+                                      atomic-chrome)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -726,5 +728,22 @@ It should only modify the values of Spacemacs settings."
                               (?\" . ?\")
                               (?\{ . ?\})
                               ) )
+  (setq HTTPENV "d")
+
+  (defun ztlevi-atomic-chrome-server-running-p ()
+    (cond ((executable-find "lsof")
+           (zerop (call-process "lsof" nil nil nil "-i" ":64292")))
+          ((executable-find "netstat") ; Windows
+           (zerop (call-process-shell-command "netstat -aon | grep 64292")))))
+
+  (if (ztlevi-atomic-chrome-server-running-p)
+      (message "Can't start atomic-chrome server, because port 64292 is already used")
+    (atomic-chrome-start-server))
+
+  (setq atomic-chrome-url-major-mode-alist
+        '(("github\\.com" . gfm-mode)
+          ("github\\.hootops\\.com" . gfm-mode)
+          ("redmine" . textile-mode)))
+  (setq atomic-chrome-buffer-open-style 'frame)
   (message ">>> done loading init file <<<")
 )
