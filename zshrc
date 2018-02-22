@@ -71,3 +71,6 @@ function ediff() {
     emacs --eval "(ediff-files \"$1\" \"$2\")"
   fi
 }
+
+eval "$(rbenv init -)"
+

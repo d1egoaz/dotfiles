@@ -61,6 +61,8 @@
      ;; react
      (osx :packages not osx-dictionary)
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
+     (ruby :variables ruby-version-manager 'rbenv)
+     ruby-on-rails
      (shell :variables shell-default-shell 'eshell)
      spacemacs-completion
      (spacemacs-editing :packages avy origami undo-tree)
