@@ -1,4 +1,4 @@
-export EDITOR="vim"
+export EDITOR="emacsclient -c"
 
 # Prefer US English and use UTF-8
 export LANG="en_US.UTF-8"
@@ -32,3 +32,4 @@ export ANSIBLE_TRANSPORT=ssh
 export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -o ControlPath=/tmp/a-%h-%p-%r"
 export ANSIBLE_NOCOWS=1
 export GTAGSLABEL=ctags
+export VISUAL="/usr/local/bin/emacsclient -c"
