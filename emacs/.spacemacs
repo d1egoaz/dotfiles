@@ -457,7 +457,8 @@ It should only modify the values of Spacemacs settings."
                                                 :weight normal
                                                 ;; :width normal
                                                 ;; :weight bold
-                                                :width ultra-expanded
+                                                ;; :width ultra-expanded
+                                                :width compressed
                                                 ;; :antialias 1
                                                 ;; :height 150
                                                 :powerline-scale 1.1)))
