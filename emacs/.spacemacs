@@ -202,7 +202,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Menlo"
+   dotspacemacs-default-font '("SF Mono"
                                :size 16
                                :weight normal
                                :width normal
@@ -451,19 +451,13 @@ It should only modify the values of Spacemacs settings."
    )
 
   (if (eq system-type 'gnu/linux)
-      (setq-default dotspacemacs-default-font '("Meslo LG S DZ"
-                                                :size 29
+      (setq-default dotspacemacs-default-font '("SF Mono"
+                                                :size 32
                                                 :weight normal
-                                                ;; :width normal
-                                                ;; :weight bold
-                                                ;; :width ultra-expanded
-                                                :width compressed
-                                                ;; :antialias 1
-                                                ;; :height 150
                                                 :powerline-scale 1.1)))
   (if (eq system-type 'windows-nt)
-      (setq-default dotspacemacs-default-font '("Meslo LG S DZ"
-                                                :size 29
+      (setq-default dotspacemacs-default-font '("SF Mono"
+                                                :size 32
                                                 :weight normal
                                                 :width normal
                                                 :powerline-scale 1.1)))
