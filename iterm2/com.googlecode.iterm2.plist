@@ -680,9 +680,13 @@ Clear Buffer</string>
 	<true/>
 	<key>MaxVertically</key>
 	<false/>
+	<key>NSFontPanelAttributes</key>
+	<string>1, 0</string>
 	<key>NSNavLastRootDirectory</key>
-	<string>~/dotfiles/iterm2</string>
+	<string>~/Documents</string>
 	<key>NSNavPanelExpandedSizeForOpenMode</key>
+	<string>{712, 448}</string>
+	<key>NSNavPanelExpandedSizeForSaveMode</key>
 	<string>{712, 448}</string>
 	<key>NSQuotedKeystrokeBinding</key>
 	<string></string>
@@ -725,7 +729,7 @@ Clear Buffer</string>
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>332 289 620 392 0 0 1280 778 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>754 395 958 451 0 0 1920 1080 </string>
+	<string>325 80 918 485 0 0 1280 778 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
 	<string>4 0 1276 778 0 0 1280 778 </string>
 	<key>NeverWarnAboutShortLivedSessions_9941FFB1-A4D6-45F4-8B9C-D880523151D2</key>
@@ -1061,7 +1065,7 @@ Clear Buffer</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Menlo-Regular 16</string>
+			<string>SFMono-Regular 18</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -1860,7 +1864,7 @@ Clear Buffer</string>
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2017-10-26T23:31:29Z</date>
+	<date>2018-02-27T20:13:44Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
@@ -1916,7 +1920,7 @@ Clear Buffer</string>
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.1.4</string>
+	<string>3.1.5</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>
