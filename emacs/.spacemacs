@@ -45,7 +45,9 @@
           magit-revision-show-gravatars nil
           git-magit-status-fullscreen t)
      (github :packages not gist github-clone magithub)
-     ;; go
+     (go :variables
+         godoc-at-point-function 'godoc-gogetdoc
+         go-tab-width 4)
      gtags
      ;; haskell
      helm
@@ -448,6 +450,8 @@ It should only modify the values of Spacemacs settings."
 
    '(web-mode-html-tag-face ((t (:foreground "#a6e22e"))))
    '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
+   '(whitespace-tab ((t (:background nil :foreground "gray30"))))
+
    )
 
   (if (eq system-type 'gnu/linux)
