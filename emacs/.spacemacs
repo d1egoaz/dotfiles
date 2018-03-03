@@ -27,14 +27,14 @@
    dotspacemacs-configuration-layers
    '(
      auto-completion
-     ;; (auto-completion :packages not hippie-exp
-     ;;                  :variables
-     ;;                  ;; auto-completion-return-key-behavior nil
-     ;;                  auto-completion-tab-key-behavior 'complete
-     ;;                  auto-completion-enable-company-help-tooltip t
-     ;;                  auto-completion-enable-help-tooltip t
-     ;;                  auto-completion-enable-sort-by-usage t
-     ;;                  auto-completion-enable-snippets-in-popup t)
+     (auto-completion :packages not hippie-exp
+                      :variables
+                      ;; auto-completion-return-key-behavior nil
+                      auto-completion-tab-key-behavior 'complete
+                      auto-completion-enable-company-help-tooltip t
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-enable-sort-by-usage t
+                      auto-completion-enable-snippets-in-popup t)
      deft
      emacs-lisp
      evil-commentary
@@ -94,6 +94,7 @@
      yaml
      ;; My personal layers
      d1egoaz
+     d1egoaz-go
      d1egoaz-scala
    )
    ;; List of additional packages that will be installed without being
@@ -632,24 +633,6 @@ It should only modify the values of Spacemacs settings."
   (add-hook 'emacs-lisp-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))
 
   ;; enable yasnippets on scala/ensime
-  (defun unimacs-company-define-backends (modes-backends-cons)
-    (let ((modes    (car modes-backends-cons))
-          (backends (cdr modes-backends-cons)))
-      (dolist (mode modes)
-        (let* ((modename (symbol-name mode))
-               (funcname (concat "company-backends-for-" modename))
-               (func (intern funcname))
-               (hook (intern (concat modename "-hook"))))
-          (setf (symbol-function func)
-                `(lambda ()
-                   (set (make-local-variable 'company-backends)
-                        ',backends)))
-          (add-hook hook func)))))
-  ;; company: If ensime is on, use ensime and yasnippet. Otherwise, use dabbrev and yasnippet.
-  (unimacs-company-define-backends
-   '((ensime-mode) . ((ensime-company :with company-yasnippet)
-                      (company-dabbrev-code :with company-dabbrev company-yasnippet)
-                      company-files)))
   (setq yas-triggers-in-field t)
 
   ;; ************** ORG-MODE **************
@@ -731,4 +714,5 @@ It should only modify the values of Spacemacs settings."
   (setq HTTPENV "d")
 
   (message ">>> done loading init file <<<")
+  (setq exec-path (append exec-path '("~/go/bin/")))
 )
