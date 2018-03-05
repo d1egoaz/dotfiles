@@ -644,33 +644,42 @@ It should only modify the values of Spacemacs settings."
         (setq org-download-screenshot-method "import  %s"
               org-plantuml-jar-path "/opt/plantuml/plantuml.jar"))
     (setq
-          org-agenda-files (list "~/onedrive/deft/new-todo.org" "~/onedrive/deft/schedule.org")
-          org-agenda-span 10
+     org-agenda-files (list "~/onedrive/deft/gtd-inbox.org" "~/onedrive/deft/gtd-personal.org" "~/onedrive/deft/gtd-work.org" )
+          org-agenda-span 16
           org-agenda-start-day "-3d"
+          org-blank-before-new-entry
+                '((heading . always)
+                  (plain-list-item . nil))
           org-confirm-babel-evaluate nil
-          org-default-notes-file "~/onedrive/deft/TODO.org"
+          org-default-notes-file "~/onedrive/deft/notes.org"
           org-download-heading-lvl nil
           org-download-image-dir "~/onedrive/deft/images"
           org-download-method 'directory
-          org-refile-targets (quote ((nil :maxlevel . 9)
-                                     (org-agenda-files :maxlevel . 9)))
+          org-log-into-drawer t
+          org-refile-targets '(("~/onedrive/deft/gtd-inbox.org" :maxlevel . 1)
+                               ("~/onedrive/deft/gtd-personal.org" :level . 1)
+                               ("~/onedrive/deft/gtd-work.org" :maxlevel . 2))
           org-src-fontify-natively t
           org-startup-with-inline-images t
-          org-capture-templates '(("n" "Next task" entry (file+headline "~/onedrive/deft/new-todo.org" "Tasks")
-                                   "** NEXT %? \nDEADLINE: %t")
-                                  ("l" "Link" entry (file+headline "~/onedrive/deft/links.org" "Links")
-                                   "* %? %^L %^g \n%T" :prepend t)
-                                  ("t" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
-                                   "* %?\n%T" :prepend t)
-                                  ("p" "Personal - Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Personal Todo Items")
-                                   "* %?\n  CREATED: %T" :prepend t)
-                                  ("w" "Work - Todo Item" entry (file+headline "~/onedrive/deft/new-todo.org" "Work Todo Items")
-                                   "* %?\n  CREATED: %T" :prepend t)
-                                  ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
-                                   "* %?\nEntered on %U\n  %i\n  %a" :clock-in t :clock-resume t))
-          ;; org-gcal-client-id secret-org-gcal-client-id
-          ;; org-gcal-client-secret secret-org-gcal-client-secret
-          ;; org-gcal-file-alist '(("diego.alvarez@hootsuite.com" . "~/onedrive/deft/schedule.org"))
+          org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
+          ;; ! is to log event on logbook drawer
+          org-capture-templates
+          '(
+            ;; example:
+            ;;   "t"                               = key
+            ;;   "Todo"                            = description
+            ;;   entry                             = type
+            ;;   (file+headline "file" "tasks")    = target
+            ;;   ""                                = template
+            ;;   :prepend t                        = properties
+            ("t" "Todo" entry (file+headline "~/onedrive/deft/gtd-inbox.org" "Inbox")
+             "* TODO %?" :prepend t :empty-lines 1)
+            ("l" "Link" entry (file* Links+headline "~/onedrive/deft/notes.org" "Links")
+             "* %? %^L %^g \n%T" :prepend t)
+            ("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
+             "* %?\n%T" :prepend t)
+            ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
+             "* %?\nEntered on %U\n  %i\n  %a" :clock-in t :clock-resume t))
           spaceline-org-clock-p t
     )
 
