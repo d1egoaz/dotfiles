@@ -672,12 +672,13 @@ It should only modify the values of Spacemacs settings."
             ;;   (file+headline "file" "tasks")    = target
             ;;   ""                                = template
             ;;   :prepend t                        = properties
+            ;; https://orgmode.org/manual/Template-expansion.html
             ("t" "Todo" entry (file+headline "~/onedrive/deft/gtd-inbox.org" "Inbox")
              "* TODO %?" :prepend t :empty-lines 1)
             ("l" "Link" entry (file* Links+headline "~/onedrive/deft/notes.org" "Links")
              "* %? %^L %^g \n%T" :prepend t)
             ("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
-             "* %?\n%T" :prepend t)
+             "* %^{title}%^g\n%T\n\n%?" :prepend t)
             ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
              "* %?\nEntered on %U\n%i\n%a" :clock-in t :clock-resume t))
           spaceline-org-clock-p t
