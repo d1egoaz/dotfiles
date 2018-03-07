@@ -498,41 +498,45 @@ It should only modify the values of Spacemacs settings."
   ;; monokai + one dark theme
   ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
   (setq
-        monokai-use-variable-pitch nil ;; org mode monospace font
-        monokai-height-minus-1 0.8
-        monokai-height-plus-1 1.1
-        monokai-height-plus-2 1.15
-        monokai-height-plus-3 1.2
-        monokai-height-plus-4 1.3
-        monokai-foreground     "#b2b2b2"
-        monokai-background     "#1e1e1e"
+   ;; monokai-use-variable-pitch nil ;; org mode monospace font
+   ;; monokai-height-minus-1 0.8
+   ;; monokai-height-plus-1 1.1
+   ;; monokai-height-plus-2 1.15
+   ;; monokai-height-plus-3 1.2
+   ;; monokai-height-plus-4 1.3
+      monokai-foreground     "#b2b2b2"
+      monokai-background     "#1e1e1e"
 
-        ;; primary colors
-        monokai-blue           "#61AFEF"
-        monokai-cyan           "#56B6C2"
-        monokai-green          "#98C379"
-        monokai-gray           "#3E4451"
-        monokai-violet         "#a8a1de"
-        monokai-red            "#E06C75"
-        monokai-orange         "#D19A66"
-        monokai-yellow         "#E5C07B")
+   ;; primary colors
+   ;; monokai-blue           "#61AFEF"
+   ;; monokai-cyan           "#56B6C2"
+   ;; monokai-green          "#98C379"
+   ;; monokai-gray           "#3E4451"
+   ;; monokai-violet         "#a8a1de"
+      monokai-red            "#E06C75"
+   ;; monokai-orange         "#D19A66"
+   ;; monokai-yellow         "#E5C07B")
+  )
 
+  ;; https://www.webpagefx.com/web-design/color-picker/282d33
+  ;; Foreground: #2aa1ae
+  ;; Background: #292e34
   (custom-set-faces
-   '(font-lock-variable-name-face ((t (:foreground "#9acb9b"))))
-   '(font-lock-function-name-face ((t (:foreground "#00FF00"))))
-   '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
-   '(font-lock-comment-face ((t (:foreground "#58626E"))))
-   '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
-   '(font-lock-type-face ((t (:foreground "#7dbaed"))))
-   '(highlight-numbers-number ((t (:foreground "#e4e597"))))
-   '(font-lock-string-face ((t (:foreground "#CB855B"))))
-   '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
+    '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
+  ;; '(font-lock-variable-name-face ((t (:foreground "#9acb9b"))))
+  ;; '(font-lock-function-name-face ((t (:background "#283329" :foreground "#3EAE2A"))))
+  ;;  '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
+  ;;  '(font-lock-comment-face ((t (:foreground "#58626E"))))
+  ;;  '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
+  ;;  '(font-lock-type-face ((t (:foreground "#7dbaed"))))
+  ;;  '(highlight-numbers-number ((t (:foreground "#e4e597"))))
+    '(font-lock-string-face ((t (:foreground "#cB855B"))))
+  ;; '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
 
-   '(web-mode-html-tag-face ((t (:foreground "#a6e22e"))))
-   '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
-   '(whitespace-tab ((t (:background nil :foreground "gray30"))))
-
-   )
+  ;;  '(web-mode-html-tag-face ((t (:foreground "#a6e22e"))))
+    '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
+    '(whitespace-tab ((t (:background nil :foreground "gray30"))))
+  )
 
   (if (eq system-type 'gnu/linux)
       (setq-default dotspacemacs-default-font '("SF Mono"
@@ -708,8 +712,9 @@ It should only modify the values of Spacemacs settings."
           ensime-startup-notification nil))
 
   ;; Include underscores and hyphen in word motions
-  (add-hook 'scala-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
   (add-hook 'emacs-lisp-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))
+  ;; For all programming modes
+  (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
   ;; enable yasnippets on scala/ensime
   (setq yas-triggers-in-field t)
