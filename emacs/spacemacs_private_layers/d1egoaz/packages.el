@@ -8,7 +8,6 @@
 (defconst d1egoaz-packages
   '(
     syntactic-close
-    org-gcal
     smartparens
     kubernetes
     kubernetes-evil
@@ -18,21 +17,12 @@
   (use-package syntactic-close
     :ensure t))
 
-(defun d1egoaz/init-org-gcal ()
-  "Initialize org-gcal"
-  (use-package org-gcal)
-  )
-
 (defun d1egoaz/init-smartparens ()
-  "Initialize org-gcal"
-  (use-package org-gcal)
-  )
+  (use-package smartparens))
 
 (defun d1egoaz/init-kubernetes ()
-  (use-package kubernetes)
-  )
+  (use-package kubernetes))
 
 (defun d1egoaz/init-kubernetes-evil ()
-  (use-package kubernetes-evil)
-  )
+  (use-package kubernetes-evil))
 ;;; packages.el ends here

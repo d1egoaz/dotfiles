@@ -92,10 +92,6 @@ This function should only modify configuration layer settings."
      (syntax-checking :variables
                       flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
                       flycheck-check-syntax-automatically '(save mode-enabled))
-     (scala :variables
-            scala-auto-insert-asterisk-in-comments t
-            scala-auto-start-ensime nil
-            scala-enable-eldoc-mode nil)
      (treemacs :variables treemacs-use-follow-mode t)
      ;; react
      restclient ;; https://github.com/pashky/restclient.el
@@ -486,12 +482,6 @@ It should only modify the values of Spacemacs settings."
   (setq custom-file "~/.emacs.d/custom.el")
   (load custom-file)
 
-  ;; ensime stable
-  ;; (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
-  ;; (push '(ensime . "melpa-stable") package-pinned-packages)
-  ;; ensime unstable 2.x
-  ;; (push '("melpa" . "melpa.org/packages/") configuration-layer--elpa-archives)
-  (push '(ensime . "melpa") package-pinned-packages)
   (push '(sbt-mode . "melpa") package-pinned-packages)
   (push '(scala-mode . "melpa") package-pinned-packages)
 
@@ -706,10 +696,6 @@ It should only modify the values of Spacemacs settings."
                                             '("lib" "lib-src" ".lib-src")
                                             projectile-globally-ignored-directories))))
   (add-hook 'scala-mode-hook #'(lambda () (setq-local eldoc-documentation-function #'ggtags-eldoc-function)))
-
-  (with-eval-after-load 'ensime
-    (setq ensime-startup-snapshot-notification nil
-          ensime-startup-notification nil))
 
   ;; Include underscores and hyphen in word motions
   (add-hook 'emacs-lisp-mode-hook #'(lambda () (modify-syntax-entry ?- "w")))

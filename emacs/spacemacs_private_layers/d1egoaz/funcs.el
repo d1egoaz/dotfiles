@@ -7,11 +7,6 @@
     (delete-backward-char 1)))
 
 (with-eval-after-load 'hydra
-  (defhydra hydra-zoom (global-map "<f2>")
-    "zoom"
-    ("g" text-scale-increase "in")
-    ("l" text-scale-decrease "out"))
-
   (defhydra diego/hydra-dumb-jump (:color pink)
     "Dumb Jump"
     ("g" dumb-jump-go "Go")
