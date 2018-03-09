@@ -9,7 +9,6 @@
   '(
     flycheck
     flyspell
-    org
     scala-mode
     sbt-mode
     play-routes-mode
@@ -21,10 +20,6 @@
 
 (defun d1egoaz-scala/post-init-flyspell ()
   (spell-checking/add-flyspell-hook 'scala-mode))
-
-(defun d1egoaz-scala/pre-init-org ()
-  (spacemacs|use-package-add-hook org
-    :post-config (add-to-list 'org-babel-load-languages '(scala . t))))
 
 (defun d1egoaz-scala/init-play-routes-mode ()
   (use-package play-routes-mode
