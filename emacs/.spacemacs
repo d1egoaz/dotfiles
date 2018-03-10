@@ -499,14 +499,10 @@ It should only modify the values of Spacemacs settings."
       monokai-background     "#1e1e1e"
 
    ;; primary colors
-   ;; monokai-blue           "#61AFEF"
-   ;; monokai-cyan           "#56B6C2"
-   ;; monokai-green          "#98C379"
-   ;; monokai-gray           "#3E4451"
-   ;; monokai-violet         "#a8a1de"
-      monokai-red            "#E06C75"
-   ;; monokai-orange         "#D19A66"
-   ;; monokai-yellow         "#E5C07B")
+      monokai-green          "#63de5d" ;; from darkokai
+      monokai-red            "#E06C75" ;; easy to eyes red
+      monokai-highlight      "#5D6365" ;; from darkokai
+      ;; monokai-emph           "#ffffff"
   )
 
   ;; https://www.webpagefx.com/web-design/color-picker/282d33
