@@ -500,7 +500,8 @@ It should only modify the values of Spacemacs settings."
 
    ;; primary colors
       monokai-green          "#63de5d" ;; from darkokai
-      monokai-red            "#E06C75" ;; easy to eyes red
+      ;; monokai-red            "#E06C75" ;; easy to eyes red
+      monokai-red            "#FF4791" ;; easy to eyes red
       monokai-highlight      "#5D6365" ;; from darkokai
       ;; monokai-emph           "#ffffff"
   )
