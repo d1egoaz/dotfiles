@@ -34,3 +34,9 @@
       ;; (unless (string-match (concat "\\[.*\\]") (buffer-string))
       ;;   (insert (concat "my custom message")))
       )))
+
+(defun diego/disapproval () (interactive) (insert "ಠ_ಠ"))
+(defun diego/shrug () (interactive) (insert "¯\_(ツ)_/¯"))
+(defun diego/table-flip () (interactive) (insert "(╯°□°）╯︵ ┻━┻"))
+(defun diego/glasses () (interactive) (insert "(⌐■_■)"))
+(defun diego/idonteven () (interactive) (insert "¯\(°_°)/¯"))
