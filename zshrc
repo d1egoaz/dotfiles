@@ -74,3 +74,5 @@ function ediff() {
 
 eval "$(rbenv init -)"
 
+[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
+

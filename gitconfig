@@ -17,7 +17,7 @@
 [alias]
   pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
 
-[includeIf "gitdir:~/dev/work/"]
+[includeIf "gitdir:~/src/"]
   path = .gitconfig-work
 [includeIf "gitdir:~/dotfiles/"]
   path = .gitconfig-personal
