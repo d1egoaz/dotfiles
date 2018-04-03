@@ -17,9 +17,11 @@ PATH="/usr/local/bin:$PATH"
 PATH="$PATH:$JAVA_HOME/bin"
 
 # go
-#export PATH=$PATH:/usr/local/go/bin
 export GOPATH="$HOME/go"
 PATH="$PATH:$GOPATH/bin"
+
+# ruby
+PATH="$HOME/.nvm/versions/node/v8.9.4/bin:$HOME/.gem/ruby/2.4.4/bin:/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin:/opt/rubies/2.4.4/bin:$PATH"
 
 if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
     PATH="/home/diego/.local/bin:$PATH"
