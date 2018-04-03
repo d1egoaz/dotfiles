@@ -96,7 +96,8 @@ This function should only modify configuration layer settings."
      ;; react
      restclient ;; https://github.com/pashky/restclient.el
      (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
-                      :variables version-control-global-margin nil)
+                      :variables version-control-global-margin t version-control-diff-tool 'diff-hl
+                      )
      yaml
      ;; My personal layers
      d1egoaz
@@ -111,7 +112,8 @@ This function should only modify configuration layer settings."
                                       protobuf-mode
                                       all-the-icons
                                       tldr
-                                      evil-goggles)
+                                      evil-goggles
+                                      graphql-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -411,7 +413,7 @@ It should only modify the values of Spacemacs settings."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 'relative
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -768,6 +770,7 @@ It should only modify the values of Spacemacs settings."
 
   ;; magit diff
   (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
+  (setq magit-revision-show-gravatars nil)
 
   ;; tramp
   (eval-after-load 'tramp
