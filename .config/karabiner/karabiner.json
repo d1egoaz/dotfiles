@@ -414,7 +414,7 @@
                     "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": false,
-                        "product_id": 631,
+                        "product_id": 632,
                         "vendor_id": 1452
                     },
                     "ignore": false,
