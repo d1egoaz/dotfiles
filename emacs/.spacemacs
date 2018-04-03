@@ -57,8 +57,8 @@ This function should only modify configuration layer settings."
          go-tab-width 4)
      gtags
      ;; haskell
-     ;; helm
-     ivy
+     helm
+     ;; ivy
      ;; html
      ;; javascript
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
