@@ -70,7 +70,7 @@ This function should only modify configuration layer settings."
      ;; react
      (osx :packages not osx-dictionary)
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
-     (ruby :variables ruby-version-manager 'rbenv)
+     (ruby :variables ruby-version-manager nil)
      ruby-on-rails
      (shell :variables shell-default-shell 'eshell)
      ;; spacemacs layers
@@ -795,5 +795,10 @@ It should only modify the values of Spacemacs settings."
   (setq HTTPENV "d")
 
   (message ">>> done loading init file <<<")
-  (setq exec-path (append exec-path '("~/go/bin/")))
+  (setq exec-path (append '("~/go/bin"
+                                      "~/.nvm/versions/node/v8.9.4/bin"
+                                      "~/.gem/ruby/2.4.4/bin"
+                                      "/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin"
+                                      "/opt/rubies/2.4.4/bin")
+                          exec-path))
 )
