@@ -17,6 +17,7 @@
   "of"  'diego-scala/scalafmt-file
   "og"  'dumb-jump-go
   "oh"  'highlight-symbol-at-point
+  "oH"  'hi-lock-unface-buffer
   "oo"  'sbt-hydra
   "opf" 'project-find-file
   "or"  'indent-region

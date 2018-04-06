@@ -32,8 +32,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(go
-     auto-completion
+   '(
      (auto-completion :packages not hippie-exp
                       :variables
                       ;; auto-completion-return-key-behavior nil
@@ -56,18 +55,9 @@ This function should only modify configuration layer settings."
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
      gtags
-     ;; haskell
-     helm
-     ;; ivy
-     ;; html
-     ;; javascript
+     ;; helm
+     ivy
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
-     nlinum
-     neotree
-     ;; nginx
-     (php :packages not php-extras php-auto-yasnippets phpcbf phpunit company-php)
-     (plantuml :variables plantuml-jar-path "/usr/local/Cellar/plantuml/1.2017.16/libexec/plantuml.jar")
-     ;; react
      (osx :packages not osx-dictionary)
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
      (ruby :variables ruby-version-manager nil)
@@ -83,21 +73,21 @@ This function should only modify configuration layer settings."
      spacemacs-layouts
      spacemacs-misc ;; dumb-jump
      ;; (spacemacs-modeline :packages spaceline)
-     (spacemacs-navigation :packages auto-highlight-symbol golden-ratio neotree restart-emacs winum)
+     ;; (spacemacs-navigation :packages auto-highlight-symbol golden-ratio neotree restart-emacs winum)
+     spacemacs-navigation
      spacemacs-org
      spacemacs-project
      ;; spacemacs-purpose ;;https://github.com/syl20bnr/spacemacs/tree/develop/layers/%2Bspacemacs/spacemacs-purpose
-     (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
+     ;; (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
+     spacemacs-visual
      spell-checking
      (syntax-checking :variables
-                      flycheck-scalastylerc "/usr/local/etc/scalastyle_config.xml"
                       flycheck-check-syntax-automatically '(save mode-enabled))
      (treemacs :variables treemacs-use-follow-mode t)
-     ;; react
      restclient ;; https://github.com/pashky/restclient.el
-     (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
-                      :variables version-control-global-margin t version-control-diff-tool 'diff-hl
-                      )
+     ;; (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
+                      ;; :variables version-control-global-margin t version-control-diff-tool 'diff-hl
+                      ;; )
      yaml
      ;; My personal layers
      d1egoaz
@@ -242,7 +232,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("SF Mono"
-                               :size 16
+                               :size 32
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -413,7 +403,7 @@ It should only modify the values of Spacemacs settings."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers nil
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -483,75 +473,41 @@ It should only modify the values of Spacemacs settings."
 
 (defun dotspacemacs/user-init ()
   (setq custom-file "~/.emacs.d/custom.el")
-  (load custom-file)
-
-  (push '(sbt-mode . "melpa") package-pinned-packages)
-  (push '(scala-mode . "melpa") package-pinned-packages)
+  (when (file-exists-p custom-file)
+    (load custom-file))
 
   ;; monokai + one dark theme
   ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
   (setq
-   ;; monokai-use-variable-pitch nil ;; org mode monospace font
-   ;; monokai-height-minus-1 0.8
-   ;; monokai-height-plus-1 1.1
-   ;; monokai-height-plus-2 1.15
-   ;; monokai-height-plus-3 1.2
-   ;; monokai-height-plus-4 1.3
       monokai-foreground     "#b2b2b2"
       monokai-background     "#1e1e1e"
-
-   ;; primary colors
       monokai-green          "#63de5d" ;; from darkokai
-      ;; monokai-red            "#E06C75" ;; easy to eyes red
-      monokai-red            "#FF4791" ;; easy to eyes red
+      monokai-red            "#fc6399" ;; easy to eyes red
       monokai-highlight      "#5D6365" ;; from darkokai
-      ;; monokai-emph           "#ffffff"
   )
 
-  ;; https://www.webpagefx.com/web-design/color-picker/282d33
-  ;; Foreground: #2aa1ae
-  ;; Background: #292e34
-  (custom-set-faces
-    '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
-  ;; '(font-lock-variable-name-face ((t (:foreground "#9acb9b"))))
-  ;; '(font-lock-function-name-face ((t (:background "#283329" :foreground "#3EAE2A"))))
-  ;;  '(font-lock-keyword-face ((t (:foreground "#CA79DA"))))
-  ;;  '(font-lock-comment-face ((t (:foreground "#58626E"))))
-  ;;  '(font-lock-comment-delimiter-face ((t (:foreground "#58626E"))))
-  ;;  '(font-lock-type-face ((t (:foreground "#7dbaed"))))
-  ;;  '(highlight-numbers-number ((t (:foreground "#e4e597"))))
-    '(font-lock-string-face ((t (:foreground "#cB855B"))))
-  ;; '(font-lock-constant-face ((t (:foreground "#4CC9b0"))))
+  (setq ivy-initial-inputs-alist nil)
+  (setq ivy-format-function 'ivy-format-function-line)
 
-  ;;  '(web-mode-html-tag-face ((t (:foreground "#a6e22e"))))
+  ;; https://www.webpagefx.com/web-design/color-picker/282d33
+  (custom-set-faces
+   '(ivy-current-match ((t (:background "#444155" :foreground "#DDA0DD"))));;dd00c8
+    '(ivy-highlight-face ((t (:background nil :foreground nil))))
+    '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
+    '(font-lock-string-face ((t (:foreground "#cB855B"))))
     '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
     '(whitespace-tab ((t (:background nil :foreground "gray30"))))
   )
 
-  (if (eq system-type 'gnu/linux)
+  (if (eq system-type 'darwin)
       (setq-default dotspacemacs-default-font '("SF Mono"
-                                                :size 32
-                                                :weight normal
-                                                :powerline-scale 1.1)))
-  (if (eq system-type 'windows-nt)
-      (setq-default dotspacemacs-default-font '("SF Mono"
-                                                :size 32
+                                                :size 16
                                                 :weight normal
                                                 :width normal
                                                 :powerline-scale 1.1)))
-
 )
 
 (defun dotspacemacs/user-config ()
-  ;; Mitigate Bug#28350 (security) in Emacs 25.2 and earlier.
-  (eval-after-load "enriched"
-    '(defun enriched-decode-display-prop (start end &optional param)
-       (list start end)))
-
-  ;; For complex scala files
-  ;; (setq max-lisp-eval-depth 50000)
-  ;; (setq max-specpdl-size 5000)
-
   ;; ************** GLOBALS **************
 
   ;; whitespace mode
@@ -565,6 +521,8 @@ It should only modify the values of Spacemacs settings."
 
   ;; deft
   (setq deft-directory "~/onedrive/deft")
+
+  ;; emacs
   (setq create-lockfiles nil) ;; disable .#file.ext creation
 
   ;; Backups
@@ -614,7 +572,9 @@ It should only modify the values of Spacemacs settings."
   (setq google-translate-default-target-language "es")
 
   (spacemacs/toggle-truncate-lines-on)
+  (spacemacs/toggle-truncate-lines)
   (spacemacs/toggle-automatic-symbol-highlight-on)
+  (setq-default truncate-lines t)
 
   (setq spacemacs-useful-buffers-regexp '("\\*\\(ansi-term\\|eshell\\|shell\\|terminal.+\\)\\*"
                                           "\\*scratch\\*"
@@ -744,7 +704,7 @@ It should only modify the values of Spacemacs settings."
             ;;   :prepend t                        = properties
             ;; https://orgmode.org/manual/Template-expansion.html
             ("t" "Todo" entry (file+headline "~/onedrive/deft/gtd-inbox.org" "Inbox")
-             "* TODO %?" :prepend t :empty-lines 1)
+             "* TODO %?\nCreated on on %U\n" :prepend t :empty-lines 1)
             ("l" "Link" entry (file* Links+headline "~/onedrive/deft/notes.org" "Links")
              "* %? %^L %^g \n%T" :prepend t)
             ("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
@@ -779,9 +739,6 @@ It should only modify the values of Spacemacs settings."
       (tramp-parse-sconfig "~/.ssh/config")
       (tramp-parse-shosts "~/.ssh/known_hosts")))
 
-  ;; (if (eq system-type 'darwin)
-  ;;   (defconst ansi-color-regexp ansi-color-control-seq-regexp))
-
   ;; avoid file changed on disk checking?
   ;; (global-auto-revert-mode -1)
   (setq revert-without-query '(".*"))
@@ -795,10 +752,4 @@ It should only modify the values of Spacemacs settings."
   (setq HTTPENV "d")
 
   (message ">>> done loading init file <<<")
-  (setq exec-path (append '("~/go/bin"
-                                      "~/.nvm/versions/node/v8.9.4/bin"
-                                      "~/.gem/ruby/2.4.4/bin"
-                                      "/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin"
-                                      "/opt/rubies/2.4.4/bin")
-                          exec-path))
 )
