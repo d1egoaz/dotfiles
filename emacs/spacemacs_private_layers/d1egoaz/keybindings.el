@@ -11,23 +11,22 @@
 (spacemacs/set-leader-keys
   ;; general
   "glh" 'git-link-homepage
-  "jj"  'avy-goto-char-timer
-  "oc"  'syntactic-close
+  ;; "jj"  'avy-goto-char-timer
+  "jj"  'avy-goto-word-or-subword-1
   "od"  'diego/delete-last-character-end-of-line
   "of"  'diego-scala/scalafmt-file
   "og"  'dumb-jump-go
   "oh"  'highlight-symbol-at-point
   "oH"  'hi-lock-unface-buffer
-  "oo"  'sbt-hydra
-  "opf" 'project-find-file
+  ;; "oo"  'sbt-hydra
   "or"  'indent-region
-  "osd" 'edd-scala/align-dependencies
-  "osf" 'diego-scala/scalafmt-file
+  "oi" 'yas-insert-snippet
+  ;; "osd" 'edd-scala/align-dependencies
+  ;; "osf" 'diego-scala/scalafmt-file
   "osg" 'edd-scala/ignore-style
   "osh" 'sbt-hydra
   "osl" 'sbt-run-previous-command
   "oss" 'sbt-command
-  "osx" 'diego-scala/scalafix-file
   "ox"  'diego-scala/scalafix-file
 )
 
