@@ -680,6 +680,8 @@ Clear Buffer</string>
 	<true/>
 	<key>MaxVertically</key>
 	<false/>
+	<key>NSFontPanelAttributes</key>
+	<string>1, 2</string>
 	<key>NSNavLastRootDirectory</key>
 	<string>~/dotfiles/iterm2</string>
 	<key>NSNavPanelExpandedSizeForOpenMode</key>
@@ -720,16 +722,20 @@ Clear Buffer</string>
 		<key>TB Is Shown</key>
 		<integer>1</integer>
 	</dict>
+	<key>NSWindow Frame NSFontPanel</key>
+	<string>1409 110 445 398 0 0 1920 1080 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>269 84 918 492 0 0 1920 1080 </string>
+	<string>1124 186 918 492 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>154 0 1690 702 0 0 1920 1080 </string>
+	<string>0 0 1920 1080 0 0 1920 1080 </string>
 	<key>NeverWarnAboutShortLivedSessions_9941FFB1-A4D6-45F4-8B9C-D880523151D2</key>
 	<true/>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
 			<key>ASCII Anti Aliased</key>
+			<true/>
+			<key>ASCII Ligatures</key>
 			<true/>
 			<key>Allow Title Reporting</key>
 			<false/>
@@ -1057,7 +1063,7 @@ Clear Buffer</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>SFMono-Regular 18</string>
+			<string>SFMono-Regular 16</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -1208,6 +1214,8 @@ Clear Buffer</string>
 			<array/>
 			<key>Terminal Type</key>
 			<string>xterm</string>
+			<key>Thin Strokes</key>
+			<integer>4</integer>
 			<key>Transparency</key>
 			<real>0.0082377958998701203</real>
 			<key>Triggers</key>
@@ -1761,6 +1769,8 @@ Clear Buffer</string>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
 	<integer>0</integer>
+	<key>NoSyncPermissionToShowTip</key>
+	<false/>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
 	<real>543938284.44279206</real>
 	<key>OnlyWhenMoreTabs</key>
@@ -1845,7 +1855,7 @@ Clear Buffer</string>
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2018-03-29T17:23:59Z</date>
+	<date>2018-04-11T14:58:36Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
