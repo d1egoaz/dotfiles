@@ -40,3 +40,12 @@
 (defun diego/table-flip () (interactive) (insert "(╯°□°）╯︵ ┻━┻"))
 (defun diego/glasses () (interactive) (insert "(⌐■_■)"))
 (defun diego/idonteven () (interactive) (insert "¯\(°_°)/¯"))
+
+(defun diego/to-snake-case ()
+  (interactive)
+  (progn
+    (replace-regexp
+     "\\([A-Z]\\)" "_\\1" nil (region-beginning) (region-end))
+    (downcase-region
+     (region-beginning)
+     (region-end))))
