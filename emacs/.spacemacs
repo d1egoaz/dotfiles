@@ -41,6 +41,8 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t)
+
+     (colors :packages nyan-mode :variables colors-enable-nyan-cat-progress-bar t)
      deft
      emacs-lisp
      evil-commentary
@@ -60,7 +62,7 @@ This function should only modify configuration layer settings."
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      (osx :packages not osx-dictionary)
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
-     (ruby :variables ruby-version-manager nil)
+     (ruby :variables ruby-version-manager nil :packages not ruby-refactor)
      ruby-on-rails
      (shell :variables shell-default-shell 'eshell)
      ;; spacemacs layers
@@ -86,14 +88,14 @@ This function should only modify configuration layer settings."
      (treemacs :variables treemacs-use-follow-mode t)
      restclient ;; https://github.com/pashky/restclient.el
      ;; (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
-                      ;; :variables version-control-global-margin t version-control-diff-tool 'diff-hl
-                      ;; )
+     ;; :variables version-control-global-margin t version-control-diff-tool 'diff-hl
+     ;; )
      yaml
      ;; My personal layers
      d1egoaz
      d1egoaz-go
      d1egoaz-scala
-   )
+     )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -103,7 +105,10 @@ This function should only modify configuration layer settings."
                                       all-the-icons
                                       tldr
                                       evil-goggles
-                                      graphql-mode)
+                                      graphql-mode
+                                      vi-tilde-fringe
+                                      evil-matchit
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
@@ -478,13 +483,12 @@ It should only modify the values of Spacemacs settings."
 
   ;; monokai + one dark theme
   ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
-  (setq
-      monokai-foreground     "#b2b2b2"
-      monokai-background     "#1e1e1e"
-      monokai-green          "#63de5d" ;; from darkokai
-      monokai-red            "#fc6399" ;; easy to eyes red
-      monokai-highlight      "#5D6365" ;; from darkokai
-  )
+  (setq monokai-foreground     "#b2b2b2"
+        monokai-background     "#1e1e1e"
+        monokai-green          "#63de5d" ;; from darkokai
+        monokai-red            "#fc6399" ;; easy to eyes red
+        monokai-highlight      "#5D6365" ;; from darkokai
+        )
 
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-format-function 'ivy-format-function-line)
@@ -492,20 +496,19 @@ It should only modify the values of Spacemacs settings."
   ;; https://www.webpagefx.com/web-design/color-picker/282d33
   (custom-set-faces
    '(ivy-current-match ((t (:background "#444155" :foreground "#DDA0DD"))));;dd00c8
-    '(ivy-highlight-face ((t (:background nil :foreground nil))))
-    '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
-    '(font-lock-string-face ((t (:foreground "#cB855B"))))
-    '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
-    '(whitespace-tab ((t (:background nil :foreground "gray30"))))
-  )
+   '(ivy-highlight-face ((t (:background nil :foreground nil))))
+   '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
+   '(font-lock-string-face ((t (:foreground "#cB855B"))))
+   '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
+   '(whitespace-tab ((t (:background nil :foreground "gray30"))))
+   )
 
   (if (eq system-type 'darwin)
       (setq-default dotspacemacs-default-font '("SF Mono"
-                                                :size 16
+                                                :size 15
                                                 :weight normal
                                                 :width normal
-                                                :powerline-scale 1.1)))
-)
+                                                :powerline-scale 1.1))))
 
 (defun dotspacemacs/user-config ()
   ;; ************** GLOBALS **************
@@ -526,36 +529,34 @@ It should only modify the values of Spacemacs settings."
   (setq create-lockfiles nil) ;; disable .#file.ext creation
 
   ;; Backups
-  (setq
-    backup-directory-alist '((".*" . "~/emacs_backups/per-save"))
-    auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
-    backup-by-copying t
-    version-control t
-    delete-old-versions t
-    delete-by-moving-to-trash t
-    kept-new-versions 6
-    kept-old-versions 2
-    vc-make-backup-files t
-    auto-save-default t
-    auto-save-timeout 20
-    auto-save-interval 200
-    make-backup-files t ;; <- DISABLED
-  )
+  (setq backup-directory-alist '((".*" . "~/emacs_backups/per-save"))
+        auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
+        backup-by-copying t
+        version-control t
+        delete-old-versions t
+        delete-by-moving-to-trash t
+        kept-new-versions 6
+        kept-old-versions 2
+        vc-make-backup-files t
+        auto-save-default t
+        auto-save-timeout 20
+        auto-save-interval 200
+        make-backup-files t ;; <- DISABLED
+        )
 
   ;; Settings
-  (setq-default
-     vc-follow-symlinks t
-     ;; Whitespace mode config
-     whitespace-style '(face tabs tab-mark spaces trailing spaces)
-     ;; tab width
-     tab-width 2
-     indent-tabs-mode nil
-     ;; Avy
-     avy-all-windows 'all-frames
-     ;; column indicator
-     fci-rule-column 110
-     fill-column 110
-  )
+  (setq-default vc-follow-symlinks t
+                ;; Whitespace mode config
+                whitespace-style '(face tabs tab-mark spaces trailing spaces)
+                ;; tab width
+                tab-width 2
+                indent-tabs-mode nil
+                ;; Avy
+                avy-all-windows 'all-frames
+                ;; column indicator
+                fci-rule-column 110
+                fill-column 110
+                )
 
   ;; avy
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p))
@@ -652,9 +653,9 @@ It should only modify the values of Spacemacs settings."
   ;; (add-hook 'scala-mode-hook #'fci-mode)
 
   (add-hook 'scala-mode-hook #'(lambda () (setq projectile-globally-ignored-directories
-                                           (append
-                                            '("lib" "lib-src" ".lib-src")
-                                            projectile-globally-ignored-directories))))
+                                                (append
+                                                 '("lib" "lib-src" ".lib-src")
+                                                 projectile-globally-ignored-directories))))
   (add-hook 'scala-mode-hook #'(lambda () (setq-local eldoc-documentation-function #'ggtags-eldoc-function)))
 
   ;; Include underscores and hyphen in word motions
@@ -673,13 +674,12 @@ It should only modify the values of Spacemacs settings."
     (if (eq system-type 'gnu/linux)
         (setq org-download-screenshot-method "import  %s"
               org-plantuml-jar-path "/opt/plantuml/plantuml.jar"))
-    (setq
-     org-agenda-files (list "~/onedrive/deft/gtd-inbox.org" "~/onedrive/deft/gtd-personal.org" "~/onedrive/deft/gtd-work.org" )
+    (setq org-agenda-files (list "~/onedrive/deft/gtd-inbox.org" "~/onedrive/deft/gtd-personal.org" "~/onedrive/deft/gtd-work.org" )
           org-agenda-span 16
           org-agenda-start-day "-3d"
           org-blank-before-new-entry
-                '((heading . always)
-                  (plain-list-item . nil))
+          '((heading . always)
+            (plain-list-item . nil))
           org-confirm-babel-evaluate nil
           org-default-notes-file "~/onedrive/deft/notes.org"
           org-download-heading-lvl nil
@@ -712,7 +712,7 @@ It should only modify the values of Spacemacs settings."
             ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
              "* %?\nEntered on %U\n%i\n%a" :clock-in t :clock-resume t))
           spaceline-org-clock-p t
-    )
+          )
 
     (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 
@@ -735,9 +735,9 @@ It should only modify the values of Spacemacs settings."
   ;; tramp
   (eval-after-load 'tramp
     '(progn
-      (setenv "SHELL" "/bin/bash")
-      (tramp-parse-sconfig "~/.ssh/config")
-      (tramp-parse-shosts "~/.ssh/known_hosts")))
+       (setenv "SHELL" "/bin/bash")
+       (tramp-parse-sconfig "~/.ssh/config")
+       (tramp-parse-shosts "~/.ssh/known_hosts")))
 
   ;; avoid file changed on disk checking?
   ;; (global-auto-revert-mode -1)
@@ -751,5 +751,7 @@ It should only modify the values of Spacemacs settings."
                               ) )
   (setq HTTPENV "d")
 
-  (message ">>> done loading init file <<<")
-)
+  (global-vi-tilde-fringe-mode)
+  (setq projectile-enable-caching t)
+  (global-evil-matchit-mode 1)
+  (message ">>> done loading init file <<<"))
