@@ -17,6 +17,10 @@
 [alias]
   pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
 
+  # Delete all local branches but master and the current one, only if they are fully merged with master.
+  # https://stackoverflow.com/a/41465769
+  branches-delete-except-master = !"f() { git branch | grep -v 'master' | grep -v ^* | xargs git branch -d; }; f"
+
 [includeIf "gitdir:~/src/"]
   path = .gitconfig-work
 [includeIf "gitdir:~/dotfiles/"]
