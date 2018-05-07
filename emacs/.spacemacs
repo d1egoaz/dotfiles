@@ -590,11 +590,10 @@ It should only modify the values of Spacemacs settings."
 
   (setq neo-theme 'icons)
 
-  (setq undo-tree-auto-save-history t
-        undo-tree-history-directory-alist
-        `(("." . ,(concat spacemacs-cache-directory "undo"))))
   (unless (file-exists-p (concat spacemacs-cache-directory "undo"))
     (make-directory (concat spacemacs-cache-directory "undo")))
+  (setq undo-tree-auto-save-history t
+        undo-tree-history-directory-alist `(("." . ,(concat spacemacs-cache-directory "undo"))))
 
   (golden-ratio-mode)
 
