@@ -49,3 +49,9 @@
     (downcase-region
      (region-beginning)
      (region-end))))
+
+
+(defun diego/org-insert-last-stored-link (arg)
+  "Insert the last link stored in `org-stored-links'."
+  (interactive "p")
+  (org-insert-all-links arg "" ""))

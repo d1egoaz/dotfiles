@@ -28,6 +28,7 @@
   "osl" 'sbt-run-previous-command
   "oss" 'sbt-command
   "ox"  'diego-scala/scalafix-file
+  "aoL" 'diego/org-insert-last-stored-link
 )
 
 (with-eval-after-load 'flyspell
