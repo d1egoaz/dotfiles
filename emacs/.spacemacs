@@ -108,6 +108,7 @@ This function should only modify configuration layer settings."
                                       graphql-mode
                                       vi-tilde-fringe
                                       evil-matchit
+                                      color-theme-sanityinc-tomorrow
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -226,6 +227,7 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         ;; sanityinc-tomorrow-eighties
                          monokai
                          atom-one-dark
                          zenburn
@@ -490,6 +492,9 @@ It should only modify the values of Spacemacs settings."
         monokai-highlight      "#5D6365" ;; from darkokai
         )
 
+  (set-foreground-color "#b2b2b2")
+  (set-background-color "#1e1e1e")
+
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-format-function 'ivy-format-function-line)
 
@@ -498,6 +503,7 @@ It should only modify the values of Spacemacs settings."
    '(ivy-current-match ((t (:background "#444155" :foreground "#DDA0DD"))));;dd00c8
    '(ivy-highlight-face ((t (:background nil :foreground nil))))
    '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
+   '(org-link ((t (:foreground "RoyalBlue3" :underline t))))
    '(font-lock-string-face ((t (:foreground "#cB855B"))))
    '(sp-show-pair-match-face ((t (:foreground "blue" :background "green"))))
    '(whitespace-tab ((t (:background nil :foreground "gray30"))))
@@ -555,7 +561,7 @@ It should only modify the values of Spacemacs settings."
                 avy-all-windows 'all-frames
                 ;; column indicator
                 fci-rule-column 110
-                fill-column 110
+                fill-column 100
                 )
 
   ;; avy
@@ -750,6 +756,7 @@ It should only modify the values of Spacemacs settings."
                               ) )
   (setq HTTPENV "d")
 
+  (setq ea-paste nil)
   (global-vi-tilde-fringe-mode)
   (setq projectile-enable-caching t)
   (global-evil-matchit-mode 1)

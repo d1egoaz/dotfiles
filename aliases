@@ -42,3 +42,6 @@ alias clip="socat - UNIX-CONNECT:/tmp/.clipper.sock"
 
 # copy working directory
 alias cwd='pwd | tr -d "\r\n" | clip'
+
+# show me the commands
+alias devv='DEV_TRACE=1 dev'
