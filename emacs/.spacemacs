@@ -410,7 +410,7 @@ It should only modify the values of Spacemacs settings."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers '(:enabled-for-modes 'all :relative t)
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -655,7 +655,8 @@ It should only modify the values of Spacemacs settings."
 
   ;; ************** SCALA **************
   ;; column indicator
-  ;; (add-hook 'scala-mode-hook #'fci-mode)
+  (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+  (global-fci-mode 1) ;; for a specific mode (add-hook 'scala-mode-hook #'fci-mode)
 
   (add-hook 'scala-mode-hook #'(lambda () (setq projectile-globally-ignored-directories
                                                 (append
@@ -724,6 +725,8 @@ It should only modify the values of Spacemacs settings."
   ;; ************** GIT / MAGIT**************
   ;; github
   (setq git-link-default-branch "master")
+
+  ;; when working with Github Enterprise repositories
   (eval-after-load "git-link"
     '(progn
        (add-to-list 'git-link-remote-alist
@@ -733,8 +736,9 @@ It should only modify the values of Spacemacs settings."
 
   (add-hook 'git-commit-setup-hook 'diego/insert-ticket-prefix)
 
-  ;; magit diff
-  (setq smerge-refine-ignore-whitespace nil) ;; https://github.com/magit/magit/issues/1689
+  ;; magit
+  ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
+  (setq smerge-refine-ignore-whitespace nil)
   (setq magit-revision-show-gravatars nil)
 
   ;; tramp
@@ -744,20 +748,17 @@ It should only modify the values of Spacemacs settings."
        (tramp-parse-sconfig "~/.ssh/config")
        (tramp-parse-shosts "~/.ssh/known_hosts")))
 
-  ;; avoid file changed on disk checking?
+  ;; avoid file changed on disk checking message
   ;; (global-auto-revert-mode -1)
   (setq revert-without-query '(".*"))
 
   ;; make electric-pair-mode work on more brackets
   (electric-pair-mode 1)
-  (setq electric-pair-pairs '(
-                              (?\" . ?\")
-                              (?\{ . ?\})
-                              ) )
-  (setq HTTPENV "d")
+  (setq electric-pair-pairs '((?\" . ?\") (?\{ . ?\}) (?\[ . ?\])) )
 
+  (setq HTTPENV "d")
   (setq ea-paste nil)
-  (global-vi-tilde-fringe-mode)
-  (setq projectile-enable-caching t)
-  (global-evil-matchit-mode 1)
+  (global-vi-tilde-fringe-mode) ;; Displays tildes in the fringe on empty lines a la Vi.
+  (setq projectile-enable-caching t) ;; fix performance on big projects
+  (global-evil-matchit-mode 1) ;; It allows you press % to match items.
   (message ">>> done loading init file <<<"))
