@@ -38,7 +38,9 @@
 
 (global-unset-key (kbd "C-j"))
 (global-unset-key (kbd "C-k"))
-
+(global-unset-key (kbd "C-SPC"))
+(global-set-key (kbd "C-SPC k") 'evil-window-up)
+(global-set-key (kbd "C-SPC j") 'evil-window-down)
 
 (with-eval-after-load 'evil
   (global-set-key (kbd "C-i") 'evil-jump-forward)
