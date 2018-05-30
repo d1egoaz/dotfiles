@@ -148,6 +148,25 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+   ;; If non-nil then enable support for the portable dumper. You'll need
+   ;; to compile Emacs 27 from source following the instructions in file
+   ;; EXPERIMENTAL.org at to root of the git repository.
+   ;; (default nil)
+   dotspacemacs-enable-emacs-pdumper nil
+
+   ;; File path pointing to emacs 27.1 executable compiled with support
+   ;; for the portable dumper (this is currently the branch pdumper).
+   ;; (default "emacs")
+   dotspacemacs-emacs-pdumper-executable-file "emacs"
+
+   ;; Name of the Spacemacs dump file. This is the file will be created by the
+   ;; portable dumper in the cache directory under dumps sub-directory.
+   ;; To load it when starting Emacs add the parameter `--dump-file'
+   ;; when invoking Emacs 27.1 executable on the command line, for instance:
+   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
+   ;; (default spacemacs.pdmp)
+   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
@@ -232,6 +251,16 @@ It should only modify the values of Spacemacs settings."
                          atom-one-dark
                          zenburn
                          spacemacs-light)
+
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
+   ;; are spaceline themes. `vanilla' is default Emacs mode-line. `custom' is a
+   ;; user defined themes, refer to the DOCUMENTATION.org for more info on how
+   ;; to create your own spaceline theme. Value can be a symbol or list with\
+   ;; additional properties.
+   ;; (default '(spacemacs :separator wave :separator-scale 1.5))
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
@@ -241,8 +270,8 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-default-font '("SF Mono"
                                :size 32
                                :weight normal
-                               :width normal
-                               :powerline-scale 1.1)
+                               :width normal)
+
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
 
@@ -513,8 +542,7 @@ It should only modify the values of Spacemacs settings."
       (setq-default dotspacemacs-default-font '("SF Mono"
                                                 :size 15
                                                 :weight normal
-                                                :width normal
-                                                :powerline-scale 1.1))))
+                                                :width normal))))
 
 (defun dotspacemacs/user-config ()
   ;; ************** GLOBALS **************
@@ -761,4 +789,6 @@ It should only modify the values of Spacemacs settings."
   (global-vi-tilde-fringe-mode) ;; Displays tildes in the fringe on empty lines a la Vi.
   (setq projectile-enable-caching t) ;; fix performance on big projects
   (global-evil-matchit-mode 1) ;; It allows you press % to match items.
+  (setq-default display-line-numbers 'relative)
+
   (message ">>> done loading init file <<<"))
