@@ -37,7 +37,7 @@ alias gs='git status -s'
 alias gd='git diff'
 alias gpu='git pull'
 
-alias tm='tmux new -A -s default'
+alias tm='tmux new -A -n 'default' -s default'
 alias clip="socat - UNIX-CONNECT:/tmp/.clipper.sock"
 
 # copy working directory
