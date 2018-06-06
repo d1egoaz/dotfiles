@@ -87,9 +87,8 @@ This function should only modify configuration layer settings."
                       flycheck-check-syntax-automatically '(save mode-enabled))
      (treemacs :variables treemacs-use-follow-mode t)
      restclient ;; https://github.com/pashky/restclient.el
-     ;; (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
-     ;; :variables version-control-global-margin t version-control-diff-tool 'diff-hl
-     ;; )
+     (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
+                      :variables version-control-global-margin t version-control-diff-tool 'diff-hl)
      yaml
      ;; My personal layers
      d1egoaz
@@ -109,6 +108,7 @@ This function should only modify configuration layer settings."
                                       vi-tilde-fringe
                                       evil-matchit
                                       color-theme-sanityinc-tomorrow
+                                      devdocs
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -767,7 +767,8 @@ It should only modify the values of Spacemacs settings."
   ;; magit
   ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
   (setq smerge-refine-ignore-whitespace nil)
-  (setq magit-revision-show-gravatars nil)
+  (setq magit-revision-show-gravatars nil
+        magit-process-popup-time 0)
 
   ;; tramp
   (eval-after-load 'tramp
@@ -790,5 +791,6 @@ It should only modify the values of Spacemacs settings."
   (setq projectile-enable-caching t) ;; fix performance on big projects
   (global-evil-matchit-mode 1) ;; It allows you press % to match items.
   (setq-default display-line-numbers 'relative)
+  (global-display-line-numbers-mode)
 
   (message ">>> done loading init file <<<"))
