@@ -64,7 +64,7 @@ This function should only modify configuration layer settings."
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
      (ruby :variables ruby-version-manager nil :packages not ruby-refactor)
      ruby-on-rails
-     (shell :variables shell-default-shell 'eshell)
+     (shell :variables shell-default-shell 'eshell shell-default-position 'right)
      ;; spacemacs layers
      spacemacs-completion
      spacemacs-defaults
