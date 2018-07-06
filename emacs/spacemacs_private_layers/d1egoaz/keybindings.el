@@ -18,11 +18,11 @@
   "og"  'dumb-jump-go
   "oh"  'highlight-symbol-at-point
   "oH"  'hi-lock-unface-buffer
-  ;; "oo"  'sbt-hydra
+  "oo"  'sbt-hydra
   "or"  'indent-region
+  "osd" 'edd-scala/align-dependencies
+  "osf" 'diego-scala/scalafmt-file
   "oi" 'yas-insert-snippet
-  ;; "osd" 'edd-scala/align-dependencies
-  ;; "osf" 'diego-scala/scalafmt-file
   "osg" 'edd-scala/ignore-style
   "osh" 'sbt-hydra
   "osl" 'sbt-run-previous-command
