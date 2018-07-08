@@ -110,6 +110,8 @@ This function should only modify configuration layer settings."
                                       evil-matchit
                                       color-theme-sanityinc-tomorrow
                                       devdocs
+                                      doom-themes
+                                      doom-modeline
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -248,6 +250,7 @@ It should only modify the values of Spacemacs settings."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
                          ;; sanityinc-tomorrow-eighties
+                         doom-one
                          monokai
                          atom-one-dark
                          zenburn
@@ -772,6 +775,10 @@ See the header of this file for more information."
   (setq-default display-line-numbers 'relative)
   (global-display-line-numbers-mode)
 
+  (use-package doom-modeline
+    :ensure t
+    :defer t
+    :hook (after-init . doom-modeline-init))
   (message ">>> done loading init file <<<"))
 
 ;; Do not write anything past this comment. This is where Emacs will
