@@ -1,2 +1,3 @@
 bin/initHS.sh
 bin/kinitload.sh
+emacs/custom.el

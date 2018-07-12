@@ -779,6 +779,13 @@ See the header of this file for more information."
     :ensure t
     :defer t
     :hook (after-init . doom-modeline-init))
+
+  (use-package web-mode
+    :ensure t
+    :defer t)
+
+  (set-foreground-color "#b2b2b2")
+  (set-background-color "#1e1e1e")
   (message ">>> done loading init file <<<"))
 
 ;; Do not write anything past this comment. This is where Emacs will
