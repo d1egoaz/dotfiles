@@ -11,8 +11,8 @@
 (spacemacs/set-leader-keys
   ;; general
   "glh" 'git-link-homepage
-  ;; "jj"  'avy-goto-char-timer
-  "jj"  'avy-goto-word-or-subword-1
+  "jj"  'avy-goto-char-timer
+  ;; "jj"  'avy-goto-word-or-subword-1
   "od"  'diego/delete-last-character-end-of-line
   "of"  'diego-scala/scalafmt-file
   "og"  'dumb-jump-go
