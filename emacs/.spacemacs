@@ -100,18 +100,21 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(persistent-scratch
-                                      protobuf-mode
+   dotspacemacs-additional-packages '(
                                       all-the-icons
-                                      tldr
-                                      evil-goggles
-                                      graphql-mode
-                                      vi-tilde-fringe
-                                      evil-matchit
                                       color-theme-sanityinc-tomorrow
                                       devdocs
-                                      doom-themes
                                       doom-modeline
+                                      doom-themes
+                                      evil-goggles
+                                      evil-matchit
+                                      graphql-mode
+                                      keyfreq
+                                      persistent-scratch
+                                      protobuf-mode
+                                      tldr
+                                      vi-tilde-fringe
+                                      web-mode
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -579,8 +582,14 @@ See the header of this file for more information."
   ;; used for avy-goto-char-timer
   (setq avy-timeout-seconds 0.3)
 
+  ;; default mode for some file types
   (add-to-list 'auto-mode-alist '("\\.proto\\'" . prog-mode))
   (add-to-list 'auto-mode-alist '("\\.apib\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-style-padding 2)
+  (setq web-mode-script-padding 2)
 
   (setq large-file-warning-threshold nil) ;; ignore TAGS too file warning
 
@@ -775,14 +784,10 @@ See the header of this file for more information."
   (setq-default display-line-numbers 'relative)
   (global-display-line-numbers-mode)
 
-  (use-package doom-modeline
-    :ensure t
-    :defer t
-    :hook (after-init . doom-modeline-init))
+  (doom-modeline-init)
 
-  (use-package web-mode
-    :ensure t
-    :defer t)
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1)
 
   (set-foreground-color "#b2b2b2")
   (set-background-color "#1e1e1e")
