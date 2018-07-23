@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
+# name : debug dprintf
+# --
+fmt.Printf("$1: %T: %+v\n", $1, $1)
+$0
