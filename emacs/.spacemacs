@@ -55,7 +55,8 @@ This function should only modify configuration layer settings."
      (github :packages not gist github-clone magithub)
      (go :variables
          godoc-at-point-function 'godoc-gogetdoc
-         go-tab-width 4)
+         go-tab-width 4
+         go-format-before-save t)
      gtags
      ;; helm
      ivy
@@ -80,6 +81,7 @@ This function should only modify configuration layer settings."
      spacemacs-org
      spacemacs-project
      spacemacs-purpose ;;https://github.com/syl20bnr/spacemacs/tree/develop/layers/%2Bspacemacs/spacemacs-purpose
+     ;; (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
      ;; (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
      spacemacs-visual
      spell-checking
@@ -136,6 +138,8 @@ This function should only modify configuration layer settings."
                                     flycheck-eclim
                                     java-mode
                                     ensime
+                                    ;; misc
+                                    window-purpose
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
