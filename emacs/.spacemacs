@@ -763,7 +763,10 @@ See the header of this file for more information."
   ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
   (setq smerge-refine-ignore-whitespace nil)
   (setq magit-revision-show-gravatars nil
-        magit-process-popup-time 0)
+        magit-process-popup-time 0
+        magit-git-debug t
+        magit-branch-rename-push-target nil
+        )
 
   ;; tramp
   (eval-after-load 'tramp
@@ -789,12 +792,19 @@ See the header of this file for more information."
   (global-display-line-numbers-mode)
 
   (doom-modeline-init)
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  ;; Enable custom neotree theme
+  (doom-themes-neotree-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config)
 
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1)
 
   (set-foreground-color "#b2b2b2")
   (set-background-color "#1e1e1e")
+  (setq projectile-keymap-prefix (kbd "C-c p"))
   (message ">>> done loading init file <<<"))
 
 ;; Do not write anything past this comment. This is where Emacs will

@@ -55,3 +55,21 @@
   "Insert the last link stored in `org-stored-links'."
   (interactive "p")
   (org-insert-all-links arg "" ""))
+
+;; https://github.com/TinySong/spacemacs-private/blob/09327fdeb0879231a18fb7fe4cf65ed550414cc1/layers/ts-git/packages.el#L64
+(defun diego/magit-visit-pull-request ()
+  "Visit the current branch's PR on GitHub."
+  (interactive)
+  (let ((remote-branch (magit-get-current-branch)))
+    (cond
+     ((null remote-branch)
+      (message "No remote branch"))
+     (t
+      (browse-url
+       (format "https://github.com/%s/pull/new/%s"
+               (replace-regexp-in-string
+                "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
+                (magit-get "remote"
+                           (magit-get-remote)
+                           "url"))
+               remote-branch))))))
