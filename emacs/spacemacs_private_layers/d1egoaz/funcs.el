@@ -73,3 +73,11 @@
                            (magit-get-remote)
                            "url"))
                remote-branch))))))
+
+(defun diego/git-fetch-origin-master ()
+  (interactive)
+  (magit-git-command-topdir "git fetch origin master"))
+
+(defun diego/git-rebase-onto-origin-master ()
+  (interactive)
+  (magit-git-command-topdir "git rebase origin/master"))

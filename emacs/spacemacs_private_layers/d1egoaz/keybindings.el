@@ -15,7 +15,9 @@
   ;; "jj"  'avy-goto-word-or-subword-1
   "od"  'diego/delete-last-character-end-of-line
   "of"  'diego-scala/scalafmt-file
-  "og"  'dumb-jump-go
+  "oj"  'dumb-jump-go
+  "ogf" 'diego/git-fetch-origin-master
+  "ogr" 'diego/git-rebase-onto-origin-master
   "oh"  'highlight-symbol-at-point
   "oH"  'hi-lock-unface-buffer
   "oo"  'sbt-hydra
