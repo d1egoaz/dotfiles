@@ -56,8 +56,10 @@ This function should only modify configuration layer settings."
      (go :variables
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4
-         go-format-before-save t)
+         go-format-before-save t
+         go-backend 'lsp)
      gtags
+     lsp
      ;; helm
      ivy
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
