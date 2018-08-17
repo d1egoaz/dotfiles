@@ -18,6 +18,8 @@
   "oj"  'dumb-jump-go
   "ogf" 'diego/git-fetch-origin-master
   "ogr" 'diego/git-rebase-onto-origin-master
+  "ogb" 'diego/git-create-branch-from-origin-master
+  "ogv" 'diego/git-visit-pull-request
   "oh"  'highlight-symbol-at-point
   "oH"  'hi-lock-unface-buffer
   "oo"  'sbt-hydra

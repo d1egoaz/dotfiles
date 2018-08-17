@@ -57,7 +57,7 @@
   (org-insert-all-links arg "" ""))
 
 ;; https://github.com/TinySong/spacemacs-private/blob/09327fdeb0879231a18fb7fe4cf65ed550414cc1/layers/ts-git/packages.el#L64
-(defun diego/magit-visit-pull-request ()
+(defun diego/git-visit-pull-request ()
   "Visit the current branch's PR on GitHub."
   (interactive)
   (let ((remote-branch (magit-get-current-branch)))
@@ -75,9 +75,18 @@
                remote-branch))))))
 
 (defun diego/git-fetch-origin-master ()
+  "git fetch origin master using magit."
   (interactive)
   (magit-git-command-topdir "git fetch origin master"))
 
 (defun diego/git-rebase-onto-origin-master ()
+  "git rebase origin/master using magit."
   (interactive)
   (magit-git-command-topdir "git rebase origin/master"))
+
+(defun diego/git-create-branch-from-origin-master ()
+  "Creates a new branch starting from origin/master."
+  (interactive)
+  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
+    (magit-git-command-topdir
+     (concat "git checkout -b " new_branch_name " origin/master"))))
