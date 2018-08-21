@@ -345,10 +345,10 @@ It should only modify the values of Spacemacs settings."
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
 
-   ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
-   ;; `p' several times cycles through the elements in the `kill-ring'.
-   ;; (default nil)
-   dotspacemacs-enable-paste-transient-state nil
+   ;; If non-nil, the paste transient-state is enabled. While enabled, after you
+   ;; paste something, pressing `C-j' and `C-k' several times cycles through the
+   ;; elements in the `kill-ring'. (default nil)
+   dotspacemacs-enable-paste-transient-state t
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -444,7 +444,15 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-highlight-delimiters 'all
 
    ;; If non-nil, start an Emacs server if one is not already running.
+   ;; (default nil)
    dotspacemacs-enable-server t
+
+   ;; Set the emacs server socket location.
+   ;; If nil, uses whatever the Emacs default is, otherwise a directory path
+   ;; like \"~/.emacs.d/server\". It has no effect if
+   ;; `dotspacemacs-enable-server' is nil.
+   ;; (default nil)
+   dotspacemacs-server-socket-dir nil
 
    ;; If non-nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
@@ -532,7 +540,7 @@ See the header of this file for more information."
 
   (if (eq system-type 'darwin)
       (setq-default dotspacemacs-default-font '("SF Mono"
-                                                :size 15
+                                                :size 13
                                                 :weight normal
                                                 :width normal))))
 
