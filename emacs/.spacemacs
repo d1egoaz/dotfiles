@@ -777,6 +777,9 @@ See the header of this file for more information."
         magit-process-popup-time 0
         magit-git-debug t
         magit-branch-rename-push-target nil
+        magit-log-arguments '("-n50")  ;; was: '("-n256" "--graph" "--decorate")
+        magit-log-section-arguments  '("-n50") ;; was: ("-n256" "--decorate")
+        magit-log-select-arguments '("-n50")  ;; was: '("-n256" "--decorate")
         )
 
   ;; tramp
