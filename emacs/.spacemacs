@@ -62,6 +62,7 @@ This function should only modify configuration layer settings."
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      (osx :packages not osx-dictionary)
      (org :packages not company-emoji emoji-cheat-sheet-plus org-brain org-pomodoro)
+     prettier
      (ruby :variables ruby-version-manager nil :packages not ruby-refactor)
      ruby-on-rails
      (shell :variables shell-default-shell 'eshell shell-default-position 'right)
