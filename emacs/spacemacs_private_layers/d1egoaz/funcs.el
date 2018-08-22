@@ -90,3 +90,8 @@
   (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
     (magit-git-command-topdir
      (concat "git checkout -b " new_branch_name " origin/master"))))
+
+(defun diego/copy-buffer-name ()
+  "copy buffer name"
+  (interactive)
+  (kill-new (buffer-name)))
