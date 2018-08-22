@@ -46,19 +46,15 @@ This function should only modify configuration layer settings."
      deft
      emacs-lisp
      evil-commentary
-     (git :packages not git-messenger magit-gitflow smeargle
-          :variables
-          magit-refs-show-commit-count 'all ;; See commit counts for all branches and tags
-          magit-diff-refine-hunk 'all
-          magit-revision-show-gravatars nil
-          git-magit-status-fullscreen t)
+     (git :packages not git-messenger magit-gitflow smeargle :variables git-magit-status-fullscreen t)
      (github :packages not gist github-clone magithub)
      (go :variables
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4
          go-format-before-save t
          ;; go-backend 'lsp
-         gofmt-command "goimports")
+         gofmt-command "goimports"
+         go-use-golangci-lint t)
      gtags
      ;; lsp
      ;; helm
