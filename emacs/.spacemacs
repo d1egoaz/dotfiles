@@ -46,7 +46,18 @@ This function should only modify configuration layer settings."
      deft
      emacs-lisp
      evil-commentary
-     (git :packages not git-messenger magit-gitflow smeargle :variables git-magit-status-fullscreen t)
+     (git :packages not git-messenger magit-gitflow smeargle
+          :variables git-magit-status-fullscreen t
+          magit-refs-show-commit-count nil
+          magit-diff-refine-hunk t ;; show whitespaces changes on the selected git diff hunks
+          magit-revision-show-gravatars nil
+          magit-process-popup-time 0
+          magit-branch-rename-push-target nil
+          magit-log-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--graph" "--decorate")
+          magit-log-section-arguments  '("-n50" "--decorate") ;; was: ("-n256" "--decorate")
+          magit-log-select-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--decorate")
+          magit-refresh-status-buffer nil ;; only automatically refresh the current Magit buffer, but not the status buffer.
+          )
      (github :packages not gist github-clone magithub)
      (go :variables
          godoc-at-point-function 'godoc-gogetdoc
@@ -770,14 +781,15 @@ See the header of this file for more information."
   ;; magit
   ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
   (setq smerge-refine-ignore-whitespace nil)
-  (setq magit-revision-show-gravatars nil
-        magit-process-popup-time 0
-        magit-git-debug t
-        magit-branch-rename-push-target nil
-        magit-log-arguments '("-n50")  ;; was: '("-n256" "--graph" "--decorate")
-        magit-log-section-arguments  '("-n50") ;; was: ("-n256" "--decorate")
-        magit-log-select-arguments '("-n50")  ;; was: '("-n256" "--decorate")
-        )
+  (defun auto-display-magit-process-buffer (&rest args)
+    "Automatically display the process buffer when it is updated."
+    ;; (let ((magit-display-buffer-noselect t))
+      (magit-process-buffer));;))
+  (advice-add 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
+  (remove-hook 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
+  (remove-hook 'server-switch-hook 'magit-commit-diff) ;; remove diff on commiting
 
   ;; tramp
   (eval-after-load 'tramp
