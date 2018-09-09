@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp -*-
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -88,7 +88,7 @@ This function should only modify configuration layer settings."
      spacemacs-language
      spacemacs-layouts
      spacemacs-misc ;; dumb-jump
-     ;; (spacemacs-modeline :packages spaceline)
+     spacemacs-modeline
      ;; (spacemacs-navigation :packages auto-highlight-symbol golden-ratio neotree restart-emacs winum)
      spacemacs-navigation
      spacemacs-org
@@ -119,7 +119,6 @@ This function should only modify configuration layer settings."
                                       all-the-icons
                                       color-theme-sanityinc-tomorrow
                                       devdocs
-                                      doom-modeline
                                       doom-themes
                                       evil-goggles
                                       evil-matchit
@@ -269,21 +268,19 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         ;; sanityinc-tomorrow-eighties
                          doom-one
-                         monokai
                          atom-one-dark
                          zenburn
                          spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
-   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
-   ;; are spaceline themes. `vanilla' is default Emacs mode-line. `custom' is a
-   ;; user defined themes, refer to the DOCUMENTATION.org for more info on how
-   ;; to create your own spaceline theme. Value can be a symbol or list with\
-   ;; additional properties.
+   ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
+   ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
+   ;; `vanilla' is default Emacs mode-line. `custom' is a user defined themes,
+   ;; refer to the DOCUMENTATION.org for more info on how to create your own
+   ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(doom)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -522,15 +519,6 @@ See the header of this file for more information."
   (when (file-exists-p custom-file)
     (load custom-file))
 
-  ;; monokai + one dark theme
-  ;; https://github.com/jonathanchu/atom-one-dark-theme/blob/master/atom-one-dark-theme.el
-  (setq monokai-foreground     "#b2b2b2"
-        monokai-background     "#1e1e1e"
-        monokai-green          "#63de5d" ;; from darkokai
-        monokai-red            "#fc6399" ;; easy to eyes red
-        monokai-highlight      "#5D6365" ;; from darkokai
-        )
-
   (set-foreground-color "#b2b2b2")
   (set-background-color "#1e1e1e")
 
@@ -541,6 +529,8 @@ See the header of this file for more information."
   (custom-set-faces
    '(ivy-current-match ((t (:background "#444155" :foreground "#DDA0DD"))));;dd00c8
    '(ivy-highlight-face ((t (:background nil :foreground nil))))
+   ;; '(hl-line ((t (:background "#282c34"))))
+   '(hl-line ((t (:foreground nil :background "#282c34"))))
    '(org-block ((t (:background "#1e1e1e" :foreground "#b2b2b2"))))
    '(org-link ((t (:foreground "RoyalBlue3" :underline t))))
    '(font-lock-string-face ((t (:foreground "#cB855B"))))
@@ -823,7 +813,6 @@ See the header of this file for more information."
   (setq-default display-line-numbers 'relative)
   (global-display-line-numbers-mode)
 
-  (doom-modeline-init)
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
   ;; Enable custom neotree theme
