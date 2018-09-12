@@ -750,7 +750,7 @@ See the header of this file for more information."
             ("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
              "* %^{title}%^g\n%T\n\n%?" :prepend t)
             ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
-             "* %?\nEntered on %U\n%i\n%a" :clock-in t :clock-resume t))
+             "* %?" :clock-in t :clock-resume t))
           spaceline-org-clock-p t
           )
 

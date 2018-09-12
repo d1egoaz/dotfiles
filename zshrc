@@ -72,3 +72,5 @@ function ediff() {
 }
 
 [ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
+
+if [ /usr/local/bin/kubectl ]; then source <(kubectl completion zsh); fi
