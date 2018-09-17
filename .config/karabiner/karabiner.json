@@ -149,55 +149,6 @@
                         ]
                     },
                     {
-                        "description": "Change left_control + letter to left_command + letter",
-                        "manipulators": [
-                            {
-                                "from": {
-                                    "key_code": "a",
-                                    "modifiers": {
-                                        "mandatory": [
-                                            "left_control"
-                                        ],
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "a",
-                                        "modifiers": [
-                                            "left_command"
-                                        ]
-                                    }
-                                ],
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "b",
-                                    "modifiers": {
-                                        "mandatory": [
-                                            "left_control"
-                                        ],
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "b",
-                                        "modifiers": [
-                                            "left_command"
-                                        ]
-                                    }
-                                ],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
                         "description": "Option(Alt)+Tab as Switch Application (Command+Tab)",
                         "manipulators": [
                             {
@@ -295,28 +246,6 @@
                             },
                             {
                                 "from": {
-                                    "key_code": "f",
-                                    "modifiers": {
-                                        "mandatory": [
-                                            "control"
-                                        ],
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "f",
-                                        "modifiers": [
-                                            "left_command"
-                                        ]
-                                    }
-                                ],
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
                                     "key_code": "s",
                                     "modifiers": {
                                         "mandatory": [
@@ -396,6 +325,28 @@
                                 "to": [
                                     {
                                         "key_code": "q",
+                                        "modifiers": [
+                                            "left_command"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "z",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "z",
                                         "modifiers": [
                                             "left_command"
                                         ]
