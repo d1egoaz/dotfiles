@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sleep 3
+
 # reset kbd, xcape
 setxkbmap -option ''
 pkill xcape
