@@ -45,3 +45,12 @@ alias cwd='pwd | tr -d "\r\n" | clip'
 
 # show me the commands
 alias devv='DEV_TRACE=1 dev'
+
+em() {
+  if [[ -z $@ ]]; then
+    emacsclient -t $(fzf) 2>/dev/null
+  else
+    nvim $@ 2>/dev/null
+  fi
+}
+
