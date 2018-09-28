@@ -44,6 +44,7 @@ This function should only modify configuration layer settings."
 
      (colors :packages nyan-mode :variables colors-enable-nyan-cat-progress-bar t)
      deft
+     docker
      emacs-lisp
      evil-commentary
      (git :packages not git-messenger magit-gitflow smeargle

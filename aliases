@@ -54,3 +54,15 @@ em() {
   fi
 }
 
+# kubernetes
+alias ku='kubectl'
+alias kuctx='kubectl config use-context $(kubectl config get-contexts -o=name | fzf --prompt "k8s context > ") && kuns'
+alias kudesc='k describe $(kugpn | fzf)'
+alias kuex='k exec -it $(kugpn | fzf) -- '
+alias kuexb='kuex /bin/bash'
+alias kugn='k get namespaces'
+alias kugp='k get pods'
+alias kugpn='k get pods -o name | cut -d'/' -f2'
+alias kul='k logs -f $(kugpn | fzf --prompt "k8s pod > ")'
+alias kulp='kugpn | fzf --preview "kubectl logs {}" --height=100%'
+alias kuns='kubectl config set-context $(k config current-context) --namespace=$(kugn -o name | cut -d'/' -f2 | fzf --prompt "k8s namespace > ")'
