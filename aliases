@@ -50,7 +50,7 @@ em() {
   if [[ -z $@ ]]; then
     emacsclient -t $(fzf) 2>/dev/null
   else
-    nvim $@ 2>/dev/null
+    emacsclient -t $@ 2>/dev/null
   fi
 }
 
