@@ -54,6 +54,11 @@ em() {
   fi
 }
 
+# display traversable json structure in jq format
+jqs() {
+ jq '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
+}
+
 # kubernetes
 alias ku='kubectl'
 alias kuctx='kubectl config use-context $(kubectl config get-contexts -o=name | fzf --prompt "k8s context > ") && kuns'
