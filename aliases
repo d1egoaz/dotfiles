@@ -60,12 +60,15 @@ jqs() {
 }
 
 # kubernetes
+alias k='kubectl'
 alias ku='kubectl'
 alias kuaf='k apply -f'
 alias kuc='kubectl config use-context $(kubectl config get-contexts -o=name | fzf --prompt "k8s context > ") && kuns'
+alias kudn='k describe nodes $(kugnn | fzf)'
 alias kudp='k describe pod $(kugpn | fzf)'
 alias kugd='k get deployments'
 alias kugn='k get namespaces'
+alias kugnn='k get nodes -o name | cut -d'/' -f2'
 alias kugp='k get pods'
 alias kugpn='k get pods -o name | cut -d'/' -f2'
 alias kugrs='k get replicasets'
@@ -75,5 +78,6 @@ alias kul='k logs -f $(kugpn | fzf --prompt "k8s pod > ")'
 alias kulp='kugpn | fzf --preview "kubectl logs {}" --height=100%'
 alias kuns='kubectl config set-context $(k config current-context) --namespace=$(kugn -o name | cut -d'/' -f2 | fzf --prompt "k8s namespace > ")'
 alias kupf='kubectl port-forward $(kugpn | fzf --prompt "k8s pod > ")'
+alias kupip='k get pod $(kugpn | fzf) -o json | jq ".status.podIP"'
 alias kux='k exec -it $(kugpn | fzf) -- '
 alias kuxb='kux /bin/bash'
