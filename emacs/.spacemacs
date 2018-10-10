@@ -784,13 +784,13 @@ See the header of this file for more information."
 
   ;; Enable again when working on shopify/core
   ;; makes magit faster on large repos
-  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
-  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
-  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
-  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
-  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-stashes)
-  ;; (remove-hook 'magit-refs-sections-hook 'magit-insert-tags)
-  ;; (remove-hook 'server-switch-hook 'magit-commit-diff) ;; remove diff on commit buffer
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-stashes)
+  (remove-hook 'magit-refs-sections-hook 'magit-insert-tags)
+  (remove-hook 'server-switch-hook 'magit-commit-diff) ;; remove diff on commit buffer
 
   ;; tramp
   (eval-after-load 'tramp

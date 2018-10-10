@@ -35,5 +35,5 @@ export ANSIBLE_NOCOWS=1
 
 export GTAGSLABEL="ctags"
 
-export EDITOR="emacsclient -c"
-export VISUAL="emacsclient -c"
+export EDITOR="em"
+export VISUAL="em"
