@@ -1,0 +1,83 @@
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+	colorflag="--color"
+else # OS X `ls`
+	colorflag="-G"
+fi
+
+# List all files colorized in long format
+alias ll="ls -lh ${colorflag}"
+
+# List all files colorized in long format, including dot files
+alias la="ls -lah ${colorflag}"
+alias l="ls -lah ${colorflag}"
+# List only directories
+alias lld='ls -lh | grep "^d"'
+
+# Always use color output for `ls`
+if [[ "$OSTYPE" =~ ^darwin ]]; then
+	alias ls="command ls -G"
+else
+	alias ls="command ls --color"
+	export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
+fi
+
+# IP addresses
+alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
+
+# View HTTP traffic
+alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+
+# Recursively delete `.DS_Store` files
+alias cleanupdstore="find . -name '*.DS_Store' -type f -ls -delete"
+
+# git
+alias gs='git status -s'
+alias gd='git diff'
+alias gpu='git pull'
+
+alias tm='tmux new -A -n 'default' -s default'
+alias clip="socat - UNIX-CONNECT:/home/diego/.local/share/clipper/clipper.sock"
+
+# copy working directory
+alias cwd='pwd | tr -d "\r\n" | clip'
+
+# show me the commands
+alias devv='DEV_TRACE=1 dev'
+
+em() {
+  if [[ -z $@ ]]; then
+    emacsclient -t $(fzf) 2>/dev/null
+  else
+    emacsclient -t $@ 2>/dev/null
+  fi
+}
+
+# display traversable json structure in jq format
+jqs() {
+ jq '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
+}
+
+# kubernetes
+alias k='kubectl'
+alias ku='kubectl'
+alias kuaf='k apply -f'
+alias kuc='kubectl config use-context $(kubectl config get-contexts -o=name | fzf --prompt "k8s context > ") && kuns'
+alias kudn='k describe nodes $(kugnn | fzf)'
+alias kudp='k describe pod $(kugpn | fzf)'
+alias kugd='k get deployments'
+alias kugn='k get namespaces'
+alias kugnn='k get nodes -o name | cut -d'/' -f2'
+alias kugp='k get pods'
+alias kugpn='k get pods -o name | cut -d'/' -f2'
+alias kugrs='k get replicasets'
+alias kugs='k get services'
+alias kugss='k get statefulsets'
+alias kul='k logs -f $(kugpn | fzf --prompt "k8s pod > ")'
+alias kulp='kugpn | fzf --preview "kubectl logs {}" --height=100%'
+alias kuns='kubectl config set-context $(k config current-context) --namespace=$(kugn -o name | cut -d'/' -f2 | fzf --prompt "k8s namespace > ")'
+alias kupf='kubectl port-forward $(kugpn | fzf --prompt "k8s pod > ")'
+alias kupip='k get pod $(kugpn | fzf) -o json | jq ".status.podIP"'
+alias kux='k exec -it $(kugpn | fzf) -- '
+alias kuxb='kux /bin/bash'

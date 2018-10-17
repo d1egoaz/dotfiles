@@ -1,7 +1,0 @@
-# disable bluetooth startup on ubuntu 16.10
-#First, stop the service:
-sudo systemctl stop bluetooth.service
-#Then disable it:
-sudo systemctl disable bluetooth.service
-#Check:
-sudo systemctl status bluetooth.service

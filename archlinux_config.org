@@ -1,16 +1,42 @@
-* Natural scrolling
+* network
+nmcli examples
 
-** Touchpad
-  gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
+List nearby wifi networks:
 
-** Trackpoint
-  xinput set-prop "TPPS/2 IBM TrackPoint" "libinput Natural Scrolling Enabled" 0
+$ nmcli device wifi list
 
-** Trackpoint speed
-  https://bbs.archlinux.org/viewtopic.php?id=224995
+Connect to a wifi network:
 
-  https://askubuntu.com/questions/37824/what-is-the-best-way-to-configure-a-thinkpads-trackpoint/553926
+$ nmcli device wifi connect SSID password password
 
-  echo 200 | sudo tee /sys/devices/platform/i8042/serio1/serio2/speed
-  echo 255 | sudo tee /sys/devices/platform/i8042/serio1/serio2/sensitivity
+Connect to a hidden network:
+
+$ nmcli device wifi connect SSID password password hidden yes
+
+Connect to a wifi on the wlan1 wifi interface:
+
+$ nmcli device wifi connect SSID password password ifname wlan1 profile_name
+
+Disconnect an interface:
+
+$ nmcli device disconnect ifname eth0
+
+Reconnect an interface marked as disconnected:
+
+$ nmcli connection up uuid UUID
+
+Get a list of UUIDs:
+
+$ nmcli connection show
+
+See a list of network devices and their state:
+
+$ nmcli device
+
+Turn off wifi:
+
+$ nmcli radio wifi off
+
+
+https://www.abhaisasidharan.xyz/blog/configuring-i3-window-manager-i3wm-debian-jessie-lenovo-thinkpad-x260
 
