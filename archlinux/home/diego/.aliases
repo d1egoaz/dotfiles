@@ -38,7 +38,7 @@ alias gd='git diff'
 alias gpu='git pull'
 
 alias tm='tmux new -A -n 'default' -s default'
-alias clip="socat - UNIX-CONNECT:/home/diego/.local/share/clipper/clipper.sock"
+alias clip="socat - UNIX-CONNECT:$HOME/.local/share/clipper/clipper.sock"
 
 # copy working directory
 alias cwd='pwd | tr -d "\r\n" | clip'

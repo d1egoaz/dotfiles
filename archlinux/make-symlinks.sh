@@ -3,7 +3,7 @@
 
 DOT_USER_HOME=~/dotfiles/archlinux/home/diego
 
-for f in .aliases .emacs.d .spacemacs .tmux.conf .vim .vimrc .xinitrc .Xresources .zprofile .zshenv .zshrc .vim .agignore .gitconfig .gitconfig-personal .gitconfig-work .gitignore_global; do ln -sf $DOT_USER_HOME/$f ~/$f; done
+for f in .aliases .emacs.d .spacemacs .tmux.conf .vim .vimrc .xinitrc .Xresources .zprofile .zshenv .zshrc .agignore .gitconfig .gitconfig-personal .gitconfig-work .gitignore_global; do ln -sf $DOT_USER_HOME/$f ~/$f; done
 
 rm -rf ~/.config/alacritty
 mkdir -p ~/.config
