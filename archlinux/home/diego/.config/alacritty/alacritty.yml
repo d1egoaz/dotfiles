@@ -146,7 +146,7 @@ visual_bell:
   duration: 0
 
 # Background opacity
-background_opacity: 0.8
+background_opacity: 1.0
 
 # Mouse bindings
 #
@@ -234,7 +234,7 @@ live_config_reload: true
 # mods may be combined with a `|`. For example, requiring control and shift
 # looks like:
 #
-mods: Control|Shift
+#mods: Control|Shift
 #
 # The parser is currently quite sensitive to whitespace and capitalization -
 # capitalization must match exactly, and piped items must not have whitespace
@@ -249,8 +249,8 @@ mods: Control|Shift
 #     strings. For example:
 #     - { ... , command: { program: "alacritty", args: ["-e", "vttest"] } }
 key_bindings:
-  - { key: V,        mods: Control|Shift, action: Paste                  }
-  - { key: C,        mods: Control|Shift, action: Copy                   }
+  - { key: V,        mods: Command, action: Paste                  }
+  - { key: C,        mods: Command, action: Copy                   }
   - { key: Q,        mods: Command, action: Quit                         }
   - { key: W,        mods: Command, action: Quit                         }
   - { key: Home,                    chars: "\x1bOH",   mode: AppCursor   }
