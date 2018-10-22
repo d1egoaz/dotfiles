@@ -95,3 +95,12 @@
   "copy buffer name"
   (interactive)
   (kill-new (buffer-name)))
+
+(defun diego/url-to-markdown-image ()
+  "copy url from clipboard and creates an url src image to paste in a markdown document"
+  (interactive)
+  (kill-new
+   (replace-regexp-in-string
+    "url"
+    (current-kill 0)
+    "<img src=\"url\" width=\"50%\" />")))
