@@ -137,7 +137,6 @@ This function should only modify configuration layer settings."
 
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(evil-lisp-state
-                                    evil-mc
                                     evil-nerd-commenter
                                     evil-numbers
                                     rainbow-delimiters
