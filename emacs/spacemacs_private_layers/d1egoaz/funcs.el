@@ -104,3 +104,27 @@
     "url"
     (current-kill 0)
     "<img src=\"url\" width=\"50%\" />")))
+
+(defun diego/iso-8601-date ()
+  "copy the full UTC time to clipboard"
+  (interactive)
+  (kill-new (shell-command-to-string "date -n -u +'%Y-%m-%dT%H:%M:%SZ'")))
+
+(defun diego--exec-command-replace-region (command)
+  (interactive)
+  (unless mark-active
+    (mark-whole-buffer))
+  (shell-command-on-region
+   (region-beginning) (region-end)
+   command
+   (current-buffer) t "*diego/error-buffer*" t))
+
+(defun diego/minify-json ()
+  "minify json current region"
+  (interactive)
+  (diego--exec-command-replace-region "jq -ScM ."))
+
+(defun diego/prettify-json ()
+  "prettify json current region"
+  (interactive)
+  (diego--exec-command-replace-region "jq -SM ."))
