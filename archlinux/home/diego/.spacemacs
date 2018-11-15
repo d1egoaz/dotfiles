@@ -73,6 +73,7 @@ This function should only modify configuration layer settings."
      ;; lsp
      ;; helm
      ivy
+     (json :variables json-fmt-tool 'prettier)
      (markdown :packages not emoji-cheat-sheet-plus vmd-mode)
      multiple-cursors
      (osx :packages not osx-dictionary)
