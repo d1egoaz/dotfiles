@@ -559,7 +559,7 @@ See the header of this file for more information."
   (setq compilation-scroll-output 'first-error)
 
   ;; deft
-  (setq deft-directory "~/onedrive/deft")
+  (setq deft-directory "~/gdrive/deft")
 
   ;; emacs
   (setq create-lockfiles nil) ;; disable .#file.ext creation
@@ -716,21 +716,21 @@ See the header of this file for more information."
     (if (eq system-type 'gnu/linux)
         (setq org-download-screenshot-method "import  %s"
               org-plantuml-jar-path "/opt/plantuml/plantuml.jar"))
-    (setq org-agenda-files (list "~/onedrive/deft/gtd-inbox.org" "~/onedrive/deft/gtd-personal.org" "~/onedrive/deft/gtd-work.org" )
+    (setq org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
           org-agenda-span 16
           org-agenda-start-day "-3d"
           org-blank-before-new-entry
           '((heading . always)
             (plain-list-item . nil))
           org-confirm-babel-evaluate nil
-          org-default-notes-file "~/onedrive/deft/notes.org"
+          org-default-notes-file "~/gdrive/deft/notes.org"
           org-download-heading-lvl nil
-          org-download-image-dir "~/onedrive/deft/images"
+          org-download-image-dir "~/gdrive/deft/images"
           org-download-method 'directory
           org-log-into-drawer t
-          org-refile-targets '(("~/onedrive/deft/gtd-inbox.org" :maxlevel . 1)
-                               ("~/onedrive/deft/gtd-personal.org" :level . 1)
-                               ("~/onedrive/deft/gtd-work.org" :maxlevel . 2))
+          org-refile-targets '(("~/gdrive/deft/gtd-inbox.org" :maxlevel . 1)
+                               ("~/gdrive/deft/gtd-personal.org" :level . 1)
+                               ("~/gdrive/deft/gtd-work.org" :maxlevel . 2))
           org-src-fontify-natively t
           org-startup-with-inline-images t
           org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
@@ -745,13 +745,13 @@ See the header of this file for more information."
             ;;   ""                                = template
             ;;   :prepend t                        = properties
             ;; https://orgmode.org/manual/Template-expansion.html
-            ("t" "Todo" entry (file+headline "~/onedrive/deft/gtd-inbox.org" "Inbox")
+            ("t" "Todo" entry (file+headline "~/gdrive/deft/gtd-inbox.org" "Inbox")
              "* TODO %?\nCreated on on %U\n" :prepend t :empty-lines 1)
-            ("l" "Link" entry (file* Links+headline "~/onedrive/deft/notes.org" "Links")
+            ("l" "Link" entry (file* Links+headline "~/gdrive/deft/notes.org" "Links")
              "* %? %^L %^g \n%T" :prepend t)
-            ("n" "Note" entry (file+headline "~/onedrive/deft/notes.org" "Notes")
+            ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
              "* %^{title}%^g\n%T\n\n%?" :prepend t)
-            ("j" "Journal" entry (file+datetree "~/onedrive/deft/journal.org")
+            ("j" "Journal" entry (file+datetree "~/gdrive/deft/journal.org")
              "* %?" :clock-in t :clock-resume t))
           spaceline-org-clock-p t
           )
