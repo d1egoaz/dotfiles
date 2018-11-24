@@ -81,3 +81,7 @@ alias kupf='kubectl port-forward $(kugpn | fzf --prompt "k8s pod > ")'
 alias kupip='k get pod $(kugpn | fzf) -o json | jq ".status.podIP"'
 alias kux='k exec -it $(kugpn | fzf) -- '
 alias kuxb='kux /bin/bash'
+
+scrotselection () {
+  scrot -s -e 'xclip -selection clipboard -t "image/png" < $f'
+}

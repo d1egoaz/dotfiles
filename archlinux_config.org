@@ -40,3 +40,9 @@ $ nmcli radio wifi off
 
 https://www.abhaisasidharan.xyz/blog/configuring-i3-window-manager-i3wm-debian-jessie-lenovo-thinkpad-x260
 
+* Disable wake on lan:
+nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan ignore
+
+* How to fix windows and linux showing differrent times when dual booting
+timedatectl set-local-rtc 1 --adjust-system-clock
+
