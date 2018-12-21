@@ -67,7 +67,7 @@ alias baty='bat -l yaml'
 
 # kubernetes
 
-kucn() {
+kcn() {
   kubectl config get-contexts -o=name
 }
 alias kaf='k apply -f'
