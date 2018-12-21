@@ -1,4 +1,4 @@
 (defun diego-go/go-build ()
   "compile project"
   (interactive)
-  (compile "go build"))
+  (compilation-start "go build"))
