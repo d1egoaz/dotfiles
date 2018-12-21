@@ -54,34 +54,49 @@ em() {
   fi
 }
 
+scrotselection () {
+  scrot -s -e 'xclip -selection clipboard -t "image/png" < $f'
+}
+
 # display traversable json structure in jq format
 jqs() {
  jq '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
 }
 
-# kubernetes
-alias k='kubectl'
-alias ku='kubectl'
-alias kuaf='k apply -f'
-alias kuc='kubectl config use-context $(kubectl config get-contexts -o=name | fzf --prompt "k8s context > ") && kuns'
-alias kudn='k describe nodes $(kugnn | fzf)'
-alias kudp='k describe pod $(kugpn | fzf)'
-alias kugd='k get deployments'
-alias kugn='k get namespaces'
-alias kugnn='k get nodes -o name | cut -d'/' -f2'
-alias kugp='k get pods'
-alias kugpn='k get pods -o name | cut -d'/' -f2'
-alias kugrs='k get replicasets'
-alias kugs='k get services'
-alias kugss='k get statefulsets'
-alias kul='k logs -f $(kugpn | fzf --prompt "k8s pod > ")'
-alias kulp='kugpn | fzf --preview "kubectl logs {}" --height=100%'
-alias kuns='kubectl config set-context $(k config current-context) --namespace=$(kugn -o name | cut -d'/' -f2 | fzf --prompt "k8s namespace > ")'
-alias kupf='kubectl port-forward $(kugpn | fzf --prompt "k8s pod > ")'
-alias kupip='k get pod $(kugpn | fzf) -o json | jq ".status.podIP"'
-alias kux='k exec -it $(kugpn | fzf) -- '
-alias kuxb='kux /bin/bash'
+alias baty='bat -l yaml'
 
-scrotselection () {
-  scrot -s -e 'xclip -selection clipboard -t "image/png" < $f'
+# kubernetes
+
+kucn() {
+  kubectl config get-contexts -o=name
+}
+alias kaf='k apply -f'
+alias kdn='k describe nodes $(kgnn | fzf)'
+alias kdp='k describe pod $(kgpn | fzf)'
+alias kgd='k get deployments'
+alias kgn='k get namespaces'
+alias kgnn='k get nodes -o name | cut -d'/' -f2'
+alias kgp='k get pods'
+alias kgpn='k get pods -o name | cut -d'/' -f2'
+alias kgrs='k get replicasets'
+alias kgs='k get services'
+alias kgss='k get statefulsets'
+alias kl='k logs -f $(kgpn | fzf --prompt "k8s pod > ")'
+alias klp='kgpn | fzf --preview "kubectl logs {}" --height=100%'
+alias kpf='k port-forward $(kgpn | fzf --prompt "k8s pod > ")'
+alias kpip='k get pod $(kgpn | fzf) -o json | jq ".status.podIP"'
+alias kx='k exec -it $(kgpn | fzf) -- '
+alias kxb='kx /bin/bash'
+alias kgpis="kgp -o jsonpath='{.items[*].spec.containers[*].image}' | tr -s '[[:space:]]' '\n' | sort | uniq -c"
+alias kgpi='k get pod $(kgpn | fzf) -o jsonpath="{.spec.containers[*].image}" | tr -s "[[:space:]]" "\n" | sort'
+
+
+kdpy() {
+ k describe pod $(kgpn | fzf) | baty
+}
+
+k-get-pods-startup-time() {
+  k get pods "$@" -o json | jq '(.items // [.]) | map({name: .metadata.name, status: .status.containerStatuses | map({name: .name, time: .state.running.startedAt})})'
+}
+
 }
