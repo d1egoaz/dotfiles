@@ -17,7 +17,7 @@ PATH="/usr/local/bin:$PATH"
 PATH="$PATH:$JAVA_HOME/bin"
 
 # go
-export GOPATH="$HOME/go"
+export GOPATH="$HOME"
 PATH="$PATH:$GOPATH/bin"
 
 # ruby
