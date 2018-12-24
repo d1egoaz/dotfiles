@@ -46,6 +46,8 @@ alias cwd='pwd | tr -d "\r\n" | clip'
 # show me the commands
 alias devv='DEV_TRACE=1 dev'
 
+alias yolo='yay -Syu --noconfirm'
+
 em() {
   if [[ -z $@ ]]; then
     emacsclient -t $(fzf) 2>/dev/null
@@ -99,4 +101,3 @@ k-get-pods-startup-time() {
   k get pods "$@" -o json | jq '(.items // [.]) | map({name: .metadata.name, status: .status.containerStatuses | map({name: .name, time: .state.running.startedAt})})'
 }
 
-}
