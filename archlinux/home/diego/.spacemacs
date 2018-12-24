@@ -52,7 +52,7 @@ This function should only modify configuration layer settings."
           magit-refs-show-commit-count nil
           magit-diff-refine-hunk t ;; show whitespaces changes on the selected git diff hunks
           magit-revision-show-gravatars nil
-          magit-process-popup-time 0
+          ;; magit-process-popup-time 0
           magit-branch-rename-push-target nil
 
           ;; makes magit faster on large repos
@@ -778,11 +778,11 @@ See the header of this file for more information."
   ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
   (setq smerge-refine-ignore-whitespace nil)
 
-  (defun auto-display-magit-process-buffer (&rest args)
-    "Automatically display the magit's process buffer when it is updated."
-    (let ((magit-display-buffer-noselect t))
-      (magit-process-buffer)))
-  (advice-add 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
+  ;; (defun auto-display-magit-process-buffer (&rest args)
+  ;;   "Automatically display the magit's process buffer when it is updated."
+  ;;   (let ((magit-display-buffer-noselect t))
+  ;;     (magit-process-buffer)))
+  ;; (advice-add 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
 
   ;; Enable again when working on shopify/core
   ;; makes magit faster on large repos
