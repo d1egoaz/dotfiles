@@ -128,3 +128,9 @@
   "prettify json current region"
   (interactive)
   (diego--exec-command-replace-region "jq -SM ."))
+
+(defun diego/resize-image ()
+  (interactive)
+  (let ((str (concat "convert \"" buffer-file-name "\" -geometry x300 \"" buffer-file-name "\"")))
+    (message str)
+    (shell-command-to-string str)))
