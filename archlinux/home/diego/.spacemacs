@@ -69,6 +69,7 @@ This function should only modify configuration layer settings."
          ;; go-backend 'lsp
          gofmt-command "goimports"
          go-use-golangci-lint t)
+     graphviz
      gtags
      ;; lsp
      ;; helm
@@ -709,11 +710,9 @@ See the header of this file for more information."
   ;; ************** ORG-MODE **************
   (with-eval-after-load 'org
     (if (eq system-type 'darwin)
-        (setq org-download-screenshot-method "screencapture -i %s"
-              org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2017.16/libexec/plantuml.jar"))
+        (setq org-download-screenshot-method "screencapture -i %s"))
     (if (eq system-type 'gnu/linux)
-        (setq org-download-screenshot-method "import  %s"
-              org-plantuml-jar-path "/opt/plantuml/plantuml.jar"))
+        (setq org-download-screenshot-method "import  %s"))
     (setq org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
           org-agenda-span 16
           org-agenda-start-day "-3d"
