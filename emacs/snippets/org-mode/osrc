@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# Author : Diego Alvarez <diego.canada@icloud.com>
+# name: osrc
+# key: osrc
+# --
+#+begin_src $1
+$0
+#+end_src
