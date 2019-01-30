@@ -52,7 +52,7 @@ This function should only modify configuration layer settings."
           magit-refs-show-commit-count nil
           magit-diff-refine-hunk t ;; show whitespaces changes on the selected git diff hunks
           magit-revision-show-gravatars nil
-          ;; magit-process-popup-time 0
+          magit-process-popup-time 3
           magit-branch-rename-push-target nil
 
           ;; makes magit faster on large repos
