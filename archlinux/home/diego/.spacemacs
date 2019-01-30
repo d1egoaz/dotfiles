@@ -122,19 +122,14 @@ This function should only modify configuration layer settings."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
                                       all-the-icons
-                                      color-theme-sanityinc-tomorrow
-                                      devdocs
                                       doom-themes
                                       evil-goggles
                                       evil-matchit
-                                      graphql-mode
                                       keyfreq
                                       persistent-scratch
-                                      protobuf-mode
                                       tldr
-                                      vi-tilde-fringe
-                                      web-mode
-                                      forge
+                                      dictionary
+                                      powerthesaurus
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
