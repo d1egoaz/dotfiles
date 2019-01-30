@@ -81,6 +81,7 @@ This function should only modify configuration layer settings."
      prettier
      (ruby :variables ruby-version-manager nil :packages not ruby-refactor)
      ruby-on-rails
+     (ruby-shopify :variables ruby-shopify-default-version "2.5.3")
      (shell :variables shell-default-shell 'eshell shell-default-position 'right)
      ;; spacemacs layers
      spacemacs-completion
