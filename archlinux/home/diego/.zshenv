@@ -37,6 +37,6 @@ export GTAGSLABEL="ctags"
 
 export EDITOR="em"
 export VISUAL="em"
+export EA_EDITOR='/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -a "" -c'
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
-

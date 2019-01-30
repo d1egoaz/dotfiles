@@ -830,7 +830,26 @@ See the header of this file for more information."
   (set-foreground-color "#b2b2b2")
   (set-background-color "#1e1e1e")
   (setq projectile-keymap-prefix (kbd "C-c p"))
+
+  (defun github-conversation-p (window-title)
+    (or (string-match-p "Pull Request" window-title)
+        (string-match-p "Issue" window-title)
+        ;; ...
+        ))
+
+  (defun popup-handler (app-name window-title x y w h)
+    (unless (zerop w)
+      (set-frame-size (selected-frame) 1000 500 t))
+    ;; set major mode
+    (cond
+     ((github-conversation-p window-title) (gfm-mode))
+     ;; ...
+     (t (markdown-mode)) ; default major mode
+     ))
+  (add-hook 'ea-popup-hook 'popup-handler)
+
   (message ">>> done loading init file <<<"))
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
