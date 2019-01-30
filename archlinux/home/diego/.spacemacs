@@ -108,6 +108,7 @@ This function should only modify configuration layer settings."
      restclient ;; https://github.com/pashky/restclient.el
      (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
                       :variables version-control-global-margin t version-control-diff-tool 'diff-hl)
+     vim-empty-lines
      yaml
      ;; My personal layers
      d1egoaz
@@ -812,7 +813,6 @@ See the header of this file for more information."
 
   (setq HTTPENV "d")
   (setq ea-paste nil)
-  (global-vi-tilde-fringe-mode) ;; Displays tildes in the fringe on empty lines a la Vi.
   (setq projectile-enable-caching t) ;; fix performance on big projects
   (global-evil-matchit-mode 1) ;; It allows you press % to match items.
   (setq-default display-line-numbers 'relative)
