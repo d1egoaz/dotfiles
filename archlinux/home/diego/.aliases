@@ -101,3 +101,7 @@ k-get-pods-startup-time() {
   k get pods "$@" -o json | jq '(.items // [.]) | map({name: .metadata.name, status: .status.containerStatuses | map({name: .name, time: .state.running.startedAt})})'
 }
 
+# get a timestamp (epoch in ms) for x minutes
+mintimestamp () {
+    echo $(($(date +"%s000 + (${1-0} * 60000)")))
+}
