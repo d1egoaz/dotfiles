@@ -42,7 +42,7 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t)
 
-     (colors :packages nyan-mode :variables colors-enable-nyan-cat-progress-bar t)
+     ;; (colors :packages nyan-mode :variables colors-enable-nyan-cat-progress-bar t)
      deft
      docker
      emacs-lisp
@@ -102,14 +102,14 @@ This function should only modify configuration layer settings."
      ;; (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
      ;; (spacemacs-visual :packages ansi-colors desktop hl-todo popup popwin) ;; fill-column-indicator
      spacemacs-visual
-     spell-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
      (syntax-checking :variables
                       flycheck-check-syntax-automatically '(save mode-enabled))
      (treemacs :variables treemacs-use-follow-mode t)
      restclient ;; https://github.com/pashky/restclient.el
      (version-control :packages not git-gutter git-gutter-fringe git-gutter-fringe+
                       :variables version-control-global-margin t version-control-diff-tool 'diff-hl)
-     vim-empty-lines
+     ;; vim-empty-lines
      yaml
      ;; My personal layers
      d1egoaz
@@ -153,6 +153,7 @@ This function should only modify configuration layer settings."
                                     ensime
                                     ;; misc
                                     window-purpose
+                                    fill-column-indicator
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -431,7 +432,8 @@ It should only modify the values of Spacemacs settings."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers '(:enabled-for-modes 'all :relative t)
+   ;; dotspacemacs-line-numbers '(:enabled-for-modes 'all :relative t)
+   dotspacemacs-line-numbers '(:enabled-for-modes nil)
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -589,7 +591,7 @@ See the header of this file for more information."
                 ;; Avy
                 avy-all-windows 'all-frames
                 ;; column indicator
-                fci-rule-column 110
+                ;; fci-rule-column 110
                 fill-column 100
                 )
 
@@ -690,8 +692,8 @@ See the header of this file for more information."
 
   ;; ************** SCALA **************
   ;; column indicator
-  (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
-  (global-fci-mode 1) ;; for a specific mode (add-hook 'scala-mode-hook #'fci-mode)
+  ;; (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+  ;; (global-fci-mode nil) ;; for a specific mode (add-hook 'scala-mode-hook #'fci-mode)
 
   (add-hook 'scala-mode-hook #'(lambda () (setq projectile-globally-ignored-directories
                                                 (append
@@ -809,7 +811,7 @@ See the header of this file for more information."
   (setq ea-paste nil)
   (setq projectile-enable-caching t) ;; fix performance on big projects
   (global-evil-matchit-mode 1) ;; It allows you press % to match items.
-  (setq-default display-line-numbers 'relative)
+  ;; (setq-default display-line-numbers 'relative)
   (global-display-line-numbers-mode)
 
   (setq doom-themes-enable-bold t
@@ -819,8 +821,8 @@ See the header of this file for more information."
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config)
 
-  (keyfreq-mode 1)
-  (keyfreq-autosave-mode 1)
+  ;; (keyfreq-mode 1)
+  ;; (keyfreq-autosave-mode 1)
 
   (set-foreground-color "#b2b2b2")
   (set-background-color "#1e1e1e")
