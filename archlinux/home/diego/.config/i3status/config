@@ -1,6 +1,6 @@
 general {
         colors = true
-        interval = 5
+        interval = 15
 }
 
 order += "volume master"
@@ -50,7 +50,7 @@ battery 1 {
 }
 
 tztime local {
-        format = " %a(%d) %b(%m)  %I:%M:%S%P"
+        format = " %b, %a(%d)  %I:%M:%S%P"
 }
 
 cpu_usage {

@@ -46,7 +46,10 @@ alias cwd='pwd | tr -d "\r\n" | clip'
 # show me the commands
 alias devv='DEV_TRACE=1 dev'
 
-alias yolo='yay -Syu --noconfirm'
+yolo () {
+  echo 'yay -Syu --noconfirm'
+  yay -Syu --noconfirm
+}
 
 em() {
   if [[ -z $@ ]]; then
