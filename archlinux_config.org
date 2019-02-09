@@ -46,3 +46,5 @@ nmcli c modify "Wired connection 1" 802-3-ethernet.wake-on-lan ignore
 * How to fix windows and linux showing differrent times when dual booting
 timedatectl set-local-rtc 1 --adjust-system-clock
 
+* USB / external hard disks
+- udevil mount /dev/sda1

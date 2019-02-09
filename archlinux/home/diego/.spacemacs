@@ -711,6 +711,8 @@ See the header of this file for more information."
 
   ;; ************** ORG-MODE **************
   (with-eval-after-load 'org
+    ;; fixes M-RET to create or elements
+    (org-defkey org-mode-map [(meta return)] 'org-meta-return)
     (if (eq system-type 'darwin)
         (setq org-download-screenshot-method "screencapture -i %s"))
     (if (eq system-type 'gnu/linux)
