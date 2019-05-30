@@ -29,16 +29,11 @@ if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
 fi
 export PATH
 
-# ansible
-export ANSIBLE_TRANSPORT="ssh"
-export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -o ControlPath=/tmp/a-%h-%p-%r"
-export ANSIBLE_NOCOWS=1
-
-export GTAGSLABEL="ctags"
-
 export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
 export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 
 export EA_EDITOR='/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -a "" -c'
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+export TERMINAL=urxvt256c

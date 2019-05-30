@@ -1,12 +1,12 @@
 set $mod Mod4
 
-font pango:DejaVu Sans Mono 10
+font pango:SF Mono 10
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec i3-sensible-terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -150,13 +150,26 @@ bar {
 #bindsym $mod+F1 exec chromium --force-device-scale-factor=1.6
 
 # Alsa audio controls
-bindsym XF86AudioRaiseVolume exec "amixer -q sset Master,0 1+ unmute"
-bindsym XF86AudioLowerVolume exec "amixer -q sset Master,0 1- unmute"
-bindsym XF86AudioMute exec "amixer -q sset Master,0 toggle"
+bindsym XF86AudioRaiseVolume exec "amixer -q sset Master,0 2%+ unmute &&  ~/dotfiles/bin/sound-notify"
+bindsym XF86AudioLowerVolume exec "amixer -q sset Master,0 2%- && ~/dotfiles/bin/sound-notify"
+bindsym XF86AudioMute exec "amixer -q sset Master,0 toggle && ~/dotfiles/bin/sound-notify"
+bindsym XF86AudioMicMute exec "amixer set Capture toggle"
 
 # Screen brightness controls
-bindsym XF86MonBrightnessUp exec xbacklight -inc 5
-bindsym XF86MonBrightnessDown exec xbacklight -dec 5
+bindsym XF86MonBrightnessUp exec xbacklight -inc 5 && exec ~/dotfiles/bin/brightness-notify
+bindsym XF86MonBrightnessDown exec xbacklight -dec 5 && exec ~/dotfiles/bin/brightness-notify
 
 # Background image
 exec --no-startup-id feh --bg-fill ~/Pictures/Baby_Chewbacca_Star_wars.jpg
+
+#exec --no-startup-id xautolock -time 1 -locker './home/diego/dotfiles/bin/lock_and_blur.sh'
+
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+
+for_window [class="Firefox"] move to workspace $ws2
+
+
+exec --no-startup-id xautolock -time 5 -locker 'i3lock -d -c 000000 -i ~/Pictures/MaxBirthBlured.png'
+exec --no-startup-id dunst
+
