@@ -168,8 +168,11 @@ for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
 
 for_window [class="Firefox"] move to workspace $ws2
+for_window [class="emacs"] move to workspace $ws3
+for_window [class="emacsclient"] move to workspace $ws3
+assign [instance="^emacs$"] $ws3
 
 
 exec --no-startup-id xautolock -time 5 -locker 'i3lock -d -c 000000 -i ~/Pictures/MaxBirthBlured.png'
-exec --no-startup-id dunst
+#exec --no-startup-id dunst
 

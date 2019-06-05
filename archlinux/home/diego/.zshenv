@@ -36,4 +36,5 @@ export EA_EDITOR='/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -a "" -
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
-export TERMINAL=urxvt256c
+export TERMINAL=rxvt
+

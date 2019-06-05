@@ -6,8 +6,5 @@ target/
 */project/target
 */project/project/target
 project/target/
-.vagrant
 .DS_Store
 TAGS
-.ensime
-.ensime-cache
