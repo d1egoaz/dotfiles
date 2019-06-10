@@ -20,11 +20,8 @@ xcape -e 'Alt_L=Control_L|Shift_L|c'
 xcape -e 'Alt_R=Control_L|Shift_L|v'
 
 xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Natural Scrolling Enabled" 1
-
 xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1
-
 xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Disable While Typing Enabled" 1
 
 xrdb -merge ~/.Xresources
-#exec i3
-exec startlxqt
+exec i3
