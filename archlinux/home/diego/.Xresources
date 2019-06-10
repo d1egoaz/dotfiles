@@ -1,33 +1,33 @@
+! HiDPI
 Xft.dpi: 192
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! URXVT
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+URxvt*.scrollBar: false
+
 ! do not scroll with output
-URxvt*scrollTtyOutput: false
+URxvt*.scrollTtyOutput: false
 
 ! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
-URxvt*scrollWithBuffer: true
+URxvt*.scrollWithBuffer: true
 
 ! scroll back to the bottom on keypress
-URxvt*scrollTtyKeypress: true
+URxvt*.scrollTtyKeypress: true
 
-!URxvt.font: 9x15
-!URxvt*.font: xft:SF Mono:size=24:antialias=true
-!URxvt*.boldFont: xft:SF Mono:bold:size=24:antialias=true
-URxvt*.font: xft:terminus:size=24:antialias=true
-URxvt*.boldFont: xft:terminus:bold:size=24:antialias=true
+URxvt*.font: xft:SF Mono:size=10:antialias=true
+URxvt*.boldFont: xft:SF Mono:bold:size=10:antialias=true
+!URxvt*.font: xft: xos4 Terminus:size=14:antialias=true
+!URxvt*.boldFont: xft: xos4 Terminus:bold:size=14:antialias=true
 
 ! True: Make the cursor underlined. False: Make the cursor a box [default]
-URxvt*cursorUnderline:                  false
+URxvt*.cursorUnderline: false
 
 ! True: blink the cursor. False: do not blink the cursor [default];
-URxvt*cursorBlink:                      true
+URxvt*.cursorBlink: true
 
-! Use the specified colour for the cursor.  The default is to use the foreground colour
-URxvt*cursorColor:                      Magenta
-
+URxvt*.cursorColor: Magenta
 URxvt*.background: #000000
 
 ! Base16 OneDark
@@ -84,4 +84,3 @@ URxvt*.background: #000000
 *color19:      base02
 *color20:      base04
 *color21:      base06
-
