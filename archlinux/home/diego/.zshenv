@@ -17,9 +17,10 @@ PATH="/usr/local/bin:$PATH"
 PATH="$PATH:$JAVA_HOME/bin"
 
 # go
-export GOPATH="$HOME"
-export GOROOT="$HOME"
-PATH="$PATH:$GOPATH/bin"
+#export GOPATH="$HOME"
+#export GOROOT="$HOME"
+export GOPATH="$HOME/go:$HOME/code/go"
+PATH="$PATH:$HOME/go/bin"
 
 # ruby
 PATH="$HOME/.nvm/versions/node/v8.9.4/bin:$HOME/.gem/ruby/2.4.4/bin:/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin:/opt/rubies/2.4.4/bin:$PATH"
