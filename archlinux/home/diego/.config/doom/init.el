@@ -13,10 +13,12 @@
        ;;japanese
 
        :completion
-       company           ; the ultimate code completion backend
+       (company           ; the ultimate code completion backend
+        +childframe)
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       ivy               ; a search engine for love and life
+       (ivy)               ; a search engine for love and life
+        ;; +fuzzy)
 
        :ui
        deft              ; notational velocity for Emacs
@@ -53,6 +55,7 @@
        ;;parinfer          ; turn lisp into python, sort of
        rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
+       format
 
        :emacs
        (dired            ; making dired pretty [functional]
@@ -109,7 +112,8 @@
        emacs-lisp        ; drown in parentheses
        ;;ess               ; emacs speaks statistics
        ;;fsharp           ; ML stands for Microsoft's Language
-       go                ; the hipster dialect
+       (go                ; the hipster dialect
+        +lsp)
        ;;(haskell +intero) ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
@@ -181,4 +185,4 @@
        ;; The default module sets reasonable defaults for Emacs. It also
        ;; provides a Spacemacs-inspired keybinding scheme and a smartparens
        ;; config. Use it as a reference for your own modules.
-       (default +bindings +smartparens +evil-commands))
+       (default +funcs +bindings +snippets +smartparens +evil-commands))
