@@ -1,35 +1,35 @@
 [merge]
-  conflictstyle = diff3
-  tool = diffmerge
+	conflictstyle = diff3
+	tool = diffmerge
 [diff]
-  tool = diffmerge
-  compactionHeuristic = true
+	tool = diffmerge
+	compactionHeuristic = true
 	algorithm = patience
 
 [core]
-  excludesfile = ~/.gitignore_global
-  commentchar = @
-  ignorecase = false
+	excludesfile = ~/.gitignore_global
+	commentchar = @
+	ignorecase = false
 [commit]
-  gpgsign = false
+	gpgsign = false
 
 [help]
-  autocorrect = 1
+	autocorrect = 1
 [alias]
-  pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
+	pr = !"pr() { git fetch origin pull/$1/head:pr-$1; git checkout pr-$1; }; pr"
 
-  # Delete all local branches but master and the current one, only if they are fully merged with master.
-  # https://stackoverflow.com/a/41465769
-  branches-delete-except-master = !"f() { git branch | grep -v 'master' | grep -v ^* | xargs git branch -d; }; f"
+	# Delete all local branches but master and the current one, only if they are fully merged with master.
+	# https://stackoverflow.com/a/41465769
+	branches-delete-except-master = !"f() { git branch | grep -v 'master' | grep -v ^* | xargs git branch -d; }; f"
 
-[includeIf "gitdir:~/dotfiles"]
-  path = .gitconfig-personal
-[includeIf "gitdir:~/dev"]
-  path = .gitconfig-personal
 [includeIf "gitdir:~/src"]
-  path = .gitconfig-work
+	path = .gitconfig-work
+[includeIf "gitdir:~/dotfiles"]
+	path = .gitconfig-personal
+[includeIf "gitdir:~/code"]
+	path = .gitconfig-personal
 [push]
-  default = simple
+	default = simple
 #[url "git@github.com:"]
 	#insteadOf = https://github.com/
 [github]
