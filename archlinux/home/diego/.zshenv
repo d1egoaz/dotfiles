@@ -12,30 +12,21 @@ export JAVA_HOME
 export JAVA_OPTS="-Dfile.encoding=UTF8 -Dscala.color"
 
 # PATH
-PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin"
-PATH="/usr/local/bin:$PATH"
-PATH="$PATH:$JAVA_HOME/bin"
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:$PATH"
 
 # go
-#export GOPATH="$HOME"
-#export GOROOT="$HOME"
-export GOPATH="$HOME/go:$HOME/code/go"
+export GOROOT=$(go env GOROOT)
+export GOPATH="$HOME/go:$HOME:$HOME/code/go"
 PATH="$PATH:$HOME/go/bin"
 
 # ruby
 PATH="$HOME/.nvm/versions/node/v8.9.4/bin:$HOME/.gem/ruby/2.4.4/bin:/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin:/opt/rubies/2.4.4/bin:$PATH"
 
-if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
-    PATH="/home/diego/.local/bin:$PATH"
-fi
 export PATH
-
-export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
-export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
-
-export EA_EDITOR='/Applications/Emacs.app/Contents/MacOS/bin/emacsclient -a "" -c'
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
+export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
+export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 export TERMINAL=rxvt
-
+export EA_EDITOR=$VISUAL
