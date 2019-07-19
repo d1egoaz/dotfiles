@@ -194,6 +194,28 @@
 (add-hook! 'conf-mode 'highlight-thing-mode)
 (add-hook! 'yaml-mode 'highlight-thing-mode)
 
+(after! magit
+  (setq magit-refs-show-commit-count nil
+        magit-diff-refine-hunk t ;; show whitespaces changes on the selected git diff hunks
+        magit-revision-show-gravatars nil
+        magit-process-popup-time 0
+        magit-branch-rename-push-target nil
+        magit-log-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--graph" "--decorate")
+        magit-log-section-arguments  '("-n50" "--decorate") ;; was: ("-n256" "--decorate")
+        magit-log-select-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--decorate")
+        magit-refresh-status-buffer t ;;automatically refresh the current Magit status buffer
+        )
+  (defun auto-display-magit-process-buffer (&rest args)
+    "Automatically display the process buffer when it is updated."
+    (let ((magit-display-buffer-noselect t))
+      (magit-process-buffer)))
+  (advice-add! 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
+  (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+  (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
+  (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
+  (remove-hook! 'server-switch-hook 'magit-commit-diff) ;; remove diff on commiting
+  )
+
 (load! "+funcs")
 (load! "+bindings")
 (message ">>> done loading init file <<<")
