@@ -5,13 +5,14 @@
       "A" nil
       "X" nil
       "w -" nil
+      "h P" nil
       )
 
 ;; Leader key
 (map!
  ;; Text-scaling
- "M-+"    (λ! (text-scale-set 0))
- "M-="    #'text-scale-increase
+ "M-+" (λ! (text-scale-set 0))
+ "M-=" #'text-scale-increase
  "M--" #'text-scale-decrease
 
  (:leader
@@ -20,13 +21,14 @@
    :desc "M-x"                    "SPC" #'execute-extended-command
    :desc "Find file in project"   "."   #'projectile-find-file
    :desc "Expand region"          ">"   #'er/expand-region
-   (:desc "window" :prefix "w"
-     :desc "Split window right" :n          "/" #'split-window-right
-     :desc "Split window below" :n        "-" #'split-window-below)
-   (:desc "buffer" :prefix               "b"
+   (:desc "+apps" :prefix "a"
+     :desc "undo tree"                   "u" #'undo-tree-visualize)
+   (:desc "+buffer" :prefix "b"
      :desc "safe erase vuffer"           "e" #'spacemacs/safe-erase-buffer
-     :desc "kill current buffer"         "d" #'kill-current-buffer)
-   (:desc "error" :prefix "e"
+     :desc "kill current buffer"         "d" #'kill-current-buffer
+     :desc "yank buffer name"            "y" #'diego/copy-buffer-name
+     :desc "copy buffer to clipboard"    "Y" #'spacemacs/copy-whole-buffer-to-clipboard)
+   (:desc "+error" :prefix "e"
      :desc "Flycheck list errors"        "l" #'flycheck-list-errors
      :desc "Disable flycheck"            "d" #'flycheck-disable-checker
      :desc "Enable flycheck"             "C" #'flycheck-buffer
@@ -34,23 +36,23 @@
      :desc "Flycheck previous error"     "p" #'flycheck-previous-error
      :desc "Flycheck clear errors"       "c" #'flycheck-clear
      :desc "Flycheck which checker"      "w" #'flycheck-select-checker)
-   (:desc "toggle" :prefix "t"
-     :desc "Toggle truncate lines"       "t" #'toggle-truncate-lines)
-   (:desc "jump" :prefix "j"
+   (:desc "+git" :prefix "g"
+     (:when (featurep! :tools magit)
+       :desc "Magit status"              "s" #'magit-status))
+   (:desc "+help" :prefix "h"
+     (:prefix ("P" . "Profiler")
+       :desc "Profiler start"            "s" #'profiler-start
+       :desc "Profiler stop"             "k" #'profiler-stop
+       :desc "Profiler report"           "r" #'profiler-report))
+   (:desc "+insert" :prefix "i"
+     :desc "insert line above"           "k" #'spacemacs/evil-insert-line-above
+     :desc "insert line below"           "j" #'spacemacs/evil-insert-line-below)
+   (:desc "+jump" :prefix "j"
      :desc "Jump to symbol"              "i" #'imenu
      :desc "Jump to link"                "l" #'ace-link
      :desc "Avy jump work"               "j" #'avy-goto-char-timer)
-   (:desc "search" :prefix "s"
-     :desc "Search buffer"               "s" #'swiper
-     :desc "Search project"              "p" #'+default/search-project
-     :desc "Look up online"              "o" #'+lookup/online-select)
-   (:desc "project" :prefix "p"
-     :desc "Find file in project"        "f" #'projectile-find-file)
-   (:desc "git" :prefix "g"
-     (:when (featurep! :tools magit)
-       :desc "Magit status"              "s" #'magit-status))
-   (:prefix ("l" . "lang")
-     :desc "Describe thing at point"      "." #'lsp-describe-thing-at-point
+   (:desc "+lang" :prefix "l"
+     :desc "Describe thing at point"     "." #'lsp-describe-thing-at-point
      (:prefix ("g" . "Go to")
        :desc "Implementation"            "i" #'lsp-goto-implementation
        :desc "Definition"                "d" #'lsp-goto-type-definition)
@@ -64,9 +66,29 @@
        :desc "Show"                      "m" #'lsp-ui-imenu
        :desc "Hide"                      "q" #'lsp-ui-imenu--kill)
      (:prefix ("r" . "refactor")
-       :desc "Rename"                    "r" #'lsp-rename))))
+       :desc "Rename"                    "r" #'lsp-rename))
+   (:desc "+narrow/notes" :prefix "n"
+     :desc "narrow region"   "r" #'narrow-to-region
+     :desc "narrow defun"   "f" #'narrow-to-defun
+     :desc "narrow widen"   "w" #'widen)
+   (:desc "+open" :prefix "o"
+     :desc "delete last character eol"   "d" #'diego/delete-last-character-end-of-line
+     :desc "highliht symbol at point"    "h" #'highlight-symbol-at-point
+     :desc "remove highlight symbol"     "H" #'hi-lock-unface-buffer)
+   (:desc "+project" :prefix "p"
+     :desc "Find file in project"        "f" #'projectile-find-file)
+   (:desc "+search" :prefix "s"
+     :desc "Search buffer"               "s" #'swiper
+     :desc "Search project"              "p" #'+default/search-project
+     :desc "Look up online"              "o" #'+lookup/online-select)
+   (:desc "+toggle" :prefix "t"
+     :desc "Toggle truncate lines"       "t" #'toggle-truncate-lines)
+   (:desc "+window" :prefix "w"
+     :desc "Split window right" :n       "/" #'split-window-right
+     :desc "Split window below" :n       "-" #'split-window-below)
+   ))
 
-(after! org
-  (map! :map org-mode-map
-        :n "M-j" #'org-metadown
-        :n "M-k" #'org-metaup))
+ (after! org
+   (map! :map org-mode-map
+         :n "M-j" #'org-metadown
+         :n "M-k" #'org-metaup))
