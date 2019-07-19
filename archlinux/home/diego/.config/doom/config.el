@@ -147,7 +147,7 @@
 ;; loads ENV variables
 (setq
  exec-path-from-shell-check-startup-files nil
- exec-path-from-shell-variables '("PATH" "GOPATH"))
+ exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
 (exec-path-from-shell-initialize)
 
 ;; whitespace mode
