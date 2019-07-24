@@ -7,8 +7,10 @@
 ;; (package! builtin-package :disable t)
 
 ;; fixes por ENV variables
-(package! exec-path-from-shell)
-(package! golden-ratio)
-(package! highlight-thing)
 
+(package! deadgrep)
 (package! evil-snipe :disable t)
+(package! exec-path-from-shell)
+(package! highlight-thing)
+(package! prettier-js)
+(package! tldr)

@@ -16,6 +16,8 @@
      ))
 
 (setq
+ doom-theme 'doom-dracula
+ doom-themes-enable-bold nil
  doom-localleader-key ","
  ;;display-line-numbers-type 'relative
  which-key-idle-delay 0.3
@@ -144,36 +146,6 @@
 
   (add-hook! 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 
-;; loads ENV variables
-(setq
- exec-path-from-shell-check-startup-files nil
- exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
-(exec-path-from-shell-initialize)
-
-;; whitespace mode
-(global-whitespace-mode) ;; Toggle whitespace visualization globally.
-
-;;(golden-ratio-mode)
-
-(defun github-conversation-p (window-title)
-  (or (string-match-p "Pull Request" window-title)
-      (string-match-p "Issue" window-title)
-      ;; ...
-      ))
-
-(defun popup-handler (app-name window-title x y w h)
-  (unless (zerop w)
-    (set-frame-size (selected-frame) 1000 500 t))
-  ;; set major mode
-  (cond
-   ((github-conversation-p window-title) (gfm-mode))
-   ;; ...
-   (t (markdown-mode)) ; default major mode
-   ))
-(add-hook! 'ea-popup-hook 'popup-handler)
-
-(add-hook! 'before-save-hook #'whitespace-cleanup)
-
 (after! go-mode
   (add-hook! 'go-mode-hook
     (add-hook! 'before-save-hook 'gofmt-before-save))
@@ -182,17 +154,13 @@
   (setq
    godoc-and-godef-command "go doc"
    gofmt-command "goimports")
-  (setq-default flycheck-disabled-checkers '(go-build go-errcheck)))
+  ;; (setq-default flycheck-disabled-checkers '(go-build go-errcheck))
+  )
 
   ;; (set-lookup-handlers! 'go-mode
   ;;   :definition #'godef-jump
   ;;   :references #'go-guru-referrers
   ;;   :documentation #'godoc-at-point))
-
-(setq highlight-thing-limit-to-region-in-large-buffers-p t)
-(add-hook! 'prog-mode-hook 'highlight-thing-mode)
-(add-hook! 'conf-mode 'highlight-thing-mode)
-(add-hook! 'yaml-mode 'highlight-thing-mode)
 
 (after! magit
   (setq magit-refs-show-commit-count nil
@@ -213,8 +181,91 @@
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
   (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
-  (remove-hook! 'server-switch-hook 'magit-commit-diff) ;; remove diff on commiting
+  (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
+
+(after! lsp-ui
+  (setq ;;lsp-ui-sideline-enable nil
+        ;; lsp-prefer-flymake t ;; t(flymake), nil(lsp-ui), or :none
+         ;;
+        ;; lsp-ui-doc
+    lsp-ui-doc-enable t
+    lsp-ui-doc-header t
+    lsp-ui-doc-include-signature t
+    lsp-ui-doc-position 'top ;; top, bottom, or at-point
+    lsp-ui-doc-max-width 150
+    lsp-ui-doc-max-height 30
+    ;; lsp-ui-doc-position 'at-point ;; top, bottom, or at-point
+    lsp-ui-doc-use-childframe t
+    lsp-ui-doc-use-webkit t
+    ;; ;; lsp-ui-flycheck
+    ;; lsp-ui-flycheck-enable nil
+    ;; ;; lsp-ui-sideline
+    lsp-ui-sideline-enable nil
+    ;; lsp-ui-sideline-ignore-duplicate t
+    ;; lsp-ui-sideline-show-symbol t
+    ;; lsp-ui-sideline-show-hover t
+    ;; lsp-ui-sideline-show-diagnostics nil
+    ;; lsp-ui-sideline-show-code-actions t
+    ;; sp-ui-sideline-code-actions-prefix ""
+    ;; ;; lsp-ui-imenu
+    ;; lsp-ui-imenu-enable t
+    ;; lsp-ui-imenu-kind-position 'top
+    ;; ;; lsp-ui-peek
+    ;; lsp-ui-peek-enable t
+    ;; lsp-ui-peek-peek-height 40
+    ;; lsp-ui-peek-list-width 90
+    ;; lsp-ui-peek-fontify 'on-demand
+        ))
+
+(after! tldr
+  (setq tldr-directory-path (concat doom-etc-dir "tldr/"))
+  ;; (set-popup-rule! "^\\*tldr\\*" :side 'right :select t :quit t))
   )
+;; loads ENV variables
+(setq
+ exec-path-from-shell-check-startup-files nil
+ exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
+(exec-path-from-shell-initialize)
+
+;; whitespace mode
+(global-whitespace-mode) ;; Toggle whitespace visualization globally.
+
+(defun github-conversation-p (window-title)
+  (or (string-match-p "Pull Request" window-title)
+      (string-match-p "Issue" window-title)
+      ;; ...
+      ))
+
+(defun popup-handler (app-name window-title x y w h)
+  (unless (zerop w)
+    (set-frame-size (selected-frame) 1000 500 t))
+  ;; set major mode
+  (cond
+   ((github-conversation-p window-title) (gfm-mode))
+   ;; ...
+   (t (markdown-mode)) ; default major mode
+   ))
+(add-hook! 'ea-popup-hook 'popup-handler)
+
+(add-hook! 'before-save-hook #'whitespace-cleanup)
+
+(setq
+ highlight-thing-limit-to-region-in-large-buffers-p t
+ highlight-thing-case-sensitive-p t
+ highlight-thing-limit-to-defun t
+ highlight-thing-exclude-thing-under-point t)
+
+(custom-set-faces
+   '(highlight-thing ((t (:background "yellow" :foreground "black")))))
+
+(add-hook! 'prog-mode-hook 'highlight-thing-mode)
+(add-hook! 'conf-mode 'highlight-thing-mode)
+(add-hook! 'yaml-mode 'highlight-thing-mode)
+
+;; enables narrowing
+(put 'narrow-to-defun  'disabled nil)
+(put 'narrow-to-page   'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 (load! "+funcs")
 (load! "+bindings")

@@ -15,17 +15,30 @@
  "M-=" #'text-scale-increase
  "M--" #'text-scale-decrease
 
+ (:map minibuffer-local-map
+   "C-j" 'next-line-or-history-element
+   "C-k" 'previous-line-or-history-element)
+
+ (:when (featurep! :completion ivy)
+   (:map minibuffer-local-map
+     "C-j" 'ivy-next-line
+     "C-k" 'ivy-previous-line))
+
  (:leader
    :nv ";" nil ;; unbind eval
-   :desc "Toggle last popup" :n "~" #'+popup/toggle
+   :desc "Toggle last popup"  "~" #'+popup/toggle
    :desc "M-x"                    "SPC" #'execute-extended-command
    :desc "Find file in project"   "."   #'projectile-find-file
    :desc "Expand region"          ">"   #'er/expand-region
    (:desc "+apps" :prefix "a"
-     :desc "undo tree"                   "u" #'undo-tree-visualize)
+     :desc "undo tree"                   "u" #'undo-tree-visualize
+     :desc "List process"                "p" #'list-processes
+     :desc "Kill process"                "P" #'counsel-list-processes
+     :desc "align regexp"                "x" #'align-regexp)
    (:desc "+buffer" :prefix "b"
      :desc "safe erase vuffer"           "e" #'spacemacs/safe-erase-buffer
      :desc "kill current buffer"         "d" #'kill-current-buffer
+     :desc "Last buffer"                 "l" #'evil-switch-to-windows-last-buffer
      :desc "yank buffer name"            "y" #'diego/copy-buffer-name
      :desc "copy buffer to clipboard"    "Y" #'spacemacs/copy-whole-buffer-to-clipboard)
    (:desc "+error" :prefix "e"
@@ -84,11 +97,18 @@
    (:desc "+toggle" :prefix "t"
      :desc "Toggle truncate lines"       "t" #'toggle-truncate-lines)
    (:desc "+window" :prefix "w"
-     :desc "Split window right" :n       "/" #'split-window-right
-     :desc "Split window below" :n       "-" #'split-window-below)
-   ))
+     :desc "Split window right"        "/" #'split-window-right
+     :desc "Split window below"        "-" #'split-window-below)))
 
- (after! org
-   (map! :map org-mode-map
-         :n "M-j" #'org-metadown
-         :n "M-k" #'org-metaup))
+(after! org
+  (map! :map org-mode-map
+        :n "M-j" #'org-metadown
+        :n "M-k" #'org-metaup))
+
+(map!
+  (:after lsp-ui-peek
+   :map lsp-ui-peek-mode-map
+   "C-p" #'lsp-ui-peek--select-prev-file
+   "C-j" #'lsp-ui-peek--select-next
+   "C-k" #'lsp-ui-peek--select-prev
+   "C-n" #'lsp-ui-peek--select-next-file))
