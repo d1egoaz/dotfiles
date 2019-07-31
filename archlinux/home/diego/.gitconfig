@@ -11,7 +11,7 @@
 	commentchar = @
 	ignorecase = false
 [commit]
-	gpgsign = false
+	gpgsign = true
 
 [help]
 	autocorrect = 1
@@ -21,20 +21,19 @@
 	# Delete all local branches but master and the current one, only if they are fully merged with master.
 	# https://stackoverflow.com/a/41465769
 	branches-delete-except-master = !"f() { git branch | grep -v 'master' | grep -v ^* | xargs git branch -d; }; f"
-
-[includeIf "gitdir:~/src"]
+[includeIf "gitdir:~/src/"]
 	path = .gitconfig-work
-[includeIf "gitdir:~/dotfiles"]
+[includeIf "gitdir:~/dotfiles/"]
 	path = .gitconfig-personal
-[includeIf "gitdir:~/code"]
+[includeIf "gitdir:~/code/"]
 	path = .gitconfig-personal
 [push]
 	default = simple
-#[url "git@github.com:"]
-	#insteadOf = https://github.com/
 [github]
 	user = d1egoaz
 [credential]
 	helper = osxkeychain
 [protocol]
 	version = 2
+[gpg]
+	program = /usr/local/bin/gpg2
