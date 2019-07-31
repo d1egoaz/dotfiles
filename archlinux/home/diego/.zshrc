@@ -1,19 +1,15 @@
 ZSH=$HOME/.oh-my-zsh
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-ZSH_THEME="in-fino-veritas"
-
 # Uncomment to change how often before auto-updates occur? (in days)
 export UPDATE_ZSH_DAYS=7
 
 if [ $EMACS ]; then
   unsetopt zle # disables zsh line editor
   plugins=(git autojump history-substring-search)
+  ZSH_THEME="simple"
 else
   plugins=(archlinux git scala autojump urltools vi-mode history-substring-search)
+  ZSH_THEME="in-fino-veritas"
 fi
 
 source $ZSH/oh-my-zsh.sh
