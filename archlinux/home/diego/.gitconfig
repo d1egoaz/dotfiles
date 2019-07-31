@@ -21,9 +21,13 @@
 	# Delete all local branches but master and the current one, only if they are fully merged with master.
 	# https://stackoverflow.com/a/41465769
 	branches-delete-except-master = !"f() { git branch | grep -v 'master' | grep -v ^* | xargs git branch -d; }; f"
+
+## needs a ending `/`
 [includeIf "gitdir:~/src/"]
 	path = .gitconfig-work
 [includeIf "gitdir:~/dotfiles/"]
+	path = .gitconfig-personal
+[includeIf "gitdir:~/dotfiles-private/"]
 	path = .gitconfig-personal
 [includeIf "gitdir:~/code/"]
 	path = .gitconfig-personal
