@@ -15,11 +15,15 @@
      projectile-project-search-path '("~/code")
      ))
 
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 (setq
  doom-theme 'doom-dracula
  doom-themes-enable-bold nil
  doom-localleader-key ","
- ;;display-line-numbers-type 'relative
+ display-line-numbers-type 'relative
  which-key-idle-delay 0.3
  ;; stay on the original character when leaving insert mode
  evil-move-cursor-back nil
@@ -136,7 +140,7 @@
      ;; https://orgmode.org/manual/Template-expansion.html
      ("t" "Todo" entry (file+headline "~/gdrive/deft/gtd-inbox.org" "Inbox")
       "* TODO %?\nCreated on on %U\n" :prepend t :empty-lines 1)
-     ("l" "Link" entry (file* Links+headline "~/gdrive/deft/notes.org" "Links")
+     ("l" "Link" entry (file+headline "~/gdrive/deft/notes.org" "Links")
       "* %? %^L %^g \n%T" :prepend t)
      ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
@@ -157,10 +161,10 @@
   ;; (setq-default flycheck-disabled-checkers '(go-build go-errcheck))
   )
 
-  ;; (set-lookup-handlers! 'go-mode
-  ;;   :definition #'godef-jump
-  ;;   :references #'go-guru-referrers
-  ;;   :documentation #'godoc-at-point))
+;; (set-lookup-handlers! 'go-mode
+;;   :definition #'godef-jump
+;;   :references #'go-guru-referrers
+;;   :documentation #'godoc-at-point))
 
 (after! magit
   (setq magit-refs-show-commit-count nil
@@ -185,37 +189,37 @@
 
 (after! lsp-ui
   (setq ;;lsp-ui-sideline-enable nil
-        ;; lsp-prefer-flymake t ;; t(flymake), nil(lsp-ui), or :none
-         ;;
-        ;; lsp-ui-doc
-    lsp-ui-doc-enable t
-    lsp-ui-doc-header t
-    lsp-ui-doc-include-signature t
-    lsp-ui-doc-position 'top ;; top, bottom, or at-point
-    lsp-ui-doc-max-width 150
-    lsp-ui-doc-max-height 30
-    ;; lsp-ui-doc-position 'at-point ;; top, bottom, or at-point
-    lsp-ui-doc-use-childframe t
-    lsp-ui-doc-use-webkit t
-    ;; ;; lsp-ui-flycheck
-    ;; lsp-ui-flycheck-enable nil
-    ;; ;; lsp-ui-sideline
-    lsp-ui-sideline-enable nil
-    ;; lsp-ui-sideline-ignore-duplicate t
-    ;; lsp-ui-sideline-show-symbol t
-    ;; lsp-ui-sideline-show-hover t
-    ;; lsp-ui-sideline-show-diagnostics nil
-    ;; lsp-ui-sideline-show-code-actions t
-    ;; sp-ui-sideline-code-actions-prefix ""
-    ;; ;; lsp-ui-imenu
-    ;; lsp-ui-imenu-enable t
-    ;; lsp-ui-imenu-kind-position 'top
-    ;; ;; lsp-ui-peek
-    ;; lsp-ui-peek-enable t
-    ;; lsp-ui-peek-peek-height 40
-    ;; lsp-ui-peek-list-width 90
-    ;; lsp-ui-peek-fontify 'on-demand
-        ))
+   ;; lsp-prefer-flymake t ;; t(flymake), nil(lsp-ui), or :none
+   ;;
+   ;; lsp-ui-doc
+   lsp-ui-doc-enable t
+   lsp-ui-doc-header t
+   lsp-ui-doc-include-signature t
+   lsp-ui-doc-position 'top ;; top, bottom, or at-point
+   lsp-ui-doc-max-width 150
+   lsp-ui-doc-max-height 30
+   ;; lsp-ui-doc-position 'at-point ;; top, bottom, or at-point
+   lsp-ui-doc-use-childframe t
+   lsp-ui-doc-use-webkit t
+   ;; ;; lsp-ui-flycheck
+   ;; lsp-ui-flycheck-enable nil
+   ;; ;; lsp-ui-sideline
+   lsp-ui-sideline-enable nil
+   ;; lsp-ui-sideline-ignore-duplicate t
+   ;; lsp-ui-sideline-show-symbol t
+   ;; lsp-ui-sideline-show-hover t
+   ;; lsp-ui-sideline-show-diagnostics nil
+   ;; lsp-ui-sideline-show-code-actions t
+   ;; sp-ui-sideline-code-actions-prefix ""
+   ;; ;; lsp-ui-imenu
+   ;; lsp-ui-imenu-enable t
+   ;; lsp-ui-imenu-kind-position 'top
+   ;; ;; lsp-ui-peek
+   ;; lsp-ui-peek-enable t
+   ;; lsp-ui-peek-peek-height 40
+   ;; lsp-ui-peek-list-width 90
+   ;; lsp-ui-peek-fontify 'on-demand
+   ))
 
 (after! tldr
   (setq tldr-directory-path (concat doom-etc-dir "tldr/"))
@@ -255,17 +259,33 @@
  highlight-thing-limit-to-defun t
  highlight-thing-exclude-thing-under-point t)
 
-(custom-set-faces
-   '(highlight-thing ((t (:background "yellow" :foreground "black")))))
+(custom-set-faces!
+ '(highlight-thing ((t (:background "yellow" :foreground "black")))))
 
 (add-hook! 'prog-mode-hook 'highlight-thing-mode)
 (add-hook! 'conf-mode 'highlight-thing-mode)
 (add-hook! 'yaml-mode 'highlight-thing-mode)
+(add-hook! 'emacs-lisp-mode 'highlight-thing-mode)
+
+
+;; Include underscores and hyphen in word motions
+(add-hook! 'emacs-lisp-mode-hook (modify-syntax-entry ?- "w"))
+(add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?_ "w"))
 
 ;; enables narrowing
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+
+;; recognize some files as scripts
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
+(add-to-list 'auto-mode-alist '("\\.aliases\\'" . sh-mode))
+
+
+;; avoid file changed on disk checking message
+;; (global-auto-revert-mode -1)
+(setq revert-without-query '(".*"))
+(add-hook! 'yaml-mode-hook 'prog-mode)
 
 (load! "+funcs")
 (load! "+bindings")

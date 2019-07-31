@@ -12,5 +12,6 @@
 (package! evil-snipe :disable t)
 (package! exec-path-from-shell)
 (package! highlight-thing)
+(package! multi-term)
 (package! prettier-js)
 (package! tldr)

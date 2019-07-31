@@ -15,14 +15,11 @@
  "M-=" #'text-scale-increase
  "M--" #'text-scale-decrease
 
- (:map minibuffer-local-map
-   "C-j" 'next-line-or-history-element
-   "C-k" 'previous-line-or-history-element)
-
  (:when (featurep! :completion ivy)
-   (:map minibuffer-local-map
+   (:map ivy-minibuffer-map
      "C-j" 'ivy-next-line
-     "C-k" 'ivy-previous-line))
+     "C-k" 'ivy-previous-line
+     "C-h" (kbd "DEL")))
 
  (:leader
    :nv ";" nil ;; unbind eval
