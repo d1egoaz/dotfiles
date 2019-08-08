@@ -144,7 +144,7 @@
       "* %? %^L %^g \n%T" :prepend t)
      ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
-     ("j" "Journal" entry (file+datetree "~/gdrive/deft/journal.org")
+     ("j" "Journal" entry (file+olp+datetree "~/gdrive/deft/journal.org")
       "* %?" :clock-in t :clock-resume t))
    )
 
@@ -232,7 +232,7 @@
 (exec-path-from-shell-initialize)
 
 ;; whitespace mode
-(global-whitespace-mode) ;; Toggle whitespace visualization globally.
+;; (global-whitespace-mode) ;; Toggle whitespace visualization globally.
 
 (defun github-conversation-p (window-title)
   (or (string-match-p "Pull Request" window-title)
@@ -253,20 +253,25 @@
 
 (add-hook! 'before-save-hook #'whitespace-cleanup)
 
-(setq
- highlight-thing-limit-to-region-in-large-buffers-p t
- highlight-thing-case-sensitive-p t
- highlight-thing-limit-to-defun t
- highlight-thing-exclude-thing-under-point t)
+(after! highlight-thing-mode
+  (setq
+   highlight-thing-limit-to-region-in-large-buffers-p t
+   highlight-thing-case-sensitive-p t
+   highlight-thing-limit-to-defun t
+   highlight-thing-exclude-thing-under-point t))
+
+;; easy to the eyes
+(doom-themes-set-faces nil
+  '(default :foreground "#bbc2cf")
+  '(highlight-thing :foreground "orange" :background "black"))
 
 (custom-set-faces!
- '(highlight-thing ((t (:background "yellow" :foreground "black")))))
+  `(font-lock-variable-name-face :foreground "#56b6c2"))
 
 (add-hook! 'prog-mode-hook 'highlight-thing-mode)
 (add-hook! 'conf-mode 'highlight-thing-mode)
 (add-hook! 'yaml-mode 'highlight-thing-mode)
 (add-hook! 'emacs-lisp-mode 'highlight-thing-mode)
-
 
 ;; Include underscores and hyphen in word motions
 (add-hook! 'emacs-lisp-mode-hook (modify-syntax-entry ?- "w"))
@@ -286,6 +291,9 @@
 ;; (global-auto-revert-mode -1)
 (setq revert-without-query '(".*"))
 (add-hook! 'yaml-mode-hook 'prog-mode)
+
+(set-popup-rule! "^\\*kubernetes" :ignore t :select t :quit t)
+(set-popup-rule! "^\\*doom:vterm*" :ignore t :select t :quit t)
 
 (load! "+funcs")
 (load! "+bindings")

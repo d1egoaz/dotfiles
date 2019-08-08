@@ -21,6 +21,14 @@
      "C-k" 'ivy-previous-line
      "C-h" (kbd "DEL")))
 
+ ;; https://github.com/suonlight/multi-libvterm
+ (:when (featurep! :term vterm)
+   (:map vterm-mode-map
+     :in "C-j"     'vterm-send-up
+     :in "C-k"     'vterm-send-down
+     :g "C-SPC"   'vterm--self-insert
+     :i "<return>" 'vterm-send-custom-return))
+
  (:leader
    :nv ";" nil ;; unbind eval
    :desc "Toggle last popup"  "~" #'+popup/toggle

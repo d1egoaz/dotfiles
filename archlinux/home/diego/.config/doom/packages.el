@@ -15,3 +15,4 @@
 (package! multi-term)
 (package! prettier-js)
 (package! tldr)
+(package! multi-libvterm :recipe (:fetcher github :repo "d1egoaz/multi-libvterm"))

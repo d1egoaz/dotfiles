@@ -87,3 +87,8 @@ the current state and point position."
 the current state and point position."
   (interactive "p")
   (dotimes (_ count) (save-excursion (evil-insert-newline-below))))
+
+(defun vterm-send-custom-return ()
+  "Sends C-m to the libvterm."
+  (interactive)
+  (process-send-string vterm--process "\C-m"))

@@ -70,3 +70,6 @@ function ediff() {
 [ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
 
 [ -f /usr/local/bin/kubectl ] && source <(kubectl completion zsh)
+function chpwd() {
+    print -Pn "\e]51;$(pwd)\e\\";
+}
