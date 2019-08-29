@@ -92,3 +92,9 @@ the current state and point position."
   "Sends C-m to the libvterm."
   (interactive)
   (process-send-string vterm--process "\C-m"))
+
+(defun save-ispell-word ()
+  (interactive)
+  (let ((word (read-from-minibuffer "A word you want to add to dictionary: " (word-at-point))))
+    (ispell-send-string (concat "*" word "\n"))
+    (setq ispell-pdict-modified-p '(t))))

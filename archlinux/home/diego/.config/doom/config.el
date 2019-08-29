@@ -20,7 +20,6 @@
   (load custom-file))
 
 (setq
- doom-theme 'doom-dracula
  doom-themes-enable-bold nil
  doom-localleader-key ","
  display-line-numbers-type 'relative
@@ -70,8 +69,12 @@
  git-link-open-in-browser t
  )
 
+
+;; loads the theme immediately, to modify faces afterwards
+(load-theme 'doom-dracula t)
+
 (set-foreground-color "#b2b2b2")
-(set-background-color "#1e1e1e")
+;;(set-background-color "#1e1e1e")
 
 ;; Disable arrows keys in evil mode
 (define-key evil-insert-state-map [left] 'undefined)
@@ -156,8 +159,10 @@
   ;; (setq godoc-at-point-function 'godoc-gogetdoc)
   ;; (setq godoc-and-godef-command "gogetdoc")
   (setq
+   ;; uses go provided tools
+   godef-command "go doc"
    godoc-and-godef-command "go doc"
-   gofmt-command "goimports")
+   gofmt-command "go fmt")
   ;; (setq-default flycheck-disabled-checkers '(go-build go-errcheck))
   )
 
@@ -176,12 +181,13 @@
         magit-log-section-arguments  '("-n50" "--decorate") ;; was: ("-n256" "--decorate")
         magit-log-select-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--decorate")
         magit-refresh-status-buffer t ;;automatically refresh the current Magit status buffer
+        magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1
         )
   (defun auto-display-magit-process-buffer (&rest args)
     "Automatically display the process buffer when it is updated."
     (let ((magit-display-buffer-noselect t))
       (magit-process-buffer)))
-  (advice-add! 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
+  (advice-add 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
   (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
@@ -225,6 +231,9 @@
   (setq tldr-directory-path (concat doom-etc-dir "tldr/"))
   ;; (set-popup-rule! "^\\*tldr\\*" :side 'right :select t :quit t))
   )
+
+(setq google-translate-default-source-language "en"
+        google-translate-default-target-language "sp")
 ;; loads ENV variables
 (setq
  exec-path-from-shell-check-startup-files nil
@@ -267,6 +276,8 @@
 
 (custom-set-faces!
   `(font-lock-variable-name-face :foreground "#56b6c2"))
+
+(solaire-global-mode nil)
 
 (add-hook! 'prog-mode-hook 'highlight-thing-mode)
 (add-hook! 'conf-mode 'highlight-thing-mode)

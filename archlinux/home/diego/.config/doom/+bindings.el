@@ -8,6 +8,8 @@
       "h P" nil
       )
 
+(map! :leader "`" #'evil-switch-to-windows-last-buffer)
+
 ;; Leader key
 (map!
  ;; Text-scaling
@@ -24,10 +26,11 @@
  ;; https://github.com/suonlight/multi-libvterm
  (:when (featurep! :term vterm)
    (:map vterm-mode-map
-     :in "C-j"     'vterm-send-up
-     :in "C-k"     'vterm-send-down
-     :g "C-SPC"   'vterm--self-insert
-     :i "<return>" 'vterm-send-custom-return))
+     :ni "C-j"     'vterm--self-insert
+     :ni "C-k"     'vterm--self-insert
+     :ni "C-d"     'vterm--self-insert
+     :ni "C-SPC"   'vterm--self-insert
+     :i "<return>" (λ! (interactive) (process-send-string vterm--process "\C-m"))))
 
  (:leader
    :nv ";" nil ;; unbind eval
@@ -37,11 +40,12 @@
    :desc "Expand region"          ">"   #'er/expand-region
    (:desc "+apps" :prefix "a"
      :desc "undo tree"                   "u" #'undo-tree-visualize
+     :desc "org capture"                 "o" #'counsel-org-capture
      :desc "List process"                "p" #'list-processes
      :desc "Kill process"                "P" #'counsel-list-processes
      :desc "align regexp"                "x" #'align-regexp)
    (:desc "+buffer" :prefix "b"
-     :desc "safe erase vuffer"           "e" #'spacemacs/safe-erase-buffer
+     :desc "safe erase buffer"           "e" #'spacemacs/safe-erase-buffer
      :desc "kill current buffer"         "d" #'kill-current-buffer
      :desc "Last buffer"                 "l" #'evil-switch-to-windows-last-buffer
      :desc "yank buffer name"            "y" #'diego/copy-buffer-name
@@ -54,9 +58,13 @@
      :desc "Flycheck previous error"     "p" #'flycheck-previous-error
      :desc "Flycheck clear errors"       "c" #'flycheck-clear
      :desc "Flycheck which checker"      "w" #'flycheck-select-checker)
+   (:desc "+file" :prefix "f"
+     :desc "jump to file"                "j" #'counsel-file-jump)
    (:desc "+git" :prefix "g"
-     (:when (featurep! :tools magit)
-       :desc "Magit status"              "s" #'magit-status))
+       :desc "Magit status"              "s" #'magit-status
+      (:desc "+list/link" :prefix "l"
+        :desc "git link line/region"     "l" #'+vc/git-browse-region-or-line
+        :desc "git link home"            "h" #'git-link-homepage))
    (:desc "+help" :prefix "h"
      (:prefix ("P" . "Profiler")
        :desc "Profiler start"            "s" #'profiler-start
@@ -96,6 +104,7 @@
    (:desc "+project" :prefix "p"
      :desc "Find file in project"        "f" #'projectile-find-file)
    (:desc "+search" :prefix "s"
+     :desc "iedit"                       "e" #'iedit-mode ;; next item [TAB]
      :desc "Search buffer"               "s" #'swiper
      :desc "Search project"              "p" #'+default/search-project
      :desc "Look up online"              "o" #'+lookup/online-select)
