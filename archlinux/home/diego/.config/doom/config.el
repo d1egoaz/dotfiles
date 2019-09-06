@@ -4,17 +4,15 @@
 ;;
 (if (eq system-type 'darwin)
     (setq
-     doom-font (font-spec :family "SF Mono" :size 14)
-     ;; doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
-     projectile-project-search-path '("~/src/github.com")
+     doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'light)
      ))
 (if (eq system-type 'gnu/linux)
     (setq
-     doom-font (font-spec :family "SF Mono" :size 30)
+     doom-font (font-spec :family "Iosevka SS04" :size 30)
      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 30)
-     projectile-project-search-path '("~/code")
      ))
 
+(setq +pretty-code-iosevka-font-name "Iosevka SS04")
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
@@ -162,7 +160,7 @@
    ;; uses go provided tools
    godef-command "go doc"
    godoc-and-godef-command "go doc"
-   gofmt-command "go fmt")
+   gofmt-command "gofmt")
   ;; (setq-default flycheck-disabled-checkers '(go-build go-errcheck))
   )
 

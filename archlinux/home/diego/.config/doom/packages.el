@@ -8,6 +8,7 @@
 
 ;; fixes por ENV variables
 
+(package! asx) ;; https://github.com/ragone/asx
 (package! deadgrep)
 (package! evil-snipe :disable t)
 (package! exec-path-from-shell)
