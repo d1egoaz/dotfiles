@@ -1,8 +1,0 @@
-@-moz-document domain("slack.com") {
-#gr_block {
-    background-color: #363636;
-}
-.special_formatting {
-    color: #b5c182 !important;
-}
-}
