@@ -10,6 +10,7 @@
 	excludesfile = ~/.gitignore_global
 	commentchar = @
 	ignorecase = false
+	commitGraph = true
 [commit]
 	gpgsign = true
 
@@ -41,3 +42,5 @@
 	version = 2
 [gpg]
 	program = /usr/local/bin/gpg2
+[gc]
+	writeCommitGraph = true
