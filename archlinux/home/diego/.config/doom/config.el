@@ -1,5 +1,7 @@
 ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
+;; currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
+
 ;; Place your private configuration here
 ;;
 (if (eq system-type 'darwin)
@@ -55,6 +57,7 @@
  make-backup-files t ;; <- DISABLED
 
  ;; avy
+ ;; avy-all-windows nil
  avy-all-windows 'all-frames
  avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p)
  ;; used for avy-goto-char-timer
@@ -150,7 +153,8 @@
    )
 
   (add-hook! 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
-
+;;
+;; go get golang.org/x/tools/gopls@latest
 (after! go-mode
   (add-hook! 'go-mode-hook
     (add-hook! 'before-save-hook 'gofmt-before-save))
@@ -160,7 +164,7 @@
    ;; uses go provided tools
    godef-command "go doc"
    godoc-and-godef-command "go doc"
-   gofmt-command "gofmt")
+   gofmt-command "goimports")
   ;; (setq-default flycheck-disabled-checkers '(go-build go-errcheck))
   )
 
@@ -202,7 +206,6 @@
    lsp-ui-doc-position 'top ;; top, bottom, or at-point
    lsp-ui-doc-max-width 150
    lsp-ui-doc-max-height 30
-   ;; lsp-ui-doc-position 'at-point ;; top, bottom, or at-point
    lsp-ui-doc-use-childframe t
    lsp-ui-doc-use-webkit t
    ;; ;; lsp-ui-flycheck
@@ -214,7 +217,7 @@
    ;; lsp-ui-sideline-show-hover t
    ;; lsp-ui-sideline-show-diagnostics nil
    ;; lsp-ui-sideline-show-code-actions t
-   ;; sp-ui-sideline-code-actions-prefix ""
+   ;; lsp-ui-sideline-code-actions-prefix ""
    ;; ;; lsp-ui-imenu
    ;; lsp-ui-imenu-enable t
    ;; lsp-ui-imenu-kind-position 'top
