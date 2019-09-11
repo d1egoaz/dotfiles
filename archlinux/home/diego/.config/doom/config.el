@@ -20,6 +20,8 @@
   (load custom-file))
 
 (setq
+ user-full-name "Diego Alvarez"
+ user-mail-address "diego.canada@icloud.com"
  doom-themes-enable-bold nil
  doom-localleader-key ","
  display-line-numbers-type 'relative
