@@ -2,8 +2,8 @@ set $mod Mod4
 
 # AUTOSTART
 #exec --no-startup-id feh --bg-fill ~/Pictures/Baby_Chewbacca_Star_wars.jpg
-exec --no-startup-id feh --bg-fill ~/Pictures/stars.jpg
-exec --no-startup-id xautolock -time 5 -locker 'i3lock -d -c 000000 -i ~/Pictures/MaxBirthBlured.png'
+exec --no-startup-id feh --bg-fill ~/Pictures/3440x1440-kylo-ren.jpg
+exec --no-startup-id xautolock -time 5 -locker 'i3lock -d -c 000000 -i ~/Pictures/3440x1440-kylo-ren.png'
 exec_always --no-startup-id dunst -conf ~/.config/dunst/config
 
 font pango:SF Mono 10
@@ -196,6 +196,16 @@ for_window [class="emacs"] move to workspace $ws3
 for_window [class="emacsclient"] move to workspace $ws3
 
 assign [instance="^emacs$"] $ws3
+
+# Don’t treat Plasma pop-ups as full-sized windows
+for_window [class="plasmashell"] floating enable
+
+# Don’t spawn an empty window for the Plasma Desktop
+for_window [title="Desktop — Plasma"] kill, floating enable, border none
+
+# Don’t let notifications and non-interactive pop-up windows steal focus
+no_focus [class="plasmashell" window_type="notification"]
+no_focus [class="plasmashell" window_type="on_screen_display"]
 
 # gaps
 gaps inner 15
