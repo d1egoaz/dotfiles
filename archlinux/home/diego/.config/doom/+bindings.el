@@ -64,6 +64,7 @@
        :desc "Magit status"              "s" #'magit-status
       (:desc "+list/link" :prefix "l"
         :desc "git link line/region"     "l" #'+vc/git-browse-region-or-line
+        :desc "git link line/region"     "L" (λ! (interactive) (+vc/git-browse-region-or-line "master"))
         :desc "git link home"            "h" #'git-link-homepage))
    (:desc "+help" :prefix "h"
      (:prefix ("P" . "Profiler")
