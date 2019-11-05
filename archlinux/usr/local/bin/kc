@@ -4,12 +4,12 @@ kcn() {
 }
 
 _context() {
-    local CONTEXT="$(kcn | fzf --prompt 'k8s context > ' --query 'tier-shared')"
+    local CONTEXT="$(kcn | fzf --prompt 'k8s context > ')"
     echo $CONTEXT
 }
 
 _namespace() {
-    local NAMESPACE="$(kubectl get namespaces --context $1 -o name | cut -d'/' -f2 | fzf --prompt 'k8s namespace > ' --query 'kafka')"
+    local NAMESPACE="$(kubectl get namespaces --context $1 -o name | cut -d'/' -f2 | fzf --prompt 'k8s namespace > ')"
     echo $NAMESPACE
 }
 _kc() {
