@@ -10,13 +10,13 @@
 
 (package! asx) ;; https://github.com/ragone/asx
 (package! deadgrep)
-(package! evil-snipe :disable t)
+(package! dockerfile-mode)
+(package! emojify)
 (package! exec-path-from-shell)
 (package! google-translate)
 (package! highlight-thing)
+(package! highlight-indent-guides)
+(package! multi-libvterm :recipe (:host github :repo "d1egoaz/multi-libvterm"))
 (package! multi-term)
 (package! prettier-js)
 (package! tldr)
-(package! kubernetes)
-(package! kubernetes-evil)
-(package! multi-libvterm :recipe (:host github :repo "d1egoaz/multi-libvterm"))

@@ -70,6 +70,9 @@
 
  ea-paste nil
  git-link-open-in-browser t
+
+ ;; Remove ./ and ../ from file commands
+ ivy-extra-directories nil
  )
 
 
@@ -132,6 +135,7 @@
                         ("~/gdrive/deft/gtd-work.org" :maxlevel . 2))
    org-src-fontify-natively t
    org-startup-with-inline-images t
+   org-clock-out-remove-zero-time-clocks nil
    org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
    ;; ! is to log event on logbook drawer
    org-capture-templates
@@ -179,23 +183,25 @@
   (setq magit-refs-show-commit-count nil
         magit-diff-refine-hunk t ;; show whitespaces changes on the selected git diff hunks
         magit-revision-show-gravatars nil
-        magit-process-popup-time 0
+        ;; magit-process-popup-time 3
         magit-branch-rename-push-target nil
         magit-log-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--graph" "--decorate")
         magit-log-section-arguments  '("-n50" "--decorate") ;; was: ("-n256" "--decorate")
         magit-log-select-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--decorate")
-        magit-refresh-status-buffer t ;;automatically refresh the current Magit status buffer
-        magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1
+        ;; magit-refresh-status-buffer t ;;automatically refresh the current Magit status buffer
+        ;; magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1
         )
-  (defun auto-display-magit-process-buffer (&rest args)
-    "Automatically display the process buffer when it is updated."
-    (let ((magit-display-buffer-noselect t))
-      (magit-process-buffer)))
-  (advice-add 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
+  ;; (defun auto-display-magit-process-buffer (&rest args)
+  ;;   "Automatically display the process buffer when it is updated."
+  ;;   (let ((magit-display-buffer-noselect t))
+  ;;     (magit-process-buffer)))
+  ;; (advice-add 'magit-process-insert-section :before #'auto-display-magit-process-buffer)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
   (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
-  (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
+  (add-hook! 'git-commit-setup-hook 'git-commit-turn-on-flyspell) ;; automatic spellchecking in commit messages
+  )
+  ;; (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
 
 (after! lsp-ui
   (setq ;;lsp-ui-sideline-enable nil
@@ -234,6 +240,10 @@
   (setq tldr-directory-path (concat doom-etc-dir "tldr/"))
   ;; (set-popup-rule! "^\\*tldr\\*" :side 'right :select t :quit t))
   )
+
+;; shows all hidden files, it just ignores files . and ..
+(after! counsel
+  (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../"))))
 
 (setq google-translate-default-source-language "en"
         google-translate-default-target-language "sp")
@@ -300,15 +310,22 @@
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.aliases\\'" . sh-mode))
 
+(setq highlight-indent-guides-method 'character)
+(add-hook! 'focus-in-hook #'highlight-indent-guides-auto-set-faces)
 
 ;; avoid file changed on disk checking message
 ;; (global-auto-revert-mode -1)
 (setq revert-without-query '(".*"))
-(add-hook! 'yaml-mode-hook 'prog-mode)
+(add-hook! 'yaml-mode-hook 'prog-mode 'highlight-indent-guides-mode)
+(add-hook! 'go-mode-hook 'flyspell-prog-mode)
 
 (set-popup-rule! "^\\*kubernetes" :ignore t :select t :quit t)
 (set-popup-rule! "^\\*doom:vterm*" :ignore t :select t :quit t)
 
+(setq emojify-emoji-set "twemoji-v2"
+      emojify-display-style 'unicode)
+
 (load! "+funcs")
 (load! "+bindings")
+
 (message ">>> done loading init file <<<")
