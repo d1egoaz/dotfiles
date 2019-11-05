@@ -3,12 +3,10 @@ ZSH=$HOME/.oh-my-zsh
 # Uncomment to change how often before auto-updates occur? (in days)
 export UPDATE_ZSH_DAYS=7
 
-if [ $EMACS ]; then
-  unsetopt zle # disables zsh line editor
-  plugins=(git autojump history-substring-search)
+plugins=(git autojump urltools vi-mode history-substring-search)
+if [ $EMACS ] || [ $INSIDE_EMACS ]; then
   ZSH_THEME="simple"
 else
-  plugins=(archlinux git scala autojump urltools vi-mode history-substring-search)
   ZSH_THEME="in-fino-veritas"
 fi
 
@@ -70,6 +68,4 @@ function ediff() {
 [ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
 
 [ -f /usr/local/bin/kubectl ] && source <(kubectl completion zsh)
-function chpwd() {
-    print -Pn "\e]51;$(pwd)\e\\";
-}
+eval "$(ssh-agent)"
