@@ -60,6 +60,53 @@
     (message str)
     (shell-command-to-string str)))
 
+(defun diego/git-create-branch-from-origin-master ()
+  "Creates a new branch starting from origin/master."
+  (interactive)
+  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
+    (magit-git-command-topdir
+     (concat "git checkout -b " new_branch_name " origin/master"))))
+
+(defun diego/prettify-jsonv2 ()
+  "prettify json current region"
+  (interactive)
+  (diego--exec-command-replace-region "prettier --parser json"))
+
+(defun diego/prettify-markdown ()
+  "prettify markdown current region"
+  (interactive)
+  (diego--exec-command-replace-region "prettier --parser markdown"))
+
+(defun diego/prettify-yaml ()
+  "prettify yaml current region"
+  (interactive)
+  (diego--exec-command-replace-region "prettier --parser yaml"))
+
+
+(defun diego/git-create-branch-from-origin-master ()
+  "Creates a new branch starting from origin/master."
+  (interactive)
+  (magit-fetch-from-upstream "origin" nil)
+  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
+    (magit-git-command-topdir
+     (concat "git checkout -b " new_branch_name " origin/master"))))
+
+(defun diego/visit-pull-request-url ()
+  "Visit the current branch's PR on Github."
+  (interactive)
+  (browse-url
+   (format "https://github.com/%s/pull/new/%s"
+           (replace-regexp-in-string
+            "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
+            (magit-get "remote"
+                       (magit-get-push-remote)
+                       "url"))
+           (magit-get-current-branch))))
+
+(defun diego/close-all-buffers ()
+  (interactive)
+  (mapc 'kill-buffer (buffer-list)))
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; SPACEMACS FUNCS
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -93,7 +140,7 @@ the current state and point position."
   (interactive)
   (process-send-string vterm--process "\C-m"))
 
-(defun save-ispell-word ()
+(defun diego/save-ispell-word ()
   (interactive)
   (let ((word (read-from-minibuffer "A word you want to add to dictionary: " (word-at-point))))
     (ispell-send-string (concat "*" word "\n"))
