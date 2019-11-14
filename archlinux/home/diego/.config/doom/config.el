@@ -38,7 +38,6 @@
  ;; deft
  deft-directory "~/gdrive/deft"
  deft-use-filename-as-title t
- deft-use-filename-as-title t
 
  ;; Scroll compilation output to first error
  compilation-scroll-output 'first-error
@@ -324,6 +323,11 @@
 
 (setq emojify-emoji-set "twemoji-v2"
       emojify-display-style 'unicode)
+
+(after! winum-mode
+   (setq winum-auto-assign-0-to-minibuffer nil
+            winum-auto-setup-mode-line nil
+            winum-ignored-buffers '(" *which-key*")))
 
 (load! "+funcs")
 (load! "+bindings")

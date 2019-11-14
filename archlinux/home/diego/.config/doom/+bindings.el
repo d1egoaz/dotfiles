@@ -34,10 +34,21 @@
 
  (:leader
    :nv ";" nil ;; unbind eval
-   :desc "Toggle last popup"  "~" #'+popup/toggle
+   :desc "Toggle last popup"  "~"       #'+popup/toggle
    :desc "M-x"                    "SPC" #'execute-extended-command
    :desc "Find file in project"   "."   #'projectile-find-file
-   :desc "Expand region"          ">"   #'er/expand-region
+   :desc "Expand region"          "> " #'er/expand-region
+                                  "`"  #'winum-select-window-by-number
+                                  "0"  #'winum-select-window-0-or-10
+                                  "1"  #'winum-select-window-1
+                                  "2"  #'winum-select-window-2
+                                  "3"  #'winum-select-window-3
+                                  "4"  #'winum-select-window-4
+                                  "5"  #'winum-select-window-5
+                                  "6"  #'winum-select-window-6
+                                  "7"  #'winum-select-window-7
+                                  "8"  #'winum-select-window-8
+                                  "9"  #'winum-select-window-9
    (:desc "+apps" :prefix "a"
      :desc "undo tree"                   "u" #'undo-tree-visualize
      :desc "org capture"                 "o" #'counsel-org-capture
@@ -127,3 +138,17 @@
    "C-j" #'lsp-ui-peek--select-next
    "C-k" #'lsp-ui-peek--select-prev
    "C-n" #'lsp-ui-peek--select-next-file))
+
+(map!
+  (:after winum-mode
+   :map winum-keymap
+      "M-0" #'winum-select-window-0-or-10
+      "M-1" #'winum-select-window-1
+      "M-2" #'winum-select-window-2
+      "M-3" #'winum-select-window-3
+      "M-4" #'winum-select-window-4
+      "M-5" #'winum-select-window-5
+      "M-6" #'winum-select-window-6
+      "M-7" #'winum-select-window-7
+      "M-8" #'winum-select-window-8
+      "M-9" #'winum-select-window-9))

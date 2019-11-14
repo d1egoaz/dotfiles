@@ -20,3 +20,4 @@
 (package! multi-term)
 (package! prettier-js)
 (package! tldr)
+(package! winum)
