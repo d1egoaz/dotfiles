@@ -134,10 +134,15 @@
         +attach          ; custom attachment system
         +babel           ; running code in org
         +capture         ; org-capture in and outside of Emacs
+        +dragndrop
         +export          ; Exporting org to whatever you want
+        +gnuplot
         +habit           ; Keep track of your habits
         +present         ; Emacs for presentations
-        +protocol)       ; Support for org-protocol:// links
+        +protocol
+        :lang go
+        :lang rest
+        )       ; Support for org-protocol:// links
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
