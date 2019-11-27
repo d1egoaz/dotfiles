@@ -1,69 +1,80 @@
-;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
+#+TITLE: My emacs doom configuration
+#+AUTHOR: Diego Alvarez
+#+EMAIL: diego.canada@icloud.com
+#+LANGUAGE: en
+#+STARTUP: inlineimages
+#+PROPERTY: header-args :tangle yes :cache yes :results silent :padline no
 
+* [0/2] Tasks :noexport:
+** [ ] Finish documentation of ...
+
+* Configuration
+** Personal Information
+*** Set full name and email
+#+BEGIN_SRC emacs-lisp
+(setq
+ user-full-name "Diego Alvarez"
+ user-mail-address "diego.canada@icloud.com"
+ )
+#+END_SRC
+
+* rest
+#+BEGIN_SRC emacs-lisp
 ;; currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 
-;; Place your private configuration here
-;;
-(if (eq system-type 'darwin)
-    (setq
-     doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'light)
-     ))
-(if (eq system-type 'gnu/linux)
-    (setq
-     doom-font (font-spec :family "Iosevka SS04" :size 30)
-     doom-variable-pitch-font (font-spec :family "Noto Sans" :size 30)
-     ))
-
-(setq +pretty-code-iosevka-font-name "Iosevka SS04")
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 
+(if (eq system-type 'darwin)
+    (setq doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'light)))
+(if (eq system-type 'gnu/linux)
+    (setq doom-font (font-spec :family "Iosevka SS04" :size 30)))
+
+(setq +pretty-code-iosevka-font-name "Iosevka SS04")
+
+;; loads the theme immediately, to modify faces afterwards
+(load-theme 'doom-dracula t)
+(set-foreground-color "#b2b2b2")
+
 (setq
- user-full-name "Diego Alvarez"
- user-mail-address "diego.canada@icloud.com"
  doom-themes-enable-bold nil
  doom-localleader-key ","
  display-line-numbers-type 'relative
  which-key-idle-delay 0.3
+
  ;; stay on the original character when leaving insert mode
  evil-move-cursor-back nil
  evil-shift-round nil
-
  evil-insert-state-cursor '((bar . 2) "#ff00ff")
  evil-normal-state-cursor '(box "#ff00ff")
- ;; disable .#file.ext creation
- create-lockfiles nil
+ create-lockfiles nil ;; disable .#file.ext creation
 
  ;; deft
  deft-directory "~/gdrive/deft"
  deft-use-filename-as-title t
- deft-use-filename-as-title t
 
- ;; Scroll compilation output to first error
- compilation-scroll-output 'first-error
+ compilation-scroll-output 'first-error ;; Scroll compilation output to first error
 
  ;; backups
- backup-directory-alist '((".*" . "~/emacs_backups/per-save"))
+ auto-save-default t
  auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
+ auto-save-interval 200
+ auto-save-timeout 20
  backup-by-copying t
- version-control t
- delete-old-versions t
+ backup-directory-alist '((".*" . "~/emacs_backups/per-save"))
  delete-by-moving-to-trash t
+ delete-old-versions t
  kept-new-versions 6
  kept-old-versions 2
- vc-make-backup-files t
- auto-save-default t
- auto-save-timeout 20
- auto-save-interval 200
  make-backup-files t ;; <- DISABLED
+ vc-make-backup-files t
+ version-control t
 
  ;; avy
- ;; avy-all-windows nil
  avy-all-windows 'all-frames
  avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p)
- ;; used for avy-goto-char-timer
- avy-timeout-seconds 0.3
+ avy-timeout-seconds 0.3 ;; used for avy-goto-char-timer
 
  ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
  smerge-refine-ignore-whitespace nil
@@ -75,13 +86,6 @@
  ivy-extra-directories nil
  )
 
-
-;; loads the theme immediately, to modify faces afterwards
-(load-theme 'doom-dracula t)
-
-(set-foreground-color "#b2b2b2")
-;;(set-background-color "#1e1e1e")
-
 ;; Disable arrows keys in evil mode
 (define-key evil-insert-state-map [left] 'undefined)
 (define-key evil-insert-state-map [right] 'undefined)
@@ -92,7 +96,7 @@
 (define-key evil-motion-state-map [up] 'undefined)
 (define-key evil-motion-state-map [down] 'undefined)
 
-;; disable mouse
+;; disable mouse, mouse is to far from hand
 (defun nothing())
 (define-key evil-normal-state-map (kbd "<down-mouse-1>") 'nothing)
 (dolist (mouse '("<mouse-1>" "<mouse-2>" "<mouse-3>"
@@ -105,7 +109,6 @@
                  "<drag-mouse-4>" "<drag-mouse-5>"
                  "<wheel-up>" "<wheel-down>" "<wheel-left>" "<wheel-right>"))
   (global-unset-key (kbd mouse)))
-
 (fset 'evil-visual-update-x-selection 'ignore)
 
 ;; ************** ORG-MODE **************
@@ -117,27 +120,22 @@
   (if (eq system-type 'gnu/linux)
       (setq org-download-screenshot-method "import  %s"))
   (setq
-   org-directory "~/gdrive/deft"
    org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
    org-agenda-span 16
    org-agenda-start-day "-3d"
-   org-blank-before-new-entry
-   '((heading . always)
-     (plain-list-item . nil))
+   org-blank-before-new-entry '((heading . always) (plain-list-item . nil))
+   org-clock-out-remove-zero-time-clocks nil
    org-confirm-babel-evaluate nil
    org-default-notes-file "~/gdrive/deft/notes.org"
+   org-directory "~/gdrive/deft"
    org-download-heading-lvl nil
    org-download-image-dir "~/gdrive/deft/images"
    org-download-method 'directory
    org-log-into-drawer t
-   org-refile-targets '(("~/gdrive/deft/gtd-inbox.org" :maxlevel . 1)
-                        ("~/gdrive/deft/gtd-personal.org" :level . 1)
-                        ("~/gdrive/deft/gtd-work.org" :maxlevel . 2))
+   org-refile-targets '(("~/gdrive/deft/gtd-inbox.org" :maxlevel . 1) ("~/gdrive/deft/gtd-personal.org" :level . 1) ("~/gdrive/deft/gtd-work.org" :maxlevel . 2))
    org-src-fontify-natively t
    org-startup-with-inline-images t
-   org-clock-out-remove-zero-time-clocks nil
-   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
-   ;; ! is to log event on logbook drawer
+   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)")) ;; ! is to log event on logbook drawer
    org-capture-templates
    '(
      ;; example:
@@ -159,7 +157,8 @@
    )
 
   (add-hook! 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
-;;
+
+
 ;; go get golang.org/x/tools/gopls@latest
 (after! go-mode
   (add-hook! 'go-mode-hook
@@ -216,24 +215,7 @@
    lsp-ui-doc-max-height 30
    lsp-ui-doc-use-childframe t
    lsp-ui-doc-use-webkit t
-   ;; ;; lsp-ui-flycheck
-   ;; lsp-ui-flycheck-enable nil
-   ;; ;; lsp-ui-sideline
    lsp-ui-sideline-enable nil
-   ;; lsp-ui-sideline-ignore-duplicate t
-   ;; lsp-ui-sideline-show-symbol t
-   ;; lsp-ui-sideline-show-hover t
-   ;; lsp-ui-sideline-show-diagnostics nil
-   ;; lsp-ui-sideline-show-code-actions t
-   ;; lsp-ui-sideline-code-actions-prefix ""
-   ;; ;; lsp-ui-imenu
-   ;; lsp-ui-imenu-enable t
-   ;; lsp-ui-imenu-kind-position 'top
-   ;; ;; lsp-ui-peek
-   ;; lsp-ui-peek-enable t
-   ;; lsp-ui-peek-peek-height 40
-   ;; lsp-ui-peek-list-width 90
-   ;; lsp-ui-peek-fontify 'on-demand
    ))
 
 (after! tldr
@@ -246,15 +228,13 @@
   (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../"))))
 
 (setq google-translate-default-source-language "en"
-        google-translate-default-target-language "sp")
+      google-translate-default-target-language "sp")
+
 ;; loads ENV variables
 (setq
  exec-path-from-shell-check-startup-files nil
  exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
 (exec-path-from-shell-initialize)
-
-;; whitespace mode
-;; (global-whitespace-mode) ;; Toggle whitespace visualization globally.
 
 (defun github-conversation-p (window-title)
   (or (string-match-p "Pull Request" window-title)
@@ -329,3 +309,5 @@
 (load! "+bindings")
 
 (message ">>> done loading init file <<<")
+
+#+END_SRC
