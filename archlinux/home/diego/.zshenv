@@ -17,6 +17,7 @@ PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:$PATH"
 # go
 export GOROOT=$(go env GOROOT)
 export GOPATH="$HOME/go:$HOME:$HOME/code/go"
+export GOPRIVATE="github.com/Shopify/*"
 PATH="$PATH:$HOME/go/bin"
 
 # ruby
