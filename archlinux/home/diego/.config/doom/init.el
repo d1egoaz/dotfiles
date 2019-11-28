@@ -75,8 +75,6 @@
         +habit           ; Keep track of your habits
         +present         ; Emacs for presentations
         +protocol
-        :lang go
-        :lang rest
         :tools pdf
         )       ; Support for org-protocol:// links
        rest              ; Emacs as a REST client

@@ -1,3 +1,4 @@
 bin/initHS.sh
 bin/kinitload.sh
 emacs/custom.el
+/archlinux/home/diego/.config/doom/config.el
