@@ -8,9 +8,6 @@
 - [[#install-emacs][Install Emacs]]
 - [[#personal-information][Personal Information]]
   - [[#set-full-name-and-email][Set full name and email]]
-- [[#doom][Doom]]
-  - [[#leader-key-similar-to-spacemacs-spc-m][Leader key similar to Spacemacs SPC-m]]
-  - [[#load-private-modules][Load private modules]]
 - [[#emacs-core][Emacs core]]
   - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
   - [[#relative-line-numbers][Relative line numbers]]
@@ -19,7 +16,7 @@
   - [[#backups][Backups]]
   - [[#which-key][Which key]]
   - [[#avoid-file-changed-on-disk-checking-message][Avoid file changed on disk checking message]]
-  - [[#enables-narrowing][Enables narrowing]]
+  - [[#enables-narrowing-functions][Enables narrowing functions]]
   - [[#include-underscores-and-hyphen-in-word-motions][Include underscores and hyphen in word motions]]
   - [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
 - [[#ui][UI]]
@@ -27,7 +24,6 @@
   - [[#disable-bold-fonts][Disable bold fonts]]
   - [[#theme-and-foreground-color][Theme and foreground color]]
   - [[#change-cursor-color-evil-mode][Change cursor color evil-mode]]
-  - [[#enables-solaire-globally][Enables Solaire globally]]
 - [[#lang][Lang]]
   - [[#org][org]]
   - [[#go][go]]
@@ -54,9 +50,12 @@
   - [[#magit][Magit]]
   - [[#tldr][tl;dr]]
 - [[#misc][Misc]]
-  - [[#add-to-list][Add to list]]
+  - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
   - [[#popup-rules][Popup rules]]
-- [[#bindings][Bindings]]
+- [[#doom][Doom]]
+  - [[#leader-key-similar-to-spacemacs-spc-m][Leader key similar to Spacemacs SPC-m]]
+  - [[#load-private-modules][Load private modules]]
+  - [[#bindings][Bindings]]
 
 * Install Emacs
 Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
@@ -67,17 +66,6 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 (setq
  user-full-name "Diego Alvarez"
  user-mail-address "diego.canada@icloud.com")
-#+END_SRC
-
-* Doom
-** Leader key similar to Spacemacs SPC-m
-#+BEGIN_SRC emacs-lisp
-(setq doom-localleader-key ",")
-#+END_SRC
-
-** Load private modules
-#+BEGIN_SRC emacs-lisp
-(load! "+funcs")
 #+END_SRC
 
 * Emacs core
@@ -95,6 +83,7 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 
 ** Disable lock files
 Disables .#file.ext creation.
+
 #+BEGIN_SRC emacs-lisp
 (setq  create-lockfiles nil)
 #+END_SRC
@@ -131,7 +120,7 @@ Disables .#file.ext creation.
 #+BEGIN_SRC emacs-lisp
 (setq revert-without-query '(".*"))
 #+END_SRC
-** Enables narrowing
+** Enables narrowing functions
 #+BEGIN_SRC emacs-lisp
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
@@ -139,10 +128,11 @@ Disables .#file.ext creation.
 #+END_SRC
 
 ** Include underscores and hyphen in word motions
-#+BEGIN_SRC emacs-lisp
-(add-hook! 'emacs-lisp-mode-hook (modify-syntax-entry ?- "w"))
-(add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?_ "w"))
+='after-change-major-mode-hook= to change every mode.
 
+#+BEGIN_SRC emacs-lisp
+(add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?_ "w"))
+(add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?- "w"))
 #+END_SRC
 
 ** Whitespace cleanup on buffer save
@@ -181,11 +171,6 @@ Loads the theme immediately, to modify faces afterwards.
 (setq
  evil-insert-state-cursor '((bar . 2) "#ff00ff")
  evil-normal-state-cursor '(box "#ff00ff"))
-#+END_SRC
-
-** Enables Solaire globally
-#+BEGIN_SRC emacs-lisp
-(solaire-global-mode nil)
 #+END_SRC
 
 * Lang
@@ -236,7 +221,6 @@ Loads the theme immediately, to modify faces afterwards.
    )
 
   (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
-
 #+END_SRC
 ** go
 *** Get latest gopls
@@ -433,7 +417,7 @@ Mouse is to far from the hand.
 #+END_SRC
 
 * Misc
-** Add to list
+** Set default modes to some specific file extensions
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.aliases\\'" . sh-mode))
@@ -444,15 +428,24 @@ Mouse is to far from the hand.
 (set-popup-rule! "^\\*doom:vterm*" :ignore t :select t :quit t)
 #+END_SRC
 
-* Bindings
+* Doom
+** Leader key similar to Spacemacs SPC-m
+#+BEGIN_SRC emacs-lisp
+(setq doom-localleader-key ",")
+#+END_SRC
+
+** Load private modules
+#+BEGIN_SRC emacs-lisp
+(load! "+funcs")
+#+END_SRC
+** Bindings
 #+BEGIN_SRC emacs-lisp
 ;; Unbind keys
 (map! :leader
       "A" nil
       "X" nil
       "w -" nil
-      "h P" nil
-      )
+      "h P" nil)
 
 (map! :leader "`" #'evil-switch-to-windows-last-buffer)
 
