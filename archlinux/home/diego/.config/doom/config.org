@@ -6,101 +6,105 @@
 
 * Table of Contents                                                      :TOC_3:
 - [[#install-emacs][Install Emacs]]
-- [[#configuration][Configuration]]
-  - [[#personal-information][Personal Information]]
-    - [[#set-full-name-and-email][Set full name and email]]
-  - [[#doom][Doom]]
-    - [[#leader-key-similar-to-spacemacs-spc-m][Leader key similar to Spacemacs SPC-m]]
-    - [[#load-private-modules][Load private modules]]
-  - [[#emacs-core][Emacs core]]
-    - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
-    - [[#relative-line-numbers][Relative line numbers]]
-    - [[#disable-lock-files][Disable lock files]]
-    - [[#scroll-compilation-output-to-first-error][Scroll compilation output to first error]]
-    - [[#backups][Backups]]
-    - [[#which-key][Which key]]
-    - [[#avoid-file-changed-on-disk-checking-message][Avoid file changed on disk checking message]]
-    - [[#enables-narrowing][Enables narrowing]]
-    - [[#include-underscores-and-hyphen-in-word-motions][Include underscores and hyphen in word motions]]
-    - [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
-  - [[#ui][UI]]
-    - [[#use-iosevka-ss04-with-font-ligatures][Use Iosevka SS04 with font ligatures]]
-    - [[#disable-bold-fonts][Disable bold fonts]]
-    - [[#theme-and-foreground-color][Theme and foreground color]]
-    - [[#change-cursor-color-evil-mode][Change cursor color evil-mode]]
-    - [[#enables-solaire-globally][Enables Solaire globally]]
-  - [[#lang][Lang]]
-    - [[#org][org]]
-    - [[#go][go]]
-    - [[#lsp][LSP]]
-  - [[#packages][Packages]]
-    - [[#avy][Avy]]
-    - [[#counsel][Counsel]]
-    - [[#deft][Deft]]
-    - [[#emacs-anywhere][Emacs Anywhere]]
-    - [[#emojify][Emojify]]
-    - [[#evil][Evil]]
-    - [[#exec-path-from-shell][Exec Path From Shell]]
-    - [[#git-link][Git Link]]
-    - [[#google-translate][Google Translate]]
-    - [[#highlight-thing][Highlight Thing]]
-    - [[#highlight-indent-guides][Highlight Indent Guides]]
-    - [[#ivy][Ivy]]
-    - [[#magit][Magit]]
-    - [[#tldr][tl;dr]]
-  - [[#misc][Misc]]
-    - [[#add-to-list][Add to list]]
-    - [[#popup-rules][Popup rules]]
-  - [[#bindings][Bindings]]
+- [[#personal-information][Personal Information]]
+  - [[#set-full-name-and-email][Set full name and email]]
+- [[#doom][Doom]]
+  - [[#leader-key-similar-to-spacemacs-spc-m][Leader key similar to Spacemacs SPC-m]]
+  - [[#load-private-modules][Load private modules]]
+- [[#emacs-core][Emacs core]]
+  - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
+  - [[#relative-line-numbers][Relative line numbers]]
+  - [[#disable-lock-files][Disable lock files]]
+  - [[#scroll-compilation-output-to-first-error][Scroll compilation output to first error]]
+  - [[#backups][Backups]]
+  - [[#which-key][Which key]]
+  - [[#avoid-file-changed-on-disk-checking-message][Avoid file changed on disk checking message]]
+  - [[#enables-narrowing][Enables narrowing]]
+  - [[#include-underscores-and-hyphen-in-word-motions][Include underscores and hyphen in word motions]]
+  - [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
+- [[#ui][UI]]
+  - [[#use-iosevka-ss04-with-font-ligatures][Use Iosevka SS04 with font ligatures]]
+  - [[#disable-bold-fonts][Disable bold fonts]]
+  - [[#theme-and-foreground-color][Theme and foreground color]]
+  - [[#change-cursor-color-evil-mode][Change cursor color evil-mode]]
+  - [[#enables-solaire-globally][Enables Solaire globally]]
+- [[#lang][Lang]]
+  - [[#org][org]]
+  - [[#go][go]]
+    - [[#get-latest-gopls][Get latest gopls]]
+    - [[#go-mode][go-mode]]
+  - [[#lsp][LSP]]
+- [[#packages][Packages]]
+  - [[#avy][Avy]]
+  - [[#counsel][Counsel]]
+  - [[#deft][Deft]]
+  - [[#emacs-anywhere][Emacs Anywhere]]
+  - [[#emojify][Emojify]]
+  - [[#evil][Evil]]
+    - [[#stay-on-the-original-character-when-leaving-insert-mode][Stay on the original character when leaving insert mode]]
+    - [[#disable-arrow-keys][Disable arrow keys]]
+    - [[#disable-mouse][Disable mouse]]
+  - [[#exec-path-from-shell][Exec Path From Shell]]
+  - [[#git-link][Git Link]]
+  - [[#google-translate][Google Translate]]
+  - [[#highlight-thing][Highlight Thing]]
+  - [[#highlight-indent-guides][Highlight Indent Guides]]
+  - [[#ivy][Ivy]]
+    - [[#remove--and--from-file-commands][Remove ./ and ../ from file commands]]
+  - [[#magit][Magit]]
+  - [[#tldr][tl;dr]]
+- [[#misc][Misc]]
+  - [[#add-to-list][Add to list]]
+  - [[#popup-rules][Popup rules]]
+- [[#bindings][Bindings]]
 
 * Install Emacs
 Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 
-* Configuration
-** Personal Information
-*** Set full name and email
+* Personal Information
+** Set full name and email
 #+BEGIN_SRC emacs-lisp
 (setq
  user-full-name "Diego Alvarez"
  user-mail-address "diego.canada@icloud.com")
 #+END_SRC
 
-** Doom
-*** Leader key similar to Spacemacs SPC-m
+* Doom
+** Leader key similar to Spacemacs SPC-m
 #+BEGIN_SRC emacs-lisp
 (setq doom-localleader-key ",")
 #+END_SRC
 
-*** Load private modules
+** Load private modules
 #+BEGIN_SRC emacs-lisp
 (load! "+funcs")
 #+END_SRC
 
-** Emacs core
-*** Move custom configuration to its own file
+* Emacs core
+** Move custom configuration to its own file
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 #+END_SRC
 
-*** Relative line numbers
+** Relative line numbers
 #+BEGIN_SRC emacs-lisp
 (setq display-line-numbers-type 'relative)
 #+END_SRC
 
-*** Disable lock files
+** Disable lock files
 Disables .#file.ext creation.
 #+BEGIN_SRC emacs-lisp
 (setq  create-lockfiles nil)
 #+END_SRC
 
-*** Scroll compilation output to first error
+** Scroll compilation output to first error
 #+BEGIN_SRC emacs-lisp
 (setq compilation-scroll-output 'first-error)
 #+END_SRC
 
-*** Backups
+** Backups
 #+BEGIN_SRC emacs-lisp
 (setq
  auto-save-default t
@@ -118,35 +122,35 @@ Disables .#file.ext creation.
  version-control t)
 #+END_SRC
 
-*** Which key
+** Which key
 #+BEGIN_SRC emacs-lisp
 (setq  which-key-idle-delay 0.3)
 #+END_SRC
 
-*** Avoid file changed on disk checking message
+** Avoid file changed on disk checking message
 #+BEGIN_SRC emacs-lisp
 (setq revert-without-query '(".*"))
 #+END_SRC
-*** Enables narrowing
+** Enables narrowing
 #+BEGIN_SRC emacs-lisp
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 #+END_SRC
 
-*** Include underscores and hyphen in word motions
+** Include underscores and hyphen in word motions
 #+BEGIN_SRC emacs-lisp
 (add-hook! 'emacs-lisp-mode-hook (modify-syntax-entry ?- "w"))
 (add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?_ "w"))
 
 #+END_SRC
 
-*** Whitespace cleanup on buffer save
+** Whitespace cleanup on buffer save
 #+BEGIN_SRC emacs-lisp
 (add-hook 'before-save-hook #'whitespace-cleanup)
 #+END_SRC
-** UI
-*** Use Iosevka SS04 with font ligatures
+* UI
+** Use Iosevka SS04 with font ligatures
 #+BEGIN_SRC emacs-lisp
 (if (eq system-type 'darwin)
     (setq doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'light)))
@@ -156,12 +160,12 @@ Disables .#file.ext creation.
 (setq +pretty-code-iosevka-font-name "Iosevka SS04")
 #+END_SRC
 
-*** Disable bold fonts
+** Disable bold fonts
 #+BEGIN_SRC emacs-lisp
 (setq doom-themes-enable-bold nil)
 #+END_SRC
 
-*** Theme and foreground color
+** Theme and foreground color
 Loads the theme immediately, to modify faces afterwards.
 #+BEGIN_SRC emacs-lisp
 (load-theme 'doom-dracula t)
@@ -172,20 +176,20 @@ Loads the theme immediately, to modify faces afterwards.
   `(font-lock-variable-name-face :foreground "#56b6c2"))
 #+END_SRC
 
-*** Change cursor color evil-mode
+** Change cursor color evil-mode
 #+BEGIN_SRC emacs-lisp
 (setq
  evil-insert-state-cursor '((bar . 2) "#ff00ff")
  evil-normal-state-cursor '(box "#ff00ff"))
 #+END_SRC
 
-*** Enables Solaire globally
+** Enables Solaire globally
 #+BEGIN_SRC emacs-lisp
 (solaire-global-mode nil)
 #+END_SRC
 
-** Lang
-*** org
+* Lang
+** org
 #+BEGIN_SRC emacs-lisp
 (after! org
   ;; fixes M-RET to create or elements
@@ -234,13 +238,13 @@ Loads the theme immediately, to modify faces afterwards.
   (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 
 #+END_SRC
-*** go
-**** Get latest gopls
+** go
+*** Get latest gopls
 #+BEGIN_EXAMPLE
 cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+END_EXAMPLE
 
-**** go-mode
+*** go-mode
 #+BEGIN_SRC emacs-lisp
 (after! go-mode
   (add-hook! 'go-mode-hook
@@ -252,7 +256,7 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
    gofmt-command "goimports")) ;; original gofmt
 #+END_SRC
 
-*** LSP
+** LSP
 #+BEGIN_SRC emacs-lisp
 (after! lsp-ui
   (setq
@@ -267,8 +271,8 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
    lsp-ui-sideline-enable nil))
 #+END_SRC
 
-** Packages
-*** Avy
+* Packages
+** Avy
 #+BEGIN_SRC emacs-lisp
 (setq
  avy-all-windows 'all-frames
@@ -277,21 +281,21 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
  avy-timeout-seconds 0.3)
 #+END_SRC
 
-*** Counsel
+** Counsel
 Shows all files, including hidden files, ignores files =.= and =..=
 #+BEGIN_SRC emacs-lisp
 (after! counsel
   (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../"))))
 #+END_SRC
 
-*** Deft
+** Deft
 #+BEGIN_SRC emacs-lisp
 (setq
  deft-directory "~/gdrive/deft"
  deft-use-filename-as-title t)
 #+END_SRC
 
-*** Emacs Anywhere
+** Emacs Anywhere
 #+BEGIN_SRC emacs-lisp
 (defun github-conversation-p (window-title)
   (or (string-match-p "Pull Request" window-title)
@@ -311,20 +315,20 @@ Shows all files, including hidden files, ignores files =.= and =..=
 (add-hook 'ea-popup-hook #'popup-handler)
 #+END_SRC
 
-*** Emojify
+** Emojify
 #+BEGIN_SRC emacs-lisp
 (setq emojify-emoji-set "twemoji-v2"
       emojify-display-style 'unicode)
 #+END_SRC
-*** Evil
-**** Stay on the original character when leaving insert mode
+** Evil
+*** Stay on the original character when leaving insert mode
 #+BEGIN_SRC emacs-lisp
 (setq
  evil-move-cursor-back nil
  evil-shift-round nil)
 #+END_SRC
 
-**** Disable arrow keys
+*** Disable arrow keys
 #+BEGIN_SRC emacs-lisp
 (define-key evil-insert-state-map [left] 'undefined)
 (define-key evil-insert-state-map [right] 'undefined)
@@ -336,7 +340,7 @@ Shows all files, including hidden files, ignores files =.= and =..=
 (define-key evil-motion-state-map [down] 'undefined)
 #+END_SRC
 
-**** Disable mouse
+*** Disable mouse
 Mouse is to far from the hand.
 #+BEGIN_SRC emacs-lisp
 (defun nothing())
@@ -354,7 +358,7 @@ Mouse is to far from the hand.
 (fset 'evil-visual-update-x-selection 'ignore)
 #+END_SRC
 
-*** Exec Path From Shell
+** Exec Path From Shell
 #+BEGIN_SRC emacs-lisp
 (setq
  exec-path-from-shell-check-startup-files nil
@@ -362,17 +366,17 @@ Mouse is to far from the hand.
 (exec-path-from-shell-initialize)
 #+END_SRC
 
-*** Git Link
+** Git Link
 #+BEGIN_SRC emacs-lisp
 (setq git-link-open-in-browser t)
 #+END_SRC
 
-*** Google Translate
+** Google Translate
 #+BEGIN_SRC emacs-lisp
 (setq google-translate-default-source-language "en"
       google-translate-default-target-language "sp")
 #+END_SRC
-*** Highlight Thing
+** Highlight Thing
 #+BEGIN_SRC emacs-lisp
 (after! highlight-thing-mode
   (setq
@@ -387,21 +391,21 @@ Mouse is to far from the hand.
 (add-hook! '(prog-mode-hook conf-mode yaml-mode emacs-lisp-mode) #'highlight-thing-mode)
 #+END_SRC
 
-*** Highlight Indent Guides
+** Highlight Indent Guides
 #+BEGIN_SRC emacs-lisp
 (setq highlight-indent-guides-method 'character)
 (add-hook 'focus-in-hook #'highlight-indent-guides-auto-set-faces)
 (add-hook! '(yaml-mode-hook prog-mode) #'highlight-indent-guides-mode)
 #+END_SRC
 
-*** Ivy
-**** Remove ./ and ../ from file commands
+** Ivy
+*** Remove ./ and ../ from file commands
 #+BEGIN_SRC emacs-lisp
 (setq
  ivy-extra-directories nil)
 #+END_SRC
 
-*** Magit
+** Magit
 #+BEGIN_SRC emacs-lisp
 (after! magit
   (setq magit-refs-show-commit-count nil
@@ -422,26 +426,25 @@ Mouse is to far from the hand.
 ;; (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
 #+END_SRC
 
-*** tl;dr
+** tl;dr
 #+BEGIN_SRC emacs-lisp
 (after! tldr
   (setq tldr-directory-path (concat doom-etc-dir "tldr/")))
 #+END_SRC
 
-** Misc
-
-*** Add to list
+* Misc
+** Add to list
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.aliases\\'" . sh-mode))
 #+END_SRC
 
-*** Popup rules
+** Popup rules
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "^\\*doom:vterm*" :ignore t :select t :quit t)
 #+END_SRC
 
-** Bindings
+* Bindings
 #+BEGIN_SRC emacs-lisp
 ;; Unbind keys
 (map! :leader
