@@ -48,6 +48,9 @@
   - [[#ivy][Ivy]]
     - [[#remove--and--from-file-commands][Remove ./ and ../ from file commands]]
   - [[#magit][Magit]]
+    - [[#tune-magit][Tune magit]]
+    - [[#set-project-list][Set project list]]
+  - [[#projectile][Projectile]]
   - [[#tldr][tl;dr]]
 - [[#misc][Misc]]
   - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
@@ -390,6 +393,8 @@ Mouse is to far from the hand.
 #+END_SRC
 
 ** Magit
+
+*** Tune magit
 #+BEGIN_SRC emacs-lisp
 (after! magit
   (setq magit-refs-show-commit-count nil
@@ -408,6 +413,26 @@ Mouse is to far from the hand.
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 ;; (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
 ;; (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
+#+END_SRC
+
+*** Set project list
+#+BEGIN_SRC emacs-lisp
+(after! magit
+  (setq magit-repository-directories
+        '(
+          ("~/src/github.com/Shopify" . 2)
+          ("~/code/" . 2)
+          ("~/dotfiles/" . 1))))
+#+END_SRC
+
+** Projectile
+#+BEGIN_SRC emacs-lisp
+(after! magit
+  (after! projectile
+    (mapc #'projectile-add-known-project
+          (mapcar #'file-name-as-directory (magit-list-repos)))
+    ;; Optionally write to persistent `projectile-known-projects-file'
+    (projectile-save-known-projects)))
 #+END_SRC
 
 ** tl;dr
