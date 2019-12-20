@@ -1,7 +1,5 @@
 ;;; ~/dotfiles/archlinux/home/diego/.config/doom/+funcs.el -*- lexical-binding: t; -*-
 
-;; shamelessly copied from Spacemacs
-
 (defun diego/delete-last-character-end-of-line ()
   "Delete last character in line"
   (interactive)
@@ -109,6 +107,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; SPACEMACS FUNCS
+;; shamelessly copied from Spacemacs
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (defun spacemacs/safe-erase-buffer ()
