@@ -42,6 +42,7 @@
 
        :emacs
        (dired +icons)
+       (ibuffer +icons)
        electric          ; smarter, keyword-based electric-indent
        vc                ; version-control and Emacs, sitting in a tree
 
@@ -51,20 +52,23 @@
        :tools
        docker
        eval              ; run code, run (also, repls)
-       flycheck          ; tasing you for every semicolon you forget
-       flyspell          ; tasing you for misspelling mispelling
-       lookup           ; helps you navigate your code and documentation
+       (lookup +dictionary) ; helps you navigate your code and documentation
        lsp
        magit             ; a git porcelain for Emacs
        pdf               ; pdf enhancements
+
+       :checkers
+       (syntax +childframe) ; Live error/warning highlights
+       (spell +everywhere) ; Spell checking
+       grammar
 
        :lang
        data              ; config/data formats
        emacs-lisp        ; drown in parentheses
        (go +lsp)
        javascript        ; all(hope(abandon(ye(who(enter(here))))))
-       markdown          ; writing docs for people to ignore
-       sh
+       (markdown +grip)  ; writing docs for people to ignore
+       (sh +lsp)
        (org              ; organize your plain life in plain text
         +attach          ; custom attachment system
         +babel           ; running code in org
@@ -79,14 +83,12 @@
         )       ; Support for org-protocol:// links
        rest              ; Emacs as a REST client
        ;;ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+       (rust +lsp)
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        web               ; the tubes
 
        :app
        regex
-       (write            ; emacs as a word processor (latex + org + markdown)
-       +wordnut         ; wordnet (wn) search
-       +langtool)       ; a proofreader (grammar/style check) for Emacs
 
        :config
        ;; For literate config users. This will tangle+compile a config.org

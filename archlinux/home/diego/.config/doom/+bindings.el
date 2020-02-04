@@ -92,7 +92,9 @@
        :desc "Show"                      "m" #'lsp-ui-imenu
        :desc "Hide"                      "q" #'lsp-ui-imenu--kill)
      (:prefix ("r" . "refactor")
-       :desc "Rename"                    "r" #'lsp-rename))
+       :desc "Rename"                    "r" #'lsp-rename)
+     (:prefix ("s" . "show")
+       :desc "show signature"            "s" #'lsp-signature-activate))
    (:desc "+narrow/notes" :prefix "n"
      :desc "narrow region"   "r" #'narrow-to-region
      :desc "narrow defun"   "f" #'narrow-to-defun

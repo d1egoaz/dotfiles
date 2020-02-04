@@ -61,6 +61,7 @@
 (defun diego/git-create-branch-from-origin-master ()
   "Creates a new branch starting from origin/master."
   (interactive)
+  (magit-fetch-branch "origin" "master" nil)
   (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
     (magit-git-command-topdir
      (concat "git checkout -b " new_branch_name " origin/master"))))
@@ -139,7 +140,7 @@ the current state and point position."
   (interactive)
   (process-send-string vterm--process "\C-m"))
 
-(defun diego/save-ispell-word ()
+(defun diego/save-add-ispell-word ()
   (interactive)
   (let ((word (read-from-minibuffer "A word you want to add to dictionary: " (word-at-point))))
     (ispell-send-string (concat "*" word "\n"))

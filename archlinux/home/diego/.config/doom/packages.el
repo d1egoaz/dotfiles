@@ -9,6 +9,7 @@
 ;; fixes por ENV variables
 
 (package! asx) ;; https://github.com/ragone/asx
+(package! command-log-mode)
 (package! deadgrep)
 (package! dockerfile-mode)
 (package! emojify)
@@ -16,7 +17,10 @@
 (package! google-translate)
 (package! highlight-indent-guides)
 (package! highlight-thing)
-(package! multi-libvterm :recipe (:host github :repo "d1egoaz/multi-libvterm"))
+(package! kubectl :recipe (:host github :repo "jypma/kubectl"))
+(package! markdown-changelog)
+(package! multi-libvterm :recipe (:host github :repo "suonlight/multi-libvterm"))
 (package! multi-term)
+(package! powerthesaurus)
 (package! prettier-js)
 (package! tldr)

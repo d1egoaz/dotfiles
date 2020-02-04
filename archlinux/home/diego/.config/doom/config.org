@@ -9,6 +9,8 @@
 - [[#personal-information][Personal Information]]
   - [[#set-full-name-and-email][Set full name and email]]
 - [[#emacs-core][Emacs core]]
+  - [[#constants][Constants]]
+  - [[#improve-keyboard-layout-command-control][Improve keyboard layout command->control]]
   - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
   - [[#relative-line-numbers][Relative line numbers]]
   - [[#disable-lock-files][Disable lock files]]
@@ -19,6 +21,7 @@
   - [[#enables-narrowing-functions][Enables narrowing functions]]
   - [[#include-underscores-and-hyphen-in-word-motions][Include underscores and hyphen in word motions]]
   - [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
+  - [[#delete-by-moving-to-trash][Delete by moving to trash]]
 - [[#ui][UI]]
   - [[#use-iosevka-ss04-with-font-ligatures][Use Iosevka SS04 with font ligatures]]
   - [[#disable-bold-fonts][Disable bold fonts]]
@@ -26,6 +29,8 @@
   - [[#change-cursor-color-evil-mode][Change cursor color evil-mode]]
 - [[#lang][Lang]]
   - [[#org][org]]
+    - [[#general][General]]
+    - [[#bullet-list][bullet list]]
   - [[#go][go]]
     - [[#get-latest-gopls][Get latest gopls]]
     - [[#go-mode][go-mode]]
@@ -72,6 +77,27 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 #+END_SRC
 
 * Emacs core
+
+** Constants
+#+BEGIN_SRC emacs-lisp
+(defconst IS-MAC     (eq system-type 'darwin))
+(defconst IS-LINUX   (eq system-type 'gnu/linux))
+#+END_SRC
+
+** Improve keyboard layout command->control
+#+BEGIN_SRC emacs-lisp
+;; +-----+-----+-----+-----+-------------------+-----+-----+
+;; |     |     |     |     |                   |     |     |
+;; |Fn   |Ctrl |Optn |Cmd  |       Space       |Cmd  |Optn | [arrows]
+;; +-----+-----+-----+-----+-------------------+-----+-----+
+(when IS-MAC
+  (setq
+   ns-command-modifier 'control
+   ns-option-modifier 'meta
+   ns-control-modifier 'super
+   ns-function-modifier 'hyper))
+#+END_SRC
+
 ** Move custom configuration to its own file
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
@@ -142,8 +168,17 @@ Disables .#file.ext creation.
 #+BEGIN_SRC emacs-lisp
 (add-hook 'before-save-hook #'whitespace-cleanup)
 #+END_SRC
+** Delete by moving to trash
+#+BEGIN_SRC emacs-lisp
+(setq delete-by-moving-to-trash IS-MAC)
+#+END_SRC
+
 * UI
 ** Use Iosevka SS04 with font ligatures
+
+#+attr_html: :width 200
+[[attach:_20191224_113829screenshot.png]]
+
 #+BEGIN_SRC emacs-lisp
 (if (eq system-type 'darwin)
     (setq doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'light)))
@@ -178,6 +213,7 @@ Loads the theme immediately, to modify faces afterwards.
 
 * Lang
 ** org
+*** General
 #+BEGIN_SRC emacs-lisp
 (after! org
   ;; fixes M-RET to create or elements
@@ -225,6 +261,12 @@ Loads the theme immediately, to modify faces afterwards.
 
   (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 #+END_SRC
+
+*** bullet list
+#+BEGIN_SRC emacs-lisp
+(setq org-bullets-bullet-list '("✸" "●" "◉" "○" "◌"))
+#+END_SRC
+
 ** go
 *** Get latest gopls
 #+BEGIN_EXAMPLE
