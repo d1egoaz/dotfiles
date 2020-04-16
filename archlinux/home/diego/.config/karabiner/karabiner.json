@@ -452,6 +452,42 @@
                                 "type": "basic"
                             }
                         ]
+                    },
+                    {
+                        "description": "shortcust with num keypad",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "keypad_0"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "7",
+                                        "modifiers": [
+                                            "left_command",
+                                            "left_control",
+                                            "left_shift"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "keypad_period"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "v",
+                                        "modifiers": [
+                                            "left_command",
+                                            "left_control"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
                     }
                 ]
             },
@@ -485,14 +521,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "left_command"
                             },
@@ -501,14 +529,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "left_control"
                             },
@@ -517,14 +537,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "right_command"
                             },
@@ -547,14 +559,6 @@
                     "manipulate_caps_lock_led": false,
                     "simple_modifications": [
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "application"
                             },
@@ -563,14 +567,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "caps_lock"
                             },
@@ -579,14 +575,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "escape"
                             },
@@ -595,14 +583,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "left_command"
                             },
@@ -611,14 +591,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "left_control"
                             },
@@ -627,14 +599,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "left_option"
                             },
@@ -643,14 +607,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "right_control"
                             },
@@ -659,14 +615,6 @@
                             }
                         },
                         {
-                            "conditions": [
-                                {
-                                    "bundle_identifiers": [
-                                        "org.gnu.Emacs"
-                                    ],
-                                    "type": "frontmost_application_unless"
-                                }
-                            ],
                             "from": {
                                 "key_code": "right_option"
                             },

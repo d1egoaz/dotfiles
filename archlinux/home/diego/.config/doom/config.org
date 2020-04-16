@@ -8,6 +8,7 @@
 - [[#install-emacs][Install Emacs]]
 - [[#personal-information][Personal Information]]
   - [[#set-full-name-and-email][Set full name and email]]
+- [[#important-doom-emacs-information][Important doom-emacs information]]
 - [[#emacs-core][Emacs core]]
   - [[#constants][Constants]]
   - [[#improve-keyboard-layout-command-control][Improve keyboard layout command->control]]
@@ -76,8 +77,10 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
  user-mail-address "diego.canada@icloud.com")
 #+END_SRC
 
+* Important doom-emacs information
+- All variables definition containing files/directories should be outside
+  =(after! ...)=
 * Emacs core
-
 ** Constants
 #+BEGIN_SRC emacs-lisp
 (defconst IS-MAC     (eq system-type 'darwin))
@@ -196,12 +199,13 @@ Disables .#file.ext creation.
 ** Theme and foreground color
 Loads the theme immediately, to modify faces afterwards.
 #+BEGIN_SRC emacs-lisp
-(load-theme 'doom-dracula t)
-(set-foreground-color "#b2b2b2")
-(doom-themes-set-faces nil
-  '(default :foreground "#bbc2cf"))
-(custom-set-faces!
-  `(font-lock-variable-name-face :foreground "#56b6c2"))
+;; (load-theme 'doom-dracula t)
+(load-theme 'doom-one t)
+;; (set-foreground-color "#b2b2b2")
+;; (doom-themes-set-faces nil
+;;   '(default :foreground "#bbc2cf"))
+;; (custom-set-faces!
+;;   `(font-lock-variable-name-face :foreground "#56b6c2"))
 #+END_SRC
 
 ** Change cursor color evil-mode
@@ -215,30 +219,37 @@ Loads the theme immediately, to modify faces afterwards.
 ** org
 *** General
 #+BEGIN_SRC emacs-lisp
+(if (eq system-type 'darwin)
+    (setq org-download-screenshot-method "screencapture -i %s"))
+(if (eq system-type 'gnu/linux)
+    (setq org-download-screenshot-method "import  %s"))
+(setq
+ org-directory "~/gdrive/deft"
+ org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
+ org-attach-id-dir (file-name-as-directory (concat (file-name-as-directory org-directory) "images"))
+ org-attach-directory org-attach-id-dir
+ org-default-notes-file (concat (file-name-as-directory org-directory) "notes.org")
+ org-download-image-dir org-attach-directory
+ org-download-image-html-width 500
+ org-refile-targets '(("~/gdrive/deft/gtd-inbox.org" :maxlevel . 1) ("~/gdrive/deft/gtd-personal.org" :level . 1) ("~/gdrive/deft/gtd-work.org" :maxlevel . 2)))
+
+
 (after! org
   ;; fixes M-RET to create or elements
   (org-defkey org-mode-map [(meta return)] 'org-meta-return)
-  (if (eq system-type 'darwin)
-      (setq org-download-screenshot-method "screencapture -i %s"))
-  (if (eq system-type 'gnu/linux)
-      (setq org-download-screenshot-method "import  %s"))
   (setq
-   org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
    org-agenda-span 16
    org-agenda-start-day "-3d"
    org-blank-before-new-entry '((heading . always) (plain-list-item . nil))
    org-clock-out-remove-zero-time-clocks nil
    org-confirm-babel-evaluate nil
-   org-default-notes-file "~/gdrive/deft/notes.org"
-   org-directory "~/gdrive/deft"
    org-download-heading-lvl nil
-   org-download-image-dir "~/gdrive/deft/images"
    org-download-method 'directory
    org-log-into-drawer t
-   org-refile-targets '(("~/gdrive/deft/gtd-inbox.org" :maxlevel . 1) ("~/gdrive/deft/gtd-personal.org" :level . 1) ("~/gdrive/deft/gtd-work.org" :maxlevel . 2))
    org-src-fontify-natively t
    org-startup-with-inline-images t
-   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)")) ;; ! is to log event on logbook drawer
+   ;; ! is to log event on logbook drawer
+   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
    org-capture-templates
    '(
      ;; example:
@@ -256,8 +267,7 @@ Loads the theme immediately, to modify faces afterwards.
      ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
      ("j" "Journal" entry (file+olp+datetree "~/gdrive/deft/journal.org")
-      "* %?" :clock-in t :clock-resume t))
-   )
+      "* %?" :clock-in t :clock-resume t)))
 
   (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 #+END_SRC
@@ -326,22 +336,42 @@ Shows all files, including hidden files, ignores files =.= and =..=
 
 ** Emacs Anywhere
 #+BEGIN_SRC emacs-lisp
-(defun github-conversation-p (window-title)
+(defun markdown-window-p (window-title)
+  "Judges from WINDOW-TITLE whether the current window likes markdown"
   (or (string-match-p "Pull Request" window-title)
       (string-match-p "Issue" window-title)
-      ;; ...
-      ))
+      (string-match-p "Discord" window-title)))
 
-(defun popup-handler (app-name window-title x y w h)
-  (unless (zerop w)
-    (set-frame-size (selected-frame) 1000 500 t))
+(defun ea-popup-handler (app-name window-title x y w h)
+  (interactive)
+  ;; (set-frame-size (selected-frame) 1000 500 t)
+  (set-frame-size (selected-frame) 80 12)
   ;; set major mode
   (cond
-   ((github-conversation-p window-title) (gfm-mode))
-   ;; ...
-   (t (markdown-mode)) ; default major mode
-   ))
-(add-hook 'ea-popup-hook #'popup-handler)
+   ((markdown-window-p window-title) (gfm-mode))
+   ;; default major mode
+   (t (org-mode)))
+
+  ;; (when (gui-selection-value)
+  ;;   (insert (gui-selection-value)))
+
+  ;; (when (gui-get-primary-selection)
+  ;;   (insert (gui-get-selection 'PRIMARY)))
+  ;; (insert (gui-selection-value))
+  ;; (insert (gui-get-primary-selection))
+  ;; (insert (x-get-selection 'PRIMARY)))
+  (when (gui-get-selection 'PRIMARY)
+    (insert (gui-get-selection 'PRIMARY)))
+
+  ;; (insert (funcall interprogram-paste-function))
+  (evil-insert-state)
+
+  (local-set-key
+   (kbd "C-c C-c") (lambda () (interactive)
+                     (local-unset-key (kbd "C-c C-c"))
+                     (delete-frame)))
+  )
+(add-hook 'ea-popup-hook #'ea-popup-handler)
 #+END_SRC
 
 ** Emojify
@@ -416,6 +446,7 @@ Mouse is to far from the hand.
 
 (doom-themes-set-faces nil
   '(highlight-thing :foreground "orange" :background "black"))
+(global-highlight-thing-mode 1)
 
 (add-hook! '(prog-mode-hook conf-mode yaml-mode emacs-lisp-mode) #'highlight-thing-mode)
 #+END_SRC

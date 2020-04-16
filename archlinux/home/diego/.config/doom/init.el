@@ -15,7 +15,7 @@
        :ui
        deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
+       ;; doom-dashboard    ; a nifty splash screen for Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE tags
        modeline          ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink the current line after jumping
@@ -68,6 +68,7 @@
        (go +lsp)
        javascript        ; all(hope(abandon(ye(who(enter(here))))))
        (markdown +grip)  ; writing docs for people to ignore
+       nix
        (sh +lsp)
        (org              ; organize your plain life in plain text
         +attach          ; custom attachment system
