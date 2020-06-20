@@ -20,6 +20,9 @@ export GOPATH="$HOME/go:$HOME:$HOME/code/go"
 export GOPRIVATE="github.com/Shopify/*"
 PATH="$PATH:$HOME/go/bin"
 
+# doom and org-capture
+PATH="$PATH:$HOME/.emacs.d/bin"
+
 # ruby
 PATH="$HOME/.nvm/versions/node/v8.9.4/bin:$HOME/.gem/ruby/2.4.4/bin:/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin:/opt/rubies/2.4.4/bin:$PATH"
 
