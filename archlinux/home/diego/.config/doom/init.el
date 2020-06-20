@@ -22,8 +22,8 @@
        ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
-        +all             ; catch all popups that start with an asterix
-        +defaults)       ; default popup rules
+        +defaults        ; default popup rules
+        +all)            ; catch all popups that start with an asterix
        (pretty-code
         +iosevka)       ; replace bits of code with pretty symbols
        treemacs          ; a project drawer, like neotree but cooler
@@ -36,7 +36,7 @@
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
        multiple-cursors  ; editing in many places at once
-       rotate-text       ; cycle region at point between text candidates
+       ;; rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
        format
 
@@ -44,6 +44,7 @@
        (dired +icons)
        (ibuffer +icons)
        electric          ; smarter, keyword-based electric-indent
+       undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
@@ -51,11 +52,11 @@
 
        :tools
        docker
-       eval              ; run code, run (also, repls)
+       (eval +overlay)   ; run code, run (also, repls)
        (lookup +dictionary) ; helps you navigate your code and documentation
-       lsp
+       (lsp +peek)
        (magit +forge)    ; a git porcelain for Emacs
-       pdf               ; pdf enhancements
+       ;; pdf               ; pdf enhancements
 
        :checkers
        (syntax +childframe) ; Live error/warning highlights
@@ -67,26 +68,27 @@
        emacs-lisp        ; drown in parentheses
        (go +lsp)
        javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       json              ; At least it ain't XML
        (markdown +grip)  ; writing docs for people to ignore
        nix
        plantuml
        (sh +lsp)
        (org              ; organize your plain life in plain text
-        +attach          ; custom attachment system
-        +babel           ; running code in org
-        +capture         ; org-capture in and outside of Emacs
+        ;; +attach          ; custom attachment system
+        ;; +babel           ; running code in org
+        ;; +capture         ; org-capture in and outside of Emacs
         +dragndrop
-        +export          ; Exporting org to whatever you want
+        ;; +export          ; Exporting org to whatever you want
         +gnuplot
-        +habit           ; Keep track of your habits
-        +present         ; Emacs for presentations
+        ;; +habit           ; Keep track of your habits
+        ;; +present         ; Emacs for presentations
         +protocol
-        :tools pdf
+        ;; :tools pdf
         )       ; Support for org-protocol:// links
        rest              ; Emacs as a REST client
        ;;ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
        (rust +lsp)
-       sh                ; she sells {ba,z,fi}sh shells on the C xor
+       (sh +lsp)         ; she sells {ba,z,fi}sh shells on the C xor
        web               ; the tubes
        (yaml +lsp)
 
