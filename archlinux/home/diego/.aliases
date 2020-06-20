@@ -26,6 +26,7 @@ yolo () {
 }
 
 em() {
+  set -x
   if [[ -z $@ ]]; then
     emacsclient -t $(fzf-tmux) 2>/dev/null
   else

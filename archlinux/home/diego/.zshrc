@@ -18,6 +18,7 @@ if [[ "$TERM" == "dumb" ]]; then
 fi
 
 source $ZSH/oh-my-zsh.sh
+source ~/.config/fzf/base16-tomorrow-night.config
 
 bindkey '^k' history-substring-search-up
 bindkey '^j' history-substring-search-down

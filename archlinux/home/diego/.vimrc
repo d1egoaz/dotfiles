@@ -1,7 +1,7 @@
-set number
+"set number
 syntax enable
 set background=dark
-colorscheme gruvbox
+colorscheme base16-tomorrow-night
 nnoremap <leader>y :call system('nc -U ~/.local/share/clipper/clipper.sock', @0)<CR>
 " set mouse=a
 
