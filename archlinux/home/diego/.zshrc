@@ -10,6 +10,13 @@ else
   ZSH_THEME="in-fino-veritas"
 fi
 
+if [[ "$TERM" == "dumb" ]]; then
+  unset zle_bracketed_paste
+  unset zle
+  PS1='$ '
+  return
+fi
+
 source $ZSH/oh-my-zsh.sh
 
 bindkey '^k' history-substring-search-up
