@@ -15,20 +15,21 @@
   - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
   - [[#relative-line-numbers][Relative line numbers]]
   - [[#disable-lock-files][Disable lock files]]
-  - [[#scroll-compilation-output-to-first-error][Scroll compilation output to first error]]
-  - [[#backups][Backups]]
-  - [[#which-key][Which key]]
-  - [[#avoid-file-changed-on-disk-checking-message][Avoid file changed on disk checking message]]
-  - [[#enables-narrowing-functions][Enables narrowing functions]]
-  - [[#include-underscores-and-hyphen-in-word-motions][Include underscores and hyphen in word motions]]
-  - [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
-  - [[#delete-by-moving-to-trash][Delete by moving to trash]]
+- [[#scroll-compilation-output-to-first-error][Scroll compilation output to first error]]
+- [[#backups][Backups]]
+- [[#which-key][Which key]]
+- [[#avoid-file-changed-on-disk-checking-message][Avoid file changed on disk checking message]]
+- [[#enables-narrowing-functions][Enables narrowing functions]]
+- [[#include-underscores-and-hyphen-in-word-motions][Include underscores and hyphen in word motions]]
+- [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
+- [[#delete-by-moving-to-trash][Delete by moving to trash]]
 - [[#ui][UI]]
   - [[#use-iosevka-ss04-with-font-ligatures][Use Iosevka SS04 with font ligatures]]
   - [[#disable-bold-fonts][Disable bold fonts]]
   - [[#theme-and-foreground-color][Theme and foreground color]]
   - [[#change-cursor-color-evil-mode][Change cursor color evil-mode]]
 - [[#lang][Lang]]
+  - [[#company][Company]]
   - [[#org][org]]
     - [[#general][General]]
     - [[#bullet-list][bullet list]]
@@ -36,6 +37,7 @@
     - [[#get-latest-gopls][Get latest gopls]]
     - [[#go-mode][go-mode]]
   - [[#lsp][LSP]]
+  - [[#plantuml][plantuml]]
 - [[#packages][Packages]]
   - [[#avy][Avy]]
   - [[#counsel][Counsel]]
@@ -58,6 +60,7 @@
     - [[#set-project-list][Set project list]]
   - [[#projectile][Projectile]]
   - [[#tldr][tl;dr]]
+  - [[#elfeed][elfeed]]
 - [[#misc][Misc]]
   - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
   - [[#popup-rules][Popup rules]]
@@ -65,6 +68,8 @@
   - [[#leader-key-similar-to-spacemacs-spc-m][Leader key similar to Spacemacs SPC-m]]
   - [[#load-private-modules][Load private modules]]
   - [[#bindings][Bindings]]
+  - [[#disable-inserting-the-comment-syntax-on-newlines-when-editing-an-existing-comment][Disable inserting the comment syntax on newlines when editing an existing comment]]
+  - [[#keycast][keycast]]
 
 * Install Emacs
 Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
@@ -120,12 +125,12 @@ Disables .#file.ext creation.
 (setq  create-lockfiles nil)
 #+END_SRC
 
-** Scroll compilation output to first error
+* Scroll compilation output to first error
 #+BEGIN_SRC emacs-lisp
 (setq compilation-scroll-output 'first-error)
 #+END_SRC
 
-** Backups
+* Backups
 #+BEGIN_SRC emacs-lisp
 (setq
  auto-save-default t
@@ -143,23 +148,23 @@ Disables .#file.ext creation.
  version-control t)
 #+END_SRC
 
-** Which key
+* Which key
 #+BEGIN_SRC emacs-lisp
 (setq  which-key-idle-delay 0.3)
 #+END_SRC
 
-** Avoid file changed on disk checking message
+* Avoid file changed on disk checking message
 #+BEGIN_SRC emacs-lisp
 (setq revert-without-query '(".*"))
 #+END_SRC
-** Enables narrowing functions
+* Enables narrowing functions
 #+BEGIN_SRC emacs-lisp
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 #+END_SRC
 
-** Include underscores and hyphen in word motions
+* Include underscores and hyphen in word motions
 ='after-change-major-mode-hook= to change every mode.
 
 #+BEGIN_SRC emacs-lisp
@@ -167,11 +172,11 @@ Disables .#file.ext creation.
 (add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?- "w"))
 #+END_SRC
 
-** Whitespace cleanup on buffer save
+* Whitespace cleanup on buffer save
 #+BEGIN_SRC emacs-lisp
 (add-hook 'before-save-hook #'whitespace-cleanup)
 #+END_SRC
-** Delete by moving to trash
+* Delete by moving to trash
 #+BEGIN_SRC emacs-lisp
 (setq delete-by-moving-to-trash IS-MAC)
 #+END_SRC
@@ -200,12 +205,14 @@ Disables .#file.ext creation.
 Loads the theme immediately, to modify faces afterwards.
 #+BEGIN_SRC emacs-lisp
 ;; (load-theme 'doom-dracula t)
-(load-theme 'doom-one t)
+;; (load-theme 'doom-one t)
+;; (load-theme 'base16-atelier-dune t)
+;; (load-theme 'base16-onedark t)
+(load-theme 'base16-tomorrow-night t)
 ;; (set-foreground-color "#b2b2b2")
 ;; (doom-themes-set-faces nil
 ;;   '(default :foreground "#bbc2cf"))
-;; (custom-set-faces!
-;;   `(font-lock-variable-name-face :foreground "#56b6c2"))
+(custom-set-faces! `(font-lock-variable-name-face :foreground "#56b6c2"))
 #+END_SRC
 
 ** Change cursor color evil-mode
@@ -216,6 +223,13 @@ Loads the theme immediately, to modify faces afterwards.
 #+END_SRC
 
 * Lang
+** Company
+#+BEGIN_SRC emacs-lisp
+(after! company
+  (setq company-idle-delay 0.5)
+  (setq company-minimum-prefix-length 1))
+
+#+END_SRC
 ** org
 *** General
 #+BEGIN_SRC emacs-lisp
@@ -236,11 +250,11 @@ Loads the theme immediately, to modify faces afterwards.
 
 (after! org
   ;; fixes M-RET to create or elements
-  (org-defkey org-mode-map [(meta return)] 'org-meta-return)
+  ;; (org-defkey org-mode-map [(meta return)] 'org-meta-return)
   (setq
    org-agenda-span 16
    org-agenda-start-day "-3d"
-   org-blank-before-new-entry '((heading . always) (plain-list-item . nil))
+   org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
    org-clock-out-remove-zero-time-clocks nil
    org-confirm-babel-evaluate nil
    org-download-heading-lvl nil
@@ -267,9 +281,8 @@ Loads the theme immediately, to modify faces afterwards.
      ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
      ("j" "Journal" entry (file+olp+datetree "~/gdrive/deft/journal.org")
-      "* %?" :clock-in t :clock-resume t)))
-
-  (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
+      "* %?" :clock-in t :clock-resume t))))
+  ;; (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
 #+END_SRC
 
 *** bullet list
@@ -287,12 +300,17 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+BEGIN_SRC emacs-lisp
 (after! go-mode
   (add-hook! 'go-mode-hook
-    (add-hook 'before-save-hook #'gofmt-before-save))
-  (add-hook 'go-mode-hook #'flyspell-prog-mode)
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t)
+    (add-hook 'go-mode-hook #'flyspell-prog-mode))
   (setq
    ;; uses go provided tools
    godef-command "go doc" ;; original godef
    gofmt-command "goimports")) ;; original gofmt
+
+(after! lsp-mode
+  (lsp-register-custom-settings '(("gopls.completeUnimported" t t) ("gopls.staticcheck" t t))))
+
 #+END_SRC
 
 ** LSP
@@ -308,6 +326,13 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
    lsp-ui-doc-use-childframe t
    lsp-ui-doc-use-webkit t
    lsp-ui-sideline-enable nil))
+#+END_SRC
+
+#+RESULTS:
+
+** plantuml
+#+BEGIN_SRC emacs-lisp
+(setq plantuml-default-exec-mode 'jar)
 #+END_SRC
 
 * Packages
@@ -338,32 +363,23 @@ Shows all files, including hidden files, ignores files =.= and =..=
 #+BEGIN_SRC emacs-lisp
 (defun markdown-window-p (window-title)
   "Judges from WINDOW-TITLE whether the current window likes markdown"
-  (or (string-match-p "Pull Request" window-title)
-      (string-match-p "Issue" window-title)
-      (string-match-p "Discord" window-title)))
+  (string-match-p (rx (or "Pull Request" "Issue" "Slack"))
+                  window-title))
 
 (defun ea-popup-handler (app-name window-title x y w h)
   (interactive)
-  ;; (set-frame-size (selected-frame) 1000 500 t)
-  (set-frame-size (selected-frame) 80 12)
+  (set-frame-size (selected-frame) 120 18)
   ;; set major mode
+  (message (concat "called from " window-title))
   (cond
    ((markdown-window-p window-title) (gfm-mode))
    ;; default major mode
    (t (org-mode)))
 
-  ;; (when (gui-selection-value)
-  ;;   (insert (gui-selection-value)))
-
-  ;; (when (gui-get-primary-selection)
-  ;;   (insert (gui-get-selection 'PRIMARY)))
-  ;; (insert (gui-selection-value))
-  ;; (insert (gui-get-primary-selection))
-  ;; (insert (x-get-selection 'PRIMARY)))
+  ;; doest' work on OSX
   (when (gui-get-selection 'PRIMARY)
     (insert (gui-get-selection 'PRIMARY)))
 
-  ;; (insert (funcall interprogram-paste-function))
   (evil-insert-state)
 
   (local-set-key
@@ -439,7 +455,10 @@ Mouse is to far from the hand.
 #+BEGIN_SRC emacs-lisp
 (after! highlight-thing-mode
   (setq
-   highlight-thing-limit-to-region-in-large-buffers-p t
+   ;; highlight-thing-limit-to-region-in-large-buffers-p t
+   highlight-thing-limit-to-region-in-large-buffers-p nil
+   highlight-thing-narrow-region-lines 15
+   highlight-thing-large-buffer-limit 5000
    highlight-thing-case-sensitive-p t
    highlight-thing-limit-to-defun t
    highlight-thing-exclude-thing-under-point t))
@@ -479,7 +498,12 @@ Mouse is to far from the hand.
         magit-log-section-arguments  '("-n50" "--decorate") ;; was: ("-n256" "--decorate")
         magit-log-select-arguments '("-n50" "--decorate")  ;; was: '("-n256" "--decorate")
         ;; magit hunk highlight whitespace, https://github.com/magit/magit/issues/1689
-        smerge-refine-ignore-whitespace nil)
+        smerge-refine-ignore-whitespace nil
+        magit-diff-paint-whitespace-lines 'all
+        magit-commit-show-diff nil
+        magit-section-initial-visibility-alist
+        '((stashes . hide) (untracked . hide) (unpushed . show))
+        magit-display-buffer-function 'diego/magit-to-the-right)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
   ;; automatic spellchecking in commit messages
@@ -513,6 +537,19 @@ Mouse is to far from the hand.
 (after! tldr
   (setq tldr-directory-path (concat doom-etc-dir "tldr/")))
 #+END_SRC
+** elfeed
+#+BEGIN_SRC emacs-lisp
+(after! elfeed
+  (doom-themes-set-faces nil
+    '(elfeed-search-tag-face :foreground "#98c379")
+    '(elfeed-search-feed-face :foreground "#e5c07b")
+    '(elfeed-search-unread-title-face :foreground "#bbc2cf")
+    '(elfeed-search-title-face :foreground "#565c64"))
+  (setq elfeed-search-filter "@2-weeks-ago +unread"
+        elfeed-search-title-max-width 100
+        elfeed-search-date-format '("%a %b-%d" 10 :left)
+        elfeed-sort-order 'ascending))
+#+END_SRC
 
 * Misc
 ** Set default modes to some specific file extensions
@@ -523,7 +560,12 @@ Mouse is to far from the hand.
 
 ** Popup rules
 #+BEGIN_SRC emacs-lisp
-(set-popup-rule! "^\\*doom:vterm*" :ignore t :select t :quit t)
+(set-popup-rule! "^\\*doom:vterm*" :side 'right :select t :quit t)
+(set-popup-rule! "^\\*kubel - *" :side 'right :size 100 :select t :quit t)
+(set-popup-rule! "^\\*Messages\\*" :select t :quit t)
+(set-popup-rule! "^\\*tldr\\*" :size 82 :side 'right :select t :quit t)
+(set-popup-rule! "^CAPTURE-.*\\.org$" :quit nil :select t :autosave t)
+;; (set-popup-rule! "^\\(?:\\*magit\\|magit:\\| \\*transient\\*\\)" :ignore nil :side 'right :select t)
 #+END_SRC
 
 * Doom
@@ -539,4 +581,28 @@ Mouse is to far from the hand.
 ** Bindings
 #+BEGIN_SRC emacs-lisp
 (load! "+bindings")
+#+END_SRC
+
+** Disable inserting the comment syntax on newlines when editing an existing comment
+#+BEGIN_SRC emacs-lisp
+(setq +evil-want-o/O-to-continue-comments nil)
+#+END_SRC
+
+** keycast
+#+BEGIN_SRC emacs-lisp
+(after! keycast
+  (define-minor-mode keycast-mode
+    "Show current command and its key binding in the mode line."
+    :global t
+    (if keycast-mode
+        (add-hook 'pre-command-hook 'keycast-mode-line-update t)
+      (remove-hook 'pre-command-hook 'keycast-mode-line-update)))
+  (setq keycast-substitute-alist '((evil-next-line nil nil)
+                                   (evil-previous-line nil nil)
+                                   (evil-forward-char nil nil)
+                                   (evil-backward-char nil nil)
+                                   (ivy-done nil nil)
+                                   (self-insert-command nil nil))))
+(add-to-list 'global-mode-string '("" mode-line-keycast))
+(keycast-mode)
 #+END_SRC

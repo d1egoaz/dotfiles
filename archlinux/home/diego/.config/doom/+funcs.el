@@ -58,10 +58,14 @@
     (message str)
     (shell-command-to-string str)))
 
+(defun diego/fetch-origin-master ()
+  (interactive)
+  (magit-fetch-branch "origin" "master" nil))
+
 (defun diego/git-create-branch-from-origin-master ()
   "Creates a new branch starting from origin/master."
   (interactive)
-  (magit-fetch-branch "origin" "master" nil)
+  (diego/fetch-origin-master)
   (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
     (magit-git-command-topdir
      (concat "git checkout -b " new_branch_name " origin/master"))))
@@ -145,3 +149,89 @@ the current state and point position."
   (let ((word (read-from-minibuffer "A word you want to add to dictionary: " (word-at-point))))
     (ispell-send-string (concat "*" word "\n"))
     (setq ispell-pdict-modified-p '(t))))
+
+(defun diego/magit-to-the-right (buffer)
+  "Opens magit window on the right"
+  (interactive)
+  (delete-other-windows) ;; make space for other windows
+  (split-window-right) ;; create a new window to host magit
+  (evil-window-right 1) ;; move to that window
+  (+magit-display-buffer-fn buffer))
+
+(defun diego/elfeed-ivy-filter ()
+  (interactive)
+  (let
+      ((filtered-tag (ivy-completing-read "Choose Tags: " (elfeed-db-get-all-tags))))
+    (progn
+      (setq elfeed-search-filter (concat elfeed-search-filter " +" filtered-tag))
+      (elfeed-search-update :force)))
+  (beginning-of-buffer))
+
+(defun diego/new-scratch-buffer ()
+  "New temporary scratch buffer with a random name."
+  (interactive)
+  (switch-to-buffer (make-temp-name "scratch-"))
+  (org-mode))
+
+(defun diego/refill-paragraphs ()
+  "fill individual paragraphs with large fill column"
+  (interactive)
+  (let ((fill-column 100000))
+    (fill-individual-paragraphs (region-beginning) (region-end))))
+
+(defun diego/rename-local-var (name)
+  (interactive "sEnter new name: ")
+  (let ((var (word-at-point)))
+    (mark-defun)
+    (replace-string var name nil (region-beginning) (region-end))))
+
+(defun diego/eshell-here ()
+  "Opens up a new shell in the directory associated with the
+    current buffer's file. The eshell is renamed to match that
+    directory to make multiple eshell windows easier."
+  (interactive)
+  (eshell "new"))
+
+(defun diego/what-is-my-ip ()
+  (interactive)
+  (message "IP: %s"
+           (with-current-buffer (url-retrieve-synchronously "https://ifconfig.me/ip")
+             (buffer-substring (+ 1 url-http-end-of-headers) (point-max)))))
+
+
+(defun diego/go-coverage-here ()
+  "Show go coverage of current file."
+  (interactive)
+  (shell-command "go test . -coverprofile=cover.out")
+  (go-coverage "cover.out"))
+
+(defun diego/elfeed-v-mpv (url)
+  "Watch a video from URL in MPV"
+  ;; (async-shell-command (format "mpv %s" url)))
+  (message url))
+
+(defun diego/elfeed-view-mpv ()
+  "Youtube-feed link"
+  (interactive)
+	(diego/elfeed-v-mpv (elfeed-entry-link (car (elfeed-search-selected))))      ;
+  (unless (use-region-p) (forward-line)))
+
+(defun diego/elfeed-mark-all-as-read ()
+  (interactive)
+  (mark-whole-buffer)
+  (elfeed-search-untag-all-unread))
+
+(cl-defun diego/elfeed-search-selected-map (fn)
+  "Map FN across selected entries in elfeed-search buffer using `mapcar'."
+  (mapcar fn (elfeed-search-selected)))
+
+(defun diego/elfeed-search-browse-chrome ()
+  (interactive)
+  (diego/elfeed-search-selected-map #'message))
+
+;; based on https://github.com/eddsteel/df-emacs/blob/master/edd/edd-util.el
+(defun diego/find-open-next-url ()
+  (interactive)
+  (search-forward-regexp goto-address-url-regexp)
+  (backward-word)
+  (browse-url-at-point))

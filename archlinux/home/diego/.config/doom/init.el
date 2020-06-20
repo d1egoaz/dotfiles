@@ -17,7 +17,7 @@
        doom              ; what makes DOOM look the way it does
        ;; doom-dashboard    ; a nifty splash screen for Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE tags
-       modeline          ; snazzy, Atom-inspired modeline, plus API
+       (modeline +light) ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink the current line after jumping
        ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
@@ -54,7 +54,7 @@
        eval              ; run code, run (also, repls)
        (lookup +dictionary) ; helps you navigate your code and documentation
        lsp
-       magit             ; a git porcelain for Emacs
+       (magit +forge)    ; a git porcelain for Emacs
        pdf               ; pdf enhancements
 
        :checkers
@@ -69,6 +69,7 @@
        javascript        ; all(hope(abandon(ye(who(enter(here))))))
        (markdown +grip)  ; writing docs for people to ignore
        nix
+       plantuml
        (sh +lsp)
        (org              ; organize your plain life in plain text
         +attach          ; custom attachment system
@@ -87,9 +88,10 @@
        (rust +lsp)
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        web               ; the tubes
+       (yaml +lsp)
 
        :app
-       regex
+       (rss +org)
 
        :config
        ;; For literate config users. This will tangle+compile a config.org
