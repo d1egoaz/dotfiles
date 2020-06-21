@@ -19,6 +19,7 @@ fi
 
 source $ZSH/oh-my-zsh.sh
 source ~/.config/fzf/base16-tomorrow-night.config
+test -e ~/.fzf.zsh && source ~/.fzf.zsh
 
 bindkey '^k' history-substring-search-up
 bindkey '^j' history-substring-search-down

@@ -335,7 +335,8 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
-                                            "org.gnu.Emacs"
+                                            "org.gnu.Emacs",
+                                            "io.alacritty"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
