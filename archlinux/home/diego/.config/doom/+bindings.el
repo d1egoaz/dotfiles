@@ -145,7 +145,8 @@
         :n "s" #'elfeed-search-live-filter
         :n "t" #'diego/elfeed-ivy-filter
         :n "u" #'elfeed-search-tag-all-unread
-        :n "c" #'elfeed-search-clear-filter)
+        :n "c" #'elfeed-search-clear-filter
+        :n "e" #'diego/elfeed-open-with-eww)
   (map! :map elfeed-search-mode-map
         :localleader
         "u" #'elfeed-update))

@@ -229,9 +229,19 @@ the current state and point position."
   (interactive)
   (diego/elfeed-search-selected-map #'message))
 
+(defun diego/elfeed-open-with-eww ()
+  (interactive)
+  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single))))
+    (eww (elfeed-entry-link entry))
+    ;; (setq shr-use-fonts nil) ;; monospaced fonts
+    (add-hook 'eww-after-render-hook 'eww-readable nil t)))
+
 ;; based on https://github.com/eddsteel/df-emacs/blob/master/edd/edd-util.el
 (defun diego/find-open-next-url ()
   (interactive)
   (search-forward-regexp goto-address-url-regexp)
   (backward-word)
   (browse-url-at-point))
+
+    ;; (let ((rule (completing-read "style-rule "
+		;; 		 '("file.size.limit" "line.size.limit")
