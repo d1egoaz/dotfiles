@@ -264,6 +264,7 @@ Loads the theme immediately, to modify faces afterwards.
    org-src-fontify-natively t
    org-startup-with-inline-images t
    ;; ! is to log event on logbook drawer
+   ;; char defines a fast-access key for the state name
    org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
    org-capture-templates
    '(
@@ -466,7 +467,7 @@ Mouse is to far from the hand.
 
 (doom-themes-set-faces nil
   '(highlight-thing :foreground "orange" :background "black"))
-(global-highlight-thing-mode 1)
+;; (global-highlight-thing-mode 1)
 
 (add-hook! '(prog-mode-hook conf-mode yaml-mode emacs-lisp-mode) #'highlight-thing-mode)
 #+END_SRC
