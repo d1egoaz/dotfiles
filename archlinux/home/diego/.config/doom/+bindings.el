@@ -146,10 +146,10 @@
         :n "t" #'diego/elfeed-ivy-filter
         :n "u" #'elfeed-search-tag-all-unread
         :n "c" #'elfeed-search-clear-filter
-        :n "e" #'diego/elfeed-open-with-eww)
-  (map! :map elfeed-search-mode-map
-        :localleader
-        "u" #'elfeed-update))
+        :n "e" #'diego/elfeed-open-with-eww
+        :n "," #'diego/elfeed-filter)
+  (map! :map elfeed-show-mode-map
+        :n "n" #'diego/find-open-next-url))
 
 (after! kubel
   (map! :map kubel-mode-map

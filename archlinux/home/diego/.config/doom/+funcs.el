@@ -1,5 +1,7 @@
 ;;; ~/dotfiles/archlinux/home/diego/.config/doom/+funcs.el -*- lexical-binding: t; -*-
 
+(require 'transient)
+
 (defun diego/delete-last-character-end-of-line ()
   "Delete last character in line"
   (interactive)
@@ -160,12 +162,9 @@ the current state and point position."
 
 (defun diego/elfeed-ivy-filter ()
   (interactive)
-  (let
-      ((filtered-tag (ivy-completing-read "Choose Tags: " (elfeed-db-get-all-tags))))
-    (progn
-      (setq elfeed-search-filter (concat elfeed-search-filter " +" filtered-tag))
-      (elfeed-search-update :force)))
-  (beginning-of-buffer))
+  (let ((filtered-tag (ivy-completing-read "Choose Tags: " (elfeed-db-get-all-tags))))
+    (elfeed-search-set-filter (concat elfeed-search-filter " +" filtered-tag))
+    (goto-char (point-min))))
 
 (defun diego/new-scratch-buffer ()
   "New temporary scratch buffer with a random name."
@@ -233,8 +232,9 @@ the current state and point position."
   (interactive)
   (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single))))
     (eww (elfeed-entry-link entry))
-    ;; (setq shr-use-fonts nil) ;; monospaced fonts
-    (add-hook 'eww-after-render-hook 'eww-readable nil t)))
+    (elfeed-untag entry 'unread)
+    (add-hook 'eww-after-render-hook 'eww-readable nil t)
+    (forward-line)))
 
 ;; based on https://github.com/eddsteel/df-emacs/blob/master/edd/edd-util.el
 (defun diego/find-open-next-url ()
@@ -245,3 +245,24 @@ the current state and point position."
 
     ;; (let ((rule (completing-read "style-rule "
 		;; 		 '("file.size.limit" "line.size.limit")
+
+(define-transient-command diego/elfeed-filter ()
+  [["Arguments"
+    ("a" "apple" "+apple")
+    ("c" "Tech Crunch" "+techcrunch")
+    ("e" "emacs" "+emacs")
+    ("h" "Hacker News" "+hnews")
+    ("l" "linux" "+linux")
+    ("t" "top" "+top")
+    ("v" "verge" "+theverge")]
+   ["Reddit"
+    ("p" "r/Programming" "+programming")]
+   ["Actions"
+    ("f" "apply" diego/elfeed-filter-do)
+    ("u" "update" elfeed-update)]])
+
+(defun diego/elfeed-filter-do ()
+  (interactive)
+  (let ((tags (mapconcat 'identity (transient-args 'diego/elfeed-filter) " ")))
+    (elfeed-search-set-filter (format "@2-weeks-ago +unread %s" tags))
+    (goto-char (point-min))))
