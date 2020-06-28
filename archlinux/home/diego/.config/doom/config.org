@@ -351,7 +351,8 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 Shows all files, including hidden files, ignores files =.= and =..=
 #+BEGIN_SRC emacs-lisp
 (after! counsel
-  (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../"))))
+  (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../")))
+  (push '(counsel-rg . "-g ** -- ") ivy-initial-inputs-alist))
 #+END_SRC
 
 ** Deft
