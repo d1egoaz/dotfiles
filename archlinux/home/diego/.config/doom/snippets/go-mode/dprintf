@@ -3,4 +3,4 @@
 # name : debug dprintf
 # key: pd
 # --
-fmt.Printf("   >>> `(diego/copy-buffer-name)`/$0: $1: %T: %+v\n", $1, $1)
+fmt.Printf("   >>> `(buffer-name)`/$0: $1: %T: %+v\n", $1, $1)

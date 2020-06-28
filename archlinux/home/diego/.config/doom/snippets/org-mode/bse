@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: bse
+# key: bse            
+# --
+
+#+BEGIN_SRC emacs-lisp
+  $0
+#+END_SRC

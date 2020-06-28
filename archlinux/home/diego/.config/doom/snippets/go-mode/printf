@@ -3,4 +3,4 @@
 # name : printf
 # key: pp
 # --
-fmt.Println("   >>> `(diego/copy-buffer-name)`/$1: $2")
+fmt.Println("   >>> `(buffer-name)`/$1: $2")
