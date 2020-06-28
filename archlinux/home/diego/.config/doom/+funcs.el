@@ -18,8 +18,16 @@
 (defun diego/copy-buffer-name ()
   "copy buffer name"
   (interactive)
-  (message (buffer-name))
-  (kill-new (buffer-name)))
+  (let ((path (buffer-name)))
+    (message path
+    (kill-new path))))
+
+(defun diego/copy-buffer-dir-path ()
+  "copy buffer name"
+  (interactive)
+  (let ((path (file-name-directory (buffer-file-name))))
+    (message path)
+    (kill-new path)))
 
 (defun diego/url-to-markdown-image ()
   "copy url from clipboard and creates an url src image to paste in a markdown document"
