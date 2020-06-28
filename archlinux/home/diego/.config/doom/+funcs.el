@@ -274,3 +274,24 @@ the current state and point position."
   (let ((tags (mapconcat 'identity (transient-args 'diego/elfeed-filter) " ")))
     (elfeed-search-set-filter (format "@2-weeks-ago +unread %s" tags))
     (goto-char (point-min))))
+
+;; From https://www.reddit.com/r/emacs/comments/b058f8/weekly_tipstricketc_thread/eilbynr
+;; https://github.com/xenodium/dotsies/blob/master/emacs/ar/ar-misc.el
+(defun diego/diff-last-2-yanks ()
+  "Run ediff on latest two entries in `kill-ring'."
+  (interactive)
+  ;; Implementation depends on `lexical-binding' being t, otherwise #'clean-up
+  ;; will not be saved as closure to `ediff-cleanup-hook' and thus will lose
+  ;; reference to itself.
+  (let ((a (generate-new-buffer "*diff-yank a*"))
+        (b (generate-new-buffer "*diff-yank b*")))
+    (cl-labels ((clean-up ()
+                          (kill-buffer a)
+                          (kill-buffer b)
+                          (remove-hook 'ediff-cleanup-hook #'clean-up)))
+      (add-hook 'ediff-cleanup-hook #'clean-up)
+      (with-current-buffer a
+        (insert (elt kill-ring 0)))
+      (with-current-buffer b
+        (insert (elt kill-ring 1)))
+      (ediff-buffers a b))))
