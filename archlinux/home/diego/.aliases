@@ -92,5 +92,5 @@ echoRun() {
 
 # docker functions
 dos () {
-  echoRun docker kill $(docker ps --format '{{.Names}}' | fzf-tmux)
+  echoRun docker kill $(docker ps --format '{{.Names}}' | fzf-tmux --preview "")
 }
