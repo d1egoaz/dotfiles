@@ -14,6 +14,7 @@
 (package! deadgrep)
 (package! dockerfile-mode)
 (package! emojify)
+(package! engine-mode)
 (package! exec-path-from-shell)
 (package! google-translate)
 (package! hackernews)

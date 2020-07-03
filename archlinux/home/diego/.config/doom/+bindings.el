@@ -113,6 +113,7 @@
    :desc "Find file in project"        "f" #'projectile-find-file)
   (:desc "+search" :prefix "s"
    :desc "iedit"                       "e" #'iedit-mode ;; next item [TAB]
+   :desc "engine"                      "E" #'diego/engine-searches
    :desc "Search buffer"               "s" #'swiper-isearch
    :desc "Search project"              "p" #'+default/search-project
    :desc "Look up online"              "o" #'+lookup/online-select)

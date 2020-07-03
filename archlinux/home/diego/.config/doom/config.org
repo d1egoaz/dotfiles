@@ -61,6 +61,7 @@
   - [[#projectile][Projectile]]
   - [[#tldr][tl;dr]]
   - [[#elfeed][elfeed]]
+  - [[#engine-mode][engine-mode]]
 - [[#misc][Misc]]
   - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
   - [[#popup-rules][Popup rules]]
@@ -554,6 +555,18 @@ Mouse is to far from the hand.
         elfeed-sort-order 'ascending))
 #+END_SRC
 
+** engine-mode
+#+BEGIN_SRC emacs-lisp
+  (after! engine-mode
+    (engine-mode t)
+    (defengine giphy "https://giphy.com/search/%s")
+    (defengine github "https://github.com/search?ref=simplesearch&q=%s")
+    (defengine google "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s")
+    (defengine powerthesaurus "https://www.powerthesaurus.org/%s/synonyms")
+    (defengine stack-overflow "https://stackoverflow.com/search?q=%s")
+    (defengine tenor "https://tenor.com/search/%s-gifs")
+    (defengine twitter "https://twitter.com/search?q=%s"))
+#+END_SRC
 * Misc
 ** Set default modes to some specific file extensions
 #+BEGIN_SRC emacs-lisp

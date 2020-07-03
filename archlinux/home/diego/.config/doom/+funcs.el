@@ -295,3 +295,16 @@ the current state and point position."
       (with-current-buffer b
         (insert (elt kill-ring 1)))
       (ediff-buffers a b))))
+
+(define-transient-command diego/engine-searches ()
+  [
+   ["Code"
+    ("c g" "Github" engine/search-github)
+    ("c s" "Stack Overflow" engine/search-stack-overflow)]
+   ["Gifs"
+    ("g t" "Tenor" engine/search-tenor)
+    ("g g" "Giphy" engine/search-giphy)]
+   ["Engines"
+    ("o g" "Google" engine/search-google)
+    ("o t" "Twitter" engine/search-twitter)
+    ("o p" "Powerthesaurus" engine/search-powerthesaurus)]])
