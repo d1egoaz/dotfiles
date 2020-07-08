@@ -117,7 +117,8 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 
 ** Relative line numbers
 #+BEGIN_SRC emacs-lisp
-(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type nil)
 #+END_SRC
 
 ** Disable lock files
@@ -285,8 +286,8 @@ Loads the theme immediately, to modify faces afterwards.
      ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
      ("j" "Journal" entry (file+olp+datetree "~/gdrive/deft/journal.org")
-      "* %?" :clock-in t :clock-resume t))))
-  ;; (add-hook 'org-mode-hook #'visual-line-mode)) ;; http://superuser.com/questions/299886/linewrap-in-org-mode-of-emacs
+      "* %?" :clock-in t :clock-resume t)))
+  (remove-hook 'org-mode-hook #'org-superstar-mode))
 #+END_SRC
 
 *** bullet list
