@@ -247,8 +247,6 @@ Loads the theme immediately, to modify faces afterwards.
  org-attach-directory org-attach-id-dir
  org-default-notes-file (concat (file-name-as-directory org-directory) "notes.org")
  org-download-image-dir org-attach-directory
- org-download-image-html-width 500
- org-tags-column -80
  org-refile-targets '(("~/gdrive/deft/gtd-inbox.org" :maxlevel . 1) ("~/gdrive/deft/gtd-personal.org" :level . 1) ("~/gdrive/deft/gtd-work.org" :maxlevel . 2)))
 
 
@@ -266,6 +264,8 @@ Loads the theme immediately, to modify faces afterwards.
    org-log-into-drawer t
    org-src-fontify-natively t
    org-startup-with-inline-images t
+   org-download-image-html-width 500
+   org-tags-column -80
    ;; ! is to log event on logbook drawer
    ;; char defines a fast-access key for the state name
    org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
