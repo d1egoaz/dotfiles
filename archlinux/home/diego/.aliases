@@ -28,10 +28,14 @@ yolo () {
 em() {
   set -x
   if [[ -z $@ ]]; then
-    emacsclient -t $(fzf-tmux) 2>/dev/null
+    emacsclient -nw $(fzf-tmux) 2>/dev/null
   else
-    emacsclient -t $@ 2>/dev/null
+    emacsclient -nw $@ 2>/dev/null
   fi
+}
+
+magit() {
+     emacsclient -nw -e "(magit-status)"
 }
 
 scrotselection () {
