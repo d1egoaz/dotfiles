@@ -99,12 +99,13 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 ;; |     |     |     |     |                   |     |     |
 ;; |Fn   |Ctrl |Optn |Cmd  |       Space       |Cmd  |Optn | [arrows]
 ;; +-----+-----+-----+-----+-------------------+-----+-----+
-(when IS-MAC
-  (setq
-   ns-command-modifier 'control
-   ns-option-modifier 'meta
-   ns-control-modifier 'super
-   ns-function-modifier 'hyper))
+;; not needed if using karabiner
+;; (when IS-MAC
+;;   (setq
+;;    ns-command-modifier 'control
+;;    ns-option-modifier 'meta
+;;    ns-control-modifier 'super
+;;    ns-function-modifier 'hyper))
 #+END_SRC
 
 ** Move custom configuration to its own file
