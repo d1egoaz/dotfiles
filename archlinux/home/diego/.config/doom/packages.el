@@ -14,7 +14,7 @@
 (package! deadgrep)
 (package! dockerfile-mode)
 (package! emojify)
-(package! engine-mode)
+(package! engine-mode :recipe (:host github :repo "hrs/engine-mode" :branch "main"))
 (package! exec-path-from-shell)
 (package! google-translate)
 (package! hackernews)
