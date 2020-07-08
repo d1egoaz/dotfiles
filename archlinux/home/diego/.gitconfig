@@ -32,6 +32,8 @@
 	path = .gitconfig-personal
 [includeIf "gitdir:~/code/"]
 	path = .gitconfig-personal
+[includeIf "gitdir:~/Google\ Drive/deft/"]
+	path = .gitconfig-personal
 [push]
 	default = simple
 [github]
