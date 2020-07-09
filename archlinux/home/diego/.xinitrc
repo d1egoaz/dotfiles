@@ -25,3 +25,4 @@ xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Disable While Typing Enab
 
 xrdb -merge ~/.Xresources
 exec i3
+#exec startkde
