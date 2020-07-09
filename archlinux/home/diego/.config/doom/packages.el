@@ -8,6 +8,7 @@
 
 ;; fixes por ENV variables
 
+(package! atomic-chrome)
 (package! asx) ;; https://github.com/ragone/asx
 (package! base16-theme)
 (package! command-log-mode)
@@ -29,3 +30,5 @@
 (package! powerthesaurus)
 (package! prettier-js)
 (package! tldr)
+
+(unpin! lsp-mode)

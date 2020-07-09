@@ -12,6 +12,8 @@
 - [[#emacs-core][Emacs core]]
   - [[#constants][Constants]]
   - [[#improve-keyboard-layout-command-control][Improve keyboard layout command->control]]
+  - [[#start-in-full-screen-mode][Start in full screen mode]]
+  - [[#authinfo][Authinfo]]
   - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
   - [[#relative-line-numbers][Relative line numbers]]
   - [[#disable-lock-files][Disable lock files]]
@@ -62,6 +64,7 @@
   - [[#tldr][tl;dr]]
   - [[#elfeed][elfeed]]
   - [[#engine-mode][engine-mode]]
+  - [[#atomic-chrome][atomic-chrome]]
 - [[#misc][Misc]]
   - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
   - [[#popup-rules][Popup rules]]
@@ -71,9 +74,21 @@
   - [[#bindings][Bindings]]
   - [[#disable-inserting-the-comment-syntax-on-newlines-when-editing-an-existing-comment][Disable inserting the comment syntax on newlines when editing an existing comment]]
   - [[#keycast][keycast]]
+  - [[#workspaces][workspaces]]
+  - [[#pretty-code][pretty-code]]
+  - [[#completion][Completion]]
+  - [[#imenu][imenu]]
+  - [[#kubernetes-schemas][kubernetes schemas]]
 
 * Install Emacs
-Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
+;;Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
+;;brew install emacs-mac --HEAD --with-modern-icon --with-modules
+
+Currently using emacs from: https://github.com/daviderestivo/homebrew-emacs-head
+```
+brew tap daviderestivo/emacs-head
+brew install emacs-head@28 --with-jansson --with-no-frame-refocus --with-imagemagick
+```
 
 * Personal Information
 ** Set full name and email
@@ -106,6 +121,15 @@ Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 ;;    ns-option-modifier 'meta
 ;;    ns-control-modifier 'super
 ;;    ns-function-modifier 'hyper))
+#+END_SRC
+** Start in full screen mode
+#+BEGIN_SRC emacs-lisp
+(toggle-frame-maximized)
+#+END_SRC
+** Authinfo
+Sensitive credentials. Only use ~/.authinfo.gpg, rather than doom’s default
+#+BEGIN_SRC emacs-lisp
+(setq auth-sources '("~/.authinfo.gpg"))
 #+END_SRC
 
 ** Move custom configuration to its own file
@@ -215,7 +239,10 @@ Loads the theme immediately, to modify faces afterwards.
 ;; (set-foreground-color "#b2b2b2")
 ;; (doom-themes-set-faces nil
 ;;   '(default :foreground "#bbc2cf"))
-(custom-set-faces! `(font-lock-variable-name-face :foreground "#56b6c2"))
+(custom-set-faces!
+  `(font-lock-variable-name-face :foreground "#56b6c2")
+  `(lsp-ui-doc-background :background "black")
+  )
 #+END_SRC
 
 ** Change cursor color evil-mode
@@ -310,8 +337,9 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
     (add-hook 'go-mode-hook #'flyspell-prog-mode))
   (setq
    ;; uses go provided tools
-   godef-command "go doc" ;; original godef
-   gofmt-command "goimports")) ;; original gofmt
+   godef-command "go doc" ; original godef
+   gofmt-command "goimports" ; original gofmt
+   lsp-gopls-hover-kind "FullDocumentation"))
 
 (after! lsp-mode
   (lsp-register-custom-settings '(("gopls.completeUnimported" t t) ("gopls.staticcheck" t t))))
@@ -322,15 +350,16 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+BEGIN_SRC emacs-lisp
 (after! lsp-ui
   (setq
+   lsp-signature-auto-activate t          ; Show signature of current function.
    lsp-ui-doc-enable t
    lsp-ui-doc-header t
    lsp-ui-doc-include-signature t
-   lsp-ui-doc-position 'top ;; top, bottom, or at-point
+   lsp-ui-doc-position 'at-point ;'top ;; top, bottom, or at-point
    lsp-ui-doc-max-width 150
    lsp-ui-doc-max-height 30
-   lsp-ui-doc-use-childframe t
-   lsp-ui-doc-use-webkit t
-   lsp-ui-sideline-enable nil))
+   lsp-ui-doc-use-childframe t)
+  (add-to-list 'lsp-ui-doc-frame-parameters '(no-accept-focus . t))
+)
 #+END_SRC
 
 #+RESULTS:
@@ -569,6 +598,12 @@ Mouse is to far from the hand.
     (defengine tenor "https://tenor.com/search/%s-gifs")
     (defengine twitter "https://twitter.com/search?q=%s"))
 #+END_SRC
+** atomic-chrome
+#+BEGIN_SRC emacs-lisp
+(setq atomic-chrome-default-major-mode 'gfm-mode)
+(atomic-chrome-start-server)
+#+END_SRC
+
 * Misc
 ** Set default modes to some specific file extensions
 #+BEGIN_SRC emacs-lisp
@@ -623,4 +658,40 @@ Mouse is to far from the hand.
                                    (self-insert-command nil nil))))
 (add-to-list 'global-mode-string '("" mode-line-keycast))
 (keycast-mode)
+#+END_SRC
+** workspaces
+#+BEGIN_SRC emacs-lisp
+(setq +workspaces-on-switch-project-behavior t)
+#+END_SRC
+** pretty-code
+Use pretty-code for the ligatures only, and not for symbols.
+#+BEGIN_SRC emacs-lisp
+(setq +pretty-code-symbols nil)
+#+END_SRC
+** Completion
+Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
+#+BEGIN_SRC emacs-lisp
+(after! company
+  (remove-hook 'evil-normal-state-entry-hook #'company-abort))
+#+END_SRC
+** imenu
+#+BEGIN_SRC emacs-lisp
+(setq org-imenu-depth 6)
+#+END_SRC
+** kubernetes schemas
+#+BEGIN_SRC emacs-lisp
+(setq lsp-yaml-schemas (make-hash-table))
+(puthash "kubernetes" ["resources.yaml"
+                       "resources/*"
+                       "pod.yaml"
+                       "deployment.yaml"
+                       "serviceaccount.yaml"
+                       "clusterrole.yaml"
+                       "role.yaml"
+                       "clusterrolebinding.yaml"
+                       "rolebinding.yaml"
+                       "configmap.yaml"
+                       "service.yaml"]
+         lsp-yaml-schemas)
+(puthash "http://json.schemastore.org/kustomization" ["kustomization.yaml"] lsp-yaml-schemas)
 #+END_SRC
