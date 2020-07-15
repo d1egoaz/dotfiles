@@ -32,3 +32,5 @@
 (package! tldr)
 
 (unpin! lsp-mode)
+(unpin! lsp-ui)
+(unpin! lsp-ivy)

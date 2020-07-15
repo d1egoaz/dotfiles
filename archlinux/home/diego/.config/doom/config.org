@@ -351,13 +351,16 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 (after! lsp-ui
   (setq
    lsp-signature-auto-activate t          ; Show signature of current function.
+   lsp-ui-doc-delay 2
    lsp-ui-doc-enable t
    lsp-ui-doc-header t
    lsp-ui-doc-include-signature t
    lsp-ui-doc-position 'at-point ;'top ;; top, bottom, or at-point
    lsp-ui-doc-max-width 150
    lsp-ui-doc-max-height 30
-   lsp-ui-doc-use-childframe t)
+   lsp-ui-doc-use-childframe t
+   lsp-ui-peek-enable nil
+   lsp-ui-sideline-show-hover t) ; shows all variables types in sideline
   (add-to-list 'lsp-ui-doc-frame-parameters '(no-accept-focus . t))
 )
 #+END_SRC
