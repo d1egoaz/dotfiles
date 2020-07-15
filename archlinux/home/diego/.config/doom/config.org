@@ -57,6 +57,8 @@
   - [[#highlight-indent-guides][Highlight Indent Guides]]
   - [[#ivy][Ivy]]
     - [[#remove--and--from-file-commands][Remove ./ and ../ from file commands]]
+    - [[#show-hydra-when-pressing-c-o][Show hydra when pressing C-o]]
+    - [[#childframe-fixed-position][childframe fixed position]]
   - [[#magit][Magit]]
     - [[#tune-magit][Tune magit]]
     - [[#set-project-list][Set project list]]
@@ -79,15 +81,21 @@
   - [[#completion][Completion]]
   - [[#imenu][imenu]]
   - [[#kubernetes-schemas][kubernetes schemas]]
+  - [[#rainbow-delimiters][rainbow delimiters]]
 
 * Install Emacs
 ;;Currently using emacs from: https://github.com/railwaycat/homebrew-emacsmacport
 ;;brew install emacs-mac --HEAD --with-modern-icon --with-modules
 
-Currently using emacs from: https://github.com/daviderestivo/homebrew-emacs-head
+;;Currently using emacs from: https://github.com/daviderestivo/homebrew-emacs-head
 ```
 brew tap daviderestivo/emacs-head
 brew install emacs-head@28 --with-jansson --with-no-frame-refocus --with-imagemagick
+```
+Currently using emacs from: https://github.com/d12frosted/homebrew-emacs-plus
+```
+brew tap d12frosted/emacs-plus
+brew install emacs-plus@28 --with-jansson --with-no-frame-refocus
 ```
 
 * Personal Information
@@ -387,7 +395,8 @@ Shows all files, including hidden files, ignores files =.= and =..=
 #+BEGIN_SRC emacs-lisp
 (after! counsel
   (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../")))
-  (push '(counsel-rg . "-g ** -- ") ivy-initial-inputs-alist))
+  ;; (push '(counsel-rg . "-g ** -- ") ivy-initial-inputs-alist))
+  (push '(counsel-rg . "--hidden -- ") ivy-initial-inputs-alist))
 #+END_SRC
 
 ** Deft
@@ -520,6 +529,15 @@ Mouse is to far from the hand.
 #+BEGIN_SRC emacs-lisp
 (setq
  ivy-extra-directories nil)
+#+END_SRC
+*** Show hydra when pressing C-o
+#+BEGIN_SRC emacs-lisp
+(setq ivy-read-action-function #'ivy-hydra-read-action)
+#+END_SRC
+*** childframe fixed position
+#+BEGIN_SRC emacs-lisp
+(after! ivy-posframe
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display))))
 #+END_SRC
 
 ** Magit
@@ -697,4 +715,8 @@ Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
                        "service.yaml"]
          lsp-yaml-schemas)
 (puthash "http://json.schemastore.org/kustomization" ["kustomization.yaml"] lsp-yaml-schemas)
+#+END_SRC
+** rainbow delimiters
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
