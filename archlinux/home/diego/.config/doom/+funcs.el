@@ -38,10 +38,17 @@
     (current-kill 0)
     "<img src=\"url\" width=\"50%\" />")))
 
-(defun diego/iso-8601-date ()
+(defun diego/today-UTC-date ()
   "copy the full UTC time to clipboard"
   (interactive)
-  (kill-new (shell-command-to-string "date -n -u +'%Y-%m-%dT%H:%M:%SZ'")))
+  "Inserts the current date in the buffer"
+  ;; nil to use current date, t to use UTC
+  (insert (format-time-string "%Y-%m-%dT%H:%M:%SZ" nil t)))
+
+(defun diego/now ()
+  "Inserts the current time in the buffer"
+  (interactive)
+  (insert (format-time-string "%H:%M:%S PT")))
 
 (defun diego--exec-command-replace-region (command)
   (interactive)
