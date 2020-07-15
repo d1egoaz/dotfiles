@@ -315,3 +315,9 @@ the current state and point position."
     ("o g" "Google" engine/search-google)
     ("o t" "Twitter" engine/search-twitter)
     ("o p" "Powerthesaurus" engine/search-powerthesaurus)]])
+
+(defun diego/code-here ()
+  "Opens current buffer in vs code"
+  (interactive)
+  (save-buffer)
+  (shell-command (concat "code " (buffer-file-name))))
