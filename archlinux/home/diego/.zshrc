@@ -74,6 +74,11 @@ function ediff() {
   fi
 }
 
+if [ -n "${commands[fzf-share]}" ]; then
+  source "$(fzf-share)/key-bindings.zsh"
+  source "$(fzf-share)/completion.zsh"
+fi
+
 [ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
 
 [ -f /usr/local/bin/kubectl ] && source <(kubectl completion zsh)

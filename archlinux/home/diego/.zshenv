@@ -2,6 +2,8 @@
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
+if [ -e /Users/diegoalvarez/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/diegoalvarez/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
 # JAVA
 if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
   JAVA_HOME="/usr/lib/jvm/default"
@@ -32,7 +34,6 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # ruby
 PATH="$HOME/.nvm/versions/node/v8.9.4/bin:$HOME/.gem/ruby/2.4.4/bin:/opt/rubies/2.4.4/lib/ruby/gems/2.4.0/bin:/opt/rubies/2.4.4/bin:$PATH"
-
 export PATH
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
