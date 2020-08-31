@@ -24,7 +24,7 @@
        (popup            ; tame sudden yet inevitable temporary windows
         +defaults        ; default popup rules
         +all)            ; catch all popups that start with an asterix
-       (pretty-code +iosevka)       ; replace bits of code with pretty symbols
+       (ligatures +iosevka)       ; replace bits of code with pretty symbols
        treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
@@ -59,7 +59,7 @@
 
        :checkers
        (syntax +childframe) ; Live error/warning highlights
-       (spell +hunspell +everywhere) ; Spell checking
+       (spell +aspell +everywhere) ; Spell checking
        grammar
 
        :lang

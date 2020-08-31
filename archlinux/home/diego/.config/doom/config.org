@@ -6,13 +6,15 @@
 
 * Table of Contents                                                      :TOC_3:
 - [[#install-emacs][Install Emacs]]
+- [[#env-variables][env variables]]
+- [[#important-doom-emacs-information][Important doom-emacs information]]
 - [[#personal-information][Personal Information]]
   - [[#set-full-name-and-email][Set full name and email]]
-- [[#important-doom-emacs-information][Important doom-emacs information]]
 - [[#emacs-core][Emacs core]]
   - [[#constants][Constants]]
   - [[#improve-keyboard-layout-command-control][Improve keyboard layout command->control]]
   - [[#start-in-full-screen-mode][Start in full screen mode]]
+  - [[#scrach-default-mode][Scrach default mode]]
   - [[#authinfo][Authinfo]]
   - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
   - [[#relative-line-numbers][Relative line numbers]]
@@ -82,6 +84,9 @@
   - [[#imenu][imenu]]
   - [[#kubernetes-schemas][kubernetes schemas]]
   - [[#rainbow-delimiters][rainbow delimiters]]
+  - [[#gnutls][gnutls]]
+  - [[#olivetti][olivetti]]
+  - [[#disable-smartparens][disable smartparens]]
 
 * Install Emacs
 Currently using emacs from: https://github.com/d12frosted/homebrew-emacs-plus
@@ -90,6 +95,12 @@ brew tap d12frosted/emacs-plus
 brew install emacs-plus@28 --with-jansson --with-no-frame-refocus
 ```
 
+* env variables
+Remember to run =doom env= after changing env variables.
+
+* Important doom-emacs information
+- All variables definition containing files/directories should be outside
+  =(after! ...)=
 * Personal Information
 ** Set full name and email
 #+BEGIN_SRC emacs-lisp
@@ -98,9 +109,6 @@ brew install emacs-plus@28 --with-jansson --with-no-frame-refocus
  user-mail-address "diego.canada@icloud.com")
 #+END_SRC
 
-* Important doom-emacs information
-- All variables definition containing files/directories should be outside
-  =(after! ...)=
 * Emacs core
 ** Constants
 #+BEGIN_SRC emacs-lisp
@@ -124,8 +132,13 @@ brew install emacs-plus@28 --with-jansson --with-no-frame-refocus
 #+END_SRC
 ** Start in full screen mode
 #+BEGIN_SRC emacs-lisp
-(toggle-frame-maximized)
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
 #+END_SRC
+** Scrach default mode
+#+BEGIN_SRC emacs-lisp
+(setq initial-major-mode 'org-mode)
+#+END_SRC
+
 ** Authinfo
 Sensitive credentials. Only use ~/.authinfo.gpg, rather than doom’s default
 #+BEGIN_SRC emacs-lisp
@@ -220,6 +233,8 @@ Disables .#file.ext creation.
 (if (eq system-type 'gnu/linux)
     (setq doom-font (font-spec :family "Iosevka SS04" :size 30)))
 
+(setq doom-variable-pitch-font (font-spec :family "Microsoft Sans Serif"))
+
 (setq +pretty-code-iosevka-font-name "Iosevka SS04")
 #+END_SRC
 
@@ -231,18 +246,13 @@ Disables .#file.ext creation.
 ** Theme and foreground color
 Loads the theme immediately, to modify faces afterwards.
 #+BEGIN_SRC emacs-lisp
-;; (load-theme 'doom-dracula t)
-;; (load-theme 'doom-one t)
-;; (load-theme 'base16-atelier-dune t)
-;; (load-theme 'base16-onedark t)
-(load-theme 'base16-tomorrow-night t)
-;; (set-foreground-color "#b2b2b2")
-;; (doom-themes-set-faces nil
-;;   '(default :foreground "#bbc2cf"))
+;; (load-theme 'doom-moonlight t)
+(setq modus-vivendi-theme-section-headings t
+      modus-operandi-theme-section-headings t)
+(setq doom-theme 'modus-operandi) ; light theme
+;; (load-theme 'modus-vivendi t); dark theme
 (custom-set-faces!
-  `(font-lock-variable-name-face :foreground "#56b6c2")
-  `(lsp-ui-doc-background :background "black")
-  )
+  `(lsp-ui-doc-background :background "black"))
 #+END_SRC
 
 ** Change cursor color evil-mode
@@ -290,6 +300,7 @@ Loads the theme immediately, to modify faces afterwards.
    org-download-method 'directory
    org-log-into-drawer t
    org-src-fontify-natively t
+   ;; org-startup-indented nil ; use full are for body
    org-startup-with-inline-images t
    org-download-image-html-width 500
    org-tags-column -80
@@ -361,7 +372,6 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
    lsp-ui-doc-use-childframe t
    lsp-ui-peek-enable nil
    lsp-ui-sideline-show-hover t) ; shows all variables types in sideline
-  (add-to-list 'lsp-ui-doc-frame-parameters '(no-accept-focus . t))
 )
 #+END_SRC
 
@@ -473,11 +483,12 @@ Mouse is to far from the hand.
 #+END_SRC
 
 ** Exec Path From Shell
+TODO: testing doom env
 #+BEGIN_SRC emacs-lisp
-(setq
- exec-path-from-shell-check-startup-files nil
- exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
-(exec-path-from-shell-initialize)
+;; (setq
+;;  exec-path-from-shell-check-startup-files nil
+;;  exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
+;; (exec-path-from-shell-initialize)
 #+END_SRC
 
 ** Git Link
@@ -550,7 +561,7 @@ Mouse is to far from the hand.
         magit-diff-paint-whitespace-lines 'all
         magit-commit-show-diff nil
         magit-section-initial-visibility-alist
-        '((stashes . hide) (untracked . hide) (unpushed . show))
+        '((stashes . hide) (unpushed . show))
         magit-display-buffer-function 'diego/magit-to-the-right)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
   (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
@@ -588,15 +599,20 @@ Mouse is to far from the hand.
 ** elfeed
 #+BEGIN_SRC emacs-lisp
 (after! elfeed
-  (doom-themes-set-faces nil
-    '(elfeed-search-tag-face :foreground "#98c379")
-    '(elfeed-search-feed-face :foreground "#e5c07b")
-    '(elfeed-search-unread-title-face :foreground "#bbc2cf")
-    '(elfeed-search-title-face :foreground "#565c64"))
+  ;; (doom-themes-set-faces nil
+  ;; '(elfeed-search-tag-face :foreground "#98c379")
+  ;; '(elfeed-search-feed-face :foreground "#e5c07b")
+  ;; '(elfeed-search-unread-title-face :foreground "#bbc2cf")
+  ;; '(elfeed-search-title-face :foreground "#565c64"))
   (setq elfeed-search-filter "@2-weeks-ago +unread"
         elfeed-search-title-max-width 100
         elfeed-search-date-format '("%a %b-%d" 10 :left)
         elfeed-sort-order 'ascending))
+
+(after! elfeed-search
+  (defun diego/disable-font-lock-mode ()
+    (font-lock-mode -1))
+  (add-hook! 'elfeed-search-mode-hook #'(diego/disable-font-lock-mode diego/olivetti-mode)))
 #+END_SRC
 
 ** engine-mode
@@ -622,6 +638,7 @@ Mouse is to far from the hand.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.aliases\\'" . sh-mode))
+(add-to-list 'auto-mode-alist '("\\.yml.erb\\'" . yaml-mode))
 #+END_SRC
 
 ** Popup rules
@@ -630,6 +647,7 @@ Mouse is to far from the hand.
 (set-popup-rule! "^\\*kubel - *" :side 'right :size 100 :select t :quit t)
 (set-popup-rule! "^\\*Messages\\*" :select t :quit t)
 (set-popup-rule! "^\\*tldr\\*" :size 82 :side 'right :select t :quit t)
+(set-popup-rule! "^\\* Merriam-Webster Thesaurus \\*" :size 100 :side 'right :select t :quit t)
 (set-popup-rule! "^CAPTURE-.*\\.org$" :quit nil :select t :autosave t)
 ;; (set-popup-rule! "^\\(?:\\*magit\\|magit:\\| \\*transient\\*\\)" :ignore nil :side 'right :select t)
 #+END_SRC
@@ -711,4 +729,31 @@ Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
 ** rainbow delimiters
 #+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+
+** gnutls
+#+BEGIN_SRC emacs-lisp
+;; (after! gnutls
+;;   (add-to-list 'gnutls-trustfiles "/usr/local/etc/libressl/cert.pem"))
+#+END_SRC
+** olivetti
+#+BEGIN_SRC emacs-lisp
+(after! olivetti
+  (setq olivetti-minimum-body-width 150
+        olivetti-recall-visual-line-mode-entry-state t))
+
+(define-minor-mode diego/olivetti-mode
+  "Toggle buffer-local `olivetti-mode' with additional parameters."
+  :init-value nil
+  :global nil
+  (if diego/olivetti-mode
+      (progn
+        (olivetti-mode 1)
+        (set-window-fringes (selected-window) 0 0))
+    (olivetti-mode -1)
+    (set-window-fringes (selected-window) nil)))
+#+END_SRC
+** disable smartparens
+#+BEGIN_SRC emacs-lisp
+(remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
 #+END_SRC

@@ -8,8 +8,8 @@
 
 ;; fixes por ENV variables
 
-(package! atomic-chrome)
 (package! asx) ;; https://github.com/ragone/asx
+(package! atomic-chrome)
 (package! base16-theme)
 (package! command-log-mode)
 (package! deadgrep)
@@ -21,14 +21,18 @@
 (package! hackernews)
 (package! highlight-indent-guides)
 (package! highlight-thing)
-(package! string-inflection)
 (package! keycast)
 (package! kubel :recipe (:host github :repo "d1egoaz/kubel"))
 (package! markdown-changelog)
+(package! mw-thesaurus)
+(package! modus-operandi-theme)
+(package! modus-vivendi-theme)
 (package! multi-libvterm :recipe (:host github :repo "suonlight/multi-libvterm"))
 (package! multi-term)
+(package! olivetti)
 (package! powerthesaurus)
 (package! prettier-js)
+(package! string-inflection)
 (package! tldr)
 
 (unpin! lsp-mode)
