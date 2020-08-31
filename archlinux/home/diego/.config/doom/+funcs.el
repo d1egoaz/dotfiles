@@ -123,7 +123,7 @@
                        "url"))
            (magit-get-current-branch))))
 
-(defun diego/close-all-buffers ()
+(defun diego/kill-close-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
@@ -181,7 +181,7 @@ the current state and point position."
     (elfeed-search-set-filter (concat elfeed-search-filter " +" filtered-tag))
     (goto-char (point-min))))
 
-(defun diego/new-scratch-buffer ()
+(defun diego/make-new-scratch-buffer ()
   "New temporary scratch buffer with a random name."
   (interactive)
   (switch-to-buffer (make-temp-name "scratch-"))
@@ -321,3 +321,14 @@ the current state and point position."
   (interactive)
   (save-buffer)
   (shell-command (concat "code " (buffer-file-name))))
+
+(defun diego/surround-org-src ()
+  "surround a region in a org-mode src block"
+  (interactive)
+  (save-excursion
+    (save-restriction ; to remove the narrowing
+      (narrow-to-region (region-beginning) (region-end))
+      (goto-char (point-min))
+      (insert "#+BEGIN_SRC\n")
+      (goto-char (point-max))
+      (insert "\n#+END_SRC\n"))))
