@@ -7,7 +7,8 @@ alias l="ls -lah"
 alias lld='ls -lh | grep "^d"'
 
 # Always use color output for `ls`, using gls -> coreutils
-alias ls="command gls -F --color"
+# alias ls="command gls -F --color"
+alias ls="command exa"
 
 # git
 alias gs='git status -s'
