@@ -114,9 +114,9 @@ precmd() {
 
 user_info() {
     #Uncomment if you only want user & host to be shown when using SSH
-    #if [[ -n $SSH_TTY ]]; then
+    if [[ -n $SSH_TTY ]]; then
         echo "%{$FG[033]%}%n%f%{$FG[239]%}@%f%{$FG[033]%}%m%f%{$FG[239]%}/%f"
-    #fi
+    fi
 }
 
 # List of prompt format strings:
