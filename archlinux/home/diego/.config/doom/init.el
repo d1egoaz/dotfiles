@@ -47,7 +47,7 @@
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-       vterm             ; another terminals in Emacs
+       ;vterm             ; another terminals in Emacs
 
        :tools
        docker
@@ -59,7 +59,7 @@
 
        :checkers
        (syntax +childframe) ; Live error/warning highlights
-       (spell +aspell +everywhere) ; Spell checking
+       (spell +flyspell +everywhere) ; Spell checking
        grammar
 
        :lang
@@ -89,7 +89,7 @@
        (rust +lsp)
        (sh +lsp)         ; she sells {ba,z,fi}sh shells on the C xor
        web               ; the tubes
-       (yaml +lsp)
+       yaml
 
        :app
        (rss +org)
