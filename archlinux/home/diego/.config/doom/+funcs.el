@@ -322,3 +322,40 @@ the current state and point position."
       (insert "#+BEGIN_SRC\n")
       (goto-char (point-max))
       (insert "\n#+END_SRC\n"))))
+(defun diego/kafka-get-controller ()
+  (interactive)
+  (let* (
+         (ctx (ivy-completing-read "Context: " diego/kafka-clusters))
+         (ns (cadr (assoc ctx diego/kafka-clusters)))
+         (str (format "kubectl --context %s --namespace %s exec -i kafka-0 -c kafka -- sh -c 'zookeeper-shell.sh $KAFKA_ZOOKEEPER_CONNECT get /controller' | tail -n 1"
+                      ctx ns)))
+    (with-output-to-temp-buffer "*kafka/get controller*"
+      (print (format "%s/%s:" ctx ns))
+      (print (shell-command-to-string str)))))
+
+(defun diego/kafka-delete-controller ()
+  (interactive)
+  (let* (
+         (ctx (ivy-completing-read "Context: " diego/kafka-clusters))
+         (ns (cadr (assoc ctx diego/kafka-clusters)))
+         (str (format "kubectl --context %s --namespace %s exec -i kafka-0 -c kafka -- sh -c 'zookeeper-shell.sh $KAFKA_ZOOKEEPER_CONNECT delete /controller'"
+                      ctx ns)))
+    (with-output-to-temp-buffer "*kafka/delete controller*"
+      (print (format "%s/%s:" ctx ns))
+      (when (yes-or-no-p (format "Sure to elect a new controller in %s/%s?" ctx ns))
+        (print (shell-command-to-string str))))))
+
+(defun diego/make-kafka-get-controller-frame ()
+  "Create a new frame and run org-capture."
+  (interactive)
+  (make-frame '((name . "alfredoc") (width . 80) (height . 32)
+                (top . 400) (left . 300)))
+  (select-frame-by-name "alfredoc")
+  (switch-to-buffer "*kafka/get controller*")
+  (read-only-mode -1)
+  (erase-buffer)
+  (local-set-key
+   (kbd "C-c C-c") (lambda () (interactive)
+                     (local-unset-key (kbd "C-c C-c"))
+                     (delete-frame)))
+  (diego/kafka-get-controller))
