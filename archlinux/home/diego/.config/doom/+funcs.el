@@ -359,3 +359,18 @@ the current state and point position."
                      (local-unset-key (kbd "C-c C-c"))
                      (delete-frame)))
   (diego/kafka-get-controller))
+
+(add-hook 'org-capture-after-finalize-hook
+          (lambda ()
+            (when (equal
+                   (cdr (assoc 'name (frame-parameters (selected-frame))))
+                   "alfredoc")
+              (delete-frame))))
+
+(defun diego/make-orgcapture-frame ()
+  "Create a new frame and run org-capture."
+  (interactive)
+  (make-frame '((name . "alfredoc") (width . 80) (height . 16)
+                (top . 400) (left . 300)))
+  (select-frame-by-name "alfredoc")
+  (org-capture))
