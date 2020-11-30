@@ -47,7 +47,6 @@
   - [[#counsel][Counsel]]
   - [[#deft][Deft]]
   - [[#emacs-anywhere][Emacs Anywhere]]
-  - [[#emojify][Emojify]]
   - [[#evil][Evil]]
     - [[#stay-on-the-original-character-when-leaving-insert-mode][Stay on the original character when leaving insert mode]]
     - [[#disable-arrow-keys][Disable arrow keys]]
@@ -86,7 +85,7 @@
   - [[#rainbow-delimiters][rainbow delimiters]]
   - [[#gnutls][gnutls]]
   - [[#olivetti][olivetti]]
-  - [[#disable-smartparens][disable smartparens]]
+  - [[#so-long][so-long]]
 
 * Install Emacs
 Currently using emacs from: https://github.com/d12frosted/homebrew-emacs-plus
@@ -132,7 +131,7 @@ Remember to run =doom env= after changing env variables.
 #+END_SRC
 ** Start in full screen mode
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 #+END_SRC
 ** Scrach default mode
 #+BEGIN_SRC emacs-lisp
@@ -252,7 +251,7 @@ Loads the theme immediately, to modify faces afterwards.
 (setq doom-theme 'modus-operandi) ; light theme
 ;; (load-theme 'modus-vivendi t); dark theme
 (custom-set-faces!
-  `(lsp-ui-doc-background :background "black"))
+  `(lsp-ui-doc-background :background "darkgray"))
 #+END_SRC
 
 ** Change cursor color evil-mode
@@ -362,16 +361,18 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 (after! lsp-ui
   (setq
    lsp-signature-auto-activate t          ; Show signature of current function.
-   lsp-ui-doc-delay 2
+   lsp-ui-doc-delay 1
    lsp-ui-doc-enable t
    lsp-ui-doc-header t
    lsp-ui-doc-include-signature t
-   lsp-ui-doc-position 'at-point ;'top ;; top, bottom, or at-point
-   lsp-ui-doc-max-width 150
    lsp-ui-doc-max-height 30
+   lsp-ui-doc-max-width 150
+   lsp-ui-doc-position 'at-point ;'top ;; top, bottom, or at-point
+   lsp-ui-doc-show-with-mouse nil  ; don't disappear on mouseover
    lsp-ui-doc-use-childframe t
    lsp-ui-peek-enable nil
-   lsp-ui-sideline-show-hover t) ; shows all variables types in sideline
+   lsp-ui-sideline-show-hover nil) ; shows all variables types in sideline
+  (add-to-list 'lsp-ui-doc-frame-parameters '(no-accept-focus . t))
 )
 #+END_SRC
 
@@ -398,7 +399,8 @@ Shows all files, including hidden files, ignores files =.= and =..=
 (after! counsel
   (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../")))
   ;; (push '(counsel-rg . "-g ** -- ") ivy-initial-inputs-alist))
-  (push '(counsel-rg . "--hidden -- ") ivy-initial-inputs-alist))
+  ;; (push '(counsel-rg . "--hidden -- ") ivy-initial-inputs-alist))
+  )
 #+END_SRC
 
 ** Deft
@@ -439,11 +441,6 @@ Shows all files, including hidden files, ignores files =.= and =..=
 (add-hook 'ea-popup-hook #'ea-popup-handler)
 #+END_SRC
 
-** Emojify
-#+BEGIN_SRC emacs-lisp
-(setq emojify-emoji-set "twemoji-v2"
-      emojify-display-style 'unicode)
-#+END_SRC
 ** Evil
 *** Stay on the original character when leaving insert mode
 #+BEGIN_SRC emacs-lisp
@@ -540,7 +537,9 @@ TODO: testing doom env
 *** childframe fixed position
 #+BEGIN_SRC emacs-lisp
 (after! ivy-posframe
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display))))
+  ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left))))
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))))
+  ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display))))
 #+END_SRC
 
 ** Magit
@@ -643,7 +642,7 @@ TODO: testing doom env
 
 ** Popup rules
 #+BEGIN_SRC emacs-lisp
-(set-popup-rule! "^\\*doom:vterm*" :side 'right :select t :quit t)
+(set-popup-rule! "^\\*doom:vterm*" :side 'right :select t :quit t :size 90)
 (set-popup-rule! "^\\*kubel - *" :side 'right :size 100 :select t :quit t)
 (set-popup-rule! "^\\*Messages\\*" :select t :quit t)
 (set-popup-rule! "^\\*tldr\\*" :size 82 :side 'right :select t :quit t)
@@ -753,7 +752,8 @@ Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
     (olivetti-mode -1)
     (set-window-fringes (selected-window) nil)))
 #+END_SRC
-** disable smartparens
+** so-long
 #+BEGIN_SRC emacs-lisp
-(remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
+(setq so-long-max-lines 1)
+(add-to-list 'auto-mode-alist '("\\.yml.erb\\'" . so-long-mode))
 #+END_SRC
