@@ -10,6 +10,11 @@ alias lld='ls -lh | grep "^d"'
 # alias ls="command gls -F --color"
 alias ls="command exa"
 
+# bat everywhere
+alias baty='bat -l yaml'
+alias cat="command bat"
+alias more="command bat"
+
 # git
 alias gs='git status -s'
 alias gd='git diff'
@@ -47,8 +52,6 @@ scrotselection () {
 jqs() {
   jq '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
 }
-
-alias baty='bat -l yaml'
 
 # kubernetes
 
