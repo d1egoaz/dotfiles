@@ -72,9 +72,10 @@
     (message str)
     (shell-command-to-string str)))
 
-(defun diego/fetch-origin-master ()
+(defun diego/fetch-and-rebase-onto-origin-master ()
   (interactive)
-  (magit-fetch-branch "origin" "master" nil))
+  (magit-fetch-branch "origin" "master" nil)
+  (magit-git-rebase "origin/master" nil))
 
 (defun diego/git-create-branch-from-origin-master ()
   "Creates a new branch starting from origin/master."
