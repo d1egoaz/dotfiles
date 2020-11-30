@@ -15,11 +15,11 @@
        :ui
        deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
-       ;; doom-dashboard    ; a nifty splash screen for Emacs
-       hl-todo           ; highlight TODO/FIXME/NOTE tags
+       doom-dashboard    ; a nifty splash screen for Emacs
+       (emoji +unicode)  ; 🙂
+       hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        (modeline +light) ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink the current line after jumping
-       ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
         +defaults        ; default popup rules
@@ -34,10 +34,9 @@
        (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
-       multiple-cursors  ; editing in many places at once
-       ;; rotate-text       ; cycle region at point between text candidates
-       snippets          ; my elves. They type so I don't have to
        format
+       multiple-cursors  ; editing in many places at once
+       snippets          ; my elves. They type so I don't have to
 
        :emacs
        (dired +icons)
@@ -50,16 +49,18 @@
        ;vterm             ; another terminals in Emacs
 
        :tools
+       direnv
        docker
        (eval +overlay)   ; run code, run (also, repls)
        (lookup +dictionary) ; helps you navigate your code and documentation
-       (lsp +peek)
+       lsp
        (magit +forge)    ; a git porcelain for Emacs
+       tmux
        ;; pdf               ; pdf enhancements
 
        :checkers
        (syntax +childframe) ; Live error/warning highlights
-       (spell +flyspell +everywhere) ; Spell checking
+       (spell +flyspell +everywhere +aspell) ; Spell checking
        grammar
 
        :lang
@@ -81,6 +82,7 @@
         +gnuplot
         ;; +habit           ; Keep track of your habits
         ;; +present         ; Emacs for presentations
+        +pandoc
         +protocol
         ;; :tools pdf
         )       ; Support for org-protocol:// links
