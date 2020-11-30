@@ -83,8 +83,6 @@ fi
 
 [ -f /usr/local/bin/kubectl ] && source <(kubectl completion zsh)
 
-[ -f ~/.local/share/lscolors.sh ] && source ~/.local/share/lscolors.sh
-
 eval "$(ssh-agent)"
 
 # similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
