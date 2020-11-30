@@ -11,6 +11,7 @@
 	commentchar = @
 	ignorecase = false
 	commitGraph = true
+	attributesfile = /Users/diegoalvarez/.gitattributes
 [commit]
 	gpgsign = true
 
