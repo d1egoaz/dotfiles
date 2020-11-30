@@ -233,14 +233,6 @@ the current state and point position."
   (mark-whole-buffer)
   (elfeed-search-untag-all-unread))
 
-(cl-defun diego/elfeed-search-selected-map (fn)
-  "Map FN across selected entries in elfeed-search buffer using `mapcar'."
-  (mapcar fn (elfeed-search-selected)))
-
-(defun diego/elfeed-search-browse-chrome ()
-  (interactive)
-  (diego/elfeed-search-selected-map #'message))
-
 (defun diego/elfeed-open-with-eww ()
   (interactive)
   (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single))))
