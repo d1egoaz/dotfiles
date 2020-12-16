@@ -1,3 +1,0 @@
-[submodule "emacs/spacemacs_private_layers/ruby-shopify"]
-	path = emacs/spacemacs_private_layers/ruby-shopify
-	url = https://github.com/jsaubry/ruby-shopify
