@@ -1,5 +1,0 @@
-@-moz-document domain("www.scala-lang.org") {
-div#content-container > div#subpackage-spacer {
-    float: left;
-}
-}
