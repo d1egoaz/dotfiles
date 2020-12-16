@@ -26,6 +26,10 @@ alias clip="socat - UNIX-CONNECT:$HOME/.local/share/clipper/clipper.sock"
 # copy working directory
 alias cwd='pwd | tr -d "\r\n" | clip'
 
+# quick directory change
+alias c='cd $(fd --type directory --hidden --exclude .git | fzf-tmux)'
+alias ck='cd $(fd . ~/.config/kube/ --type directory --hidden --exclude .git | fzf-tmux)'
+
 yolo () {
   echo 'yay -Syu --noconfirm'
   yay -Syu --noconfirm

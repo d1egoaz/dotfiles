@@ -562,12 +562,18 @@ TODO: testing doom env
         magit-section-initial-visibility-alist
         '((stashes . hide) (unpushed . show))
         magit-display-buffer-function 'diego/magit-to-the-right)
-  (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
-  (remove-hook! 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
-  ;; automatic spellchecking in commit messages
-  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
-;; (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
-;; (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
+        ; https://github.com/magit/magit/issues/4017
+        ;magit-insert-tags-header
+    (remove-hook! 'magit-status-sections-hook #'(
+        magit-insert-status-headers
+        magit-insert-unpushed-to-pushremote
+        magit-insert-unpulled-from-pushremote
+        magit-insert-unpulled-from-upstream
+        magit-insert-unpushed-to-upstream-or-recent)
+    ;; automatic spellchecking in commit messages
+    (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
+    (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
+    ;; (remove-hook! 'server-switch-hook 'magit-commit-diff)) ;; remove diff on commiting
 #+END_SRC
 
 *** Set project list
