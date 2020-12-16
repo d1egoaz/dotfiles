@@ -23,7 +23,7 @@ alias gpu='git pull'
 alias tm="tmux new -A -n 'default' -s default"
 
 # copy working directory
-alias cwd='pwd | tr -d "\r\n" | clip'
+alias cwd='pwd | tr -d "\r\n" | pbcopy'
 
 # quick directory change
 alias c='cd $(fd --type directory --hidden --exclude .git | fzf-tmux)'
