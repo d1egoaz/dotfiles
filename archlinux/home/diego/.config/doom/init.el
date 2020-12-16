@@ -60,7 +60,7 @@
 
        :checkers
        (syntax +childframe) ; Live error/warning highlights
-       (spell +flyspell +everywhere +aspell) ; Spell checking
+       (spell +everywhere +aspell) ; Spell checking
        grammar
 
        :lang
@@ -84,6 +84,7 @@
         ;; +present         ; Emacs for presentations
         +pandoc
         +protocol
+        +pretty
         ;; :tools pdf
         )       ; Support for org-protocol:// links
        rest              ; Emacs as a REST client
