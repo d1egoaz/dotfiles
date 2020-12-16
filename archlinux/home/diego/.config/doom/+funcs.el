@@ -90,6 +90,25 @@
     (magit-git-command-topdir
      (concat "git checkout -b " new_branch_name " origin/master"))))
 
+(defun diego/review-pr (url)
+  "creates a new worspace with a the PR to get reviewed"
+  (interactive "sPR URL: ")
+  (let* ((pr-alist (github-review-pr-from-url url))
+         (repo (alist-get 'repo pr-alist))
+         (num (alist-get 'num pr-alist))
+         (dir (concat "~/src/github.com/Shopify/" repo "/")))
+    ;; (+workspace-switch (concat (alist-get 'repo pr-alist) "-" (alist-get 'num pr-alist)) t)
+    (+workspace-switch repo t)
+    ;; (counsel-projectile-switch-project-by-name repo)
+    (counsel-find-file (concat dir "README.md"))
+    ;; (doom-project-browse dir)
+    ;; (diego/fetch-origin-master);; needed to get the diff list
+    (shell-command (concat "cd " dir "; gh pr checkout " num))
+    ;;git diff --name-only remotes/origin/master..origin/new_business_platform_topic --diff-filter=d                                                                                                                                          <<<
+
+;; (forge-checkout-pullreq (string-to-number (alist-get 'num pr-alist)))))
+    ))
+
 (defun diego/prettify-jsonv2 ()
   "prettify json current region"
   (interactive)
@@ -160,6 +179,14 @@ the current state and point position."
   (let ((word (read-from-minibuffer "A word you want to add to dictionary: " (word-at-point))))
     (ispell-send-string (concat "*" word "\n"))
     (setq ispell-pdict-modified-p '(t))))
+
+(defun diego/kubel-east-d ()
+  (interactive)
+  (setq
+   kubel-resource "Pods"
+   kubel-context "kafka-regional-us-east1-d"
+   kubel-namespace "kafka-regional")
+  (kubel-open))
 
 (defun diego/magit-to-the-right (buffer)
   "Opens magit window on the right"
@@ -318,6 +345,15 @@ the current state and point position."
       (insert "#+BEGIN_SRC\n")
       (goto-char (point-max))
       (insert "\n#+END_SRC\n"))))
+
+(defvar diego/kafka-clusters '(("kafka-regional-us-east1-b" "kafka-regional")
+                     ("kafka-regional-us-central1-a" "kafka-regional")
+                     ("kafka-aggregate-us-central1-a" "kafka-aggregate")
+                     ("kafka-cdc-us-east1-d" "kafka-cdc")
+                     ("" "")
+                     ("" "")
+                     ))
+
 (defun diego/kafka-get-controller ()
   (interactive)
   (let* (
