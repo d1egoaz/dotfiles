@@ -1,6 +1,7 @@
 ;;; ~/dotfiles/archlinux/home/diego/.config/doom/+funcs.el -*- lexical-binding: t; -*-
 
 (require 'transient)
+(require 'goto-addr)
 
 (defun diego/delete-last-character-end-of-line ()
   "Delete last character in line"
@@ -77,11 +78,15 @@
   (magit-fetch-branch "origin" "master" nil)
   (magit-git-rebase "origin/master" nil))
 
+(defun diego/fetch-origin-master ()
+  (interactive)
+  (magit-fetch-branch "origin" "master" nil))
+
 (defun diego/git-create-branch-from-origin-master ()
   "Creates a new branch starting from origin/master."
   (interactive)
   (diego/fetch-origin-master)
-  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
+  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego/")))
     (magit-git-command-topdir
      (concat "git checkout -b " new_branch_name " origin/master"))))
 
@@ -99,15 +104,6 @@
   "prettify yaml current region"
   (interactive)
   (diego--exec-command-replace-region "prettier --parser yaml"))
-
-
-(defun diego/git-create-branch-from-origin-master ()
-  "Creates a new branch starting from origin/master."
-  (interactive)
-  (magit-fetch-from-upstream "origin" nil)
-  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
-    (magit-git-command-topdir
-     (concat "git checkout -b " new_branch_name " origin/master"))))
 
 (defun diego/visit-pull-request-url ()
   "Visit the current branch's PR on Github."
