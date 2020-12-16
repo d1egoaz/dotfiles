@@ -48,6 +48,7 @@
   - [[#deft][Deft]]
   - [[#emacs-anywhere][Emacs Anywhere]]
   - [[#evil][Evil]]
+    - [[#general-1][general]]
     - [[#stay-on-the-original-character-when-leaving-insert-mode][Stay on the original character when leaving insert mode]]
     - [[#disable-arrow-keys][Disable arrow keys]]
     - [[#disable-mouse][Disable mouse]]
@@ -55,7 +56,6 @@
   - [[#git-link][Git Link]]
   - [[#google-translate][Google Translate]]
   - [[#highlight-thing][Highlight Thing]]
-  - [[#highlight-indent-guides][Highlight Indent Guides]]
   - [[#ivy][Ivy]]
     - [[#remove--and--from-file-commands][Remove ./ and ../ from file commands]]
     - [[#show-hydra-when-pressing-c-o][Show hydra when pressing C-o]]
@@ -81,8 +81,6 @@
   - [[#pretty-code][pretty-code]]
   - [[#completion][Completion]]
   - [[#imenu][imenu]]
-  - [[#kubernetes-schemas][kubernetes schemas]]
-  - [[#rainbow-delimiters][rainbow delimiters]]
   - [[#gnutls][gnutls]]
   - [[#olivetti][olivetti]]
   - [[#so-long][so-long]]
@@ -102,7 +100,7 @@ Remember to run =doom env= after changing env variables.
   =(after! ...)=
 * Personal Information
 ** Set full name and email
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  user-full-name "Diego Alvarez"
  user-mail-address "diego.canada@icloud.com")
@@ -110,13 +108,13 @@ Remember to run =doom env= after changing env variables.
 
 * Emacs core
 ** Constants
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (defconst IS-MAC     (eq system-type 'darwin))
 (defconst IS-LINUX   (eq system-type 'gnu/linux))
 #+END_SRC
 
 ** Improve keyboard layout command->control
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 ;; +-----+-----+-----+-----+-------------------+-----+-----+
 ;; |     |     |     |     |                   |     |     |
 ;; |Fn   |Ctrl |Optn |Cmd  |       Space       |Cmd  |Optn | [arrows]
@@ -130,29 +128,29 @@ Remember to run =doom env= after changing env variables.
 ;;    ns-function-modifier 'hyper))
 #+END_SRC
 ** Start in full screen mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 ;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 #+END_SRC
 ** Scrach default mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq initial-major-mode 'org-mode)
 #+END_SRC
 
 ** Authinfo
 Sensitive credentials. Only use ~/.authinfo.gpg, rather than doom’s default
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq auth-sources '("~/.authinfo.gpg"))
 #+END_SRC
 
 ** Move custom configuration to its own file
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 #+END_SRC
 
 ** Relative line numbers
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 ;; (setq display-line-numbers-type 'relative)
 (setq display-line-numbers-type nil)
 #+END_SRC
@@ -160,17 +158,17 @@ Sensitive credentials. Only use ~/.authinfo.gpg, rather than doom’s default
 ** Disable lock files
 Disables .#file.ext creation.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq  create-lockfiles nil)
 #+END_SRC
 
 * Scroll compilation output to first error
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq compilation-scroll-output 'first-error)
 #+END_SRC
 
 * Backups
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  auto-save-default t
  auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
@@ -188,16 +186,16 @@ Disables .#file.ext creation.
 #+END_SRC
 
 * Which key
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq  which-key-idle-delay 0.3)
 #+END_SRC
 
 * Avoid file changed on disk checking message
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq revert-without-query '(".*"))
 #+END_SRC
 * Enables narrowing functions
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -206,17 +204,17 @@ Disables .#file.ext creation.
 * Include underscores and hyphen in word motions
 ='after-change-major-mode-hook= to change every mode.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?_ "w"))
 (add-hook! 'after-change-major-mode-hook (modify-syntax-entry ?- "w"))
 #+END_SRC
 
 * Whitespace cleanup on buffer save
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (add-hook 'before-save-hook #'whitespace-cleanup)
 #+END_SRC
 * Delete by moving to trash
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq delete-by-moving-to-trash IS-MAC)
 #+END_SRC
 
@@ -226,9 +224,9 @@ Disables .#file.ext creation.
 #+attr_html: :width 200
 [[attach:_20191224_113829screenshot.png]]
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (if (eq system-type 'darwin)
-    (setq doom-font (font-spec :family "Iosevka SS04" :size 16 :weight 'light)))
+    (setq doom-font (font-spec :family "Iosevka SS04" :size 14)))
 (if (eq system-type 'gnu/linux)
     (setq doom-font (font-spec :family "Iosevka SS04" :size 30)))
 
@@ -238,16 +236,35 @@ Disables .#file.ext creation.
 #+END_SRC
 
 ** Disable bold fonts
-#+BEGIN_SRC emacs-lisp
-(setq doom-themes-enable-bold nil)
+#+BEGIN_SRC elisp
+;; (setq doom-themes-enable-bold nil)
 #+END_SRC
 
 ** Theme and foreground color
 Loads the theme immediately, to modify faces afterwards.
-#+BEGIN_SRC emacs-lisp
-;; (load-theme 'doom-moonlight t)
-(setq modus-vivendi-theme-section-headings t
-      modus-operandi-theme-section-headings t)
+#+BEGIN_SRC elisp
+(setq modus-themes-slanted-constructs t ; use slanted text (italics) unless it is absolutely necessary, strings and code comments
+      modus-themes-fringes 'subtle ; {nil,'subtle,'intense}
+      modus-themes-syntax 'all-syntax ; Lots of options---continue reading the manual
+      modus-themes-paren-match 'intense-bold ; {nil,'subtle-bold,'intense,'intense-bold}
+      modus-themes-prompts 'intense ; {nil,'subtle,'intense}
+      modus-themes-completions 'opinionated ; {nil,'moderate,'opinionated}
+      modus-themes-region 'bg-only-no-extend ; {nil,'no-extend,'bg-only,'bg-only-no-extend}
+      modus-themes-org-blocks 'grayscale ; {nil,'grayscale,'rainbow}
+      modus-themes-headings ; Lots of options---continue reading the manual
+      '((1 . section)
+        (2 . section-no-bold)
+        (3 . rainbow-line)
+        (t . rainbow-line-no-bold))
+      modus-themes-scale-headings t
+      modus-themes-scale-1 1.1
+      modus-themes-scale-2 1.15
+      modus-themes-scale-3 1.21
+      modus-themes-scale-4 1.27
+      modus-themes-scale-5 1.33)
+
+(load-theme 'modus-operandi t)
+
 (setq doom-theme 'modus-operandi) ; light theme
 ;; (load-theme 'modus-vivendi t); dark theme
 (custom-set-faces!
@@ -255,7 +272,7 @@ Loads the theme immediately, to modify faces afterwards.
 #+END_SRC
 
 ** Change cursor color evil-mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  evil-insert-state-cursor '((bar . 2) "#ff00ff")
  evil-normal-state-cursor '(box "#ff00ff"))
@@ -263,7 +280,7 @@ Loads the theme immediately, to modify faces afterwards.
 
 * Lang
 ** Company
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! company
   (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 1))
@@ -271,7 +288,7 @@ Loads the theme immediately, to modify faces afterwards.
 #+END_SRC
 ** org
 *** General
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (if (eq system-type 'darwin)
     (setq org-download-screenshot-method "screencapture -i %s"))
 (if (eq system-type 'gnu/linux)
@@ -297,12 +314,16 @@ Loads the theme immediately, to modify faces afterwards.
    org-confirm-babel-evaluate nil
    org-download-heading-lvl nil
    org-download-method 'directory
+   org-fontify-quote-and-verse-blocks nil ; When nil, format these as normal Org. This is the default, because the content of these blocks will still be treated as Org syntax.
+   org-fontify-whole-heading-line t ; Non-nil means fontify the whole line for headings.
+   org-hide-leading-stars nil
    org-log-into-drawer t
    org-src-fontify-natively t
-   ;; org-startup-indented nil ; use full are for body
    org-startup-with-inline-images t
+   org-startup-indented t
+   org-startup-truncatd nil
    org-download-image-html-width 500
-   org-tags-column -80
+  org-tags-column -80
    ;; ! is to log event on logbook drawer
    ;; char defines a fast-access key for the state name
    org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
@@ -324,11 +345,14 @@ Loads the theme immediately, to modify faces afterwards.
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
      ("j" "Journal" entry (file+olp+datetree "~/gdrive/deft/journal.org")
       "* %?" :clock-in t :clock-resume t)))
+
   (remove-hook 'org-mode-hook #'org-superstar-mode))
 #+END_SRC
 
+#+RESULTS:
+
 *** bullet list
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq org-bullets-bullet-list '("✸" "●" "◉" "○" "◌"))
 #+END_SRC
 
@@ -339,7 +363,7 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+END_EXAMPLE
 
 *** go-mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! go-mode
   (add-hook! 'go-mode-hook
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
@@ -357,7 +381,7 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+END_SRC
 
 ** LSP
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! lsp-ui
   (setq
    lsp-signature-auto-activate t          ; Show signature of current function.
@@ -379,13 +403,13 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+RESULTS:
 
 ** plantuml
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq plantuml-default-exec-mode 'jar)
 #+END_SRC
 
 * Packages
 ** Avy
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  avy-all-windows 'all-frames
  avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p)
@@ -395,7 +419,7 @@ cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
 
 ** Counsel
 Shows all files, including hidden files, ignores files =.= and =..=
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! counsel
   (setq counsel-find-file-ignore-regexp (regexp-opt '("./" "../")))
   ;; (push '(counsel-rg . "-g ** -- ") ivy-initial-inputs-alist))
@@ -404,14 +428,14 @@ Shows all files, including hidden files, ignores files =.= and =..=
 #+END_SRC
 
 ** Deft
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  deft-directory "~/gdrive/deft"
  deft-use-filename-as-title t)
 #+END_SRC
 
 ** Emacs Anywhere
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (defun markdown-window-p (window-title)
   "Judges from WINDOW-TITLE whether the current window likes markdown"
   (string-match-p (rx (or "Pull Request" "Issue" "Slack"))
@@ -442,15 +466,20 @@ Shows all files, including hidden files, ignores files =.= and =..=
 #+END_SRC
 
 ** Evil
+*** general
+#+begin_src elisp
+(setq evil-want-C-i-jump t)
+#+end_src
+
 *** Stay on the original character when leaving insert mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  evil-move-cursor-back nil
  evil-shift-round nil)
 #+END_SRC
 
 *** Disable arrow keys
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (define-key evil-insert-state-map [left] 'undefined)
 (define-key evil-insert-state-map [right] 'undefined)
 (define-key evil-insert-state-map [up] 'undefined)
@@ -463,7 +492,7 @@ Shows all files, including hidden files, ignores files =.= and =..=
 
 *** Disable mouse
 Mouse is to far from the hand.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (defun nothing())
 (define-key evil-normal-state-map (kbd "<down-mouse-1>") 'nothing)
 (dolist (mouse '("<mouse-1>" "<mouse-2>" "<mouse-3>"
@@ -481,7 +510,7 @@ Mouse is to far from the hand.
 
 ** Exec Path From Shell
 TODO: testing doom env
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 ;; (setq
 ;;  exec-path-from-shell-check-startup-files nil
 ;;  exec-path-from-shell-variables '("PATH" "GOPATH" "GOROOT"))
@@ -489,17 +518,17 @@ TODO: testing doom env
 #+END_SRC
 
 ** Git Link
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq git-link-open-in-browser t)
 #+END_SRC
 
 ** Google Translate
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq google-translate-default-source-language "en"
       google-translate-default-target-language "sp")
 #+END_SRC
 ** Highlight Thing
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! highlight-thing-mode
   (setq
    ;; highlight-thing-limit-to-region-in-large-buffers-p t
@@ -512,30 +541,22 @@ TODO: testing doom env
 
 (doom-themes-set-faces nil
   '(highlight-thing :foreground "orange" :background "black"))
-;; (global-highlight-thing-mode 1)
 
-(add-hook! '(prog-mode-hook conf-mode yaml-mode emacs-lisp-mode) #'highlight-thing-mode)
-#+END_SRC
-
-** Highlight Indent Guides
-#+BEGIN_SRC emacs-lisp
-(setq highlight-indent-guides-method 'character)
-(add-hook 'focus-in-hook #'highlight-indent-guides-auto-set-faces)
-(add-hook! '(yaml-mode-hook prog-mode) #'highlight-indent-guides-mode)
+(add-hook! '(prog-mode-hook conf-mode yaml-mode elisp-mode) #'highlight-thing-mode)
 #+END_SRC
 
 ** Ivy
 *** Remove ./ and ../ from file commands
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq
  ivy-extra-directories nil)
 #+END_SRC
 *** Show hydra when pressing C-o
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq ivy-read-action-function #'ivy-hydra-read-action)
 #+END_SRC
 *** childframe fixed position
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! ivy-posframe
   ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left))))
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))))
@@ -545,9 +566,9 @@ TODO: testing doom env
 ** Magit
 
 *** Tune magit
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! magit
-  (setq magit-refs-show-commit-count nil
+    (setq magit-refs-show-commit-count nil
         magit-diff-refine-hunk t ;; show whitespaces changes on the selected git diff hunks
         magit-revision-show-gravatars nil
         magit-process-popup-time -1
@@ -559,17 +580,19 @@ TODO: testing doom env
         smerge-refine-ignore-whitespace nil
         magit-diff-paint-whitespace-lines 'all
         magit-commit-show-diff nil
-        magit-section-initial-visibility-alist
-        '((stashes . hide) (unpushed . show))
-        magit-display-buffer-function 'diego/magit-to-the-right)
-        ; https://github.com/magit/magit/issues/4017
-        ;magit-insert-tags-header
+        magit-section-initial-visibility-alist '((stashes . hide) (unpushed . show))
+        ;; magit-display-buffer-function 'diego/magit-to-the-right
+        magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
+        )
+        ;; https://github.com/magit/magit/issues/4017
+        ;;magit-insert-tags-header
+    ; (setq magit-refresh-verbose t) to see timings
     (remove-hook! 'magit-status-sections-hook #'(
-        magit-insert-status-headers
+        ;; magit-insert-status-headers
         magit-insert-unpushed-to-pushremote
         magit-insert-unpulled-from-pushremote
         magit-insert-unpulled-from-upstream
-        magit-insert-unpushed-to-upstream-or-recent)
+        magit-insert-unpushed-to-upstream-or-recent))
     ;; automatic spellchecking in commit messages
     (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
     (remove-hook! 'magit-refs-sections-hook 'magit-insert-tags) ;; remove tags from ref section
@@ -577,7 +600,7 @@ TODO: testing doom env
 #+END_SRC
 
 *** Set project list
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! magit
   (setq magit-repository-directories
         '(
@@ -587,7 +610,7 @@ TODO: testing doom env
 #+END_SRC
 
 ** Projectile
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! magit
   (after! projectile
     (mapc #'projectile-add-known-project
@@ -597,12 +620,12 @@ TODO: testing doom env
 #+END_SRC
 
 ** tl;dr
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! tldr
   (setq tldr-directory-path (concat doom-etc-dir "tldr/")))
 #+END_SRC
 ** elfeed
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! elfeed
   ;; (doom-themes-set-faces nil
   ;; '(elfeed-search-tag-face :foreground "#98c379")
@@ -621,7 +644,7 @@ TODO: testing doom env
 #+END_SRC
 
 ** engine-mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
   (after! engine-mode
     (engine-mode t)
     (defengine giphy "https://giphy.com/search/%s")
@@ -633,21 +656,21 @@ TODO: testing doom env
     (defengine twitter "https://twitter.com/search?q=%s"))
 #+END_SRC
 ** atomic-chrome
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq atomic-chrome-default-major-mode 'gfm-mode)
 (atomic-chrome-start-server)
 #+END_SRC
 
 * Misc
 ** Set default modes to some specific file extensions
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.aliases\\'" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.yml.erb\\'" . yaml-mode))
 #+END_SRC
 
 ** Popup rules
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (set-popup-rule! "^\\*doom:vterm*" :side 'right :select t :quit t :size 90)
 (set-popup-rule! "^\\*kubel - *" :side 'right :size 100 :select t :quit t)
 (set-popup-rule! "^\\*Messages\\*" :select t :quit t)
@@ -659,26 +682,26 @@ TODO: testing doom env
 
 * Doom
 ** Leader key similar to Spacemacs SPC-m
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq doom-localleader-key ",")
 #+END_SRC
 
 ** Load private modules
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (load! "+funcs")
 #+END_SRC
 ** Bindings
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (load! "+bindings")
 #+END_SRC
 
 ** Disable inserting the comment syntax on newlines when editing an existing comment
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq +evil-want-o/O-to-continue-comments nil)
 #+END_SRC
 
 ** keycast
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! keycast
   (define-minor-mode keycast-mode
     "Show current command and its key binding in the mode line."
@@ -696,53 +719,33 @@ TODO: testing doom env
 (keycast-mode)
 #+END_SRC
 ** workspaces
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq +workspaces-on-switch-project-behavior t)
 #+END_SRC
 ** pretty-code
 Use pretty-code for the ligatures only, and not for symbols.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq +pretty-code-symbols nil)
 #+END_SRC
 ** Completion
 Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! company
   (remove-hook 'evil-normal-state-entry-hook #'company-abort))
 #+END_SRC
 ** imenu
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq org-imenu-depth 6)
 #+END_SRC
-** kubernetes schemas
-#+BEGIN_SRC emacs-lisp
-(setq lsp-yaml-schemas (make-hash-table))
-(puthash "kubernetes" ["resources.yaml"
-                       "resources/*"
-                       "pod.yaml"
-                       "deployment.yaml"
-                       "serviceaccount.yaml"
-                       "clusterrole.yaml"
-                       "role.yaml"
-                       "clusterrolebinding.yaml"
-                       "rolebinding.yaml"
-                       "configmap.yaml"
-                       "service.yaml"]
-         lsp-yaml-schemas)
-(puthash "http://json.schemastore.org/kustomization" ["kustomization.yaml"] lsp-yaml-schemas)
-#+END_SRC
-** rainbow delimiters
-#+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
 
 ** gnutls
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 ;; (after! gnutls
 ;;   (add-to-list 'gnutls-trustfiles "/usr/local/etc/libressl/cert.pem"))
 #+END_SRC
 ** olivetti
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (after! olivetti
   (setq olivetti-minimum-body-width 150
         olivetti-recall-visual-line-mode-entry-state t))
@@ -759,7 +762,7 @@ Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
     (set-window-fringes (selected-window) nil)))
 #+END_SRC
 ** so-long
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC elisp
 (setq so-long-max-lines 1)
 (add-to-list 'auto-mode-alist '("\\.yml.erb\\'" . so-long-mode))
 #+END_SRC
