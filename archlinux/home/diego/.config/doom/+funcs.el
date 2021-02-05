@@ -86,7 +86,7 @@
   "Creates a new branch starting from origin/master."
   (interactive)
   (diego/fetch-origin-master)
-  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego/")))
+  (let ((new_branch_name (read-from-minibuffer "New branch name (from origin/master): " "diego_")))
     (magit-git-command-topdir
      (concat "git checkout -b " new_branch_name " origin/master"))))
 
