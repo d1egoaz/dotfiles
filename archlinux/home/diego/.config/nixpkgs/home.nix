@@ -39,7 +39,7 @@ in {
     pkgs.vscode
     pkgs.watch
     pkgs.zstd
-    unstable.alacritty
+    pkgs.alacritty
     unstable.bash
     unstable.docker-compose
     unstable.exa
