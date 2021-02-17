@@ -19,5 +19,5 @@ for f in "$NIX_PROFILE_APPS"/*; do
 	app_name="$(basename "$f")"
 	echo $app_name
 	echo "new link for $app_name"
-	ln -sfn "$f" "$APP_DIR"/
+	ln -sf "$f" "$APP_DIR"/
 done

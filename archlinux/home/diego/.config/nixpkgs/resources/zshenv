@@ -11,7 +11,7 @@ else
 fi
 
 # PATH
-PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:$PATH"
+PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:$HOME/bin:$PATH"
 
 if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
@@ -34,11 +34,11 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # cloudplatform: add Shopify clusters to your local kubernetes config
-export KUBECONFIG=/Users/diegoalvarez/.kube/config.shopify.cloudplatform
+export KUBECONFIG=$HOME/.kube/config.shopify.cloudplatform
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
 export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 export ALTERNATE_EDITOR="vim"
-if [ -e /Users/diegoalvarez/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/diegoalvarez/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

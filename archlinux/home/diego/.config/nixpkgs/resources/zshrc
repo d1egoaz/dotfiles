@@ -1,0 +1,25 @@
+# Emacs tramp mode compatibility
+[[ $TERM == "tramp" ]] && unsetopt zle && PS1='$ ' && return
+
+# quick escape/command mode
+bindkey jk vi-cmd-mode
+
+# load aliases
+test -e ~/.aliases && source ~/.aliases
+
+function ediff() {
+  if [ "X$2" = "X" ]; then
+    echo "USAGE: ediff <FILE 1> <FILE 2>"
+  else
+    # The --eval flag takes lisp code and evaluates it with EMACS
+    emacs --eval "(ediff-files \"$1\" \"$2\")"
+  fi
+}
+
+[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
+[ -f /usr/local/bin/kubectl ] && source <(kubectl completion zsh)
+
+eval "$(ssh-agent)"
+
+# similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
+ulimit -n 2048

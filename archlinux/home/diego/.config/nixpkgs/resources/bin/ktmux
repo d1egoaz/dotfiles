@@ -10,7 +10,7 @@ _ktmux() {
     echo "#[fg=red,bold] No context selected "
   else
     local KUBE_TMUX
-    KUBE_TMUX+="#[fg=${1},bold]${KUBE_CONTEXT}"
+    KUBE_TMUX+="#[fg=${1}]${KUBE_CONTEXT}"
     KUBE_TMUX+="#[fg=colour250]:"
     KUBE_TMUX+="#[fg=${2}]${KUBE_NAMESPACE}"
     echo "${KUBE_TMUX} "
