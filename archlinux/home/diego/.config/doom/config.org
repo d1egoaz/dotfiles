@@ -28,7 +28,7 @@
 - [[#whitespace-cleanup-on-buffer-save][Whitespace cleanup on buffer save]]
 - [[#delete-by-moving-to-trash][Delete by moving to trash]]
 - [[#ui][UI]]
-  - [[#use-iosevka-ss04-with-font-ligatures][Use Iosevka SS04 with font ligatures]]
+  - [[#use-iosevka-ss08-with-font-ligatures][Use Iosevka SS08 with font ligatures]]
   - [[#disable-bold-fonts][Disable bold fonts]]
   - [[#theme-and-foreground-color][Theme and foreground color]]
   - [[#change-cursor-color-evil-mode][Change cursor color evil-mode]]
@@ -219,20 +219,20 @@ Disables .#file.ext creation.
 #+END_SRC
 
 * UI
-** Use Iosevka SS04 with font ligatures
+** Use Iosevka SS08 with font ligatures
 
 #+attr_html: :width 200
 [[attach:_20191224_113829screenshot.png]]
 
 #+BEGIN_SRC elisp
 (if (eq system-type 'darwin)
-    (setq doom-font (font-spec :family "Iosevka SS04" :size 14)))
+    (setq doom-font (font-spec :family "Iosevka SS08" :size 14)))
 (if (eq system-type 'gnu/linux)
-    (setq doom-font (font-spec :family "Iosevka SS04" :size 30)))
+    (setq doom-font (font-spec :family "Iosevka SS08" :size 30)))
 
 (setq doom-variable-pitch-font (font-spec :family "Microsoft Sans Serif"))
 
-(setq +pretty-code-iosevka-font-name "Iosevka SS04")
+(setq +pretty-code-iosevka-font-name "Iosevka SS08")
 #+END_SRC
 
 ** Disable bold fonts
@@ -558,8 +558,8 @@ TODO: testing doom env
 *** childframe fixed position
 #+BEGIN_SRC elisp
 (after! ivy-posframe
-  ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left))))
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))))
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left))))
+  ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))))
   ;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display))))
 #+END_SRC
 

@@ -1,13 +1,22 @@
 { config, pkgs, ... }:
 
 let
-  prefferedFont = "Iosevka Term SS04";
+  fonts.fontconfig.enable = true;
+  prefferedFont = "Iosevka Term SS08";
   emacs_community_overlay = (import (builtins.fetchTarball {
     url =
       "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
   }));
   unstable =
     import <nixpkgs-unstable> { overlays = [ emacs_community_overlay ]; };
+
+  iosevkass08 = pkgs.iosevka.override {
+    privateBuildPlan = {
+      design = [ "ss04" ];
+      family = "Iosevka Term SS08";
+    };
+    set = "term";
+  };
 
 in {
   home.username = "diegoalvarez";
@@ -50,9 +59,9 @@ in {
     unstable.google-cloud-sdk
     unstable.graphviz
     unstable.htop
+    unstable.iosevka-bin
     unstable.kafkacat
     unstable.languagetool
-    unstable.tmux
     unstable.ripgrep
     unstable.ruby
     # rust
@@ -62,11 +71,15 @@ in {
 
     unstable.tldr
     unstable.wget
-    unstable.zsh
   ];
 
+  xdg.configFile."alacritty/alacritty.yml".source = ./resources/alacritty.yml;
+
   home.file = {
-    ".config/alacritty/alacritty.yml".source = ./resources/alacritty.yml;
+    "bin/ktmux".source = ./resources/bin/ktmux;
+    "bin/kc".source = ./resources/bin/kc;
+    "bin/ktail".source = ./resources/bin/ktail;
+    ".ignore".source = ./resources/ignore;
   };
 
   programs = {
@@ -94,14 +107,15 @@ in {
 
     emacs = {
       enable = true;
-      # package = unstable.emacsGcc;
-      package = unstable.emacsMacport;
+      package = unstable.emacsGcc;
+      # package = unstable.emacsMacport;
       # package = unstable.emacsUnstable;
-      # extraPackages = epkgs: [ epkgs.vterm ];
+      extraPackages = epkgs: [ epkgs.vterm ];
     };
 
     vim = {
       enable = true;
+      plugins = [ pkgs.vimPlugins.base16-vim ];
       extraConfig = ''
         " Modify default escape and leader mappings for convenience
         inoremap jk <ESC>
@@ -124,6 +138,35 @@ in {
           set t_ut=
         endif
       '';
+    };
+
+    tmux = {
+      enable = true;
+      package = unstable.tmux;
+      shortcut = "a";
+      keyMode = "vi";
+      plugins = with pkgs.tmuxPlugins; [
+        continuum
+        fzf-tmux-url # prefix u -> fzf urls
+        pain-control # panes with vi like movements hjkl
+        resurrect
+        sensible
+      ];
+      extraConfig = (builtins.readFile ./resources/tmux.conf);
+    };
+
+    zsh = {
+      enable = true;
+      enableAutosuggestions = true;
+      enableCompletion = true;
+      defaultKeymap = "viins";
+      oh-my-zsh = {
+        enable = true;
+        theme = "sunaku";
+        plugins = [  "fzf" "autojump" "gpg-agent"];
+      };
+      initExtraFirst = (builtins.readFile ./resources/zshrc);
+      envExtra = (builtins.readFile ./resources/zshenv);
     };
   };
 }

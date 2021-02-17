@@ -23,12 +23,12 @@ window:
 # Font configuration (changes require restart)
 font:
   normal:
-    family: Iosevka Term SS04
+    family: Iosevka Term SS08
     # style: Italic
   bold:
-    family: Iosevka Term SS04
+    family: Iosevka Term SS08
   italic:
-    family: Iosevka Term SS04
+    family: Iosevka Term SS08
 
   # Point size of the font
   size: 16.0

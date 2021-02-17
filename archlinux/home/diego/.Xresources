@@ -16,8 +16,8 @@ URxvt*.scrollWithBuffer: true
 ! scroll back to the bottom on keypress
 URxvt*.scrollTtyKeypress: true
 
-URxvt*.font: xft:Iosevka SS04:size=12:antialias=true
-URxvt*.boldFont: xft:Iosevka SS04:bold:size=12:antialias=true
+URxvt*.font: xft:Iosevka SS08:size=12:antialias=true
+URxvt*.boldFont: xft:Iosevka SS08:bold:size=12:antialias=true
 !URxvt*.font: xft: xos4 Terminus:size=14:antialias=true
 !URxvt*.boldFont: xft: xos4 Terminus:bold:size=14:antialias=true
 
