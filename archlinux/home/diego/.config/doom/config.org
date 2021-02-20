@@ -315,7 +315,7 @@ Loads the theme immediately, to modify faces afterwards.
    org-download-heading-lvl nil
    org-download-method 'directory
    org-fontify-quote-and-verse-blocks nil ; When nil, format these as normal Org. This is the default, because the content of these blocks will still be treated as Org syntax.
-   org-fontify-whole-heading-line t ; Non-nil means fontify the whole line for headings.
+   org-fontify-whole-heading-line nil; Non-nil means fontify the whole line for headings.
    org-hide-leading-stars nil
    org-log-into-drawer t
    org-src-fontify-natively t
