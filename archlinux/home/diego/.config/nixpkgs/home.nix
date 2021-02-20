@@ -1,4 +1,5 @@
 { config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   fonts.fontconfig.enable = true;
@@ -159,14 +160,28 @@ in {
       enable = true;
       enableAutosuggestions = true;
       enableCompletion = true;
-      defaultKeymap = "viins";
+      defaultKeymap = "emacs";
+      # defaultKeymap = "viins";
       oh-my-zsh = {
         enable = true;
-        theme = "sunaku";
-        plugins = [  "fzf" "autojump" "gpg-agent"];
+        # theme = "sunaku"; overriden by powerlevel10k
+        plugins = [ "fzf" "autojump" "gpg-agent" ];
       };
       initExtraFirst = (builtins.readFile ./resources/zshrc);
       envExtra = (builtins.readFile ./resources/zshenv);
+      # from https://git.catgirl.ai/ext0l/nixos-config/src/branch/master/vector.nix
+      plugins = [
+        {
+          name = "powerlevel10k";
+          src = pkgs.zsh-powerlevel10k;
+          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+        }
+        {
+          name = "powerlevel10k-config";
+          src = lib.cleanSource ./resources;
+          file = "p10k-config";
+        }
+      ];
     };
   };
 }
