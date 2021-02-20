@@ -707,7 +707,7 @@ TODO: testing doom env
     "Show current command and its key binding in the mode line."
     :global t
     (if keycast-mode
-        (add-hook 'pre-command-hook 'keycast-mode-line-update t)
+        (add-hook 'pre-command-hook 'keycast--update t)
       (remove-hook 'pre-command-hook 'keycast-mode-line-update)))
   (setq keycast-substitute-alist '((evil-next-line nil nil)
                                    (evil-previous-line nil nil)
