@@ -19,6 +19,7 @@
   - [[#move-custom-configuration-to-its-own-file][Move custom configuration to its own file]]
   - [[#relative-line-numbers][Relative line numbers]]
   - [[#disable-lock-files][Disable lock files]]
+  - [[#increase-fill-column][Increase fill column]]
 - [[#scroll-compilation-output-to-first-error][Scroll compilation output to first error]]
 - [[#backups][Backups]]
 - [[#which-key][Which key]]
@@ -160,6 +161,11 @@ Disables .#file.ext creation.
 
 #+BEGIN_SRC elisp
 (setq  create-lockfiles nil)
+#+END_SRC
+** Increase fill column
+Monitors have too much wide space
+#+BEGIN_SRC emacs-lisp
+(setq fill-column 120)
 #+END_SRC
 
 * Scroll compilation output to first error
