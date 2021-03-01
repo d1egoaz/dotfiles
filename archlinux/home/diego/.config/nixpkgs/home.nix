@@ -3,12 +3,11 @@
 let
   fonts.fontconfig.enable = true;
   prefferedFont = "Iosevka Term SS08";
-  emacs_community_overlay = (import (builtins.fetchTarball {
-    url =
-      "https://github.com/nix-community/emacs-overlay/archive/28520b7f2fc11bfcea7b5087fc084d391d828a02.tar.gz";
-  }));
-  unstable = import <nixpkgs-unstable> {};
-  unstablenixos = import <nixos-unstable> {overlays = [ emacs_community_overlay ];};
+  #emacs_community_overlay = (import (builtins.fetchTarball {
+  #  url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
+  #}));
+  unstable = import <nixpkgs-unstable> { };
+  #unstablenixos = import <nixos-unstable> {overlays = [ emacs_community_overlay ];};
 
   iosevkass08 = pkgs.iosevka.override {
     privateBuildPlan = {
@@ -108,9 +107,9 @@ in {
 
     emacs = {
       enable = true;
-      package = unstablenixos.emacsGcc;
-      # package = unstable.emacsMacport;
-    #  package = unstable.emacsUnstable;
+      # package = unstablenixos.emacsGcc;
+      # package = unstable.emacsGcc;
+      package = unstable.emacsMacport;
       extraPackages = epkgs: [ epkgs.vterm ];
     };
 
