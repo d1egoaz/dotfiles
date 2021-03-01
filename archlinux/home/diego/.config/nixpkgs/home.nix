@@ -35,8 +35,11 @@ in {
     pkgs.ejson
     pkgs.fzf
     pkgs.gnupg
+    pkgs.graphviz
     pkgs.gtypist
+    pkgs.htop
     pkgs.jq
+    pkgs.languagetool
     pkgs.maven
     pkgs.mitmproxy
     pkgs.mpv
@@ -47,9 +50,10 @@ in {
     pkgs.socat
     pkgs.vscode
     pkgs.watch
+    pkgs.wget
     pkgs.zstd
-    pkgs.alacritty
-    unstable.bash
+    pkgs.bash
+    unstable.alacritty
     unstable.docker-compose
     unstable.exa
     unstable.fd
@@ -57,20 +61,16 @@ in {
     unstable.gitAndTools.git-crypt
     unstable.go
     unstable.google-cloud-sdk
-    unstable.graphviz
-    unstable.htop
     unstable.iosevka-bin
     unstable.kafkacat
-    unstable.languagetool
     unstable.ripgrep
     unstable.ruby
+    unstable.tldr
     # rust
     unstable.rustc
     unstable.cargo
     unstable.rustfmt
 
-    unstable.tldr
-    unstable.wget
   ];
 
   xdg.configFile."alacritty/alacritty.yml".source = ./resources/alacritty.yml;
