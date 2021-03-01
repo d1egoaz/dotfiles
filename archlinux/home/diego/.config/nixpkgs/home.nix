@@ -36,6 +36,7 @@ in {
     pkgs.ejson
     pkgs.fzf
     pkgs.gnupg
+    pkgs.gtypist
     pkgs.jq
     pkgs.maven
     pkgs.mitmproxy
