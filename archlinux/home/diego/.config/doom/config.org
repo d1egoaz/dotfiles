@@ -69,6 +69,7 @@
   - [[#elfeed][elfeed]]
   - [[#engine-mode][engine-mode]]
   - [[#atomic-chrome][atomic-chrome]]
+  - [[#spell][spell]]
 - [[#misc][Misc]]
   - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
   - [[#popup-rules][Popup rules]]
@@ -298,7 +299,7 @@ Loads the theme immediately, to modify faces afterwards.
 (if (eq system-type 'darwin)
     (setq org-download-screenshot-method "screencapture -i %s"))
 (if (eq system-type 'gnu/linux)
-    (setq org-download-screenshot-method "import  %s"))
+    (setq org-download-screenshot-method "import %s"))
 (setq
  org-directory "~/gdrive/deft"
  org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
@@ -319,7 +320,7 @@ Loads the theme immediately, to modify faces afterwards.
    org-clock-out-remove-zero-time-clocks nil
    org-confirm-babel-evaluate nil
    org-download-heading-lvl nil
-   org-download-method 'directory
+   org-download-method 'attach
    org-fontify-quote-and-verse-blocks nil ; When nil, format these as normal Org. This is the default, because the content of these blocks will still be treated as Org syntax.
    org-fontify-whole-heading-line nil; Non-nil means fontify the whole line for headings.
    org-hide-leading-stars nil
@@ -666,6 +667,11 @@ TODO: testing doom env
 (setq atomic-chrome-default-major-mode 'gfm-mode)
 (atomic-chrome-start-server)
 #+END_SRC
+** spell
+#+begin_src elisp
+;; (setq ispell-dictionary "english")
+(setq ispell-dictionary "en")
+#+end_src
 
 * Misc
 ** Set default modes to some specific file extensions
