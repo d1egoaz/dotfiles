@@ -3,19 +3,22 @@
 let
   fonts.fontconfig.enable = true;
   prefferedFont = "Iosevka Term SS08";
-  #emacs_community_overlay = (import (builtins.fetchTarball {
-  #  url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
-  #}));
-  unstable = import <nixpkgs-unstable> { };
-  #unstablenixos = import <nixos-unstable> {overlays = [ emacs_community_overlay ];};
+  emacs_community_overlay = (import (builtins.fetchTarball {
+    url =
+      "https://github.com/nix-community/emacs-overlay/archive/360f24a1de8fcc3ea31c89d64b5ab6269037064a.tar.gz";
+  }));
 
-  iosevkass08 = pkgs.iosevka.override {
-    privateBuildPlan = {
-      design = [ "ss04" ];
-      family = "Iosevka Term SS08";
-    };
-    set = "term";
-  };
+  # unstablenixos = import <nixos-unstable> {overlays = [ emacs_community_overlay ];};
+  unstable = import <nixpkgs-unstable> { };
+  unstablenixos = (import (builtins.fetchTarball {
+    # Descriptive name to make the store path easier to identify
+    name = "nixos-unstable-2021-03-01";
+    # Commit hash
+    url =
+      "https://github.com/nixos/nixpkgs/archive/0aeba64fb26e4defa0842a942757144659c6e29f.tar.gz";
+    # Hash obtained using `nix-prefetch-url --unpack <url>`
+    sha256 = "08qd78dm29xmawc32m83mvhjp4j9k3bj4pjgms2yj8185b82574i";
+  })) { overlays = [ emacs_community_overlay ]; };
 
 in {
   home.username = "diegoalvarez";
@@ -107,9 +110,9 @@ in {
 
     emacs = {
       enable = true;
-      # package = unstablenixos.emacsGcc;
+      package = unstablenixos.emacsGcc;
       # package = unstable.emacsGcc;
-      package = unstable.emacsMacport;
+      # package = unstable.emacsMacport;
       extraPackages = epkgs: [ epkgs.vterm ];
     };
 
