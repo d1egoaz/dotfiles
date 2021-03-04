@@ -43,6 +43,7 @@ in {
     pkgs.htop
     pkgs.jq
     pkgs.languagetool
+    pkgs.manpages
     pkgs.maven
     pkgs.mitmproxy
     pkgs.mpv
@@ -73,7 +74,6 @@ in {
     unstable.rustc
     unstable.cargo
     unstable.rustfmt
-
   ];
 
   xdg.configFile."alacritty/alacritty.yml".source = ./resources/alacritty.yml;
