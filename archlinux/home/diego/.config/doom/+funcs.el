@@ -282,6 +282,7 @@ the current state and point position."
     ("h" "Hacker News" "+hnews")
     ("l" "linux" "+linux")
     ("t" "top" "+top")
+    ("s" "sre" "+sre")
     ("v" "verge" "+theverge")]
    ["Reddit"
     ("p" "r/Programming" "+programming")]
