@@ -407,3 +407,13 @@ the current state and point position."
                 (top . 400) (left . 300)))
   (select-frame-by-name "alfredoc")
   (org-capture))
+
+(defun diego/autocapitalize-org-headings ()
+  "Find org headings and capitalize first word"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (evil-eobp))
+      (org-next-visible-heading 1)
+      (evil-forward-word-begin)
+      (upcase-char 1))))
