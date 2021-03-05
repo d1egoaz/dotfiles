@@ -329,7 +329,7 @@ Loads the theme immediately, to modify faces afterwards.
    org-startup-with-inline-images t
    org-startup-indented t
    org-startup-truncatd nil
-   org-download-image-html-width 500
+   org-download-image-html-width 200
   org-tags-column -80
    ;; ! is to log event on logbook drawer
    ;; char defines a fast-access key for the state name
