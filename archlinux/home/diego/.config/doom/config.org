@@ -166,7 +166,7 @@ Disables .#file.ext creation.
 ** Increase fill column
 Monitors have too much wide space
 #+BEGIN_SRC emacs-lisp
-(setq fill-column 120)
+(setq-default fill-column 120)
 #+END_SRC
 
 * Scroll compilation output to first error
