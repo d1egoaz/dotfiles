@@ -416,4 +416,6 @@ the current state and point position."
     (while (not (evil-eobp))
       (org-next-visible-heading 1)
       (evil-forward-word-begin)
+      (while (member (word-at-point) '("TODO" "DONE" "CANCELLED"))
+        (evil-forward-word-begin))
       (upcase-char 1))))
