@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name: itshould
-# key: itshould
-# --
-it should "$1" in {
-  $0
-}

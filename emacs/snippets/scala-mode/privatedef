@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name : private def f(arg: T): R = {...}
-# key: private def
-# --
-private def ${1:name}(${2:args}): ${3:Unit} = {
-  $0
-}

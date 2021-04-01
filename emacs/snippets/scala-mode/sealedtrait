@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name: sealedtrait
-# key: sealedtrait
-# --
-sealed trait ${1:name}
-$0

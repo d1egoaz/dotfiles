@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name: option
-# key: option
-# --
-Option[$0]

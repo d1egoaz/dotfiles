@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# Author : Diego Alvarez <diego.alvarez.zuluaga@gmail.com>
-# name: val
-# key: val
-# --
-val ${1:name}: ${2:T} = ${0:value}
