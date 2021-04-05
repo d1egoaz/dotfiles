@@ -23,7 +23,7 @@
 (package! kubel :recipe (:host github :repo "d1egoaz/kubel"))
 (package! markdown-changelog)
 (package! mw-thesaurus)
-(package! modus-themes :recipe (:host gitlab :repo "protesilaos/modus-themes" :branch "main"))
+;; (package! modus-themes :recipe (:host gitlab :repo "protesilaos/modus-themes" :branch "main"))
 (package! olivetti)
 (package! powerthesaurus)
 (package! prettier-js)
