@@ -161,7 +161,7 @@ in {
     vim = {
       enable = true;
       plugins = [ unstable.vimPlugins.base16-vim ];
-      extraConfig = (builtins.readFile ./resources/vimrc);
+      extraConfig = builtins.readFile ./resources/vimrc;
     };
 
     tmux = {
@@ -176,7 +176,7 @@ in {
         resurrect
         sensible
       ];
-      extraConfig = (builtins.readFile ./resources/tmux.conf);
+      extraConfig = builtins.readFile ./resources/tmux.conf;
     };
 
     zsh = {
@@ -193,8 +193,8 @@ in {
         size = 50000;
         save = 50000;
       };
-      initExtraBeforeCompInit = (builtins.readFile ./resources/zshrc);
-      envExtra = (builtins.readFile ./resources/zshenv);
+      initExtraBeforeCompInit = builtins.readFile ./resources/zshrc;
+      envExtra = builtins.readFile ./resources/zshenv;
       plugins = [
         {
           name = "powerlevel10k";
