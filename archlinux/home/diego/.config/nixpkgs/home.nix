@@ -1,102 +1,106 @@
 { config, lib, pkgs, ... }:
 
+# my channels:
+# home-manager https://github.com/nix-community/home-manager/archive/master.tar.gz
+# nixos-unstable-small https://nixos.org/channels/nixos-unstable-small
+# nixpkgs-unstable https://nixos.org/channels/nixpkgs-unstable
+
 let
   fonts.fontconfig.enable = true;
   prefferedFont = "Iosevka Term SS08";
   emacs_community_overlay = (import (builtins.fetchTarball {
-    url =
-      "https://github.com/nix-community/emacs-overlay/archive/360f24a1de8fcc3ea31c89d64b5ab6269037064a.tar.gz";
+    url = "https://github.com/nix-community/emacs-overlay/archive/6005779173365a3bdf793b37c3bd57446372eb70.tar.gz";
   }));
 
-  # unstablenixos = import <nixos-unstable> {overlays = [ emacs_community_overlay ];};
-  unstable = import <nixpkgs-unstable> { };
-  unstablenixos = (import (builtins.fetchTarball {
-    # Descriptive name to make the store path easier to identify
-    name = "nixos-unstable-2021-03-01";
-    # Commit hash
-    url =
-      "https://github.com/nixos/nixpkgs/archive/0aeba64fb26e4defa0842a942757144659c6e29f.tar.gz";
-    # Hash obtained using `nix-prefetch-url --unpack <url>`
-    sha256 = "08qd78dm29xmawc32m83mvhjp4j9k3bj4pjgms2yj8185b82574i";
-  })) { overlays = [ emacs_community_overlay ]; };
+  unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
+  pkgsunstable = import <nixpkgs-unstable> { };
 
 in {
   home.username = "diegoalvarez";
   home.homeDirectory = "/Users/diegoalvarez";
-  home.stateVersion = "20.09";
+  home.stateVersion = "21.05";
   nixpkgs.config.allowUnfree = true;
 
+  # sort packages by name ignoring source prefix in emacs `sort-regexp-fields`:
+  # records to sort: `\w+\(.*\)$`, key: `\1`
   home.packages = [
-    # rm -rf ~/.emacs.d/.local/etc/*spell*
-    # same as (pkgs.aspellWithDicts (dicts: with dicts; [en en-computers en-science]))
-    (pkgs.aspellWithDicts (d: [ d.en d.es d.en-computers d.en-science ]))
-    pkgs.autojump
-    pkgs.bat # cannot install unstable, collision between `/nix/store/4igk0yhblxiw9gy9jqflcczyq9da7zbj-bat-0.13.0/bin/.bat-wrapped' and `/nix/store/dr1d3f2p48izs3bc7873bal5np9mcajl-bat-0.15.0/bin/.bat-wrapped'
-    pkgs.clipper
-    pkgs.curl
-    pkgs.direnv
-    pkgs.ejson
-    pkgs.fzf
-    pkgs.gnupg
-    pkgs.graphviz
-    pkgs.gtypist
-    pkgs.htop
-    pkgs.jq
-    pkgs.languagetool
-    pkgs.manpages
-    pkgs.maven
-    pkgs.mitmproxy
-    pkgs.mpv
-    pkgs.nixfmt
-    pkgs.pandoc
-    pkgs.reattach-to-user-namespace
-    pkgs.shellcheck
-    pkgs.socat
-    pkgs.vscode
-    pkgs.watch
-    pkgs.wget
-    pkgs.zstd
-    pkgs.bash
-    unstable.alacritty
-    unstable.docker-compose
-    unstable.exa
-    unstable.fd
-    unstable.gitAndTools.gh
-    unstable.gitAndTools.git-crypt
-    unstable.go
-    unstable.google-cloud-sdk
-    unstable.iosevka-bin
-    unstable.kafkacat
-    unstable.ripgrep
-    unstable.ruby
-    unstable.tldr
-    # rust
-    unstable.rustc
-    unstable.cargo
-    unstable.rustfmt
+    # same as (pkgs.aspellWithDicts (dicts: with dicts; [en en-computers en-science])) # rm -rf ~/.emacs.d/.local/etc/*spell*
+    (unstable.aspellWithDicts (d: [ d.en d.es d.en-computers d.en-science ]))
+    pkgs     .autojump # j command
+    unstable .docker-compose
+    pkgs     .ejson
+    unstable .exa
+    unstable .fd
+    unstable .fzf
+    unstable .gitAndTools.gh
+    unstable .gitAndTools.git-crypt
+    unstable .gnupg
+    unstable .go
+    unstable .google-cloud-sdk
+    pkgs     .graphviz
+    pkgs     .gtypist
+    pkgs     .htop
+    unstable .iosevka-bin
+    pkgs     .jq
+    unstable .kafkacat
+    pkgs     .languagetool
+    pkgs     .manpages
+    pkgs     .mitmproxy
+    pkgs     .mpv
+    pkgs     .nixfmt
+    pkgs     .pandoc
+    unstable .ripgrep
+    pkgs     .shellcheck
+    pkgs     .shfmt
+    unstable .tldr
+    unstable .vscode
+    pkgs     .watch
   ];
 
-  xdg.configFile."alacritty/alacritty.yml".source = ./resources/alacritty.yml;
+  # example xdg
+  # xdg.configFile."git/attributes".source = ./resources/gitattributes;
 
   home.file = {
     "bin/ktmux".source = ./resources/bin/ktmux;
     "bin/kc".source = ./resources/bin/kc;
     "bin/ktail".source = ./resources/bin/ktail;
     ".ignore".source = ./resources/ignore;
+    ".aliases".source = ./resources/aliases;
   };
 
   programs = {
-    # Let Home Manager install and manage itself.
-    home-manager.enable = true;
+    home-manager.enable = true; # Let Home Manager install and manage itself.
 
-    # NOTE: run `bat cache --build`
-    # TODO: run this somehow in some nix after hook
+    alacritty = {
+      enable = true;
+      package = unstable.alacritty;
+      settings = {
+        env.TERM = "xterm-256color";
+        colors.cursor = {
+          text = "0x1d1f21";
+          cursor = "0xc5c8c6";
+        };
+        cursor.style = "Block";
+        font = {
+          size = 14;
+          normal.family = "Iosevka Term SS08";
+          bold.family = "Iosevka Term SS08";
+          italic.family = "Iosevka Term SS08";
+        };
+        window.dimensions = {
+          lines = 60;
+          columns = 200;
+        };
+      };
+    };
+
+    # NOTE: run `bat cache --build`, TODO: run this somehow in some nix after hook
     bat = {
       enable = true;
       config = {
-        theme = "base16tomorrownight";
         pager = "less -FR";
         style = "numbers,changes,header";
+        theme = "base16tomorrownight";
       };
       themes = {
         base16tomorrownight = builtins.readFile (pkgs.fetchFromGitHub {
@@ -110,37 +114,54 @@ in {
 
     emacs = {
       enable = true;
-      package = unstablenixos.emacsGcc;
-      # package = unstable.emacsGcc;
-      # package = unstable.emacsMacport;
+      package = unstable.emacsGcc;
       extraPackages = epkgs: [ epkgs.vterm ];
+    };
+
+    git = {
+      userEmail = "diego.canada@icloud.com";
+      userName = "Diego Alvarez";
+      signing = {
+        key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+        signByDefault = true;
+      };
+      delta.enable = true; # https://github.com/dandavison/delta
+      enable = true;
+      package = unstable.gitAndTools.gitFull;
+      includes = [{
+        path = ./resources/gitconfigwork;
+        condition = "gitdir:~/src/";
+      }];
+      extraConfig = {
+        core.commentChar = "@"; # so I can use emacs pull request reviews package
+        credential.helper = "store --file /opt/dev/var/private/git_credential_store";
+        diff.algorithm = "patience";
+        github.user = "d1egoaz";
+        merge.conflictstyle = "diff3";
+        protocol.version = "2";
+        pull.ff = "only";
+        url."https://github.com/Shopify/".insteadOf = [
+          "git@github.com:Shopify/"
+          "git@github.com:shopify/"
+          "ssh://git@github.com/Shopify/"
+          "ssh://git@github.com/shopify/"
+        ];
+      };
+      ignores = [ ".DS_STORE" ];
+      attributes = [
+        "*.el    diff=lisp"
+        "*.go    diff=golang"
+        "*.lisp  diff=lisp"
+        "*.md    diff=markdown"
+        "*.rb    diff=ruby"
+        "*.rs    diff=rust"
+      ];
     };
 
     vim = {
       enable = true;
-      plugins = [ pkgs.vimPlugins.base16-vim ];
-      extraConfig = ''
-        " Modify default escape and leader mappings for convenience
-        inoremap jk <ESC>
-        let mapleader = " "
-        " Basic settings
-        filetype plugin indent on
-        syntax on
-        set encoding=utf-8
-        set clipboard=unnamed,unnamedplus
-        set number
-        set background=dark
-        colorscheme base16-tomorrow-night
-        "nnoremap <leader>y :call system('nc -U ~/.local/share/clipper/clipper.sock', @0)<CR>
-        " use system clipboar as default register
-
-        if &term =~ '256color'
-          " disable Background Color Erase (BCE) so that color schemes
-          " render properly when inside 256-color tmux and GNU screen.
-          " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
-          set t_ut=
-        endif
-      '';
+      plugins = [ unstable.vimPlugins.base16-vim ];
+      extraConfig = (builtins.readFile ./resources/vimrc);
     };
 
     tmux = {
@@ -148,7 +169,7 @@ in {
       package = unstable.tmux;
       shortcut = "a";
       keyMode = "vi";
-      plugins = with pkgs.tmuxPlugins; [
+      plugins = with unstable.tmuxPlugins; [
         continuum
         fzf-tmux-url # prefix u -> fzf urls
         pain-control # panes with vi like movements hjkl
@@ -163,19 +184,21 @@ in {
       enableAutosuggestions = true;
       enableCompletion = true;
       defaultKeymap = "emacs";
-      # defaultKeymap = "viins";
       oh-my-zsh = {
         enable = true;
         # theme = "sunaku"; overriden by powerlevel10k
         plugins = [ "fzf" "autojump" "gpg-agent" ];
       };
-      initExtraFirst = (builtins.readFile ./resources/zshrc);
+      history = {
+        size = 50000;
+        save = 50000;
+      };
+      initExtraBeforeCompInit = (builtins.readFile ./resources/zshrc);
       envExtra = (builtins.readFile ./resources/zshenv);
-      # from https://git.catgirl.ai/ext0l/nixos-config/src/branch/master/vector.nix
       plugins = [
         {
           name = "powerlevel10k";
-          src = pkgs.zsh-powerlevel10k;
+          src = unstable.zsh-powerlevel10k;
           file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
         }
         {

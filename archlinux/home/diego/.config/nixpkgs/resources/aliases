@@ -47,10 +47,6 @@ magit() {
      emacsclient -t -e "(magit-status)"
 }
 
-scrotselection () {
-  scrot -s -e 'xclip -selection clipboard -t "image/png" < $f'
-}
-
 # display traversable json structure in jq format
 jqs() {
   jq '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
@@ -74,7 +70,6 @@ alias kgrs='k get replicasets'
 alias kgs='k get services'
 alias kgss='k get statefulsets'
 alias kl='k logs -f $(kgpn | fzf-tmux --prompt "k8s pod > ")'
-# alias klp='kgpn | fzf-tmux --preview "k logs -f {}" --height=100%'
 alias klk='k logs -f $(k get pods -o name -l app=kafka | cut -d'/' -f2 | fzf-tmux --prompt "k8s pod > ") kafka'
 alias kpf='k port-forward $(kgpn | fzf-tmux --prompt "k8s pod > ")'
 alias kpip='k get pod $(kgpn | fzf-tmux) -o json | jq ".status.podIP"'
