@@ -12,8 +12,7 @@ alias ls="command exa"
 
 # bat everywhere
 alias baty='bat -l yaml'
-alias cat="command bat"
-alias more="command bat"
+alias b="command bat"
 
 # git
 alias gs='git status -s'
