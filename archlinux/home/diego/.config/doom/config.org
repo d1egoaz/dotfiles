@@ -153,8 +153,8 @@ Sensitive credentials. Only use ~/.authinfo.gpg, rather than doom’s default
 
 ** Relative line numbers
 #+BEGIN_SRC elisp
-;; (setq display-line-numbers-type 'relative)
-(setq display-line-numbers-type nil)
+(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type nil)
 #+END_SRC
 
 ** Disable lock files
