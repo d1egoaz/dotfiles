@@ -343,9 +343,9 @@ the current state and point position."
     (save-restriction ; to remove the narrowing
       (narrow-to-region (region-beginning) (region-end))
       (goto-char (point-min))
-      (insert "#+BEGIN_SRC go\n")
+      (insert "#+begin_src go\n")
       (goto-char (point-max))
-      (insert "\n#+END_SRC\n"))))
+      (insert "\n#+end_src\n"))))
 
 (defun diego/surround-org-src ()
   "surround a region in a org-mode src block"
@@ -354,9 +354,9 @@ the current state and point position."
     (save-restriction ; to remove the narrowing
       (narrow-to-region (region-beginning) (region-end))
       (goto-char (point-min))
-      (insert "#+BEGIN_SRC\n")
+      (insert "#+begin_src\n")
       (goto-char (point-max))
-      (insert "\n#+END_SRC\n"))))
+      (insert "\n#+end_src\n"))))
 
 (defvar diego/kafka-clusters '(("kafka-regional-us-east1-b" "kafka-regional")
                      ("kafka-regional-us-central1-a" "kafka-regional")
