@@ -250,32 +250,33 @@ Monitors have too much wide space
 ** Theme and foreground color
 Loads the theme immediately, to modify faces afterwards.
 #+BEGIN_SRC elisp
-(setq modus-themes-slanted-constructs t ; use slanted text (italics) unless it is absolutely necessary, strings and code comments
-      modus-themes-fringes 'subtle ; {nil,'subtle,'intense}
-      modus-themes-syntax 'all-syntax ; Lots of options---continue reading the manual
-      modus-themes-paren-match 'intense-bold ; {nil,'subtle-bold,'intense,'intense-bold}
-      modus-themes-prompts 'intense ; {nil,'subtle,'intense}
+(setq
       modus-themes-completions 'opinionated ; {nil,'moderate,'opinionated}
-      modus-themes-region 'bg-only-no-extend ; {nil,'no-extend,'bg-only,'bg-only-no-extend}
-      modus-themes-org-blocks 'grayscale ; {nil,'grayscale,'rainbow}
+      modus-themes-fringes 'subtle ; {nil,'subtle,'intense}
       modus-themes-headings ; Lots of options---continue reading the manual
       '((1 . section)
         (2 . section-no-bold)
         (3 . rainbow-line)
         (t . rainbow-line-no-bold))
-      modus-themes-scale-headings t
+      modus-themes-org-blocks 'grayscale ; {nil,'grayscale,'rainbow}
+      modus-themes-paren-match 'intense-bold ; {nil,'subtle-bold,'intense,'intense-bold}
+      modus-themes-prompts 'intense ; {nil,'subtle,'intense}
+      modus-themes-region 'bg-only-no-extend ; {nil,'no-extend,'bg-only,'bg-only-no-extend}
+      modus-themes-slanted-constructs t ; use slanted text (italics) unless it is absolutely necessary, strings and code comments
+      modus-themes-subtle-line-numbers t
+      modus-themes-syntax 'all-syntax ; Lots of options---continue reading the manual
       modus-themes-scale-1 1.1
       modus-themes-scale-2 1.15
       modus-themes-scale-3 1.21
       modus-themes-scale-4 1.27
-      modus-themes-scale-5 1.33)
+      modus-themes-scale-5 1.33
+      modus-themes-scale-headings t)
 
-(load-theme 'modus-operandi t)
-
-(setq doom-theme 'modus-operandi) ; light theme
+(setq doom-theme 'modus-operandi)
+;; (load-theme 'modus-operandi t)
 ;; (load-theme 'modus-vivendi t); dark theme
-(custom-set-faces!
-  `(lsp-ui-doc-background :background "darkgray"))
+;; (custom-set-faces!
+;;   `(lsp-ui-doc-background :background "darkgray"))
 #+END_SRC
 
 ** Change cursor color evil-mode
@@ -366,7 +367,7 @@ Loads the theme immediately, to modify faces afterwards.
 ** go
 *** Get latest gopls
 #+BEGIN_EXAMPLE
-cd /tmp && GO111MODULE=on go get golang.org/x/tools/gopls@latest
+GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+END_EXAMPLE
 
 *** go-mode
@@ -500,8 +501,8 @@ Shows all files, including hidden files, ignores files =.= and =..=
 *** Disable mouse
 Mouse is to far from the hand.
 #+BEGIN_SRC elisp
-(defun nothing())
-(define-key evil-normal-state-map (kbd "<down-mouse-1>") 'nothing)
+;; (defun nothing ())
+;; (define-key evil-normal-state-map (kbd "<down-mouse-1>") #'nothing)
 (dolist (mouse '("<mouse-1>" "<mouse-2>" "<mouse-3>"
                  "<up-mouse-1>" "<up-mouse-2>" "<up-mouse-3>"
                  "<down-mouse-1>" "<down-mouse-2>" "<down-mouse-3>"

@@ -336,6 +336,17 @@ the current state and point position."
   (save-buffer)
   (shell-command (concat "code " (buffer-file-name))))
 
+(defun diego/surround-org-src-go ()
+  "surround a region in a org-mode src block"
+  (interactive)
+  (save-excursion
+    (save-restriction ; to remove the narrowing
+      (narrow-to-region (region-beginning) (region-end))
+      (goto-char (point-min))
+      (insert "#+BEGIN_SRC go\n")
+      (goto-char (point-max))
+      (insert "\n#+END_SRC\n"))))
+
 (defun diego/surround-org-src ()
   "surround a region in a org-mode src block"
   (interactive)
@@ -413,9 +424,13 @@ the current state and point position."
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (while (not (evil-eobp))
+    (while (not (eobp))
       (org-next-visible-heading 1)
-      (evil-forward-word-begin)
+      (forward-to-word 1)
       (while (member (word-at-point) '("TODO" "DONE" "CANCELLED"))
-        (evil-forward-word-begin))
+        (forward-to-word 1))
       (upcase-char 1))))
+
+(defun diego/insert-uuid ()
+  (interactive)
+  (shell-command-to-string "uuidgen"))
