@@ -32,7 +32,6 @@ in {
     unstable .exa
     unstable .fd
     unstable .fzf
-    unstable .gitAndTools.gh
     unstable .gitAndTools.git-crypt
     unstable .gnupg
     unstable .go
@@ -156,6 +155,14 @@ in {
         "*.rb    diff=ruby"
         "*.rs    diff=rust"
       ];
+    };
+
+    gh = {
+      enable = true;
+      aliases =  {
+          pc = "pr checkout";
+          pv = "pr view";
+        };
     };
 
     vim = {
