@@ -69,8 +69,9 @@
    :desc "insert line above"           "k" #'spacemacs/evil-insert-line-above
    :desc "insert line below"           "j" #'spacemacs/evil-insert-line-below)
   (:desc "+jump" :prefix "j"
+   :desc "Jump to recent file/buffer"  "f" #'counsel-buffer-or-recentf
    :desc "Jump to symbol"              "i" #'imenu
-   :desc "Jump to link"                "l" #'ace-link
+   :desc "Jump to line"                "l" #'avy-goto-line
    :desc "Avy jump work"               "j" #'avy-goto-char-timer)
   (:desc "+kubel" :prefix "k"
    :desc "set context"                 "c" #'kubel-set-context
@@ -172,6 +173,9 @@
 ;; ;; (define-key map (kbd "k") 'kubel-delete-popup)
 ;; ;; based on view
 
+(after! evil
+  (map! :map evil-normal-state-map
+        "C-r" #'undo-fu-only-redo))
 
 (defhydra hydra-paste (:color red
                        :hint nil)

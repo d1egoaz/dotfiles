@@ -9,22 +9,22 @@
 ;; found in modules/README.org.
 
 (doom! :completion
-       (company +childframe)
-       (ivy +childframe)
+       ;; (company +childframe) too slow on MacOS
+       ;; (ivy +childframe) too slow on MacOS
+       company
+       ivy
 
        :ui
        deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       ;; (modeline +light) ; snazzy, Atom-inspired modeline, plus API
-       modeline ; snazzy, Atom-inspired modeline, plus API
-       nav-flash         ; blink the current line after jumping
-       ophints           ; highlight the region an operation acts on
+       (ligatures +iosevka)       ; replace bits of code with pretty symbols
+       modeline          ; snazzy, Atom-inspired modeline, plus API
        (popup            ; tame sudden yet inevitable temporary windows
         +defaults        ; default popup rules
-        +all)            ; catch all popups that start with an asterix
-       (ligatures +iosevka)       ; replace bits of code with pretty symbols
+        ;; +all
+        )            ; catch all popups that start with an asterix
        treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
@@ -46,22 +46,28 @@
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-       ;vterm             ; another terminals in Emacs
+       vterm             ; another terminals in Emacs
+
+       :checkers
+       ;; (syntax +childframe) ; Live error/warning highlights
+       ;; (spell +everywhere +aspell) ; Spell checking
+       syntax            ; Live error/warning highlights
+       ;; (spell +everywhere +aspell) ; Spell checking
+       (spell +aspell) ; Spell checking
+       grammar
 
        :tools
-       direnv
        docker
-       (eval +overlay)   ; run code, run (also, repls)
+       eval                 ; run code, run (also, repls)
        (lookup +dictionary) ; helps you navigate your code and documentation
        lsp
        (magit +forge)    ; a git porcelain for Emacs
        tmux
        ;; pdf               ; pdf enhancements
 
-       :checkers
-       (syntax +childframe) ; Live error/warning highlights
-       (spell +everywhere +aspell) ; Spell checking
-       grammar
+       :os
+       (:if IS-MAC macos)  ; improve compatibility with macOS
+       tty               ; improve the terminal Emacs experience
 
        :lang
        data              ; config/data formats
@@ -71,31 +77,26 @@
        json              ; At least it ain't XML
        (markdown +grip)  ; writing docs for people to ignore
        nix
-       plantuml
-       (sh +lsp)
        (org              ; organize your plain life in plain text
         ;; +attach          ; custom attachment system
         ;; +babel           ; running code in org
         ;; +capture         ; org-capture in and outside of Emacs
         +dragndrop
-        ;; +export          ; Exporting org to whatever you want
         +gnuplot
-        ;; +habit           ; Keep track of your habits
-        ;; +present         ; Emacs for presentations
         +pandoc
         +protocol
-        +pretty
-        ;; :tools pdf
         )       ; Support for org-protocol:// links
+       plantuml
+       (sh +lsp)
        rest              ; Emacs as a REST client
-       ;;ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       (rust +lsp)
+       ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
        (sh +lsp)         ; she sells {ba,z,fi}sh shells on the C xor
        web               ; the tubes
        yaml
 
        :app
        (rss +org)
+       everywhere
 
        :config
        ;; For literate config users. This will tangle+compile a config.org

@@ -20,6 +20,7 @@
   - [[#relative-line-numbers][Relative line numbers]]
   - [[#disable-lock-files][Disable lock files]]
   - [[#increase-fill-column][Increase fill column]]
+  - [[#disable-exit-confirmation][Disable exit confirmation]]
 - [[#scroll-compilation-output-to-first-error][Scroll compilation output to first error]]
 - [[#backups][Backups]]
 - [[#which-key][Which key]]
@@ -47,7 +48,7 @@
   - [[#avy][Avy]]
   - [[#counsel][Counsel]]
   - [[#deft][Deft]]
-  - [[#emacs-anywhere][Emacs Anywhere]]
+  - [[#emacs-everywhere][Emacs Everywhere]]
   - [[#evil][Evil]]
     - [[#general-1][general]]
     - [[#stay-on-the-original-character-when-leaving-insert-mode][Stay on the original character when leaving insert mode]]
@@ -74,6 +75,7 @@
   - [[#set-default-modes-to-some-specific-file-extensions][Set default modes to some specific file extensions]]
   - [[#popup-rules][Popup rules]]
 - [[#doom][Doom]]
+  - [[#custom-splash-image][Custom splash image]]
   - [[#leader-key-similar-to-spacemacs-spc-m][Leader key similar to Spacemacs SPC-m]]
   - [[#load-private-modules][Load private modules]]
   - [[#bindings][Bindings]]
@@ -169,6 +171,10 @@ Monitors have too much wide space
 (setq-default fill-column 120)
 #+END_SRC
 
+** Disable exit confirmation
+#+BEGIN_SRC emacs-lisp
+(setq confirm-kill-emacs nil)
+#+END_SRC
 * Scroll compilation output to first error
 #+BEGIN_SRC elisp
 (setq compilation-scroll-output 'first-error)
@@ -228,7 +234,7 @@ Monitors have too much wide space
 * UI
 ** Use Iosevka SS08 with font ligatures
 
-#+attr_html: :width 200
+#+attr_html: :width 500
 [[attach:_20191224_113829screenshot.png]]
 
 #+BEGIN_SRC elisp
@@ -325,12 +331,14 @@ Loads the theme immediately, to modify faces afterwards.
    org-fontify-quote-and-verse-blocks nil ; When nil, format these as normal Org. This is the default, because the content of these blocks will still be treated as Org syntax.
    org-fontify-whole-heading-line nil; Non-nil means fontify the whole line for headings.
    org-hide-leading-stars nil
+   org-insert-heading-respect-content nil ; Insert Org headings at point, not after the current subtree
    org-log-into-drawer t
    org-src-fontify-natively t
    org-startup-with-inline-images t
    org-startup-indented t
    org-startup-truncatd nil
-   org-download-image-html-width 200
+   org-pretty-mode nil
+   org-download-image-html-width 500
   org-tags-column -80
    ;; ! is to log event on logbook drawer
    ;; char defines a fast-access key for the state name
@@ -420,9 +428,8 @@ GO111MODULE=on go get golang.org/x/tools/gopls@latest
 #+BEGIN_SRC elisp
 (setq
  avy-all-windows 'all-frames
- avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?r ?u ?q ?p)
- ;; used for avy-goto-char-timer
- avy-timeout-seconds 0.3)
+ avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?e ?i ?g ?h)
+ avy-timeout-seconds 0.3) ;; used for avy-goto-char-timer
 #+END_SRC
 
 ** Counsel
@@ -442,35 +449,12 @@ Shows all files, including hidden files, ignores files =.= and =..=
  deft-use-filename-as-title t)
 #+END_SRC
 
-** Emacs Anywhere
+** Emacs Everywhere
 #+BEGIN_SRC elisp
-(defun markdown-window-p (window-title)
-  "Judges from WINDOW-TITLE whether the current window likes markdown"
-  (string-match-p (rx (or "Pull Request" "Issue" "Slack"))
-                  window-title))
-
-(defun ea-popup-handler (app-name window-title x y w h)
-  (interactive)
-  (set-frame-size (selected-frame) 120 18)
-  ;; set major mode
-  (message (concat "called from " window-title))
-  (cond
-   ((markdown-window-p window-title) (gfm-mode))
-   ;; default major mode
-   (t (org-mode)))
-
-  ;; doest' work on OSX
-  (when (gui-get-selection 'PRIMARY)
-    (insert (gui-get-selection 'PRIMARY)))
-
-  (evil-insert-state)
-
-  (local-set-key
-   (kbd "C-c C-c") (lambda () (interactive)
-                     (local-unset-key (kbd "C-c C-c"))
-                     (delete-frame)))
-  )
-(add-hook 'ea-popup-hook #'ea-popup-handler)
+(setq emacs-everywhere-frame-parameters
+  `((name . "emacs-everywhere")
+    (width . 120)
+    (height . 20)))
 #+END_SRC
 
 ** Evil
@@ -694,6 +678,10 @@ TODO: testing doom env
 #+END_SRC
 
 * Doom
+** Custom splash image
+#+BEGIN_SRC emacs-lisp
+(setq fancy-splash-image (concat doom-private-dir "doom-emacs-bw-light.svg"))
+#+END_SRC
 ** Leader key similar to Spacemacs SPC-m
 #+BEGIN_SRC elisp
 (setq doom-localleader-key ",")
