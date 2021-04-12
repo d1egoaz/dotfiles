@@ -10,11 +10,11 @@
     (move-end-of-line 1)
     (delete-backward-char 1)))
 
-(defun diego/disapproval () (interactive) (insert "ಠ_ಠ"))
-(defun diego/shrug () (interactive) (insert "¯\\_(ツ)_/¯"))
-(defun diego/table-flip () (interactive) (insert "(╯°□°）╯︵ ┻━┻"))
-(defun diego/glasses () (interactive) (insert "(⌐■_■)"))
-(defun diego/idonteven () (interactive) (insert "¯\(°_°)/¯"))
+(defun diego/emoji-disapproval () (interactive) (insert "ಠ_ಠ"))
+(defun diego/emoji-shrug () (interactive) (insert "¯\\_(ツ)_/¯"))
+(defun diego/emoji-table-flip () (interactive) (insert "(╯°□°）╯︵ ┻━┻"))
+(defun diego/emoji-glasses () (interactive) (insert "(⌐■_■)"))
+(defun diego/emoji-idonteven () (interactive) (insert "¯\(°_°)/¯"))
 
 (defun diego/copy-buffer-name ()
   "copy buffer name"
