@@ -342,7 +342,7 @@ Loads the theme immediately, to modify faces afterwards.
   org-tags-column -80
    ;; ! is to log event on logbook drawer
    ;; char defines a fast-access key for the state name
-   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)"))
+   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)" "IN-PROGRESS(p!)"))
    org-capture-templates
    '(
      ;; example:
