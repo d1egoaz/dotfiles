@@ -88,6 +88,7 @@
   - [[#gnutls][gnutls]]
   - [[#olivetti][olivetti]]
   - [[#so-long][so-long]]
+  - [[#ox-gfm][ox-gfm]]
 
 * Install Emacs
 Currently using emacs from: https://github.com/d12frosted/homebrew-emacs-plus
@@ -766,4 +767,10 @@ Fix company causing minibuffer region to disappear (e.g. lsp ask root dialogue).
 #+BEGIN_SRC elisp
 (setq so-long-max-lines 1)
 (add-to-list 'auto-mode-alist '("\\.yml.erb\\'" . so-long-mode))
+#+END_SRC
+
+** ox-gfm
+#+BEGIN_SRC emacs-lisp
+(use-package! ox-gfm
+  :after org)
 #+END_SRC

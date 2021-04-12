@@ -25,6 +25,7 @@
 (package! mw-thesaurus)
 ;; (package! modus-themes :recipe (:host gitlab :repo "protesilaos/modus-themes" :branch "main"))
 (package! olivetti)
+(package! ox-gfm)
 (package! powerthesaurus)
 (package! prettier-js)
 (package! string-inflection)
