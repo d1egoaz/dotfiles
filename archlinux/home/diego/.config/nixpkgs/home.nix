@@ -27,6 +27,7 @@ in {
     # same as (pkgs.aspellWithDicts (dicts: with dicts; [en en-computers en-science])) # rm -rf ~/.emacs.d/.local/etc/*spell*
     (unstable.aspellWithDicts (d: [ d.en d.es d.en-computers d.en-science ]))
     pkgs     .autojump # j command
+    pkgs     .gnused
     unstable .docker-compose
     pkgs     .ejson
     unstable .exa
@@ -34,6 +35,7 @@ in {
     unstable .fzf
     unstable .gitAndTools.git-crypt
     unstable .gnupg
+    unstable .gnuplot
     unstable .go
     unstable .google-cloud-sdk
     pkgs     .graphviz
@@ -93,7 +95,7 @@ in {
       };
     };
 
-    # NOTE: run `bat cache --build`, TODO: run this somehow in some nix after hook
+    # NOTE: run `bat cache --build`, TODO: run this somehow in some nix after hook: postInstall
     bat = {
       enable = true;
       config = {
@@ -182,6 +184,10 @@ in {
         pain-control # panes with vi like movements hjkl
         resurrect
         sensible
+        {
+          plugin = jump;
+          extraConfig = "set -g @jump-key 'f'";
+        }
       ];
       extraConfig = builtins.readFile ./resources/tmux.conf;
     };
@@ -194,7 +200,7 @@ in {
       oh-my-zsh = {
         enable = true;
         # theme = "sunaku"; overriden by powerlevel10k
-        plugins = [ "fzf" "autojump" "gpg-agent" ];
+        plugins = [ "colored-man-pages" "fzf" "autojump" "gpg-agent" ];
       };
       history = {
         size = 50000;
