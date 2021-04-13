@@ -4,6 +4,11 @@
 # quick escape/command mode
 bindkey jk vi-cmd-mode
 
+autoload -Uz bashcompinit
+autoload -Uz compinit
+bashcompinit
+compinit
+
 # load aliases
 test -e ~/.aliases && source ~/.aliases
 
