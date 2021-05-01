@@ -26,13 +26,11 @@ in {
   home.packages = [
     # same as (pkgs.aspellWithDicts (dicts: with dicts; [en en-computers en-science])) # rm -rf ~/.emacs.d/.local/etc/*spell*
     (unstable.aspellWithDicts (d: [ d.en d.es d.en-computers d.en-science ]))
-    pkgs     .autojump # j command
     pkgs     .gnused
     unstable .docker-compose
     pkgs     .ejson
-    unstable .exa
+    # unstable .exa
     unstable .fd
-    unstable .fzf
     unstable .gitAndTools.git-crypt
     unstable .gnupg
     unstable .gnuplot
@@ -42,7 +40,6 @@ in {
     pkgs     .gtypist
     pkgs     .htop
     unstable .iosevka-bin
-    pkgs     .jq
     unstable .kafkacat
     pkgs     .languagetool
     pkgs     .manpages
@@ -95,6 +92,11 @@ in {
       };
     };
 
+    autojump = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     # NOTE: run `bat cache --build`, TODO: run this somehow in some nix after hook: postInstall
     bat = {
       enable = true;
@@ -113,10 +115,20 @@ in {
       };
     };
 
+    exa = {
+      enable = true;
+      enableAliases = true;
+    };
     emacs = {
       enable = true;
       package = unstable.emacsGcc;
       extraPackages = epkgs: [ epkgs.vterm ];
+    };
+
+    fzf = {
+      enable = true;
+      package = unstable.fzf;
+      enableZshIntegration = true;
     };
 
     git = {
@@ -134,6 +146,7 @@ in {
         condition = "gitdir:~/src/";
       }];
       extraConfig = {
+        branch.sort = "-committerdate";
         core.commentChar = "@"; # so I can use emacs pull request reviews package
         credential.helper = "store --file /opt/dev/var/private/git_credential_store";
         diff.algorithm = "patience";
@@ -165,6 +178,11 @@ in {
           pc = "pr checkout";
           pv = "pr view";
         };
+      gitProtocol = "https";
+    };
+
+    jq = {
+      enable = true;
     };
 
     vim = {
@@ -199,8 +217,7 @@ in {
       defaultKeymap = "emacs";
       oh-my-zsh = {
         enable = true;
-        # theme = "sunaku"; overriden by powerlevel10k
-        plugins = [ "colored-man-pages" "fzf" "autojump" "gpg-agent" ];
+        plugins = [ "colored-man-pages" "gpg-agent" ];
       };
       history = {
         size = 50000;
