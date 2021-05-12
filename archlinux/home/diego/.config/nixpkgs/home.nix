@@ -9,10 +9,13 @@ let
   fonts.fontconfig.enable = true;
   prefferedFont = "Iosevka Term SS08";
   emacs_community_overlay = (import (builtins.fetchTarball {
-    url = "https://github.com/nix-community/emacs-overlay/archive/6005779173365a3bdf793b37c3bd57446372eb70.tar.gz";
+    url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
   }));
+  #unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
+  # check https://github.com/NixOS/nixpkgs/pull/120731
+  #unstable = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/5ef56ad9f17993bda954e5c0527984b3d6fa570a.tar.gz") {overlays = [ emacs_community_overlay ]; config= { allowUnfree = true ; } ;} ;
+  unstable = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/d9e18f4e7f77fffde95384d36cc8ac5d1d51b356.tar.gz") {overlays = [ emacs_community_overlay ]; config= { allowUnfree = true ; } ;} ;
 
-  unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
   pkgsunstable = import <nixpkgs-unstable> { };
 
 in {
@@ -51,7 +54,7 @@ in {
     pkgs     .shellcheck
     pkgs     .shfmt
     unstable .tldr
-    unstable .vscode
+    #unstable .vscode
     pkgs     .watch
   ];
 
@@ -119,9 +122,13 @@ in {
       enable = true;
       enableAliases = true;
     };
+
+#(emacsGit.override
+  #{ nativeComp = true; })
     emacs = {
       enable = true;
       package = unstable.emacsGcc;
+      #package = unstable.emacsGit;
       extraPackages = epkgs: [ epkgs.vterm ];
     };
 

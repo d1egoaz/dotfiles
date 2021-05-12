@@ -242,7 +242,7 @@ Monitors have too much wide space
 (if (eq system-type 'darwin)
     (setq doom-font (font-spec :family "Iosevka SS08" :size 14)
         doom-big-font (font-spec :family "Iosevka SS08" :size 18)
-        doom-variable-pitch-font (font-spec :family "Helvetica" :size 14))
+        doom-variable-pitch-font (font-spec :family "Helvetica" :size 14)))
 (if (eq system-type 'gnu/linux)
     (setq doom-font (font-spec :family "Iosevka SS08" :size 30)))
 
@@ -310,7 +310,7 @@ Loads the theme immediately, to modify faces afterwards.
     (setq org-download-screenshot-method "import %s"))
 (setq
  org-directory "~/gdrive/deft"
- org-agenda-files (list "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
+ org-agenda-files (list "~/gdrive/deft/journal.org" "~/gdrive/deft/gtd-inbox.org" "~/gdrive/deft/gtd-personal.org" "~/gdrive/deft/gtd-work.org" )
  org-attach-id-dir (file-name-as-directory (concat (file-name-as-directory org-directory) "images"))
  org-attach-directory org-attach-id-dir
  org-default-notes-file (concat (file-name-as-directory org-directory) "notes.org")
@@ -343,7 +343,7 @@ Loads the theme immediately, to modify faces afterwards.
   org-tags-column -80
    ;; ! is to log event on logbook drawer
    ;; char defines a fast-access key for the state name
-   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)" "IN-PROGRESS(p!)"))
+   org-todo-keywords '((sequence "TODO(t!)" "WAITING(w!)" "|" "DONE(d!)" "CANCELLED(c!)" "IN-PROGRESS(i!)"))
    org-capture-templates
    '(
      ;; example:
@@ -361,8 +361,7 @@ Loads the theme immediately, to modify faces afterwards.
      ("n" "Note" entry (file+headline "~/gdrive/deft/notes.org" "Notes")
       "* %^{title}%^g\n%T\n\n%?" :prepend t)
      ("j" "Journal" entry (file+olp+datetree "~/gdrive/deft/journal.org")
-      "* %?" :clock-in t :clock-resume t)))
-
+      "* %?\nSCHEDULED: <%(org-read-date nil nil \"today\")>" :clock-in t :clock-resume t)))
   (remove-hook 'org-mode-hook #'org-superstar-mode))
 #+END_SRC
 
@@ -541,8 +540,7 @@ TODO: testing doom env
 ** Ivy
 *** Remove ./ and ../ from file commands
 #+BEGIN_SRC elisp
-(setq
- ivy-extra-directories nil)
+(setq ivy-extra-directories nil)
 #+END_SRC
 *** Show hydra when pressing C-o
 #+BEGIN_SRC elisp
