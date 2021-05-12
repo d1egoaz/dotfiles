@@ -3,6 +3,6 @@
 # key: bsgo
 # --
 
-#+BEGIN_SRC go
+#+begin_src go
   $0
-#+END_SRC
+#+end_src
