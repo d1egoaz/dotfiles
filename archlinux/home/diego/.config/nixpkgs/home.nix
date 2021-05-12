@@ -9,12 +9,17 @@ let
   fonts.fontconfig.enable = true;
   prefferedFont = "Iosevka Term SS08";
   emacs_community_overlay = (import (builtins.fetchTarball {
-    url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
+    url =
+      "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
   }));
-  #unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
-  # check https://github.com/NixOS/nixpkgs/pull/120731
-  #unstable = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/5ef56ad9f17993bda954e5c0527984b3d6fa570a.tar.gz") {overlays = [ emacs_community_overlay ]; config= { allowUnfree = true ; } ;} ;
-  unstable = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/d9e18f4e7f77fffde95384d36cc8ac5d1d51b356.tar.gz") {overlays = [ emacs_community_overlay ]; config= { allowUnfree = true ; } ;} ;
+  # unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
+  # nixos status https://status.nixos.org/, check for nixos-unstable-small channel
+  # https://hydra.nixos.org/job/nixos/unstable-small/tested
+  unstable = import (fetchTarball
+    "https://github.com/NixOS/nixpkgs/archive/93123faae0281d2e97d12641a7cfad07c8028aff.tar.gz") {
+      overlays = [ emacs_community_overlay ];
+      config = { allowUnfree = true; };
+    };
 
   pkgsunstable = import <nixpkgs-unstable> { };
 
@@ -29,33 +34,33 @@ in {
   home.packages = [
     # same as (pkgs.aspellWithDicts (dicts: with dicts; [en en-computers en-science])) # rm -rf ~/.emacs.d/.local/etc/*spell*
     (unstable.aspellWithDicts (d: [ d.en d.es d.en-computers d.en-science ]))
-    pkgs     .gnused
-    unstable .docker-compose
-    pkgs     .ejson
+    pkgs.gnused
+    unstable.docker-compose
+    pkgs.ejson
     # unstable .exa
-    unstable .fd
-    unstable .gitAndTools.git-crypt
-    unstable .gnupg
-    unstable .gnuplot
-    unstable .go
-    unstable .google-cloud-sdk
-    pkgs     .graphviz
-    pkgs     .gtypist
-    pkgs     .htop
-    unstable .iosevka-bin
-    unstable .kafkacat
-    pkgs     .languagetool
-    pkgs     .manpages
-    pkgs     .mitmproxy
-    pkgs     .mpv
-    pkgs     .nixfmt
-    pkgs     .pandoc
-    unstable .ripgrep
-    pkgs     .shellcheck
-    pkgs     .shfmt
-    unstable .tldr
+    unstable.fd
+    unstable.gitAndTools.git-crypt
+    unstable.gnupg
+    unstable.gnuplot
+    unstable.go
+    unstable.google-cloud-sdk
+    pkgs.graphviz
+    pkgs.gtypist
+    pkgs.htop
+    unstable.iosevka-bin
+    unstable.kafkacat
+    pkgs.languagetool
+    pkgs.manpages
+    pkgs.mitmproxy
+    pkgs.mpv
+    pkgs.nixfmt
+    pkgs.pandoc
+    unstable.ripgrep
+    pkgs.shellcheck
+    pkgs.shfmt
+    unstable.tldr
     #unstable .vscode
-    pkgs     .watch
+    pkgs.watch
   ];
 
   # example xdg
@@ -123,8 +128,8 @@ in {
       enableAliases = true;
     };
 
-#(emacsGit.override
-  #{ nativeComp = true; })
+    #(emacsGit.override
+    #{ nativeComp = true; })
     emacs = {
       enable = true;
       package = unstable.emacsGcc;
@@ -154,8 +159,10 @@ in {
       }];
       extraConfig = {
         branch.sort = "-committerdate";
-        core.commentChar = "@"; # so I can use emacs pull request reviews package
-        credential.helper = "store --file /opt/dev/var/private/git_credential_store";
+        core.commentChar =
+          "@"; # so I can use emacs pull request reviews package
+        credential.helper =
+          "store --file /opt/dev/var/private/git_credential_store";
         diff.algorithm = "patience";
         github.user = "d1egoaz";
         merge.conflictstyle = "diff3";
@@ -181,16 +188,14 @@ in {
 
     gh = {
       enable = true;
-      aliases =  {
-          pc = "pr checkout";
-          pv = "pr view";
-        };
+      aliases = {
+        pc = "pr checkout";
+        pv = "pr view";
+      };
       gitProtocol = "https";
     };
 
-    jq = {
-      enable = true;
-    };
+    jq = { enable = true; };
 
     vim = {
       enable = true;
