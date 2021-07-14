@@ -3,7 +3,6 @@
 # my channels:
 # home-manager https://github.com/nix-community/home-manager/archive/master.tar.gz
 # nixos-unstable-small https://nixos.org/channels/nixos-unstable-small
-# nixpkgs-unstable https://nixos.org/channels/nixpkgs-unstable
 
 let
   fonts.fontconfig.enable = true;
@@ -12,16 +11,14 @@ let
     url =
       "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
   }));
-  # unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
+  unstable = import <nixos-unstable-small> { overlays = [ emacs_community_overlay ]; };
   # nixos status https://status.nixos.org/, check for nixos-unstable-small channel
   # https://hydra.nixos.org/job/nixos/unstable-small/tested
-  unstable = import (fetchTarball
-    "https://github.com/NixOS/nixpkgs/archive/93123faae0281d2e97d12641a7cfad07c8028aff.tar.gz") {
-      overlays = [ emacs_community_overlay ];
-      config = { allowUnfree = true; };
-    };
-
-  pkgsunstable = import <nixpkgs-unstable> { };
+  # unstable = import (fetchTarball
+  #   "https://github.com/NixOS/nixpkgs/archive/5687a345be5806c3ba6fc3ca33b38525f28c905a.tar.gz") {
+  #     overlays = [ emacs_community_overlay ];
+  #     config = { allowUnfree = true; };
+  #   };
 
 in {
   home.username = "diegoalvarez";
@@ -71,6 +68,7 @@ in {
     "bin/kc".source = ./resources/bin/kc;
     "bin/ktail".source = ./resources/bin/ktail;
     ".ignore".source = ./resources/ignore;
+    ".rgignore".source = ./resources/rgignore;
     ".aliases".source = ./resources/aliases;
   };
 
@@ -100,6 +98,7 @@ in {
       };
     };
 
+    # TODO: @d1egoaz 2021-05-28: try zoxide (z)
     autojump = {
       enable = true;
       enableZshIntegration = true;
@@ -130,12 +129,11 @@ in {
 
     #(emacsGit.override
     #{ nativeComp = true; })
-    emacs = {
-      enable = true;
-      package = unstable.emacsGcc;
-      #package = unstable.emacsGit;
-      extraPackages = epkgs: [ epkgs.vterm ];
-    };
+    #emacs = {
+       #enable = true;
+       #package = unstable.emacsGcc;
+       #extraPackages = epkgs: [ epkgs.vterm ];
+     #};
 
     fzf = {
       enable = true;
