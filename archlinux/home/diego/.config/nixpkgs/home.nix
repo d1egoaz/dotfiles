@@ -66,6 +66,7 @@ in {
   home.file = {
     "bin/ktmux".source = ./resources/bin/ktmux;
     "bin/kc".source = ./resources/bin/kc;
+    "bin/k".source = ./resources/bin/k;
     "bin/ktail".source = ./resources/bin/ktail;
     ".ignore".source = ./resources/ignore;
     ".rgignore".source = ./resources/rgignore;
