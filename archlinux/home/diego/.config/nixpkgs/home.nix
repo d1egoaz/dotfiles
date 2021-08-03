@@ -205,7 +205,7 @@ in {
     tmux = {
       enable = true;
       package = unstable.tmux;
-      shortcut = "a";
+      shortcut = "b";
       keyMode = "vi";
       plugins = with unstable.tmuxPlugins; [
         continuum
