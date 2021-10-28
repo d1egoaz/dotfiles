@@ -187,11 +187,11 @@ in {
 
     gh = {
       enable = true;
-      aliases = {
+      settings.aliases = {
         pc = "pr checkout";
         pv = "pr view";
       };
-      gitProtocol = "https";
+      settings.git_protocol = "https";
     };
 
     jq = { enable = true; };
