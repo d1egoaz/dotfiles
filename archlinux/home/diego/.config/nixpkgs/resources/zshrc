@@ -18,8 +18,7 @@ function ediff() {
 
 [ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
 [[ -f /opt/dev/sh/chruby/chruby.sh ]] && type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
-
-eval "$(ssh-agent)"
+[[ -x /usr/local/bin/brew ]] && eval $(/usr/local/bin/brew shellenv)
 
 # similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
 ulimit -n 2048

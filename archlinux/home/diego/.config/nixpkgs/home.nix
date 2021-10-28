@@ -31,6 +31,7 @@ in {
   home.packages = [
     # same as (pkgs.aspellWithDicts (dicts: with dicts; [en en-computers en-science])) # rm -rf ~/.emacs.d/.local/etc/*spell*
     (unstable.aspellWithDicts (d: [ d.en d.es d.en-computers d.en-science ]))
+    pkgs.coreutils # for adding realpath used by vterm ff function
     pkgs.gnused
     unstable.docker-compose
     pkgs.ejson
@@ -228,7 +229,7 @@ in {
       defaultKeymap = "emacs";
       oh-my-zsh = {
         enable = true;
-        plugins = [ "colored-man-pages" "gpg-agent" ];
+        plugins = [ "colored-man-pages" "gpg-agent" "ssh-agent" ];
       };
       history = {
         size = 50000;
