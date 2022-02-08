@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# Author : Diego Alvarez <diego.canada@icloud.com>
-# name : test
-# key: test
-# --
-func Test$1(t *testing.T) {
-	$0
-}

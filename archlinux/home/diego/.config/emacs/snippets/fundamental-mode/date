@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: date
-# key: date
-# condition: t
-# --
-`(format-time-string "%Y-%m-%d")`$0
