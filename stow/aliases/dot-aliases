@@ -1,0 +1,103 @@
+# Always use color output for `ls`, using gls -> coreutils
+# alias ls="command gls -F --color"
+alias ls="command exa"
+
+# List all files colorized in long format
+alias ll="ls -lh"
+# List all files colorized in long format, including dot files
+alias la="ls -lah"
+alias l="ls -lah"
+# List only directories
+alias lld='ls -lh | grep "^d"'
+
+# bat everywhere
+alias baty='bat -l yaml'
+alias b="command bat"
+
+# git
+alias gs='git status -s'
+alias gd='git diff'
+alias gpu='git pull'
+
+alias tm="tmux new -A -n 'default' -s default"
+
+# copy working directory
+alias cwd='pwd | tr -d "\r\n" | pbcopy'
+
+# quick directory change
+alias c='cd $(fd --type directory --hidden --exclude .git | fzf-tmux)'
+alias ck='cd $(fd . ~/.config/kube/ --type directory --hidden --exclude .git | fzf-tmux)'
+
+yolo () {
+  echo 'yay -Syu --noconfirm'
+  yay -Syu --noconfirm
+}
+
+em() {
+  set -x
+  if [[ -z $@ ]]; then
+    emacsclient -t $(fzf-tmux) 2>/dev/null
+  else
+    emacsclient -t $@ 2>/dev/null
+  fi
+}
+
+magit() {
+     emacsclient -t -e "(magit-status)"
+}
+
+# display traversable json structure in jq format
+jqs() {
+  jq '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
+}
+
+# kubernetes
+
+kcn() {
+  kubectl config get-contexts -o=name
+}
+alias kaf='k apply -f'
+alias kdn='k describe nodes $(kgnn | fzf-tmux)'
+alias kdp='k describe pod $(kgpn | fzf-tmux)'
+alias kgd='k get deployments'
+alias kgn='k get namespaces'
+alias kgnn='k get nodes -o name | cut -d'/' -f2'
+alias kgp='k get pods'
+alias kgpw='k get pods -w'
+alias kgpn='k get pods -o name | cut -d'/' -f2'
+alias kgrs='k get replicasets'
+alias kgs='k get services'
+alias kgss='k get statefulsets'
+alias kl='k logs -f $(kgpn | fzf-tmux --prompt "k8s pod > ")'
+alias klk='k logs -f $(k get pods -o name -l app=kafka | cut -d'/' -f2 | fzf-tmux --prompt "k8s pod > ") kafka'
+alias kpf='k port-forward $(kgpn | fzf-tmux --prompt "k8s pod > ")'
+alias kpip='k get pod $(kgpn | fzf-tmux) -o json | jq ".status.podIP"'
+alias kx='k exec -it $(kgpn | fzf-tmux) -- '
+alias kxb='kx /bin/bash'
+alias kgpis="kgp -o jsonpath='{.items[*].spec.containers[*].image}' | tr -s '[[:space:]]' '\n' | sort | uniq -c"
+alias kgpi='k get pod $(kgpn | fzf-tmux) -o jsonpath="{.spec.containers[*].image}" | tr -s "[[:space:]]" "\n" | sort'
+
+#k exec -it $(k describe node $(kgp -o wide | grep $(kgpn | fzf-tmux) | awk '{print $7}') | grep datadog | awk '{print $2}') --namespace cluster-services bash
+
+kdpy() {
+  k describe pod $(kgpn | fzf-tmux) | baty
+}
+
+k-get-pods-startup-time() {
+  k get pods "$@" -o json | jq '(.items // [.]) | map({name: .metadata.name, status: .status.containerStatuses | map({name: .name, time: .state.running.startedAt})})'
+}
+
+# get a timestamp (epoch in ms) for x minutes
+mintimestamp () {
+  echo $(($(date +"%s000 + (${1-0} * 60000)")))
+}
+
+echoRun() {
+  echo "> $@"
+  $@
+}
+
+# docker functions
+dos () {
+  echoRun docker kill $(docker ps --format '{{.Names}}' | fzf-tmux --preview "")
+}

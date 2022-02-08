@@ -1,0 +1,49 @@
+[branch]
+	sort = "-committerdate"
+
+[commit]
+	gpgSign = true
+
+[core]
+	commentChar = "@"
+	commitGraph = true
+[credential "https://github.com"]
+	helper = "gh auth git-credential"
+
+[diff]
+	algorithm = "patience"
+
+[github]
+	user = "d1egoaz"
+
+[gpg]
+	program = "gpg"
+
+[merge]
+	conflictstyle = "diff3"
+
+[protocol]
+	version = "2"
+
+[pull]
+	ff = "only"
+
+[url "https://github.com/Shopify/"]
+	insteadOf = "git@github.com:Shopify/"
+	insteadOf = "git@github.com:shopify/"
+	insteadOf = "ssh://git@github.com/Shopify/"
+	insteadOf = "ssh://git@github.com/shopify/"
+
+[user]
+	email = "diego.canada@icloud.com"
+	name = "Diego Alvarez"
+	signingKey = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77"
+
+[includeIf "gitdir:~/src/"]
+	path = "./config-work"
+[gc]
+	writeCommitGraph = true
+[credential]
+	helper = 
+	helper = store --file /opt/dev/var/private/git_credential_store
+

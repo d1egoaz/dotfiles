@@ -1,0 +1,5 @@
+aliases:
+  pc: pr checkout
+  pv: pr view
+editor: ''
+git_protocol: https
