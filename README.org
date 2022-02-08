@@ -1,9 +1,14 @@
-#+TITLE: Readme
+* Usage
 
-All my dotfiles are eventually be managed by [[file:archlinux/home/diego/.config/nixpkgs/home.nix][nix home-manager configuration]].
+- cd =stow=
+- Run =make all= to install/update configuration
 
-* TODO [0/1]
-** TODO finish porting apps to nix format
-:LOGBOOK:
-- State "TODO"       from              [2020-12-16 Wed 12:43]
-:END:
+
+* Emacs
+
+My emacs configuration is here [[https://github.com/d1egoaz/dotemacs][dotemacs]].
+
+* Deprecated
+
+- There is a git history about my linux dotfiles.
+- There is also a history about using nix.
