@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: bsgo
-# key: bsgo
-# --
-
-#+begin_src go
-  $0
-#+end_src

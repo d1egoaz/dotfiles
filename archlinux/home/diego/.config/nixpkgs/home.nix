@@ -77,29 +77,6 @@ in {
   programs = {
     home-manager.enable = true; # Let Home Manager install and manage itself.
 
-    alacritty = {
-      enable = true;
-      package = unstable.alacritty;
-      settings = {
-        env.TERM = "xterm-256color";
-        colors.cursor = {
-          text = "0x1d1f21";
-          cursor = "0xc5c8c6";
-        };
-        cursor.style = "Block";
-        font = {
-          size = 14;
-          normal.family = "Iosevka Term SS08";
-          bold.family = "Iosevka Term SS08";
-          italic.family = "Iosevka Term SS08";
-        };
-        window.dimensions = {
-          lines = 60;
-          columns = 200;
-        };
-      };
-    };
-
     # TODO: @d1egoaz 2021-05-28: try zoxide (z)
     autojump = {
       enable = true;

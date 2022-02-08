@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: link
-# key: link
-# expand-env: ((yas-indent-line 'fixed))
-# --
-[$2]($1)$0
