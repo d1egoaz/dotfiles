@@ -40,7 +40,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
 ulimit -n 2048
 
-plugins=(colored-man-pages gpg-agent) # ssh-agent)
+plugins=(autojump colored-man-pages gpg-agent fzf)
 
 # Extras
 
