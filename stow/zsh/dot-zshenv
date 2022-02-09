@@ -36,8 +36,6 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # cloudplatform: add Shopify clusters to your local kubernetes config
 export KUBECONFIG=$HOME/.kube/config.shopify.cloudplatform:$HOME/.kube/config.shopify.production-registry
 
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
-
 export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
 export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
 export ALTERNATE_EDITOR="vim"
