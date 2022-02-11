@@ -27,7 +27,7 @@ PATH="$PATH:$HOME/.emacs.d/bin"
 export PATH
 
 # fzf
-export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :500 {}'"
+export FZF_DEFAULT_OPTS='--height 30% --no-preview --layout reverse --multi -0 --no-info --pointer ● --color "gutter:-1,pointer:#00ff00"'
 # Setting fd as the default source for fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 # To apply the command to CTRL-T as well
