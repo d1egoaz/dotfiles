@@ -41,6 +41,7 @@ brew install go
 brew install jq
 brew install ripgrep
 brew install fd
+brew install prettier
 
 echo "Install only tool that I'm going to use: Emacs ❤️ ..."
 brew tap d12frosted/emacs-plus
