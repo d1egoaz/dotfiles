@@ -29,6 +29,7 @@ brew install font-iosevka-ss08
 # TODO: install sf pro and sf mono from https://developer.apple.com/fonts/
 
 echo "Installing terminal helpers..."
+brew install coreutils
 brew install bash # needed by one of the tmux plugins
 brew install tmux
 brew install fzf
@@ -42,15 +43,16 @@ brew install jq
 brew install ripgrep
 brew install fd
 brew install prettier
+brew install mermaid-cli
 
 echo "Install only tool that I'm going to use: Emacs ❤️ ..."
 brew tap d12frosted/emacs-plus
 brew update
 
+# for emacs
 brew install cmake
 brew install aspell --language en,es
 brew install languagetool
 brew install pandoc
 brew install shellcheck
 brew install shfmt
-brew install emacs-plus@28 --with-no-frame-refocus --with-native-comp
