@@ -5,9 +5,6 @@
 # quick escape/command mode
 bindkey jk vi-cmd-mode
 
-# load aliases
-test -e ~/.aliases && source ~/.aliases
-
 function ediff() {
     if [ "X$2" = "X" ]; then
         echo "USAGE: ediff <FILE 1> <FILE 2>"
@@ -33,19 +30,20 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] &&
 fi
 
 # set brew env variables
-eval $(brew shellenv)
+[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+[[ -f /opt/dev/sh/chruby/chruby.sh ]] && type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
+[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
 
 [ -f $HOMEBREW_PREFIX/etc/profile.d/autojump.sh ] && . $HOMEBREW_PREFIX/etc/profile.d/autojump.sh
 
-[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
-[ -f /opt/dev/sh/chruby/chruby.sh ] && type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
-
 # similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
 ulimit -n 2048
-
 plugins=(autojump colored-man-pages gpg-agent fzf)
 
 # Extras
+
+# load aliases
+test -e ~/.aliases && source ~/.aliases
 
 ## Powerlevel10k
 source $HOMEBREW_PREFIX/opt/powerlevel10k/powerlevel10k.zsh-theme
@@ -56,8 +54,3 @@ source $ZSH/oh-my-zsh.sh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-[[ -f /opt/dev/sh/chruby/chruby.sh ]] && type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
-
-[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
-[[ -x /usr/local/bin/brew ]] && eval $(/usr/local/bin/brew shellenv)

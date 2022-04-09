@@ -1,3 +1,7 @@
+# set brew env variables
+[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+[[ -x /usr/local/bin/brew ]] && eval $(/usr/local/bin/brew shellenv)
+
 # Prefer US English and use UTF-8
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
@@ -12,8 +16,6 @@ fi
 
 # PATH
 PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.local/bin:$PATH"
-
-if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
 # go
 export GOROOT=$($HOMEBREW_PREFIX/bin/go env GOROOT)
@@ -39,3 +41,6 @@ export ALTERNATE_EDITOR="vim"
 export EMACS_ADDITIONAL_DIR="$HOME/dotfiles-private/shopify"
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+# to reload .zprofile
+# exec zsh --login
