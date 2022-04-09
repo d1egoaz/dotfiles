@@ -1,40 +1,21 @@
 [branch]
-	sort = "-committerdate"
-
+    sort = "-committerdate"
 [commit]
-	gpgSign = true
-
+    gpgSign = true
 [core]
-	commentChar = "@"
-	commitGraph = true
+    commentChar = "@"
 [credential "https://github.com"]
-	helper = "gh auth git-credential"
-
-[diff]
-	algorithm = "patience"
-
+    helper = "gh auth git-credential"
 [github]
-	user = "d1egoaz"
-
+    user = "d1egoaz"
 [gpg]
-	program = "gpg"
-
+    program = "gpg"
 [merge]
-	conflictstyle = "diff3"
-
-[protocol]
-	version = "2"
-
+    conflictstyle = "diff3"
 [pull]
-	ff = "only"
-[user]
-	email = "diego.canada@icloud.com"
-	name = "Diego Alvarez"
-	signingKey = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77"
-
-[includeIf "gitdir:~/src/"]
-	path = "./config-work"
-[gc]
-	writeCommitGraph = true
+    ff = "only"
 [include]
-	path = /Users/diegoalvarez/.config/dev/gitconfig
+    path = "./config-personal"
+    path = /Users/diegoalvarez/.config/dev/gitconfig
+[includeIf "gitdir:~/src/"]
+    path = "./config-work"

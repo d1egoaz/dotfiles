@@ -40,6 +40,7 @@ brew install bat
 echo "Installing dev tools ..."
 brew install go
 brew install jq
+brew install stern
 brew install ripgrep
 brew install fd
 brew install prettier

@@ -16,14 +16,11 @@ PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.local/b
 if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
 # go
-export GOROOT=$(/opt/homebrew/bin/go env GOROOT)
-export GOPATH="$HOME/go:$HOME:$HOME/code/go"
+export GOROOT=$($HOMEBREW_PREFIX/bin/go env GOROOT)
+# export GOPATH="$HOME/go:$HOME:$HOME/code/go"
+export GOPATH="$HOME"
 export GOPRIVATE="github.com/Shopify/*"
-PATH="$PATH:$HOME/go/bin"
-
-# doom and org-capture
-PATH="$PATH:$HOME/.emacs.d/bin"
-
+PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
 export PATH
 
 # fzf

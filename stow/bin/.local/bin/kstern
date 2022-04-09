@@ -3,14 +3,14 @@ set -a
 source .kube-env 2> /dev/null
 set +a
 
-_ktail() {
+_kstern() {
 
   if [[ -z "$KUBE_CONTEXT" ]]; then
       echo "Please use kc to define a namespace and context"
       exit 1
   fi
   set -x
-  exec kubetail --context ${KUBE_CONTEXT} --namespace ${KUBE_NAMESPACE} $@
+  exec stern --context ${KUBE_CONTEXT} --namespace ${KUBE_NAMESPACE} $@
 }
 
-_ktail "$@"
+_kstern "$@"

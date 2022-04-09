@@ -101,3 +101,5 @@ echoRun() {
 dos () {
   echoRun docker kill $(docker ps --format '{{.Names}}' | fzf-tmux --preview "")
 }
+
+alias watchh='watch '

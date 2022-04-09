@@ -1,13 +1,15 @@
 filetype plugin indent on " Automatically detect file types.
 inoremap jk <ESC>
+" command docs from https://www.guckes.net/vim/setup.html
+set showcmd          " Show the input of an *incomplete* command. So while you are typing the command "y23dd you will see "y23dd before you type the last 'd' which completes the command.
+set laststatus=2     " This makes Vim show a status line even when only one window is shown.
+set termguicolors    " fix green line numbers
+set showmatch        " Show matching brackets.
 set background=dark
 set colorcolumn=120
 set encoding=utf-8
 set history=1000
-set termguicolors         " fix green line numbers
 set relativenumber
-set showcmd               " Show (partial) command in status line.
-set showmatch             " Show matching brackets.
 syntax on
 
 if &term =~ '256color'
