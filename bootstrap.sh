@@ -45,6 +45,7 @@ brew install ripgrep
 brew install fd
 brew install prettier
 brew install mermaid-cli
+brew install gum
 
 echo "Install only tool that I'm going to use: Emacs ❤️ ..."
 brew tap d12frosted/emacs-plus
