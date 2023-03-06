@@ -1,20 +1,14 @@
 #!/bin/bash
-set -a
-CURRENT_PWD=`tmux run "echo #{pane_current_path}"`
-source $CURRENT_PWD/.kube-env 2> /dev/null
 
-set +a
+directory=$1
+source "$directory"/.kube-env 2>/dev/null
 
-_ktmux() {
-  if [[ -z "$KUBE_CONTEXT" ]]; then
+if [[ -z "$KUBE_CONTEXT" ]]; then
     echo "#[fg=red,bold] No context selected "
-  else
-    local KUBE_TMUX
-    KUBE_TMUX+="#[fg=${1}]${KUBE_CONTEXT}"
-    KUBE_TMUX+="#[fg=colour250]:"
-    KUBE_TMUX+="#[fg=${2}]${KUBE_NAMESPACE}"
-    echo "${KUBE_TMUX} "
-  fi
-}
-
-_ktmux "$@"
+else
+    kube_tmux=""
+    kube_tmux+="#[fg=${1}]${KUBE_CONTEXT}"
+    kube_tmux+="#[fg=colour250]:"
+    kube_tmux+="#[fg=${2}]${KUBE_NAMESPACE}"
+    echo "${kube_tmux} "
+fi

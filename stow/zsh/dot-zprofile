@@ -1,12 +1,18 @@
-# set brew env variables
+# Configure brew
 [[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
 [[ -x /usr/local/bin/brew ]] && eval $(/usr/local/bin/brew shellenv)
+export HOMEBREW_NO_ANALYTICS=1
 
-# Prefer US English and use UTF-8
+# Locals, prefer US English and use UTF-8
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# JAVA
+# PATH init
+PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.local/bin:$PATH"
+
+## Langs
+
+### JAVA
 if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
   export JAVA_HOME="/usr/lib/jvm/default"
 else
@@ -14,29 +20,38 @@ else
   export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home"
 fi
 
-# PATH
-PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.local/bin:$PATH"
-
-# go
+### Go
 export GOROOT=$($HOMEBREW_PREFIX/bin/go env GOROOT)
 # export GOPATH="$HOME/go:$HOME:$HOME/code/go"
 export GOPATH="$HOME"
 export GOPRIVATE="github.com/Shopify/*"
 PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
+
+### Rust
+PATH="${PATH}:${HOME}/.cargo/bin"
+
+### gke-gcloud-auth-plugin
+PATH="/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:${PATH}"
+
+# PATH end
 export PATH
 
-# fzf
-export FZF_DEFAULT_OPTS='--height 30% --no-preview --layout reverse --multi -0 --no-info --pointer ● --color "gutter:-1,pointer:#00ff00"'
+# Other tools
+
+## fzf
+### --exact, If you don't prefer fuzzy matching and do not wish to "quote" every word, start fzf with -e or --exact option.
+export FZF_DEFAULT_OPTS='--exact --height 30% --no-preview --layout reverse --multi -0 --no-info --pointer ● --color "gutter:-1,pointer:#00ff00"'
+
 # Setting fd as the default source for fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # cloudplatform: add Shopify clusters to your local kubernetes config
-export KUBECONFIG=$HOME/.kube/config.shopify.cloudplatform:$HOME/.kube/config.shopify.production-registry
+export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/config.shopify.production-registry:$HOME/.kube/config.shopify.cloudplatform
 
-export EDITOR="emacsclient -t"                  # $EDITOR opens in terminal
-export VISUAL="emacsclient -c -a emacs"         # $VISUAL opens in GUI mode
+export EDITOR="emacsclient -r -a emacs"                  # $EDITOR opens in terminal
+export VISUAL="emacsclient -r -c -a emacs"         # $VISUAL opens in GUI mode
 export ALTERNATE_EDITOR="vim"
 export EMACS_ADDITIONAL_DIR="$HOME/dotfiles-private/shopify"
 
@@ -44,3 +59,6 @@ if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc
 
 # to reload .zprofile
 # exec zsh --login
+
+# https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True

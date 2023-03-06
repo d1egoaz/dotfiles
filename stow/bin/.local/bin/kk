@@ -11,7 +11,7 @@ _k() {
     exit 1
   fi
   set -x
-  exec kubectl  "${args[@]}" --context "${KUBE_CONTEXT}" --namespace "${KUBE_NAMESPACE}"
+  exec kubectl --context "${KUBE_CONTEXT}" --namespace "${KUBE_NAMESPACE}" "${args[@]}"
 }
 
 _k "$@"

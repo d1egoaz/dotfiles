@@ -21,6 +21,8 @@ alias gpu='git pull'
 
 alias tm="tmux new -A -n 'default' -s default"
 
+alias fkill="ps -fea | fzf | cut -d\" \" -f1 | xargs kill -9"
+
 # copy working directory
 alias cwd='pwd | tr -d "\r\n" | pbcopy'
 
@@ -36,14 +38,14 @@ yolo () {
 em() {
   set -x
   if [[ -z $@ ]]; then
-    emacsclient -t $(fzf-tmux) 2>/dev/null
+    emacsclient -r -t $(fzf-tmux) 2>/dev/null
   else
-    emacsclient -t $@ 2>/dev/null
+    emacsclient -r -t $@ 2>/dev/null
   fi
 }
 
 magit() {
-     emacsclient -t -e "(magit-status)"
+     emacsclient -r -t -e "(magit-status)"
 }
 
 # display traversable json structure in jq format

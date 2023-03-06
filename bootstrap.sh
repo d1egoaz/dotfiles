@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 echo "Installing brew..."
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -55,6 +55,16 @@ brew update
 brew install cmake
 brew install aspell --language en,es
 brew install languagetool
+brew install vale
+brew install proselint
 brew install pandoc
 brew install shellcheck
 brew install shfmt
+brew install universal-ctags
+
+echo "Installing lsp servers ..."
+brew install yaml-language-server
+brew install bash-language-server
+brew install rust-analyzer
+brew install gopls
+npm install -g typescript-language-server typescript
