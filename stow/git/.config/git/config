@@ -4,8 +4,6 @@
     gpgSign = true
 [core]
     commentChar = "@"
-[credential "https://github.com"]
-    helper = "gh auth git-credential"
 [github]
     user = "d1egoaz"
 [gpg]
