@@ -1,7 +1,6 @@
 # Configure brew
-[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
-[[ -x /usr/local/bin/brew ]] && eval $(/usr/local/bin/brew shellenv)
 export HOMEBREW_NO_ANALYTICS=1
+[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
 
 # Locals, prefer US English and use UTF-8
 export LANG="en_US.UTF-8"
@@ -23,7 +22,7 @@ fi
 ### Go
 export GOROOT=$($HOMEBREW_PREFIX/bin/go env GOROOT)
 # export GOPATH="$HOME/go:$HOME:$HOME/code/go"
-export GOPATH="$HOME"
+export GOPATH="$HOME/go"
 export GOPRIVATE="github.com/Shopify/*"
 PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
 
@@ -33,11 +32,6 @@ PATH="${PATH}:${HOME}/.cargo/bin"
 ### gke-gcloud-auth-plugin
 PATH="/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:${PATH}"
 
-# PATH end
-export PATH
-
-# Other tools
-
 ## fzf
 ### --exact, If you don't prefer fuzzy matching and do not wish to "quote" every word, start fzf with -e or --exact option.
 export FZF_DEFAULT_OPTS='--exact --height 30% --no-preview --layout reverse --multi -0 --no-info --pointer ● --color "gutter:-1,pointer:#00ff00"'
@@ -46,6 +40,14 @@ export FZF_DEFAULT_OPTS='--exact --height 30% --no-preview --layout reverse --mu
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_BASE="/opt/homebrew/opt/fzf"
+PATH="$PATH:$FZF_BASE/bin"
+
+PATH="/opt/homebrew/bin:$PATH"
+# PATH end
+export PATH
+
+# Other tools
 
 # cloudplatform: add Shopify clusters to your local kubernetes config
 export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/config.shopify.production-registry:$HOME/.kube/config.shopify.cloudplatform
