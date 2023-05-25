@@ -105,3 +105,14 @@ dos () {
 }
 
 alias watchh='watch '
+
+killport() {
+    echo "Executing command: lsof -t -i:$1"
+    local pids=$(lsof -t -i:"$1")
+    if [ -n "$pids" ]; then
+        echo "Executing command: kill -9 $pids"
+        kill -9 $pids
+    else
+        echo "No processes found on port $1"
+    fi
+}

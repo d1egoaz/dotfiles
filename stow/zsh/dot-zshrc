@@ -30,24 +30,22 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] &&
 
 fi
 
-# set brew env variables
-# [[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
-[[ -f /opt/dev/sh/chruby/chruby.sh ]] && (type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; })
-[ -f /opt/dev/dev.sh ] && source /opt/dev/dev.sh
-
-[ -f $HOMEBREW_PREFIX/etc/profile.d/autojump.sh ] && . $HOMEBREW_PREFIX/etc/profile.d/autojump.sh
-
 # similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
 ulimit -n 2048
 
-# removed oh-my-zsh and load manually the plugins I use
-# autojump j zsh
+# Plugins
+## autojump:
 source /opt/homebrew/opt/autojump/etc/autojump.sh
 
-# fzf zsh
+## fzf:
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 source /opt/homebrew/opt/fzf/shell/completion.zsh #2> /dev/null
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
+
+# Bindings
+
+## Emacs
+bindkey -e
 
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
@@ -60,9 +58,7 @@ if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   zle -N zle-line-finish
 fi
 
-# Use emacs key bindings
-bindkey -e
-
+## Fuzzy find history forward/backward
 # Start typing + [Up-Arrow] - fuzzy find history forward
 if [[ -n "${terminfo[kcuu1]}" ]]; then
   autoload -U up-line-or-beginning-search
@@ -84,7 +80,10 @@ if [[ -n "${terminfo[kcud1]}" ]]; then
 fi
 
 # Control+Backspace key combination, which is represented by ^?
-bindkey '^?' backward-kill-word
+# bindkey '^?' backward-kill-word
+
+bindkey '^[[1;3D' backward-word # alt-f
+bindkey '^[[1;3C' forward-word  # alt-b
 
 # Edit the current command line in $EDITOR
 autoload -U edit-command-line
@@ -93,15 +92,15 @@ bindkey '\C-x\C-e' edit-command-line
 
 # disable the gpg zsh as I'm not using it from shell
 # GPG zsh
-# export GPG_TTY=$TTY
+export GPG_TTY=$TTY
 
 # Fix for passphrase prompt on the correct tty
 # See https://www.gnupg.org/documentation/manuals/gnupg/Agent-Options.html#option-_002d_002denable_002dssh_002dsupport
-# function _gpg-agent_update-tty_preexec {
-#   gpg-connect-agent updatestartuptty /bye &>/dev/null
-# }
-# autoload -U add-zsh-hook
-# add-zsh-hook preexec _gpg-agent_update-tty_preexec
+ function _gpg-agent_update-tty_preexec {
+   gpg-connect-agent updatestartuptty /bye &>/dev/null
+ }
+ autoload -U add-zsh-hook
+ add-zsh-hook preexec _gpg-agent_update-tty_preexec
 
 # load aliases
 test -e ~/.aliases && source ~/.aliases
