@@ -38,8 +38,7 @@ ulimit -n 2048
 source /opt/homebrew/opt/autojump/etc/autojump.sh
 
 ## fzf:
-source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
-source /opt/homebrew/opt/fzf/shell/completion.zsh #2> /dev/null
+source /opt/homebrew/opt/fzf/shell/completion.zsh 2> /dev/null
 source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
 
 # Bindings
