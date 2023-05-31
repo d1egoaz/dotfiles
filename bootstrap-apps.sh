@@ -7,4 +7,4 @@ brew install --cask iterm2
 brew install --cask kindle
 
 brew tap d12frosted/emacs-plus
-brew install emacs-plus@30 --with-no-frame-refocus --with-native-comp --with-savchenkovaleriy-big-sur-icon
+brew install emacs-plus@30 --with-no-frame-refocus --with-native-comp --with-savchenkovaleriy-big-sur-icon --with-xwidgets
