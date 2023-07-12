@@ -22,6 +22,7 @@ brew install pass
 brew install pinentry-mac
 brew install tree
 brew install stow
+brew install dua-cli # disk usage analyzer
 
 echo "Installing fonts..."
 brew tap homebrew/cask-fonts
