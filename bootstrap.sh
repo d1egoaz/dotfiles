@@ -71,6 +71,15 @@ brew install libvterm
 echo "Installing lsp servers ..."
 brew install yaml-language-server
 brew install bash-language-server
-brew install rust-analyzer
+# brew install rust-analyzer
 brew install gopls
 npm install -g typescript-language-server typescript
+
+
+echo "chime"
+brew install rbenv
+brew install helm
+brew install argocd
+brew install tfenv
+brew install cdktf
+brew install yarn
