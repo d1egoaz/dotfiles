@@ -14,6 +14,5 @@
     ff = "only"
 [include]
     path = "./config-personal"
-    path = /Users/diegoalvarez/.config/dev/gitconfig
-#[includeIf "gitdir:~/src/"]
-#    path = "./config-work"
+[includeIf "gitdir:~/work/"]
+    path = "./config-work"
