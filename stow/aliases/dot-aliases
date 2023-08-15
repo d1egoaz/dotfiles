@@ -116,3 +116,5 @@ killport() {
         echo "No processes found on port $1"
     fi
 }
+
+alias docker-compose='curl -s "https://official-joke-api.appspot.com/random_joke" | jq -r ".setup + \" \" + .punchline"'
