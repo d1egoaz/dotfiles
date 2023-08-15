@@ -1,3 +1,5 @@
+# -*- mode: bash-ts; -*-
+
 # Configure brew
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
@@ -24,7 +26,7 @@ fi
 export GOROOT=$($HOMEBREW_PREFIX/bin/go env GOROOT)
 # export GOPATH="$HOME/go:$HOME:$HOME/code/go"
 export GOPATH="$HOME/go"
-export GOPRIVATE="github.com/Shopify/*"
+export GOPRIVATE="github.com/1debit/*"
 PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
 
 ### Rust
@@ -50,13 +52,13 @@ export PATH
 
 # Other tools
 
-# cloudplatform: add Shopify clusters to your local kubernetes config
-export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/config.shopify.production-registry:$HOME/.kube/config.shopify.cloudplatform
+# export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/other.config
+export KUBECONFIG=$HOME/.kube/config
 
 export EDITOR="emacsclient -r -a emacs"                  # $EDITOR opens in terminal
 export VISUAL="emacsclient -r -c -a emacs"         # $VISUAL opens in GUI mode
 export ALTERNATE_EDITOR="vim"
-export EMACS_ADDITIONAL_DIR="$HOME/dotfiles-private/shopify"
+export EMACS_ADDITIONAL_DIR="$HOME/dotfiles-private/chime"
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
