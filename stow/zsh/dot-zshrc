@@ -1,3 +1,5 @@
+# -*- mode: bash-ts; -*-
+
 zmodload zsh/zprof
 # Emacs tramp mode compatibility
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
@@ -105,3 +107,11 @@ export GPG_TTY=$TTY
 test -e ~/.aliases && source ~/.aliases
 
 eval "$(starship init zsh)"
+
+# chime
+# eval "$(rbenv init -)"
+
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
+unset CASE_SENSITIVE HYPHEN_INSENSITIVE
+autoload -Uz compinit && compinit
