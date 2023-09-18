@@ -34,7 +34,7 @@ brew install bash # needed by one of the tmux plugins
 brew install tmux
 brew install fzf
 brew install autojump
-brew install exa
+brew install eza
 brew install bat
 brew install progress
 
