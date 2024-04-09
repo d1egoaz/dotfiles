@@ -1,5 +1,8 @@
 # -*- mode: bash-ts; -*-
 
+HISTSIZE=10000
+SAVEHIST=10000
+
 zmodload zsh/zprof
 # Emacs tramp mode compatibility
 [[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
@@ -109,9 +112,10 @@ test -e ~/.aliases && source ~/.aliases
 eval "$(starship init zsh)"
 
 # chime
-# eval "$(rbenv init -)"
+eval "$(rbenv init -)"
 
 zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
 unset CASE_SENSITIVE HYPHEN_INSENSITIVE
 autoload -Uz compinit && compinit
+source ~/.fzf-tab/fzf-tab.plugin.zsh

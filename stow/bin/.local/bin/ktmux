@@ -10,5 +10,6 @@ else
     kube_tmux+="#[fg=${1}]${KUBE_CONTEXT}"
     kube_tmux+="#[fg=colour250]:"
     kube_tmux+="#[fg=${2}]${KUBE_NAMESPACE}"
+
     echo "${kube_tmux} "
 fi
