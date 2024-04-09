@@ -1,4 +1,6 @@
 [user]
-  email = diego.alvarez@chime.com
+    email = diego.alvarez@chime.com
+    name = "Diego Alvarez"
+    signingkey = "C63945863D4B9E77"
 [url "git@github.com:"]
     insteadOf = https://github.com/

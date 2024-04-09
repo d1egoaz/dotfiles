@@ -1,18 +1,33 @@
+[init]
+    defaultBranch = "main"
 [branch]
+    # sort by most recently used branches
     sort = "-committerdate"
 [commit]
     gpgSign = true
 [core]
     commentChar = "@"
+[diff]
+    algorithm = "histogram"
+    # algorithm = "patience" when refactoring
+[fetch]
+    prune = true
+    prunetags = true
 [github]
     user = "d1egoaz"
+    signingkey = "C63945863D4B9E77"
 [gpg]
     program = "gpg"
 [merge]
-    conflictstyle = "diff3"
+    conflictstyle = "zdiff3"
 [pull]
     ff = "only"
+[push]
+    # push the local branch to a remote branch with the same name
+    default = "current"
 [include]
     path = "./config-personal"
 [includeIf "gitdir:~/work/"]
     path = "./config-work"
+[rebase]
+    updateRefs = true
