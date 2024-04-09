@@ -1,6 +1,8 @@
+# -*- mode: bash-ts; -*-
+
 # Always use color output for `ls`, using gls -> coreutils
 # alias ls="command gls -F --color"
-alias ls="command exa"
+alias ls="command eza"
 
 # List all files colorized in long format
 alias ll="ls -lh"
@@ -118,3 +120,6 @@ killport() {
 }
 
 alias docker-compose='curl -s "https://official-joke-api.appspot.com/random_joke" | jq -r ".setup + \" \" + .punchline"'
+
+# test caffeinate -id, i: idle, d: display
+alias prevent-idle-sleep='caffeinate -i'
