@@ -5,3 +5,5 @@
 /stow/tmux/.config/tmux/plugins/tmux-fzf-url/
 /stow/tmux/.config/tmux/plugins/tmux-continuum/
 /stow/vale/styles/
+stow/bin/.local/share/
+stow/bin/.local/state/
