@@ -50,22 +50,21 @@ brew install fd
 brew install prettier
 brew install mermaid-cli
 brew install gum
+brew install hashicorp/tap/terraform
+brew install jq
+brew install ynqa/tap/jnv
 
 # k8s
 brew install kind
 
-echo "Install only tool that I'm going to use: Emacs ❤️ ..."
+echo "Emacs ❤️ ..."
 
 # for emacs
 brew install cmake
 brew install aspell --language en,es
-brew install languagetool
-brew install vale
-brew install proselint
 brew install pandoc
 brew install shellcheck
 brew install shfmt
-brew install universal-ctags
 brew install libvterm
 
 echo "Installing lsp servers ..."
@@ -74,7 +73,7 @@ brew install bash-language-server
 # brew install rust-analyzer
 brew install gopls
 npm install -g typescript-language-server typescript
-
+brew install hashicorp/tap/terraform-ls
 
 echo "chime"
 brew install rbenv
