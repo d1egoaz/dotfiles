@@ -118,4 +118,7 @@ zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
 unset CASE_SENSITIVE HYPHEN_INSENSITIVE
 autoload -Uz compinit && compinit
+
+# Install:
+# git clone https://github.com/Aloxaf/fzf-tab ~/.fzf-tab/
 source ~/.fzf-tab/fzf-tab.plugin.zsh
