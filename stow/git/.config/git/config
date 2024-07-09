@@ -8,18 +8,17 @@
 [core]
     commentChar = "@"
 [diff]
-    algorithm = "histogram"
-    # algorithm = "patience" when refactoring
+    # algorithm = "histogram"
+    algorithm = "patience" # when refactoring
 [fetch]
     prune = true
-    prunetags = true
+    pruneTags = true
 [github]
     user = "d1egoaz"
-    signingkey = "C63945863D4B9E77"
 [gpg]
     program = "gpg"
 [merge]
-    conflictstyle = "zdiff3"
+    conflictStyle = "zdiff3"
 [pull]
     ff = "only"
 [push]
@@ -31,3 +30,21 @@
     path = "./config-work"
 [rebase]
     updateRefs = true
+[user]
+    signingkey = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77"
+
+[maintenance "gc"]
+    enabled = true
+    schedule = weekly
+[maintenance "commit-graph"]
+    enabled = true
+    schedule = daily
+[maintenance "incremental-repack"]
+    enabled = true
+    schedule = weekly
+[maintenance "pack-refs"]
+    enabled = true
+    schedule = daily
+[maintenance "prefetch"]
+    enabled = true
+    schedule = hourly
