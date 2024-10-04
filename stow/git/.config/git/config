@@ -36,15 +36,15 @@
 [maintenance "gc"]
     enabled = true
     schedule = weekly
-[maintenance "commit-graph"]
-    enabled = true
-    schedule = daily
-[maintenance "incremental-repack"]
-    enabled = true
-    schedule = weekly
-[maintenance "pack-refs"]
-    enabled = true
-    schedule = daily
-[maintenance "prefetch"]
-    enabled = true
-    schedule = hourly
+# [maintenance "commit-graph"]
+#     enabled = true
+#     schedule = daily
+# [maintenance "incremental-repack"]
+#     enabled = true
+#     schedule = weekly
+# [maintenance "pack-refs"]
+#     enabled = true
+#     schedule = daily
+# [maintenance "prefetch"]
+#     enabled = true
+#     schedule = daily
