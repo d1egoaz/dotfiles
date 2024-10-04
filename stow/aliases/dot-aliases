@@ -2,7 +2,7 @@
 
 # Always use color output for `ls`, using gls -> coreutils
 # alias ls="command gls -F --color"
-alias ls="command eza"
+# alias ls="command eza"
 
 # List all files colorized in long format
 alias ll="ls -lh"
@@ -82,10 +82,6 @@ alias kgpis="kgp -o jsonpath='{.items[*].spec.containers[*].image}' | tr -s '[[:
 alias kgpi='k get pod $(kgpn | fzf-tmux) -o jsonpath="{.spec.containers[*].image}" | tr -s "[[:space:]]" "\n" | sort'
 
 #k exec -it $(k describe node $(kgp -o wide | grep $(kgpn | fzf-tmux) | awk '{print $7}') | grep datadog | awk '{print $2}') --namespace cluster-services bash
-
-kdpy() {
-  k describe pod $(kgpn | fzf-tmux) | baty
-}
 
 k-get-pods-startup-time() {
   k get pods "$@" -o json | jq '(.items // [.]) | map({name: .metadata.name, status: .status.containerStatuses | map({name: .name, time: .state.running.startedAt})})'
