@@ -112,10 +112,10 @@ test -e ~/.aliases && source ~/.aliases
 eval "$(starship init zsh)"
 
 # chime
-hostname=$(hostname)
-if [ "$hostname" != "Diegos-MacBook-Air.local" ]; then
-    eval "$(rbenv init -)"
-fi
+# hostname=$(hostname)
+# if [ "$hostname" != "Diegos-MacBook-Air.local" ]; then
+#     eval "$(rbenv init -)"
+# fi
 
 zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
