@@ -125,3 +125,5 @@ autoload -Uz compinit && compinit
 # Install:
 # git clone https://github.com/Aloxaf/fzf-tab ~/.fzf-tab/
 source ~/.fzf-tab/fzf-tab.plugin.zsh
+eval "$(direnv hook zsh)"
+eval "$(devbox global shellenv --init-hook)"

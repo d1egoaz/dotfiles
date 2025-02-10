@@ -19,10 +19,23 @@ success_symbol = '[➜](bold green)'
 disabled = false
 format = 'on [$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
 
+[custom.direnv]
+detect_files = ['.envrc']
+format = '[ direnv](bold bright-yellow)'
+disabled = false
+
+[custom.devbox]
+when = ''' test -n "$IN_NIX_SHELL" '''
+# command = 'echo devbox'
+# style = 'dimmed fg:white bg:black'
+format = '[ \[devbox\]](bold white)'
+disabled = false
+
 [custom.kubeinfo]
 command = '''sed -n 's/KUBE_CONTEXT=\(.*\)/Kube Context: \1,/p; s/KUBE_NAMESPACE=\(.*\)/namespace: \1/p' .kube-env | paste -sd ' ' -'''
 detect_files = ['.kube-env']
 format = ' [$output]($style)'
+disabled = false
 
 [git_branch]
 disabled = false
