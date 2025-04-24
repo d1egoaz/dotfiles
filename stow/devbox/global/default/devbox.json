@@ -1,0 +1,54 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
+  "packages": [
+    "ripgrep@latest",
+    "ffmpeg@latest",
+    "ollama@latest",
+    "cloudflared@latest",
+    "fzf@latest",
+    "gh@latest",
+    "go@latest",
+    "gopls@latest",
+    "gum@latest",
+    "htop@latest",
+    "golangci-lint@latest",
+    "prettierd@latest",
+    "shfmt@latest",
+    "shellcheck@latest",
+    "cargo@latest",
+    "starship@latest",
+    "autojump@latest",
+    "fd@latest",
+    "mysql-client@latest",
+    "yamllint@latest",
+    "graphviz@latest",
+    "kubernetes-helm@latest",
+    "git@latest",
+    "claude-code@latest",
+    "argocd@2.13.4",
+    "pandoc@latest",
+    "gnupg@latest",
+    "coreutils@latest",
+    "direnv@latest",
+    "kubecolor@latest",
+    "bash@latest",
+    "pinentry_mac@latest",
+    "tmux@latest",
+    "tree@latest",
+    "tree-sitter@latest",
+    "zsh@latest",
+    "jq@latest",
+    "yq@latest",
+    "socat@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}
