@@ -1,129 +1,123 @@
 # -*- mode: bash-ts; -*-
 
+# History settings
 HISTSIZE=10000
 SAVEHIST=10000
 
+# Load zsh profiling (if needed)
 zmodload zsh/zprof
-# Emacs tramp mode compatibility
-[[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
-[[ $TERM == "tramp" ]] && unsetopt zle && PS1='[\u@\h \w]$ ' && return
 
-# quick escape/command mode
-bindkey jk vi-cmd-mode
-
-function ediff() {
-    if [ "X$2" = "X" ]; then
-        echo "USAGE: ediff <FILE 1> <FILE 2>"
-    else
-        # The --eval flag takes lisp code and evaluates it with EMACS
-        emacsclient -r --eval "(ediff-files \"$1\" \"$2\")"
-    fi
-}
-
-if [[ "$INSIDE_EMACS" = 'vterm' ]] &&
-    [[ -n ${EMACS_VTERM_PATH} ]] &&
-    [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh ]]; then
-    source ${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh
-
-    ff() {
-        vterm_cmd find-file "$(realpath "${@:-.}")"
-    }
-
-    msg() {
-        vterm_cmd message "%s" "$*"
-    }
-
+# Handle dumb/tramp terminals gracefully
+if [[ $TERM == "dumb" ]]; then
+  unsetopt zle
+  PS1='$ '
+  return
+fi
+if [[ $TERM == "tramp" ]]; then
+  unsetopt zle
+  PS1='[\u@\h \w]$ '
+  return
 fi
 
-# similar to https://github.com/edenhill/kafkacat/issues/209 to make kafkacat happy
+# Interactive keybindings
+bindkey jk vi-cmd-mode
+
+# --- Interactive Functions ---
+# ediff: Launches Emacs ediff between two files.
+ediff() {
+  if [ -z "$2" ]; then
+    echo "Usage: ediff <FILE1> <FILE2>"
+  else
+    emacsclient -r --eval "(ediff-files \"$1\" \"$2\")"
+  fi
+}
+
+# Emacs vterm integration (if inside Emacs and vterm available)
+if [[ "$INSIDE_EMACS" = "vterm" ]] &&
+   [[ -n ${EMACS_VTERM_PATH} ]] &&
+   [[ -f "${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh" ]]; then
+  source "${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh"
+
+  ff() {
+    vterm_cmd find-file "$(realpath "${@:-.}")"
+  }
+
+  msg() {
+    vterm_cmd message "%s" "$*"
+  }
+fi
+
+# Increase file descriptor limit (helpful for some tools)
 ulimit -n 2048
 
-# Plugins
-## autojump:
-source /opt/homebrew/opt/autojump/etc/autojump.sh
+# --- Plugins and Completions ---
+# autojump plugin
+source "${DEVBOX_PACKAGES_DIR}/share/autojump/autojump.zsh" 2>/dev/null
 
-## fzf:
-source /opt/homebrew/opt/fzf/shell/completion.zsh 2> /dev/null
-source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
+# fzf completions and key-bindings
+source "${DEVBOX_PACKAGES_DIR}/share/fzf/completion.zsh" 2>/dev/null
+source "${DEVBOX_PACKAGES_DIR}/share/fzf/key-bindings.zsh" 2>/dev/null
 
-# Bindings
-
-## Emacs
+# Use Emacs keybindings in zsh
 bindkey -e
 
+# Terminal alternate mode initialization (for some key sequences)
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
-  function zle-line-init() {
-    echoti smkx
-  }
-  function zle-line-finish() {
-    echoti rmkx
-  }
+  zle-line-init() { echoti smkx; }
+  zle-line-finish() { echoti rmkx; }
   zle -N zle-line-init
   zle -N zle-line-finish
 fi
 
-## Fuzzy find history forward/backward
-# Start typing + [Up-Arrow] - fuzzy find history forward
+# Fuzzy history search (using up/down arrows)
 if [[ -n "${terminfo[kcuu1]}" ]]; then
   autoload -U up-line-or-beginning-search
   zle -N up-line-or-beginning-search
-
   bindkey -M emacs "${terminfo[kcuu1]}" up-line-or-beginning-search
   bindkey -M viins "${terminfo[kcuu1]}" up-line-or-beginning-search
   bindkey -M vicmd "${terminfo[kcuu1]}" up-line-or-beginning-search
 fi
-
-# Start typing + [Down-Arrow] - fuzzy find history backward
 if [[ -n "${terminfo[kcud1]}" ]]; then
   autoload -U down-line-or-beginning-search
   zle -N down-line-or-beginning-search
-
   bindkey -M emacs "${terminfo[kcud1]}" down-line-or-beginning-search
   bindkey -M viins "${terminfo[kcud1]}" down-line-or-beginning-search
   bindkey -M vicmd "${terminfo[kcud1]}" down-line-or-beginning-search
 fi
 
-# Control+Backspace key combination, which is represented by ^?
-# bindkey '^?' backward-kill-word
+# Alt-key bindings for word navigation
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
 
-bindkey '^[[1;3D' backward-word # alt-f
-bindkey '^[[1;3C' forward-word  # alt-b
-
-# Edit the current command line in $EDITOR
+# Bind Ctrl-x Ctrl-e to edit the current command line in $EDITOR
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\C-x\C-e' edit-command-line
 
-# disable the gpg zsh as I'm not using it from shell
-# GPG zsh
+# GPG: set TTY and update agent on each command execution
 export GPG_TTY=$TTY
+_gpg-agent_update-tty_preexec() {
+  gpg-connect-agent updatestartuptty /bye &>/dev/null
+}
+autoload -U add-zsh-hook
+add-zsh-hook preexec _gpg-agent_update-tty_preexec
 
-# Fix for passphrase prompt on the correct tty
-# See https://www.gnupg.org/documentation/manuals/gnupg/Agent-Options.html#option-_002d_002denable_002dssh_002dsupport
- function _gpg-agent_update-tty_preexec {
-   gpg-connect-agent updatestartuptty /bye &>/dev/null
- }
- autoload -U add-zsh-hook
- add-zsh-hook preexec _gpg-agent_update-tty_preexec
+# Source aliases if they exist
+[ -e ~/.aliases ] && source ~/.aliases
 
-# load aliases
-test -e ~/.aliases && source ~/.aliases
-
+# Initialize the Starship prompt
 eval "$(starship init zsh)"
 
-# chime
-# hostname=$(hostname)
-# if [ "$hostname" != "Diegos-MacBook-Air.local" ]; then
-#     eval "$(rbenv init -)"
-# fi
-
+# Set up advanced completion options
 zstyle ':completion:*:*:*:*:*' menu select
-zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' matcher-list \
+  'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
+  'r:|=*' 'l:|=* r:|=*'
 unset CASE_SENSITIVE HYPHEN_INSENSITIVE
 autoload -Uz compinit && compinit
 
-# Install:
-# git clone https://github.com/Aloxaf/fzf-tab ~/.fzf-tab/
+# fzf-tab plugin for enhanced tab completion (if installed)
 source ~/.fzf-tab/fzf-tab.plugin.zsh
+
+# Direnv integration for automatic environment variable management
 eval "$(direnv hook zsh)"
-eval "$(devbox global shellenv --init-hook)"

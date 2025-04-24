@@ -1,69 +1,57 @@
 # -*- mode: bash-ts; -*-
 
-# Configure brew
+# Configure Homebrew
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
-[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Locals, prefer US English and use UTF-8
+# Locale settings
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 
-# PATH init
+# Initial PATH setup
 PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.local/bin:$PATH"
 
-## Langs
+# Initialize Devbox early so DEVBOX_PACKAGES_DIR is set
+eval "$(devbox global shellenv --init-hook)"
 
-### JAVA
-if [[ "$OSTYPE" =~ ^linux-gnu ]]; then
-  export JAVA_HOME="/usr/lib/jvm/default"
+### Go configuration (DEVBOX only)
+if [ -x "$DEVBOX_PACKAGES_DIR/bin/go" ]; then
+  export GOROOT="$($DEVBOX_PACKAGES_DIR/bin/go env GOROOT)"
 else
-  export JAVA_8_HOME="/Library/Java/JavaVirtualMachines/jdk1.8/Contents/Home"
-  export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home"
+  echo "Warning: go binary not found in $DEVBOX_PACKAGES_DIR/bin/go" >&2
 fi
 
-### Go
-export GOROOT=$($HOMEBREW_PREFIX/bin/go env GOROOT)
-# export GOPATH="$HOME/go:$HOME:$HOME/code/go"
 export GOPATH="$HOME/go"
 export GOPRIVATE="github.com/1debit/*"
 PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
 
-### Rust
-PATH="${PATH}:${HOME}/.cargo/bin"
+### Rust configuration
+PATH="$PATH:${HOME}/.cargo/bin"
 
-### gke-gcloud-auth-plugin
-PATH="/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:${PATH}"
-
-## fzf
-### --exact, If you don't prefer fuzzy matching and do not wish to "quote" every word, start fzf with -e or --exact option.
+### fzf configuration
 export FZF_DEFAULT_OPTS='--exact --height 30% --no-preview --layout reverse --multi -0 --no-info --pointer ● --color "gutter:-1,pointer:#00ff00"'
-
-# Setting fd as the default source for fzf
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-# To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_BASE="/opt/homebrew/opt/fzf"
+export FZF_BASE="${DEVBOX_PACKAGES_DIR}/bin/fzf"
 PATH="$PATH:$FZF_BASE/bin"
 
+# Prepend Homebrew binaries
 PATH="/opt/homebrew/bin:$PATH"
-# PATH end
 export PATH
 
-# Other tools
+# Kubernetes config
+export KUBECONFIG="$HOME/.kube/config"
 
-# export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/other.config
-export KUBECONFIG=$HOME/.kube/config
-
-export EDITOR="emacsclient -r -a emacs"                  # $EDITOR opens in terminal
-export VISUAL="emacsclient -r -c -a emacs"         # $VISUAL opens in GUI mode
+# Editor configuration
+export EDITOR="emacsclient -r -a emacs"    # terminal
+export VISUAL="emacsclient -r -c -a emacs"   # GUI
 export ALTERNATE_EDITOR="vim"
 export EMACS_ADDITIONAL_DIR="$HOME/dotfiles-private/chime"
 
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+# Load Nix if available
+if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+fi
 
-# to reload .zprofile
-# exec zsh --login
-
-# https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke
-export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+source "$HOME/.zprivate"
