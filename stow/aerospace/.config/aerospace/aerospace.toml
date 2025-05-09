@@ -186,7 +186,7 @@ if.app-id = 'com.apple.QuickTimePlayerX'
 run = 'layout floating'
 
 [[on-window-detected]]
-if.app-name-regex-substring = '.*'
+# if.app-name-regex-substring = '.*'
 run = 'move-node-to-workspace 6'
 
 # [[on-window-detected]]
