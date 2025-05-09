@@ -7,3 +7,4 @@
 /stow/vale/styles/
 stow/bin/.local/share/
 stow/bin/.local/state/
+.DS_Store

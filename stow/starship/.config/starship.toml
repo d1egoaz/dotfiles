@@ -60,11 +60,14 @@ show_notifications = true
 
 [time]
 disabled = false
-style = 'green'
-use_12hr = true
+format = "[$time]($style) "
+time_format = "%l:%M:%S %P"
+utc_time_offset = "local"
+style = "italic dimmed white"
 
 [directory]
 disabled = false
+style = "blue"
 
 ####################
 # Disabled modules #
@@ -179,7 +182,7 @@ disabled = true
 disabled = true
 
 [nodejs]
-disabled = true
+disabled = false
 
 [ocaml]
 disabled = true
@@ -200,7 +203,7 @@ disabled = true
 disabled = true
 
 [python]
-disabled = true
+disabled = false
 
 [raku]
 disabled = true
@@ -221,7 +224,7 @@ disabled = true
 disabled = true
 
 [terraform]
-disabled = true
+disabled = false
 
 [typst]
 disabled = true
@@ -239,7 +242,7 @@ disabled = true
 disabled = true
 
 [nix_shell]
-disabled = true
+disabled = false
 
 [conda]
 disabled = true
@@ -263,7 +266,7 @@ disabled = true
 disabled = true
 
 [direnv]
-disabled = true
+disabled = false
 
 [env_var]
 disabled = true
@@ -291,3 +294,4 @@ disabled = true
 
 [shell]
 disabled = true
+
