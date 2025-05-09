@@ -39,7 +39,12 @@
     "zsh@latest",
     "jq@latest",
     "yq@latest",
-    "socat@latest"
+    "socat@latest",
+    "aerospace@latest",
+    "jankyborders@latest",
+    "wezterm@latest",
+    "zsh-autosuggestions@latest",
+    "zsh-syntax-highlighting@latest"
   ],
   "shell": {
     "init_hook": [
