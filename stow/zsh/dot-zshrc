@@ -122,3 +122,5 @@ source ~/.fzf-tab/fzf-tab.plugin.zsh
 
 # Direnv integration for automatic environment variable management
 eval "$(direnv hook zsh)"
+
+source "${DEVBOX_PACKAGES_DIR}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
