@@ -54,9 +54,10 @@ ulimit -n 2048
 # autojump plugin
 source "${DEVBOX_PACKAGES_DIR}/share/autojump/autojump.zsh" 2>/dev/null
 
-# fzf completions and key-bindings
+# fzf
 source "${DEVBOX_PACKAGES_DIR}/share/fzf/completion.zsh" 2>/dev/null
 source "${DEVBOX_PACKAGES_DIR}/share/fzf/key-bindings.zsh" 2>/dev/null
+source "${DEVBOX_PACKAGES_DIR}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # Use Emacs keybindings in zsh
 bindkey -e
