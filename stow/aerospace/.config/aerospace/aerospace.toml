@@ -149,8 +149,13 @@ esc   = 'mode main'
 if.app-id= 'com.google.Chrome'
 run = 'move-node-to-workspace 1'
 
+# emacs
 [[on-window-detected]]
 if.app-id= 'org.gnu.Emacs'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id= 'NULL-APP-BUNDLE-ID' # emacs nix gets this id, it works for now
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
