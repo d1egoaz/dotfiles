@@ -1,6 +1,54 @@
 {
   "lockfile_version": "1",
   "packages": {
+    "Nerdfonts@latest": {
+      "last_modified": "2024-11-16T04:25:12Z",
+      "resolved": "github:NixOS/nixpkgs/34a626458d686f1b58139620a8b2793e9e123bba#nerdfonts",
+      "source": "devbox-search",
+      "version": "3.2.1",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/kjp1v736v5adydkwfh1wy5m71v7y02ww-nerdfonts-3.2.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/kjp1v736v5adydkwfh1wy5m71v7y02ww-nerdfonts-3.2.1"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/cw6dv2xzf2gq2d4n558jd76mspwqmlkw-nerdfonts-3.2.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/cw6dv2xzf2gq2d4n558jd76mspwqmlkw-nerdfonts-3.2.1"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/r6r5vzi72a5vx8b3lhl1aq9hma99m2b1-nerdfonts-3.2.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/r6r5vzi72a5vx8b3lhl1aq9hma99m2b1-nerdfonts-3.2.1"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/c8z07qzzpg17vg0chvfz56gkj48frhww-nerdfonts-3.2.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/c8z07qzzpg17vg0chvfz56gkj48frhww-nerdfonts-3.2.1"
+        }
+      }
+    },
     "aerospace@latest": {
       "last_modified": "2025-05-02T12:26:36Z",
       "resolved": "github:NixOS/nixpkgs/4be4d7a7758d92d60a092a503c93a381f95c71b1#aerospace",
@@ -1794,6 +1842,34 @@
             }
           ],
           "store_path": "/nix/store/1rlccxy9swhrd2i8kln0a523hjp9ri50-shfmt-3.11.0"
+        }
+      }
+    },
+    "sketchybar@latest": {
+      "last_modified": "2025-04-17T05:47:26Z",
+      "resolved": "github:NixOS/nixpkgs/ebe4301cbd8f81c4f8d3244b3632338bbeb6d49c#sketchybar",
+      "source": "devbox-search",
+      "version": "2.22.1",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/q79z05hdpzs63qh95m5jvlnakq1wvkx6-sketchybar-2.22.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/q79z05hdpzs63qh95m5jvlnakq1wvkx6-sketchybar-2.22.1"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/6g5nxl0jqi92005qd2i7siyby4604w4i-sketchybar-2.22.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/6g5nxl0jqi92005qd2i7siyby4604w4i-sketchybar-2.22.1"
         }
       }
     },

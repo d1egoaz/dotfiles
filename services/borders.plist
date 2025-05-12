@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Unique label for launchd -->
+  <key>Label</key>
+  <string>ca.diegoa.global.borders</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/diego/.local/share/devbox/global/default/.devbox/nix/profile/default/bin/borders</string>
+    <string>active_color=0xffff00ff</string>
+    <string>inactive_color=0xff494d64</string>
+    <string>width=3.0</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>

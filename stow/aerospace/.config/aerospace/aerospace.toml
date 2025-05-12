@@ -1,7 +1,15 @@
-after-login-command = []
+exec.inherit-env-vars = true
+exec.env-vars.PATH = '/opt/homebrew/bin:/Users/diego/.local/share/devbox/global/default/.devbox/nix/profile/default/bin:/Users/diego/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}'
 
+after-login-command = []
 after-startup-command = [
-  'exec-and-forget borders active_color=0xffff00ff inactive_color=0xff494d64 width=3.0'
+  'exec-and-forget borders active_color=0xffff00ff inactive_color=0xff494d64 width=3.0',
+  'exec-and-forget sketchybar --config /Users/diego/.config/sketchybar/sketchybarrc'
+]
+
+# Notify Sketchybar about workspace change
+exec-on-workspace-change = ['/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
 ]
 start-at-login = true
 

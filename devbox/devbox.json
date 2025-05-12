@@ -44,7 +44,9 @@
     "jankyborders@latest",
     "wezterm@latest",
     "zsh-autosuggestions@latest",
-    "zsh-syntax-highlighting@latest"
+    "zsh-syntax-highlighting@latest",
+    "sketchybar@latest",
+    "Nerdfonts@latest"
   ],
   "shell": {
     "init_hook": [
