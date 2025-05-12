@@ -1,10 +1,10 @@
 exec.inherit-env-vars = true
-exec.env-vars.PATH = '/opt/homebrew/bin:/Users/diego/.local/share/devbox/global/default/.devbox/nix/profile/default/bin:/Users/diego/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}'
+exec.env-vars.PATH = '${HOME}/.local/share/devbox/global/default/.devbox/nix/profile/default/bin:${HOME}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}'
 
 after-login-command = []
 after-startup-command = [
   'exec-and-forget borders active_color=0xffff00ff inactive_color=0xff494d64 width=3.0',
-  'exec-and-forget sketchybar --config /Users/diego/.config/sketchybar/sketchybarrc'
+  'exec-and-forget sketchybar --config ${HOME}/.config/sketchybar/sketchybarrc'
 ]
 
 # Notify Sketchybar about workspace change
@@ -155,7 +155,7 @@ if.app-id= 'org.gnu.Emacs'
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
-if.app-id= 'NULL-APP-BUNDLE-ID' # emacs nix gets this id, it works for now
+if.window-title-regex-substring= 'emacs.*' # emacs nix gets this id, it works for now
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
