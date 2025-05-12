@@ -1,92 +1,74 @@
+#!/bin/bash
 # -*- mode: bash-ts; -*-
 
 # This is a demo config to showcase some of the most important commands.
 # It is meant to be changed and configured, as it is intentionally kept sparse.
 # For a (much) more advanced configuration example see my dotfiles:
 # https://github.com/FelixKratz/dotfiles
-
+source "$CONFIG_DIR/colors.sh"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items" # Directory where the items are configured
 
 #######
 # BAR #
 #######
-# https://felixkratz.github.io/SketchyBar/config/bar
-
-sketchybar --bar position=top height=30 blur_radius=30 color=0x40000000 #topmost=window
-
-#####################
-# Changing Defaults #
-#####################
-# https://felixkratz.github.io/SketchyBar/config/items
+bar=(
+    height=39
+    color=$BAR_COLOR
+    height=30
+    position=top
+    blur_radius=0
+    notch_width=0
+    shadow=on
+    sticky=on
+)
 
 default=(
-    padding_left=5
-    padding_right=5
-    icon.font="Symbols Nerd Font Mono:Regular:13.0"
-    label.font="Essential PragmataPro:Bold:15.0"
-    icon.color=0xffffffff
-    label.color=0xffffffff
-    icon.padding_left=4
-    icon.padding_right=4
-    label.padding_left=4
-    label.padding_right=4
+    updates=when_shown
+    background.color="$ITEM_BG_COLOR"
+    background.corner_radius=6
+    background.height=30
+    icon.color=$WHITE
+    icon.font="${ICON_FONT}:Regular:13.0"
+    icon.padding_left=1
+    icon.padding_right=2
+    icon.y_offset=1
+    label.color=$WHITE
+    label.font="${FONT}:Regular:15.0"
+    label.padding_left=1
+    label.padding_right=5
+    label.y_offset=1
+    padding_left=2
+    padding_right=2
+    background.height=30
 )
-sketchybar --default "${default[@]}"
+sketchybar --bar "${bar[@]}" --default "${default[@]}"
 
-#############
-# Aerospace #
-#############
-sketchybar --add event aerospace_workspace_change
-for sid in $(aerospace list-workspaces --all); do
-    sketchybar --add item space.$sid left \
-        --subscribe space.$sid aerospace_workspace_change \
-        --set space.$sid \
-        background.color=0x44ffffff \
-        background.corner_radius=5 \
-        background.height=20 \
-        background.drawing=off \
-        label="$sid" \
-        click_script="aerospace workspace $sid" \
-        script="$CONFIG_DIR/plugins/aerospace.sh $sid"
-done
 
-##############
-# Left Items #
-##############
+# Left
+source "$ITEM_DIR/apple.sh"
+source "$ITEM_DIR/aerospaces.sh"
+source "$ITEM_DIR/front_app.sh"
 
-sketchybar --add item chevron left \
-    --set chevron icon="" label.drawing=off \
-    padding_right=0 \
-    --add item front_app left \
-    --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
-    --subscribe front_app front_app_switched \
-    --set chevron background.color=0xff1e1e1e label.color=0xffffa500 icon.color=0xffffa500 \
-    --set front_app background.color=0xff1e1e1e label.color=0xffffa500 icon.color=0xffffa500 \
-    padding_left=0 \
-    padding_right=0
-
-###############
-# Right Items #
-###############
-
-sketchybar --add item ip_address right \
-    --set ip_address script="$PLUGIN_DIR/ip_address.sh" \
-    update_freq=30 \
-    padding_left=2 \
-    padding_right=8 \
-    --subscribe ip_address wifi_change \
-    --add item clock right \
-    --set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
-    --add item volume right \
-    --set volume script="$PLUGIN_DIR/volume.sh" \
-    --subscribe volume volume_change \
-    --add item battery right \
-    --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-    --subscribe battery system_woke power_source_change
+# Right
+source "$ITEM_DIR/ip.sh"
+source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/battery.sh"
 
 # Bracket
 
 sketchybar --add bracket status ip_address volume battery
 
+sketchybar --add bracket spaces '/space\..*/' \
+    --set spaces background.color=0x17f8f8ff \
+    background.corner_radius=10 \
+    background.height=30 \
+    background.shadow.drawing=on \
+    background.shadow.distance=1 \
+    background.border_color=0x07f8f8ff \
+    background.border_width=1
+
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
+echo "sketchybar configuation loaded!"

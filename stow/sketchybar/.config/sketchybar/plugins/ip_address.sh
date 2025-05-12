@@ -6,21 +6,20 @@ IP_ADDRESS=$(scutil --nwi | grep address | sed 's/.*://' | tr -d ' ' | head -1)
 IS_VPN=$(scutil --nwi | grep -m1 'utun' | awk '{ print $1 }')
 
 if [[ $IS_VPN != "" ]]; then
-#	COLOR=$CYAN
-	ICON=
-	LABEL="VPN"
+    # COLOR=$ACCENT_COLOR
+    ICON=
+    LABEL="VPN"
 elif [[ $IP_ADDRESS != "" ]]; then
-#	COLOR=$BLUE
-	ICON=
-	LABEL=$IP_ADDRESS
+    COLOR=$BLUE
+    ICON=
+    LABEL=$IP_ADDRESS
 else
-#	COLOR=$WHITE
-	ICON=
-	LABEL="Not Connected"
+    COLOR=$RED
+    ICON=
+    LABEL="Not Connected"
 fi
 
-#sketchybar --set $NAME background.color=$COLOR \
 sketchybar --set $NAME \
-	icon=$ICON \
-	label="$LABEL"
-
+    icon=$ICON \
+    label="$LABEL" \
+    background.color=$COLOR
