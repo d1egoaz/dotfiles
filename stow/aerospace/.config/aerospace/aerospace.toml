@@ -180,7 +180,7 @@ run = 'move-node-to-workspace Terminal'
 
 # AI
 [[on-window-detected]]
-if.app-id = 'com.google.Chrome.app.dcgbmlomojmddplnnbcafbhnhlgcjdhh'
+if.window-title-regex-substring = 'ChatGPT'
 run = 'move-node-to-workspace AI'
 
 [[on-window-detected]]
