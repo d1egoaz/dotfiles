@@ -36,7 +36,7 @@ config.window_decorations = 'RESIZE|INTEGRATED_BUTTONS'
 
 config.keys = {
   { key = 'p', mods = 'CMD|SHIFT', action = action.ActivateCommandPalette },
+  { key = 'k', mods = 'CMD', action = wezterm.action.ClearScrollback 'ScrollbackAndViewport' },
 }
-
 
 return config
