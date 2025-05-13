@@ -19,3 +19,4 @@ for sid in $(aerospace list-workspaces --all); do
         click_script="aerospace workspace $sid" \
         script="$CONFIG_DIR/plugins/aerospace.sh $sid"
 done
+# https://www.nerdfonts.com/cheat-sheet
