@@ -1,5 +1,5 @@
 #!/bin/sh
-
+source colors.sh
 get_wifi_ssid() {
     for i in $(ifconfig -lX "en[0-9]"); do
         SSID=$(ipconfig getsummary "$i" 2>/dev/null | awk '/ SSID/ {print $NF}')
@@ -18,11 +18,11 @@ if [ -z "$WIFI_SSID" ]; then
 fi
 
 if [[ $IS_VPN != "" ]]; then
-    # COLOR=$ACCENT_COLOR
+    COLOR=$BLUE
     ICON=
     LABEL="VPN/$WIFI_SSID"
 elif [[ $IP_ADDRESS != "" ]]; then
-    COLOR=$BLUE
+    COLOR=$ORANGE
     ICON=
     LABEL=$WIFI_SSID
 else
@@ -34,4 +34,4 @@ fi
 sketchybar --set $NAME \
     icon=$ICON \
     label="$LABEL" \
-    background.color=$COLOR
+    label.color=$COLOR
