@@ -99,6 +99,7 @@ alt-e = 'workspace Emacs'
 alt-n = 'workspace Notion'
 alt-s = 'workspace Slack'
 alt-t = 'workspace Terminal'
+alt-z = 'workspace Zoom'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
@@ -109,6 +110,7 @@ alt-shift-e = ['move-node-to-workspace Emacs', 'workspace Emacs']
 alt-shift-n = ['move-node-to-workspace Notion', 'workspace Notion']
 alt-shift-s = ['move-node-to-workspace Slack', 'workspace Slack']
 alt-shift-t = ['move-node-to-workspace Terminal', 'workspace Terminal']
+alt-shift-z = ['move-node-to-workspace Zoom', 'workspace Zoom']
 
 alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
@@ -200,6 +202,11 @@ run = 'move-node-to-workspace Notion'
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
 run = 'move-node-to-workspace Slack'
+
+# zoom
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = 'move-node-to-workspace Zoom'
 
 # 1p
 [[on-window-detected]]
