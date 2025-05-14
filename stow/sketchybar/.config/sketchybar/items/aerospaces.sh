@@ -8,6 +8,18 @@ source icons.sh
 #############
 sketchybar --add event aerospace_workspace_change
 for sid in $(aerospace list-workspaces --all); do
+    ICON="?"
+    case "$sid" in
+    "AI") ICON="" ;;
+    "Chrome") ICON="" ;;
+    "Emacs") ICON="" ;;
+    "Notion") ICON="" ;;
+    "Slack") ICON="" ;;
+    "Terminal") ICON="" ;;
+    "Zoom") ICON="󰰷" ;;
+    esac
+
+    # label="${ICON} ${sid}" \
     sketchybar --add item space.$sid left \
         --subscribe space.$sid aerospace_workspace_change \
         --set space.$sid \
@@ -15,7 +27,7 @@ for sid in $(aerospace list-workspaces --all); do
         background.corner_radius=5 \
         background.height=20 \
         background.drawing=off \
-        label="┆${sid}┆" \
+        label="${ICON}" \
         click_script="aerospace workspace $sid" \
         script="$CONFIG_DIR/plugins/aerospace.sh $sid"
 done
