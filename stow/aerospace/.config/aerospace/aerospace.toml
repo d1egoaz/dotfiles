@@ -40,11 +40,14 @@ preset = 'qwerty'
 [gaps]
 inner.horizontal = 2
 inner.vertical = 2
-outer.left = 2
+outer.left = 3
+outer.right = 3
 outer.bottom = 2
-outer.top = 15
-# outer.top = [{ monitor.main = 30 }, 2]
-outer.right = 2
+outer.top = [
+  { monitor."LG" = 40 },
+  { monitor."^built-in retina display$" = 15 },
+  30,
+]
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
