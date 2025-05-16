@@ -47,7 +47,11 @@
     "sketchybar@latest",
     "Nerdfonts@latest",
     "path:/Users/diego.albeiroalvarezzuluag/dotfiles/flakes/devbox-global-emacs",
-    "path:/Users/diego/dotfiles/flakes/devbox-global-emacs"
+    "path:/Users/diego/dotfiles/flakes/devbox-global-emacs",
+    "atkinson-hyperlegible-next@latest",
+    "lsd@latest",
+    "bat@latest",
+    "xh@latest"
   ],
   "shell": {
     "init_hook": [

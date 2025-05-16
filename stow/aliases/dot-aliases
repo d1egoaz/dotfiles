@@ -4,17 +4,15 @@
 # alias ls="command gls -F --color"
 # alias ls="command eza"
 
-# List all files colorized in long format
-alias ll="ls -lh"
-# List all files colorized in long format, including dot files
-alias la="ls -lah"
-alias l="ls -lah"
-# List only directories
-alias lld='ls -lh | grep "^d"'
+alias ls="command lsd"
+alias l='ls -l'
+alias la='ls -a'
+alias lla='ls -la'
+alias lt='ls --tree'
 
 # bat everywhere
-alias baty='bat -l yaml'
 alias b="command bat"
+alias baty='bat -l yaml'
 
 # git
 alias gs='git status -s'
@@ -32,9 +30,8 @@ alias cwd='pwd | tr -d "\r\n" | pbcopy'
 alias c='cd $(fd --type directory --hidden --exclude .git | fzf-tmux)'
 alias ck='cd $(fd . ~/.config/kube/ --type directory --hidden --exclude .git | fzf-tmux)'
 
-yolo () {
-  echo 'yay -Syu --noconfirm'
-  yay -Syu --noconfirm
+batdiff() {
+    git diff --name-only --relative --diff-filter=d | xargs bat --diff
 }
 
 em() {
