@@ -206,6 +206,10 @@ if.app-name-regex-substring = 'AI diegoa'
 run = 'move-node-to-workspace AI'
 
 [[on-window-detected]]
+if.app-name-regex-substring = 'Perplexity'
+run = 'move-node-to-workspace AI'
+
+[[on-window-detected]]
 if.app-id = 'ai.perplexity.mac'
 run = 'move-node-to-workspace AI'
 
