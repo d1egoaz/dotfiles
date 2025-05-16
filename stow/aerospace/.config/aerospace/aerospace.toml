@@ -194,11 +194,19 @@ run = 'move-node-to-workspace Terminal'
 
 # AI
 [[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = 'move-node-to-workspace AI'
+
+[[on-window-detected]]
 if.window-title-regex-substring = 'ChatGPT'
 run = 'move-node-to-workspace AI'
 
 [[on-window-detected]]
-if.window-title-regex-substring = 'AI diegoa.ca.*'
+if.app-name-regex-substring = 'AI diegoa'
+run = 'move-node-to-workspace AI'
+
+[[on-window-detected]]
+if.app-id = 'ai.perplexity.mac'
 run = 'move-node-to-workspace AI'
 
 [[on-window-detected]]
@@ -244,7 +252,12 @@ run = 'layout floating'
 
 # catch-all
 [[on-window-detected]]
-run = 'move-node-to-workspace 3'
+check-further-callbacks = true
+run = 'layout floating'
+
+[[on-window-detected]]
+run = ['layout tiling', 'move-node-to-workspace 3'] #
+# run = ['layout floating', 'move-node-to-workspace 3']
 
 # [[on-window-detected]]
 # check-further-callbacks = true
