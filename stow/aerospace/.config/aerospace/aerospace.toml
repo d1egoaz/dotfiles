@@ -1,4 +1,5 @@
 # format file with tapo-cli
+# https://nikitabobko.github.io/AeroSpace/guide
 
 exec.inherit-env-vars = true
 exec.env-vars.PATH = '${HOME}/.local/share/devbox/global/default/.devbox/nix/profile/default/bin:${HOME}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}'

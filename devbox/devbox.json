@@ -51,7 +51,8 @@
     "atkinson-hyperlegible-next@latest",
     "lsd@latest",
     "bat@latest",
-    "xh@latest"
+    "xh@latest",
+    "taplo-cli@latest"
   ],
   "shell": {
     "init_hook": [
