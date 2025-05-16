@@ -1,11 +1,8 @@
 #!/bin/bash
 
-ACCENT_COLOR=0x33ffffff
-BAR_COLOR=0x40000000
-FONT="Essential PragmataPro"
+# FONT="Essential PragmataPro"
+FONT="Atkinson Hyperlegible Next"
 ICON_FONT="Symbols Nerd Font Mono"
-ITEM_BG_COLOR=0x33000000
-WHITE=0xffffffff
 
 # Color Palette
 BLACK=0xff181926
@@ -17,19 +14,56 @@ ORANGE=0xfff5a97f
 RED=0xffed8796
 TRANSPARENT=0x00000000
 WHITE=0xffcad3f5
+# WHITE=0xffffffff
 YELLOW=0xffeed49f
 
-# bar colors
-BACKGROUND_1=0x903c3e4f
-BACKGROUND_2=0x90494d64
-BAR_COLOR=0xa024273a
-ICON_COLOR=$WHITE  # Color of all icons
-LABEL_COLOR=$WHITE # Color of all labels
-
-POPUP_BACKGROUND_COLOR=0xff24273a
-POPUP_BORDER_COLOR=$WHITE
-
-SHADOW_COLOR=$BLACK
-
 ACTIVE_SPACE=0xff00ffff # cyan
-SPACE_BACKGROUND=0x17f8f8ff
+SPACE_BACKGROUND=0x17f8f820
+
+# transparent BAR_COLOR=0x40000000
+# -- Teal Scheme --
+BAR_COLOR2=0xff001f20
+ITEM_BG_COLOR2=0xff003547
+ACCENT_COLOR2=0xff2cf9ed
+
+
+# BAR_COLOR=0x400000FF
+BAR_COLOR=0xff001f20
+ITEM_BG_COLOR=$SPACE_BACKGROUND
+ACCENT_COLOR=0x33ffffff
+
+# -- Gray Scheme --
+# BAR_COLOR2=0xff101314
+# ITEM_BG_COLOR2=0xff353c3f
+# ACCENT_COLOR2=0xffffffff
+
+# -- Purple Scheme --
+# BAR_COLOR2=0xff140c42
+# ITEM_BG_COLOR2=0xff2b1c84
+# ACCENT_COLOR2=0xffeb46f9
+
+# -- Red Scheme ---
+# BAR_COLOR=0xff23090e
+# ITEM_BG_COLOR=0xff591221
+# ACCENT_COLOR=0xffff2453
+
+# -- Blue Scheme ---
+# BAR_COLOR=0xf021254
+# ITEM_BG_COLOR=0xff093aa8
+# ACCENT_COLOR=0xff15bdf9
+
+# -- Green Scheme --
+# BAR_COLOR=0xff003315
+# ITEM_BG_COLOR=0xff008c39
+# ACCENT_COLOR=0xff1dfca1
+
+
+# -- Orange Scheme --
+# BAR_COLOR2=0xff381c02
+# ITEM_BG_COLOR2=0xff99440a
+# ACCENT_COLOR2=0xfff97716
+
+# -- Yellow Scheme --
+# BAR_COLOR2=0xff2d2b02
+# ITEM_BG_COLOR2=0xff8e7e0a
+# ACCENT_COLOR2=0xfff7fc17

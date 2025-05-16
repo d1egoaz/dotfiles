@@ -21,7 +21,7 @@ start-at-login = true
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
-accordion-padding = 30
+accordion-padding = 40
 default-root-container-layout = 'tiles'
 default-root-container-orientation = 'auto'
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
@@ -42,8 +42,8 @@ inner.horizontal = 2
 inner.vertical = 2
 outer.left = 2
 outer.bottom = 2
-# outer.top = 2
-outer.top = [{ monitor.main = 30 }, 2]
+outer.top = 15
+# outer.top = [{ monitor.main = 30 }, 2]
 outer.right = 2
 
 # 'main' binding mode declaration
@@ -152,6 +152,14 @@ esc = 'mode main'
 
 
 # https://nikitabobko.github.io/AeroSpace/guide#installation
+# [[on-window-detected]]
+#     if.app-id = 'com.apple.systempreferences'
+#     if.app-name-regex-substring = 'settings'
+#     if.window-title-regex-substring = 'substring'
+#     if.workspace = 'workspace-name'
+#     if.during-aerospace-startup = true
+#     check-further-callbacks = true
+#     run = ['layout floating', 'move-node-to-workspace S']  # The callback itself
 
 ################
 # Apps Mapping #
@@ -168,7 +176,7 @@ if.app-id = 'org.gnu.Emacs'
 run = 'move-node-to-workspace Emacs'
 
 [[on-window-detected]]
-if.window-title-regex-substring = 'emacs.*' # emacs nix gets this id, it works for now
+if.app-name-regex-substring = 'emacs.*' # emacs nix gets this id, it works for now
 run = 'move-node-to-workspace Emacs'
 
 # terminal

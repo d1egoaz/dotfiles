@@ -12,22 +12,22 @@ IS_VPN=$(scutil --nwi | grep -m1 'utun' | awk '{ print $1 }')
 WIFI_SSID=$(get_wifi_ssid)
 
 if [ -z "$WIFI_SSID" ]; then
-  WIFI_SSID="$IP_ADDRESS"
-  else
-  WIFI_SSID="$WIFI_SSID/$IP_ADDRESS"
+    WIFI_SSID="$IP_ADDRESS"
+    # else
+    # WIFI_SSID="$WIFI_SSID/$IP_ADDRESS"
 fi
 
 if [[ $IS_VPN != "" ]]; then
     COLOR=$BLUE
-    ICON=
+    ICON=􀎡
     LABEL="VPN/$WIFI_SSID"
 elif [[ $IP_ADDRESS != "" ]]; then
     COLOR=$ORANGE
-    ICON=
+    ICON=􀙇
     LABEL=$WIFI_SSID
 else
     COLOR=$RED
-    ICON=
+    ICON=􀙥
     LABEL="Not Connected"
 fi
 

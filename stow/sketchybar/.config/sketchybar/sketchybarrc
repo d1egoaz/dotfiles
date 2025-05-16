@@ -13,40 +13,36 @@ ITEM_DIR="$CONFIG_DIR/items" # Directory where the items are configured
 # BAR #
 #######
 bar=(
-    height=39
+    padding_left=10
+    padding_right=10
+    blur_radius=30
     color=$BAR_COLOR
-    height=30
+    height=37
     position=top
-    blur_radius=0
-    notch_width=0
     shadow=on
     sticky=on
 )
 
 default=(
-    updates=when_shown
     background.color="$ITEM_BG_COLOR"
-    background.corner_radius=6
-    background.height=30
+    background.corner_radius=5
+    background.height=20
     icon.color=$WHITE
-    icon.font="${ICON_FONT}:Regular:13.0"
-    icon.padding_left=1
+    icon.font="${ICON_FONT}:Regular:16.0"
+    icon.padding_left=8
     icon.padding_right=2
-    icon.y_offset=1
     label.color=$WHITE
-    label.font="${ICON_FONT}:Regular:15.0"
-    label.padding_left=1
-    label.padding_right=5
-    label.y_offset=1
+    label.font="${FONT}:Regular:13.0"
+    label.padding_left=2
+    label.padding_right=4
     padding_left=2
     padding_right=2
-    background.height=30
+    updates=when_shown
 )
 sketchybar --bar "${bar[@]}" --default "${default[@]}"
 
-
 # Left
-source "$ITEM_DIR/apple.sh"
+# source "$ITEM_DIR/apple.sh"
 source "$ITEM_DIR/aerospaces.sh"
 source "$ITEM_DIR/front_app.sh"
 
@@ -60,15 +56,15 @@ source "$ITEM_DIR/battery.sh"
 
 sketchybar --add bracket status ip_address volume battery
 
-sketchybar --add bracket spaces '/space\..*/' \
-    --set spaces background.color=$SPACE_BACKGROUND \
-    background.corner_radius=10 \
-    background.height=30 \
-    background.shadow.drawing=on \
-    background.shadow.distance=1 \
-    background.border_color=0x07f8f8ff \
-    background.border_width=1 \
-    background.padding_left=0
+# sketchybar --add bracket spaces '/space\..*/' \
+#     --set spaces background.color=$SPACE_BACKGROUND \
+#     background.corner_radius=10 \
+#     background.height=30 \
+#     background.shadow.drawing=on \
+#     background.shadow.distance=1 \
+#     background.border_color=0x07f8f8ff \
+#     background.border_width=1 \
+#     background.padding_left=0
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
