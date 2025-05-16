@@ -18,11 +18,11 @@ if [ -z "$WIFI_SSID" ]; then
 fi
 
 if [[ $IS_VPN != "" ]]; then
-    COLOR=$BLUE
+    COLOR=$ORANGE
     ICON=􀎡
     LABEL="VPN/$WIFI_SSID"
 elif [[ $IP_ADDRESS != "" ]]; then
-    COLOR=$ORANGE
+    COLOR=$WHITE
     ICON=􀙇
     LABEL=$WIFI_SSID
 else

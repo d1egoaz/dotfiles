@@ -1,72 +1,20 @@
 #!/bin/bash
 
-# FONT="Essential PragmataPro"
+# https://github.com/tokyo-night/tokyo-night-vscode-theme
+
 FONT="Atkinson Hyperlegible Next"
 ICON_FONT="Symbols Nerd Font Mono"
+MONO_FONT="Essential PragmataPro"
 
-# Color Palette
-BLACK=0xff181926
 BLUE=0xff8aadf4
-GREEN=0xffa6da95
-GREY=0xff939ab7
-MAGENTA=0xffc6a0f6
-ORANGE=0xfff5a97f
+ORANGE=0xffe0af68
 RED=0xffed8796
-TRANSPARENT=0x00000000
-WHITE=0xffcad3f5
-# WHITE=0xffffffff
-YELLOW=0xffeed49f
-
-ACTIVE_SPACE=0xff00ffff # cyan
-SPACE_BACKGROUND=0x17f8f820
 
 # transparent BAR_COLOR=0x40000000
-# -- Teal Scheme --
-BAR_COLOR2=0xff001f20
-ITEM_BG_COLOR2=0xff003547
-ACCENT_COLOR2=0xff2cf9ed
-
-
-# BAR_COLOR=0x400000FF
-# BAR_COLOR=0xcc620daf
-BAR_COLOR=0xe6620daf
-# BAR_COLOR=0xff101314
-# BAR_COLOR=0x40000000
-ITEM_BG_COLOR=$SPACE_BACKGROUND
-ACCENT_COLOR=0x33ffffff
-
-# -- Gray Scheme --
-# BAR_COLOR2=0xff101314
-# ITEM_BG_COLOR2=0xff353c3f
-# ACCENT_COLOR2=0xffffffff
-
-# -- Purple Scheme --
-# BAR_COLOR2=0xff140c42
-# ITEM_BG_COLOR2=0xff2b1c84
-# ACCENT_COLOR2=0xffeb46f9
-
-# -- Red Scheme ---
-# BAR_COLOR=0xff23090e
-# ITEM_BG_COLOR=0xff591221
-# ACCENT_COLOR=0xffff2453
-
-# -- Blue Scheme ---
-# BAR_COLOR=0xf021254
-# ITEM_BG_COLOR=0xff093aa8
-# ACCENT_COLOR=0xff15bdf9
-
-# -- Green Scheme --
-# BAR_COLOR=0xff003315
-# ITEM_BG_COLOR=0xff008c39
-# ACCENT_COLOR=0xff1dfca1
-
-
-# -- Orange Scheme --
-# BAR_COLOR2=0xff381c02
-# ITEM_BG_COLOR2=0xff99440a
-# ACCENT_COLOR2=0xfff97716
-
-# -- Yellow Scheme --
-# BAR_COLOR2=0xff2d2b02
-# ITEM_BG_COLOR2=0xff8e7e0a
-# ACCENT_COLOR2=0xfff7fc17
+ACTIVE_APP_FG_COLOR=0xdd2ac3de
+ACTIVE_SPACE_BG_COLOR=0xdd2ac3de
+BAR_COLOR=0xff24283b
+FG_COLOR=0xffa9b1d6
+INACTIVE_SPACE_ICON_COLOR=0xaaa9b1d6
+ITEM_BG_COLOR=0x44565f89
+SPACE_BACKGROUND=0xffffc777

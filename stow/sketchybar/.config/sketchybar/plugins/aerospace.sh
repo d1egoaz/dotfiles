@@ -7,11 +7,10 @@ source colors.sh
 
 if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
     sketchybar --set $NAME background.drawing=on \
-        background.color=$ACCENT_COLOR2 \
-        label.color=$BAR_COLOR2 \
-        icon.color=$BAR_COLOR2
+        background.color=$ACTIVE_SPACE_BG_COLOR \
+        icon.color=$BAR_COLOR
 else
     sketchybar --set $NAME background.drawing=off \
-        label.color=$ACCENT_COLOR \
-        icon.color=$ACCENT_COLOR
+        label.color=$INACTIVE_SPACE_ICON_COLOR \
+        icon.color=$INACTIVE_SPACE_ICON_COLOR
 fi

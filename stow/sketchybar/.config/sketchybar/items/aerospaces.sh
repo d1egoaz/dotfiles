@@ -8,7 +8,7 @@ source icons.sh
 #############
 sketchybar --add event aerospace_workspace_change
 for sid in $(aerospace list-workspaces --all); do
-    ICON="?"
+    ICON="$sid"
     case "$sid" in
     "AI") ICON="" ;;
     "Chrome") ICON="" ;;
