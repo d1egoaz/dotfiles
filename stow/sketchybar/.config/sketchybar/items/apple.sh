@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source colors.sh
+source colours.sh
 source icons.sh
 
 POPUP_OFF="sketchybar --set apple.logo popup.drawing=off"

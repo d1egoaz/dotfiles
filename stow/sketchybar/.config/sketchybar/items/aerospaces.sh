@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source colors.sh
+source colours.sh
 source icons.sh
 
 #############
