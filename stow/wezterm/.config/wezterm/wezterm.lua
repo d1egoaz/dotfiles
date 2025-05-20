@@ -3,8 +3,13 @@ local config = wezterm.config_builder()
 local action = wezterm.action
 
 -- (here will be added actual configuration)
-config.font = wezterm.font {
-  family = 'Essential PragmataPro',
+--config.font = wezterm.font {
+  --family = 'Essential PragmataPro',
+--}
+config.font = wezterm.font_with_fallback {
+  'Essential PragmataPro',
+  'Menlo',
+  'DengXian', -- test with: wezterm ls-fonts --text '显示中文'
 }
 config.font_size = 18.0
 config.line_height = 1.0
