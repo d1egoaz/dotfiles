@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 source colours.sh
+
 get_wifi_ssid() {
     for i in $(ifconfig -lX "en[0-9]"); do
         SSID=$(ipconfig getsummary "$i" 2>/dev/null | awk '/ SSID/ {print $NF}')
@@ -7,31 +8,49 @@ get_wifi_ssid() {
     done
 }
 
-IP_ADDRESS=$(scutil --nwi | grep address | sed 's/.*://' | tr -d ' ' | head -1 | awk -F. '{print $1"."$2"."$3".x"}')
-IS_VPN=$(scutil --nwi | grep -m1 'utun' | awk '{ print $1 }')
-WIFI_SSID=$(get_wifi_ssid)
+format_lan_ip() {
+    if [[ $1 == 192.168.100.* ]]; then
+        echo "􀤆LAN ISOLATED"
+    else
+        echo "􀤆${1%.*}.x"
+    fi
+}
 
-if [ -z "$WIFI_SSID" ]; then
-    WIFI_SSID="$IP_ADDRESS"
-    # else
-    # WIFI_SSID="$WIFI_SSID/$IP_ADDRESS"
-fi
+WIFI_SSID="􀙇$(get_wifi_ssid)"
 
-if [[ $IS_VPN != "" ]]; then
+#–– find IPs on all en* ––
+for iface in $(ifconfig -l | tr ' ' '\n' | grep -E '^en[0-9]+$'); do
+    ip=$(ipconfig getifaddr "$iface" 2>/dev/null) || continue
+    if [[ $iface == $WIFI_IFACE ]]; then
+        WIFI_IP=$ip
+    else
+        LAN_IP=$ip
+    fi
+done
+
+IS_VPN=$(scutil --nwi | awk '/utun[0-9]+/ {print; exit}')
+
+if [[ -n $IS_VPN ]]; then
     COLOUR=$ORANGE
-    ICON=􀎡
-    LABEL="VPN/$WIFI_SSID"
-elif [[ $IP_ADDRESS != "" ]]; then
+    LABEL="􀎡VPN"
+    [[ -n $WIFI_SSID ]] && LABEL+=" $WIFI_SSID"
+    [[ -n $LAN_IP ]] && LABEL+=" $(format_lan_ip $LAN_IP)"
+
+elif [[ -n $WIFI_SSID || -n $LAN_IP ]]; then
     COLOUR=$WHITE
-    ICON=􀙇
-    LABEL=$WIFI_SSID
+    LABEL=""
+    [[ -n $WIFI_SSID ]] && LABEL+="$WIFI_SSID"
+    if [[ -n $LAN_IP ]]; then
+        [[ -n $LABEL ]] && LABEL+=" "
+        LABEL+="LAN:$(format_lan_ip $LAN_IP)"
+    fi
+
 else
     COLOUR=$RED
     ICON=􀙥
-    LABEL="Not Connected"
+    LABEL="􀙥Not Connected"
 fi
 
-sketchybar --set $NAME \
-    icon=$ICON \
+sketchybar --set "$NAME" \
     label="$LABEL" \
-    label.color=$COLOUR
+    label.color="$COLOUR"
