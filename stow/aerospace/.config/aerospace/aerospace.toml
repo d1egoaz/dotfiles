@@ -45,8 +45,8 @@ outer.left = 3
 outer.right = 3
 outer.bottom = 2
 outer.top = [
-  { monitor."LG" = 40 },
-  { monitor."^built-in retina display$" = 15 },
+  { monitor.'LG' = 40 },
+  { monitor.'^built-in retina display$' = 15 },
   30,
 ]
 
@@ -100,6 +100,7 @@ alt-9 = 'workspace 9'
 alt-a = 'workspace AI'
 alt-c = 'workspace Chrome'
 alt-e = 'workspace Emacs'
+alt-i = 'workspace IDEs'
 alt-n = 'workspace Notion'
 alt-s = 'workspace Slack'
 alt-t = 'workspace Terminal'
@@ -111,6 +112,7 @@ alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
 alt-shift-a = ['move-node-to-workspace AI', 'workspace AI']
 alt-shift-c = ['move-node-to-workspace Chrome', 'workspace Chrome']
 alt-shift-e = ['move-node-to-workspace Emacs', 'workspace Emacs']
+alt-shift-i = ['move-node-to-workspace IDEs', 'workspace IDEs']
 alt-shift-n = ['move-node-to-workspace Notion', 'workspace Notion']
 alt-shift-s = ['move-node-to-workspace Slack', 'workspace Slack']
 alt-shift-t = ['move-node-to-workspace Terminal', 'workspace Terminal']
@@ -236,6 +238,15 @@ run = 'move-node-to-workspace Zoom'
 [[on-window-detected]]
 if.app-id = 'com.1password.1password'
 run = 'move-node-to-workspace 9'
+
+# IDEs
+[[on-window-detected]]
+if.app-name-regex-substring = 'Cursor'
+run = 'move-node-to-workspace IDEs'
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = 'move-node-to-workspace IDEs'
 
 # 3-others
 [[on-window-detected]]

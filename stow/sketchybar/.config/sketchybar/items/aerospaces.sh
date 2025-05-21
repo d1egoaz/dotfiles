@@ -10,12 +10,14 @@ sketchybar --add event aerospace_workspace_change
 for sid in $(aerospace list-workspaces --all); do
     ICON="$sid"
     case "$sid" in
+    # https://www.nerdfonts.com/cheat-sheet
     "AI") ICON="" ;;
     "Chrome") ICON="" ;;
     "Emacs") ICON="" ;;
     "Notion") ICON="" ;;
     "Slack") ICON="" ;;
     "Terminal") ICON="" ;;
+    "IDEs") ICON="" ;;
     "Zoom") ICON="󰰷" ;;
     esac
 
@@ -30,4 +32,3 @@ for sid in $(aerospace list-workspaces --all); do
         click_script="aerospace workspace $sid" \
         script="$CONFIG_DIR/plugins/aerospace.sh $sid"
 done
-# https://www.nerdfonts.com/cheat-sheet
