@@ -52,7 +52,8 @@
     "lsd@latest",
     "bat@latest",
     "xh@latest",
-    "taplo-cli@latest"
+    "taplo-cli@latest",
+    "stow@latest"
   ],
   "shell": {
     "init_hook": [
