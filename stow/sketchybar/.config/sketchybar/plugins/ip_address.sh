@@ -1,10 +1,16 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
 source colours.sh
 
-get_wifi_ssid() {
+get_wifi_details() {
     for i in $(ifconfig -lX "en[0-9]"); do
-        SSID=$(ipconfig getsummary "$i" 2>/dev/null | awk '/ SSID/ {print $NF}')
-        [ -n "$SSID" ] && echo "$SSID" && return
+        SSID=$(ipconfig getsummary "$i" 2>/dev/null |
+            awk '/ SSID/ {print $NF}')
+        if [ -n "$SSID" ]; then
+            WIFI_IFACE="$i"
+            WIFI_SSID="􀙇$SSID"
+            return
+        fi
     done
 }
 
@@ -16,7 +22,7 @@ format_lan_ip() {
     fi
 }
 
-WIFI_SSID="􀙇$(get_wifi_ssid)"
+get_wifi_details
 
 #–– find IPs on all en* ––
 for iface in $(ifconfig -l | tr ' ' '\n' | grep -E '^en[0-9]+$'); do
@@ -37,14 +43,15 @@ if [[ -n $IS_VPN ]]; then
     [[ -n $LAN_IP ]] && LABEL+=" $(format_lan_ip $LAN_IP)"
 
 elif [[ -n $WIFI_SSID || -n $LAN_IP ]]; then
-    COLOUR=$WHITE
-    LABEL=""
+    # COLOUR=$WHITE
+    COLOUR=$ORANGE
+    LABEL=" "
     [[ -n $WIFI_SSID ]] && LABEL+="$WIFI_SSID"
+    # LABEL+="$WIFI_SSID"
     if [[ -n $LAN_IP ]]; then
         [[ -n $LABEL ]] && LABEL+=" "
-        LABEL+="LAN:$(format_lan_ip $LAN_IP)"
+        LABEL+=" $(format_lan_ip $LAN_IP)"
     fi
-
 else
     COLOUR=$RED
     ICON=􀙥

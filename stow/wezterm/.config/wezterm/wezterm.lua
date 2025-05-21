@@ -2,6 +2,9 @@ local wezterm = require "wezterm"
 local config = wezterm.config_builder()
 local action = wezterm.action
 
+config.enable_scroll_bar = true
+config.scrollback_lines = 6400
+
 -- (here will be added actual configuration)
 --config.font = wezterm.font {
   --family = 'Essential PragmataPro',
