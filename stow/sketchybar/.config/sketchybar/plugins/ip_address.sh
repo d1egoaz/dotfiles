@@ -30,7 +30,9 @@ for iface in $(ifconfig -l | tr ' ' '\n' | grep -E '^en[0-9]+$'); do
     if [[ $iface == $WIFI_IFACE ]]; then
         WIFI_IP=$ip
     else
-        LAN_IP=$ip
+        if [[ "$ip" != 169.254.* && "$ip" != 127.0.0.1 ]]; then
+            LAN_IP=$ip
+        fi
     fi
 done
 
