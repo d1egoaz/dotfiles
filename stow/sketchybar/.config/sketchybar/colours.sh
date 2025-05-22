@@ -7,8 +7,9 @@ ICON_FONT="Symbols Nerd Font Mono"
 MONO_FONT="Essential PragmataPro"
 
 BLUE=0xff8aadf4
-ORANGE=0xffe0af68
+ORANGE=0xAAffc777
 RED=0xffed8796
+PURPLE=0xAAbb9af7
 
 # transparent BAR_COLOUR=0x40000000
 ACTIVE_APP_FG_COLOUR=0xdd2ac3de

@@ -37,16 +37,14 @@ for iface in $(ifconfig -l | tr ' ' '\n' | grep -E '^en[0-9]+$'); do
 done
 
 IS_VPN=$(scutil --nwi | awk '/utun[0-9]+/ {print; exit}')
+COLOUR=$PURPLE
 
 if [[ -n $IS_VPN ]]; then
-    COLOUR=$ORANGE
     LABEL="􀎡VPN"
     [[ -n $WIFI_SSID ]] && LABEL+=" $WIFI_SSID"
     [[ -n $LAN_IP ]] && LABEL+=" $(format_lan_ip $LAN_IP)"
 
 elif [[ -n $WIFI_SSID || -n $LAN_IP ]]; then
-    # COLOUR=$WHITE
-    COLOUR=$ORANGE
     LABEL=" "
     [[ -n $WIFI_SSID ]] && LABEL+="$WIFI_SSID"
     # LABEL+="$WIFI_SSID"
