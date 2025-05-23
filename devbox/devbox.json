@@ -54,7 +54,8 @@
     "xh@latest",
     "taplo-cli@latest",
     "delta@latest",
-    "stow@latest"
+    "stow@latest",
+    "postgresql@latest"
   ],
   "shell": {
     "init_hook": [
