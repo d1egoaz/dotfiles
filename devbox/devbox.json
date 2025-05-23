@@ -53,6 +53,7 @@
     "bat@latest",
     "xh@latest",
     "taplo-cli@latest",
+    "delta@latest",
     "stow@latest"
   ],
   "shell": {

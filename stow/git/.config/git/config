@@ -7,9 +7,16 @@
     gpgSign = true
 [core]
     commentChar = "@"
-[diff]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true
+    # algorithm = "patience" # when refactoring
+# [diff]
     # algorithm = "histogram"
-    algorithm = "patience" # when refactoring
+[diff]
+    colorMoved = default
 [fetch]
     prune = true
     pruneTags = true
