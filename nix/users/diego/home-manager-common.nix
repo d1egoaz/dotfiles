@@ -23,6 +23,9 @@
       golangci-lint
       gopls
 
+      # Editor
+      emacs-custom
+
       # Shell and terminal utilities
       autojump
       bat

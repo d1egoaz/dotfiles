@@ -14,6 +14,20 @@
       url = "github:LnL7/nix-darwin/nix-darwin-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    flake-utils.url = "github:numtide/flake-utils";
+
+    emacs-flake = {
+      url = "path:/Users/diego.albeiroalvarezzuluag/dotfiles/nix/flakes/emacs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.emacs-overlay.follows = "emacs-overlay";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
   outputs = { nixpkgs, ... }@inputs:
@@ -27,6 +41,9 @@
           };
 
           nh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.nh;
+
+          # Add emacs from our custom flake
+          emacs-custom = inputs.emacs-flake.packages.${prev.system}.default;
         })
       ];
 
