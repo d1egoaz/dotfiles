@@ -169,7 +169,7 @@
     ".aliases".source = ../../../stow/aliases/dot-aliases;
     # ".zshrc" - Let home-manager generate this with proper starship integration
     # ".zprofile" - No longer needed, everything managed by home-manager
-    ".zprivate".source = ../../../stow/zsh/dot-zprivate;
+    # ".zprivate" - Not managed by home-manager, sourced directly in zsh initContent
     # Note: fzf-tab plugin will be managed by home-manager zsh configuration instead
   };
 
