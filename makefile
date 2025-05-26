@@ -15,13 +15,13 @@ nix-install-darwin:
 
 # macOS machines (using darwin-rebuild)
 nix-office-mbp: check-darwin
-	cd nix && darwin-rebuild switch --flake .#office-mbp
+	cd nix && sudo darwin-rebuild switch --flake .#office-mbp
 
 nix-personal-mbp: check-darwin
-	cd nix && darwin-rebuild switch --flake .#personal-mbp
+	cd nix && sudo darwin-rebuild switch --flake .#personal-mbp
 
 nix-personal-mini: check-darwin
-	cd nix && darwin-rebuild switch --flake .#personal-mini
+	cd nix && sudo darwin-rebuild switch --flake .#personal-mini
 
 # Linux server (Ubuntu Server + Nix - no system rebuild needed)
 # Note: personal-server uses Ubuntu Server + Nix package manager,
@@ -40,10 +40,10 @@ nix-switch:
 		else \
 			if [ "$$(whoami)" = "diego.albeiroalvarezzuluag" ]; then \
 				echo "Building for office MacBook Pro..."; \
-				cd nix && darwin-rebuild switch --flake .#office-mbp; \
+				cd nix && sudo darwin-rebuild switch --flake .#office-mbp; \
 			else \
 				echo "Building for personal MacBook Pro..."; \
-				cd nix && darwin-rebuild switch --flake .#personal-mbp; \
+				cd nix && sudo darwin-rebuild switch --flake .#personal-mbp; \
 			fi \
 		fi \
 	else \
