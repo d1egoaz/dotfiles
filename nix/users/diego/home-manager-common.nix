@@ -16,44 +16,46 @@
     # ========================================================================
     packages = with pkgs; [
       # Development tools
-      git
-      gh
-      go
-      gopls
-      golangci-lint
       cargo
+      gh
+      git
+      go
+      golangci-lint
+      gopls
 
       # Shell and terminal utilities
-      ripgrep
-      fzf
-      bat
-      fd
-      lsd
-      starship
       autojump
+      bat
       direnv
+      fd
+      fzf
+      gum
+      htop
+      lsd
+      ripgrep
+      starship
       tmux
       tree
-      htop
-      gum
 
       # Text processing and formatting
-      jq
-      yq
       delta
-      prettierd
-      shfmt
-      shellcheck
-      yamllint
-      taplo-cli
+      graphviz
+      jq
+      nixfmt-rfc-style
       pandoc
+      prettierd
+      shellcheck
+      shfmt
+      taplo-cli
+      yamllint
+      yq
 
       # System utilities
+      bash
       coreutils
       gnupg
       socat
       xh
-      bash
 
       # Cloud and Kubernetes tools
       kubernetes-helm
@@ -65,19 +67,17 @@
       mysql-client
       postgresql
 
-      # Media and AI tools
+      # Media
       ffmpeg
+
+      # AI tools
       ollama
 
-      # Visualization and fonts
-      graphviz
+      # Fonts
+      atkinson-hyperlegible-next
       nerd-fonts.fira-code
-      nerd-fonts.jetbrains-mono
       nerd-fonts.hack
-      # atkinson-hyperlegible-next  # May not be available in nixpkgs
-
-      # File management
-      stow
+      nerd-fonts.jetbrains-mono
     ];
 
     # ========================================================================
