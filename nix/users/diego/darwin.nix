@@ -31,7 +31,7 @@
     # Applications
     casks = [
       "1password"
-      "excalidraw"
+      "excalidrawz"
       "google-chrome"
       "hyprnote"
       "opensuperwhisper"
