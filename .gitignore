@@ -14,3 +14,4 @@ stow/gnupg/.gnupg/*
 # Exception: Re-include
 !stow/gnupg/.gnupg/gpg-agent.conf
 !stow/gnupg/.gnupg/gpg.conf
+stow/zsh/dot-zprivate

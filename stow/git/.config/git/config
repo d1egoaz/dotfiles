@@ -58,3 +58,5 @@
 # [maintenance "prefetch"]
 #     enabled = true
 #     schedule = daily
+[advice]
+	detachedHead = false

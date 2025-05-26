@@ -1,0 +1,352 @@
+{
+  pkgs,
+  ...
+}:
+
+{
+  # ============================================================================
+  # Home Manager Configuration
+  # ============================================================================
+
+  home = {
+    stateVersion = "25.05";
+
+    # ========================================================================
+    # Packages - Only packages that are in devbox global
+    # ========================================================================
+    packages = with pkgs; [
+      # Development tools
+      git
+      gh
+      go
+      gopls
+      golangci-lint
+      cargo
+
+      # Shell and terminal utilities
+      ripgrep
+      fzf
+      bat
+      fd
+      lsd
+      starship
+      autojump
+      direnv
+      tmux
+      tree
+      htop
+      gum
+
+      # Text processing and formatting
+      jq
+      yq
+      delta
+      prettierd
+      shfmt
+      shellcheck
+      yamllint
+      taplo-cli
+      pandoc
+
+      # System utilities
+      coreutils
+      gnupg
+      socat
+      xh
+      bash
+
+      # Cloud and Kubernetes tools
+      kubernetes-helm
+      argocd
+      kubecolor
+      cloudflared
+
+      # Database tools
+      mysql-client
+      postgresql
+
+      # Media and AI tools
+      ffmpeg
+      ollama
+
+      # Visualization and fonts
+      graphviz
+      nerd-fonts.fira-code
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.hack
+      # atkinson-hyperlegible-next  # May not be available in nixpkgs
+
+      # File management
+      stow
+    ];
+
+    # ========================================================================
+    # Environment Variables
+    # ========================================================================
+    sessionVariables = {
+      # Editor configuration
+      EDITOR = "emacsclient -r -a emacs";
+      VISUAL = "emacsclient -r -c -a emacs";
+      ALTERNATE_EDITOR = "vim";
+
+      # Locale settings
+      LANG = "en_US.UTF-8";
+      LC_ALL = "en_US.UTF-8";
+
+      # Development environment
+      GOPATH = "$HOME/go";
+      GOPRIVATE = "github.com/1debit/*";
+      GOROOT = "${pkgs.go}/share/go";
+
+      # Kubernetes
+      KUBECONFIG = "$HOME/.kube/config";
+
+      # Rust configuration
+      CARGO_HOME = "$HOME/.cargo";
+    };
+
+        # Additional PATH entries
+    sessionPath = [
+      # System directories
+      "/usr/local/bin"
+      "/usr/bin"
+      "/bin"
+      "/usr/sbin"
+      "/sbin"
+      "$HOME/.local/bin"
+
+      # Development tools
+      "$GOPATH/bin"
+      "$GOROOT/bin"
+      "$CARGO_HOME/bin"
+    ];
+  };
+
+  # ============================================================================
+  # XDG Configuration Files
+  # ============================================================================
+
+  xdg = {
+    enable = true;
+
+    configFile = {
+      # Linting and formatting
+      "yamllint/config".source = ../../../stow/yamllint/.config/yamllint/config;
+
+      # Git configuration
+      "git/config".source = ../../../stow/git/.config/git/config;
+      "git/config-work".source = ../../../stow/git/.config/git/config-work;
+      "git/config-personal".source = ../../../stow/git/.config/git/config-personal;
+      "git/attributes".source = ../../../stow/git/.config/git/attributes;
+      "git/ignore".source = ../../../stow/git/.config/git/ignore;
+
+      # GitHub CLI
+      "gh/config.yml".source = ../../../stow/gh/.config/gh/config.yml;
+      "gh/hosts.yml".source = ../../../stow/gh/.config/gh/hosts.yml;
+
+      # Shell and terminal
+      "starship.toml".source = ../../../stow/starship/.config/starship.toml;
+      "tmux/tmux.conf".source = ../../../stow/tmux/.config/tmux/tmux.conf;
+      "bat/config".source = ../../../stow/bat/.config/bat/config;
+
+    };
+  };
+
+  # ============================================================================
+  # Home Files (dotfiles in $HOME)
+  # ============================================================================
+
+  home.file = {
+    # Security and encryption
+    ".gnupg/gpg.conf".source = ../../../stow/gnupg/.gnupg/gpg.conf;
+    ".gnupg/gpg-agent.conf".source = ../../../stow/gnupg/.gnupg/gpg-agent.conf;
+
+    # Editor and tools
+    ".vimrc".source = ../../../stow/vim/dot-vimrc;
+    ".vale.ini".source = ../../../stow/vale/config;
+
+    # Shell configuration
+    ".aliases".source = ../../../stow/aliases/dot-aliases;
+    # ".zshrc" - Let home-manager generate this with proper starship integration
+    # ".zprofile" - No longer needed, everything managed by home-manager
+    ".zprivate".source = ../../../stow/zsh/dot-zprivate;
+    # Note: fzf-tab plugin will be managed by home-manager zsh configuration instead
+  };
+
+  # ============================================================================
+  # Program Configurations
+  # ============================================================================
+
+  programs = {
+    # Shell with plugins
+    zsh = {
+      enable = true;
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
+
+      # History settings
+      history = {
+        size = 10000;
+        save = 10000;
+      };
+
+      # Shell options and initialization
+      initContent = ''
+        # Load zsh profiling (if needed)
+        zmodload zsh/zprof
+
+        # Handle dumb/tramp terminals gracefully
+        if [[ $TERM == "dumb" ]]; then
+          unsetopt zle
+          PS1='$ '
+          return
+        fi
+        if [[ $TERM == "tramp" ]]; then
+          unsetopt zle
+          PS1='[\u@\h \w]$ '
+          return
+        fi
+
+        # Interactive keybindings
+        bindkey jk vi-cmd-mode
+
+        # --- Interactive Functions ---
+        # ediff: Launches Emacs ediff between two files.
+        ediff() {
+          if [ -z "$2" ]; then
+            echo "Usage: ediff <FILE1> <FILE2>"
+          else
+            emacsclient -r --eval "(ediff-files \"$1\" \"$2\")"
+          fi
+        }
+
+        # Emacs vterm integration (if inside Emacs and vterm available)
+        if [[ "$INSIDE_EMACS" = "vterm" ]] &&
+           [[ -n ''${EMACS_VTERM_PATH} ]] &&
+           [[ -f "''${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh" ]]; then
+          source "''${EMACS_VTERM_PATH}/etc/emacs-vterm-zsh.sh"
+
+          ff() {
+            vterm_cmd find-file "$(realpath "''${@:-.}")"
+          }
+
+          msg() {
+            vterm_cmd message "%s" "$*"
+          }
+        fi
+
+        # Increase file descriptor limit (helpful for some tools)
+        ulimit -n 2048
+
+        # --- Plugins and Completions ---
+        # autojump plugin (installed via Nix)
+        if [ -f ~/.nix-profile/share/autojump/autojump.zsh ]; then
+          source ~/.nix-profile/share/autojump/autojump.zsh
+        fi
+
+        # Use Emacs keybindings in zsh
+        bindkey -e
+
+        # Terminal alternate mode initialization (for some key sequences)
+        if (( ''${+terminfo[smkx]} )) && (( ''${+terminfo[rmkx]} )); then
+          zle-line-init() { echoti smkx; }
+          zle-line-finish() { echoti rmkx; }
+          zle -N zle-line-init
+          zle -N zle-line-finish
+        fi
+
+        # Fuzzy history search (using up/down arrows)
+        if [[ -n "''${terminfo[kcuu1]}" ]]; then
+          autoload -U up-line-or-beginning-search
+          zle -N up-line-or-beginning-search
+          bindkey -M emacs "''${terminfo[kcuu1]}" up-line-or-beginning-search
+          bindkey -M viins "''${terminfo[kcuu1]}" up-line-or-beginning-search
+          bindkey -M vicmd "''${terminfo[kcuu1]}" up-line-or-beginning-search
+        fi
+        if [[ -n "''${terminfo[kcud1]}" ]]; then
+          autoload -U down-line-or-beginning-search
+          zle -N down-line-or-beginning-search
+          bindkey -M emacs "''${terminfo[kcud1]}" down-line-or-beginning-search
+          bindkey -M viins "''${terminfo[kcud1]}" down-line-or-beginning-search
+          bindkey -M vicmd "''${terminfo[kcud1]}" down-line-or-beginning-search
+        fi
+
+        # Alt-key bindings for word navigation
+        bindkey '^[[1;3D' backward-word
+        bindkey '^[[1;3C' forward-word
+
+        # Bind Ctrl-x Ctrl-e to edit the current command line in $EDITOR
+        autoload -U edit-command-line
+        zle -N edit-command-line
+        bindkey '\C-x\C-e' edit-command-line
+
+        # GPG: set TTY and update agent on each command execution
+        export GPG_TTY=$TTY
+        _gpg-agent_update-tty_preexec() {
+          gpg-connect-agent updatestartuptty /bye &>/dev/null
+        }
+        autoload -U add-zsh-hook
+        add-zsh-hook preexec _gpg-agent_update-tty_preexec
+
+        # Source aliases if they exist
+        [ -e ~/.aliases ] && source ~/.aliases
+
+        # Source private/sensitive environment variables
+        [ -e ~/.zprivate ] && source ~/.zprivate
+
+        # Set up advanced completion options
+        zstyle ':completion:*:*:*:*:*' menu select
+        zstyle ':completion:*' matcher-list \
+          'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
+          'r:|=*' 'l:|=* r:|=*'
+        unset CASE_SENSITIVE HYPHEN_INSENSITIVE
+        autoload -Uz compinit && compinit
+      '';
+
+      # Additional plugins
+      plugins = [
+        {
+          name = "fzf-tab";
+          src = pkgs.fetchFromGitHub {
+            owner = "Aloxaf";
+            repo = "fzf-tab";
+            rev = "v1.1.2";
+            sha256 = "sha256-Qv8zAiMtrr67CbLRrFjGaPzFZcOiMVEFLg1Z+N6VMhg=";
+          };
+        }
+      ];
+    };
+
+    # Development tools
+    git.enable = true;
+
+    # Terminal enhancements
+    starship.enable = true;
+    bat.enable = true;
+    tmux.enable = true;
+
+    # Environment and navigation
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
+
+    # Fuzzy finder with custom configuration
+    fzf = {
+      enable = true;
+      defaultOptions = [
+        "--exact"
+        "--height 30%"
+        "--no-preview"
+        "--layout reverse"
+        "--multi"
+        "-0"
+        "--no-info"
+        "--pointer ●"
+        "--color gutter:-1,pointer:#00ff00"
+      ];
+      defaultCommand = "fd --type f --hidden --follow --exclude .git";
+      changeDirWidgetCommand = "fd --type f --hidden --follow --exclude .git";
+    };
+  };
+}
