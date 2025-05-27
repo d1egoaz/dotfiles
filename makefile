@@ -7,6 +7,9 @@ check-darwin:
 		exit 1; \
 	fi
 
+nix-gc:
+	nix-store --gc
+
 # Install nix-darwin (run this first on macOS)
 nix-install-darwin:
 	@echo "🚀 Installing nix-darwin..."
