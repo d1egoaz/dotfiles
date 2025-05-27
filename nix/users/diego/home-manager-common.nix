@@ -23,6 +23,10 @@
       golangci-lint
       gopls
 
+      # Build tools
+      cmake
+      libtool
+
       # Editor
       emacs-custom
 

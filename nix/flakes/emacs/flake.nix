@@ -16,8 +16,8 @@
           overlays = [ emacs-overlay.overlay ];
         };
         # --- Explicitly enable native compilation ---
-        # Get the emacs-git from the overlay and override its build arguments
-        my-emacs-with-native-comp = (pkgs.emacs-git.override {
+        # Get the emacs-unstable from the overlay and override its build arguments
+        my-emacs-with-native-comp = (pkgs.emacs-unstable.override {
          withImageMagick = true;
          withMailutils = true;
          # 2025-05-12 https://github.com/NixOS/nixpkgs/issues/395169

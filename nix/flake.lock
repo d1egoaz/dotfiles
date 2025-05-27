@@ -34,8 +34,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1748303618,
-        "narHash": "sha256-cGM4rTzbbGBoKu9MKIknflAfAMAJK5RB/d7aNvOndzQ=",
+        "lastModified": 1748303809,
+        "narHash": "sha256-/O8eTm/luFk+KFb0XdYZsBjFrkL5mq9kMp99bxFFr9o=",
         "path": "/Users/diego.albeiroalvarezzuluag/dotfiles/nix/flakes/emacs",
         "type": "path"
       },
@@ -52,11 +52,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1748296758,
-        "narHash": "sha256-MeAtKCT6iFVt8JJZyNDVOKh3RYKkhg91l/sLZoc54QU=",
+        "lastModified": 1748309015,
+        "narHash": "sha256-NVgo/saT8uehYYwwhzWrTTFlpH0icR2E3tHHKsUouJ4=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "49ba6a14d9e80baa3715984cc2dde8c9fdf00049",
+        "rev": "0fba546d9aa235fc726fe9c8c3bb703e918c14c4",
         "type": "github"
       },
       "original": {
