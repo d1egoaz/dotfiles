@@ -328,6 +328,17 @@
     # Development tools
     git.enable = true;
 
+    # GPG configuration
+    gpg = {
+      enable = true;
+      settings = {
+        auto-key-retrieve = true;
+        no-emit-version = true;
+        default-key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+        encrypt-to = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+      };
+    };
+
     # Terminal enhancements
     starship.enable = true;
     bat.enable = true;

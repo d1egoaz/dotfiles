@@ -32,37 +32,9 @@
   # programs = {
   #   gnupg.agent.enable = true;
   # };
-  programs.gnupg = {
-    # enable = true;
-
-    agent = {
-      enable = true; # turn on the gpg-agent
-      # pinentryPackage = pkgs.pinentry_mac;
-
-      # pinentryFlavor = "mac";     # use macOS pinentry
-      # extraConfig    = ''         # all your gpg.conf settings
-      #   # cache timeouts
-      #   default-cache-ttl 600
-      #   max-cache-ttl     7200
-
-      #   # your custom settings
-      #   auto-key-retrieve
-      #   no-emit-version
-      #   default-key 4DF4C58193BBB0863AB37A6DC63945863D4B9E77
-      #   encrypt-to   4DF4C58193BBB0863AB37A6DC63945863D4B9E77
-      #   # pinentry-mode loopback
-      # '';
-    };
+  programs.gnupg.agent = {
+    enable = true;
   };
-  # services.gpg-agent = {
-  #   enable = true;
-  #   pinentryPackage = pkgs.pinentry_mac;
-  # };
-
-  # services.gpg-agent = {
-  #   enable = true;
-  #   pinentryPackage = pkgs.pinentry_mac;
-  # };
 
   # ============================================================================
   # System State
