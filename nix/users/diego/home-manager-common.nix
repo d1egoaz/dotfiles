@@ -29,6 +29,8 @@
 
       # Editor
       emacs-custom
+      aspell
+      aspellDicts.en
 
       # Shell and terminal utilities
       autojump
@@ -110,6 +112,8 @@
 
       # Rust configuration
       CARGO_HOME = "$HOME/.cargo";
+
+      ASPELL_CONF = "dict-dir ${pkgs.aspellDicts.en}/lib/aspell";
     };
 
     # Additional PATH entries
