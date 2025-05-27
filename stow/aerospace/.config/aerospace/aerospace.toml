@@ -2,12 +2,11 @@
 # https://nikitabobko.github.io/AeroSpace/guide
 
 exec.inherit-env-vars = true
-exec.env-vars.PATH = '${HOME}/.local/share/devbox/global/default/.devbox/nix/profile/default/bin:${HOME}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${PATH}'
 
 after-login-command = []
 after-startup-command = [
   'exec-and-forget borders',
-  'exec-and-forget sketchybar --config ${HOME}/.config/sketchybar/sketchybarrc',
+  'exec-and-forget sketchybar --config ~/.config/sketchybar/sketchybarrc',
 ]
 
 # Notify Sketchybar about workspace change
