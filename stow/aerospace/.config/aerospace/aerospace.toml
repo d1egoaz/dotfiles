@@ -3,6 +3,8 @@
 
 exec.inherit-env-vars = true
 
+exec.env-vars.PATH = "/etc/profiles/per-user/${USER}/bin:${PATH}"
+
 after-login-command = []
 after-startup-command = [
   'exec-and-forget borders',
