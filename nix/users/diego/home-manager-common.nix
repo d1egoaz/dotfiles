@@ -25,7 +25,7 @@
 
       # Build tools
       cmake
-      libtool
+      glibtool
 
       # Editor
       emacs-custom
