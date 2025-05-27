@@ -20,9 +20,6 @@
       aerospace
       jankyborders
       sketchybar
-
-      # Terminal emulator
-      wezterm
     ];
 
     # macOS-specific environment variables
@@ -43,14 +40,17 @@
   # macOS-specific XDG Configuration Files
   # ============================================================================
 
-  xdg.configFile = {
-    # Terminal emulator
-    "wezterm/wezterm.lua".source = ../../../stow/wezterm/.config/wezterm/wezterm.lua;
-    # "iterm/config.json".source = ../../../stow/iterm/config.json;  # Uncomment if using iTerm
+  # ============================================================================
+  # Terminal Configuration
+  # ============================================================================
 
-    # Window management and UI
-    "aerospace/aerospace.toml".source = ../../../stow/aerospace/.config/aerospace/aerospace.toml;
+  programs.wezterm = {
+    enable = true;
+    # Use your existing Lua configuration
+    extraConfig = builtins.readFile ../../../stow/wezterm/.config/wezterm/wezterm.lua;
+  };
+
+  xdg.configFile = {
     "sketchybar".source = ../../../stow/sketchybar/.config/sketchybar;
-    "borders/bordersrc".source = ../../../stow/borders/.config/borders/bordersrc;
   };
 }
