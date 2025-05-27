@@ -114,12 +114,6 @@
 
     # Additional PATH entries
     sessionPath = [
-      # System directories
-      "/usr/local/bin"
-      "/usr/bin"
-      "/bin"
-      "/usr/sbin"
-      "/sbin"
       "$HOME/.local/bin"
 
       # Development tools
