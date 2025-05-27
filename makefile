@@ -8,7 +8,7 @@ check-darwin:
 	fi
 
 nix-gc:
-	nix-store --gc
+	nix-collect-garbage; nix-store --gc
 
 # Install nix-darwin (run this first on macOS)
 nix-install-darwin:
@@ -70,4 +70,3 @@ devbox-backup:
 
 devbox-diff:
 	delta ~/dotfiles/devbox/devbox.json $$DEVBOX_PROJECT_ROOT/devbox.json
-

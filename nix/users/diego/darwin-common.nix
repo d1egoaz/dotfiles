@@ -400,28 +400,33 @@
 
     # Global system preferences
     NSGlobalDomain = {
-      # Keyboard and interface
-      AppleKeyboardUIMode = 3; # Full keyboard access
+      # Enables full keyboard access to all controls (not just text fields and lists).
+      AppleKeyboardUIMode = 3;
       AppleShowScrollBars = "Always";
 
-      InitialKeyRepeat = 15;
-      KeyRepeat = 1;
+      # Controls the delay before a key starts repeating when held down.
+      InitialKeyRepeat = 15; # default is 68
+      KeyRepeat = 3; # default is 6
       AppleShowAllExtensions = true;
+      # Disables the press-and-hold pop-up for accented characters
       ApplePressAndHoldEnabled = false;
 
+      # Disables window opening/closing animations
       NSAutomaticWindowAnimationsEnabled = false;
 
       # Text substitutions
+      # Disables smart quotes “ ” instead of " "
       NSAutomaticQuoteSubstitutionEnabled = false;
+      # Disables automatic insertion of a period when you double-space
       NSAutomaticPeriodSubstitutionEnabled = false;
+      # Enables auto-capitalization at the beginning of sentences
       NSAutomaticCapitalizationEnabled = true;
 
       # Interface appearance
-      AppleInterfaceStyleSwitchesAutomatically = true;
+      # Enables automatic switching between light and dark mode based on time of day.
+      AppleInterfaceStyleSwitchesAutomatically = false;
+      # Hides the menu bar when not in use
       "_HIHideMenuBar" = true;
-
-      # Navigation
-      AppleEnableSwipeNavigateWithScrolls = false;
     };
 
     # Input devices

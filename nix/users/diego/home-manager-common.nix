@@ -7,6 +7,7 @@
   # ============================================================================
   # Home Manager Configuration
   # ============================================================================
+  # https://nix-community.github.io/home-manager/options.xhtml
 
   home = {
     stateVersion = "25.05";
@@ -92,6 +93,7 @@
     # ========================================================================
     # Environment Variables
     # ========================================================================
+    # /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
     sessionVariables = {
       # Editor configuration
       EDITOR = "emacsclient -r -a emacs";
