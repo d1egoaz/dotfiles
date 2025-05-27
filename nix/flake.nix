@@ -32,14 +32,15 @@
     flake-utils.url = "github:numtide/flake-utils";
 
     emacs-flake = {
-      url = "path:/Users/diego.albeiroalvarezzuluag/dotfiles/nix/flakes/emacs";
+      url = "path:./flakes/emacs";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
       inputs.emacs-overlay.follows = "emacs-overlay";
       inputs.flake-utils.follows = "flake-utils";
     };
   };
 
-  outputs = { nixpkgs, ... }@inputs:
+  outputs =
+    { nixpkgs, ... }@inputs:
     let
       overlays = [
         # This overlay makes unstable packages available through pkgs.unstable

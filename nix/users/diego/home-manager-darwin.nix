@@ -33,6 +33,7 @@
       # Homebrew settings
       HOMEBREW_NO_ANALYTICS = "1";
       HOMEBREW_NO_ENV_HINTS = "1";
+      GPG_TTY = "${builtins.getEnv "TTY"}";
 
       # Work-related environment variables are set in .zprivate to avoid committing sensitive data
     };

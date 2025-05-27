@@ -34,15 +34,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1748303809,
-        "narHash": "sha256-/O8eTm/luFk+KFb0XdYZsBjFrkL5mq9kMp99bxFFr9o=",
-        "path": "/Users/diego.albeiroalvarezzuluag/dotfiles/nix/flakes/emacs",
+        "path": "./flakes/emacs",
         "type": "path"
       },
       "original": {
-        "path": "/Users/diego.albeiroalvarezzuluag/dotfiles/nix/flakes/emacs",
+        "path": "./flakes/emacs",
         "type": "path"
-      }
+      },
+      "parent": []
     },
     "emacs-overlay": {
       "inputs": {

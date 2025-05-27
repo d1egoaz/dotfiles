@@ -39,8 +39,6 @@ systemFunc rec {
     # Allow unfree packages.
     { nixpkgs.config.allowUnfree = true; }
 
-
-
     machineConfig
     userOSConfig
     home-manager.home-manager

@@ -112,7 +112,7 @@
       CARGO_HOME = "$HOME/.cargo";
     };
 
-        # Additional PATH entries
+    # Additional PATH entries
     sessionPath = [
       # System directories
       "/usr/local/bin"
@@ -165,8 +165,8 @@
 
   home.file = {
     # Security and encryption
-    ".gnupg/gpg.conf".source = ../../../stow/gnupg/.gnupg/gpg.conf;
-    ".gnupg/gpg-agent.conf".source = ../../../stow/gnupg/.gnupg/gpg-agent.conf;
+    # ".gnupg/gpg.conf".source = ../../../stow/gnupg/.gnupg/gpg.conf;
+    # ".gnupg/gpg-agent.conf".source = ../../../stow/gnupg/.gnupg/gpg-agent.conf;
 
     # Editor and tools
     ".vimrc".source = ../../../stow/vim/dot-vimrc;
@@ -185,6 +185,7 @@
   # ============================================================================
 
   programs = {
+
     # Shell with plugins
     zsh = {
       enable = true;
@@ -355,5 +356,14 @@
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
       changeDirWidgetCommand = "fd --type f --hidden --follow --exclude .git";
     };
+  };
+
+  services.gpg-agent = {
+    enable = true;
+    defaultCacheTtl = 43200;
+    enableSshSupport = true;
+    enableZshIntegration = true;
+    maxCacheTtl = 86400;
+    pinentry.package = pkgs.pinentry_mac;
   };
 }
