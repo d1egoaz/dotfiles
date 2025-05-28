@@ -16,6 +16,9 @@ nix-install-darwin:
 	@echo "📝 Note: This will prompt for sudo password during system activation"
 	sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#$$(if [ "$$(whoami)" = "diego.albeiroalvarezzuluag" ]; then echo "office-mbp"; else echo "personal-mbp"; fi)
 
+nix-update:
+	nix flake update
+
 # macOS machines (using darwin-rebuild)
 nix-office-mbp: check-darwin
 	cd nix && sudo darwin-rebuild switch --flake .#office-mbp

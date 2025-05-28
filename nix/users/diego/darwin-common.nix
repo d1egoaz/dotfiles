@@ -363,8 +363,12 @@
     ];
 
     # Mac App Store apps
+    # These app IDs are from using the mas CLI app or browsing the Store
+    # https://github.com/mas-cli/mas
+    #
+    # $ nix shell nixpkgs#mas
+    # $ mas search <app name>
     masApps = {
-      # Add Mac App Store apps here if needed
       # "App Name" = app_id;
     };
   };
@@ -389,15 +393,15 @@
 
     # Finder configuration
     finder = {
-      AppleShowAllExtensions = true;
+      AppleShowAllExtensions = true; # show all file extensions
       ShowPathbar = true;
       ShowStatusBar = true;
-      # Desktop settings
       ShowExternalHardDrivesOnDesktop = true;
       ShowRemovableMediaOnDesktop = true;
-      # Default view style (List view)
-      FXPreferredViewStyle = "Nlsv";
-      FXEnableExtensionChangeWarning = false;
+      FXPreferredViewStyle = "Nlsv"; # Default view style (List view)
+      FXEnableExtensionChangeWarning = false; # disable warning when changing file extension
+      _FXShowPosixPathInTitle = true; # show full path in finder title
+      QuitMenuItem = true; # enable quit menu item
     };
 
     # Global system preferences
@@ -407,8 +411,10 @@
       AppleShowScrollBars = "Always";
 
       # Controls the delay before a key starts repeating when held down.
-      InitialKeyRepeat = 15; # default is 68
-      KeyRepeat = 3; # default is 6
+      # 120, 94, 68 (default), 35, 25, 15
+      InitialKeyRepeat = 15;
+      # 120, 90, 60, 30, 12, 6 (default), 2
+      KeyRepeat = 6;
       AppleShowAllExtensions = true;
       # Disables the press-and-hold pop-up for accented characters
       ApplePressAndHoldEnabled = false;
@@ -449,4 +455,7 @@
 
   # Enable sudo with Touch ID
   security.pam.services.sudo_local.touchIdAuth = true;
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=30
+  '';
 }
