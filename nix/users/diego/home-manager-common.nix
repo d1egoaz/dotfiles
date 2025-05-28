@@ -24,6 +24,7 @@
     # ========================================================================
     packages = with pkgs; [
       # Development tools
+      btop
       cargo
       gh
       git
@@ -66,6 +67,8 @@
       taplo-cli
       yamllint
       yq
+      shellcheck
+      yaml-language-server
 
       # System utilities
       bash
@@ -401,5 +404,11 @@
     enableZshIntegration = true;
     maxCacheTtl = 86400;
     pinentry.package = pkgs.pinentry_mac;
+  };
+
+  services.emacs = {
+    # run as daemon
+    enable = true;
+    package = pkgs.emacs-custom;
   };
 }
