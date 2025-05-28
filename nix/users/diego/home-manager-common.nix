@@ -1,13 +1,20 @@
 {
   pkgs,
+  inputs,
   ...
 }:
 
 {
+  imports = [ inputs.tokyonight.homeManagerModules.default ];
   # ============================================================================
   # Home Manager Configuration
   # ============================================================================
   # https://nix-community.github.io/home-manager/options.xhtml
+
+  tokyonight = {
+    enable = false;
+    style = "night"; # Options: "night", "storm", "day", "moon"
+  };
 
   home = {
     stateVersion = "25.05";
@@ -34,7 +41,6 @@
       aspellDicts.en
 
       # Shell and terminal utilities
-      autojump
       bat
       direnv
       fd
@@ -46,6 +52,7 @@
       starship
       tmux
       tree
+      zoxide
 
       # Text processing and formatting
       delta
@@ -154,8 +161,6 @@
       # Shell and terminal
       "starship.toml".source = ../../../stow/starship/.config/starship.toml;
       "tmux/tmux.conf".source = ../../../stow/tmux/.config/tmux/tmux.conf;
-      "bat/config".source = ../../../stow/bat/.config/bat/config;
-
     };
   };
 
@@ -247,10 +252,6 @@
         ulimit -n 2048
 
         # --- Plugins and Completions ---
-        # autojump plugin (installed via Nix)
-        if [ -f ~/.nix-profile/share/autojump/autojump.zsh ]; then
-          source ~/.nix-profile/share/autojump/autojump.zsh
-        fi
 
         # Use Emacs keybindings in zsh
         bindkey -e
@@ -327,6 +328,7 @@
 
     # Development tools
     git.enable = true;
+    git.delta.tokyonight.enable = true;
 
     # GPG configuration
     gpg = {
@@ -340,9 +342,20 @@
     };
 
     # Terminal enhancements
+    bat = {
+      enable = true;
+      config = {
+        style = "numbers,changes,header";
+      };
+      tokyonight.enable = true;
+      extraPackages = with pkgs.bat-extras; [ batman ];
+    };
     starship.enable = true;
-    bat.enable = true;
     tmux.enable = true;
+    lsd = {
+      enable = true;
+      enableZshIntegration = true;
+    };
 
     # Environment and navigation
     direnv = {
@@ -353,6 +366,9 @@
     # Fuzzy finder with custom configuration
     fzf = {
       enable = true;
+
+      enableZshIntegration = true;
+      tokyonight.enable = true;
       defaultOptions = [
         "--exact"
         "--height 30%"
@@ -366,6 +382,15 @@
       ];
       defaultCommand = "fd --type f --hidden --follow --exclude .git";
       changeDirWidgetCommand = "fd --type f --hidden --follow --exclude .git";
+    };
+
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+      options = [
+        "--cmd"
+        "cd"
+      ];
     };
   };
 

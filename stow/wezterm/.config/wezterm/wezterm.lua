@@ -17,8 +17,8 @@ config.font = wezterm.font_with_fallback {
 config.font_size = 18.0
 config.line_height = 1.0
 
-config.color_scheme = "Tokyo Night"
--- config.color_scheme = "Nightfly (Gogh)"
+-- config.color_scheme = "Tokyo Night"
+config.color_scheme = 'tokyonight_night' -- or tokyonight_day, or whatever style
 
 config.enable_tab_bar = false
 config.window_padding = { left = '0.5cell', right = '0.5cell', top = '0.5cell', bottom = '0.5cell' }

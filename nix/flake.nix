@@ -37,6 +37,10 @@
       inputs.emacs-overlay.follows = "emacs-overlay";
       inputs.flake-utils.follows = "flake-utils";
     };
+
+    tokyonight = {
+      url = "github:mrjones2014/tokyonight.nix";
+    };
   };
 
   outputs =
