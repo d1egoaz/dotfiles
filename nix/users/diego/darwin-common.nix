@@ -18,20 +18,20 @@
         # Execution settings
         exec = {
           inherit-env-vars = true;
+          env-vars.PATH = "/etc/profiles/per-user/\${USER}/bin:\${PATH}";
         };
 
         # Startup commands
         after-login-command = [ ];
         after-startup-command = [
-          "exec-and-forget borders"
-          "exec-and-forget ${pkgs.sketchybar}/bin/sketchybar --config ~/.config/sketchybar/sketchybarrc"
+          "exec-and-forget sleep 5 && sketchybar --config ~/.config/sketchybar/sketchybarrc"
         ];
 
         # Workspace change notifications
         exec-on-workspace-change = [
           "/bin/bash"
           "-c"
-          "${pkgs.sketchybar}/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=\$AEROSPACE_FOCUSED_WORKSPACE"
+          "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=\${AEROSPACE_FOCUSED_WORKSPACE}"
         ];
 
         # Normalizations
@@ -307,16 +307,18 @@
             "if".app-id = "com.apple.QuickTimePlayerX";
             run = "layout floating";
           }
-          # Catch-all rules
+          # Catch-all tiling rule with fallback
           {
             check-further-callbacks = true;
-            run = "layout floating";
-          }
-          {
+            "if".app-name-regex-substring = ".*";
             run = [
               "layout tiling"
               "move-node-to-workspace 3"
             ];
+          }
+          {
+            "if".app-name-regex-substring = ".*";
+            run = "layout floating";
           }
         ];
       };
