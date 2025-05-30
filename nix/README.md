@@ -89,7 +89,14 @@ nix/
 │   │   ├── darwin.nix          # macOS system config for diego
 │   │   ├── darwin-common.nix   # Shared macOS settings
 │   │   ├── home-manager-darwin.nix  # macOS-specific home config
-│   │   └── home-manager-common.nix  # Cross-platform home config
+│   │   ├── home-manager-common.nix  # Cross-platform home config
+│   │   ├── programs/           # Modular program configurations
+│   │   │   ├── zsh.nix        # Shell config with aliases and plugins
+│   │   │   ├── git.nix        # Git configuration with profiles
+│   │   │   ├── fzf.nix        # Fuzzy finder settings
+│   │   │   └── vim.nix        # Editor configuration
+│   │   └── services/           # Service configurations
+│   │       └── aerospace.nix   # Window management (AeroSpace)
 │   └── diego.albeiroalvarezzuluag/
 │       ├── darwin.nix          # macOS system config for work user
 │       └── home-manager-darwin.nix  # Work user home config
@@ -116,9 +123,28 @@ nix/
 ### User Environment
 
 - **Custom Emacs** - Built with native compilation and patches
-- **Git Configuration** - Multiple profiles (work/personal)
+- **Git Configuration** - Multiple profiles (work/personal) with conditional includes
 - **Shell Enhancements** - FZF, zoxide, direnv integration
 - **GPG Setup** - Agent configuration with Touch ID support
+
+## Modular Program Configuration
+
+Program configurations are organized in dedicated modules for maintainability:
+
+- **`programs/zsh.nix`** - Complete shell setup including:
+  - Extensive alias collection (git, kubernetes, system utilities)
+  - Oh My Zsh with plugins (git, kubectl, fzf)
+  - Custom initialization and history settings
+
+- **`programs/git.nix`** - Git configuration with:
+  - Delta integration for better diffs
+  - GPG signing setup
+  - Conditional includes for work/personal profiles
+  - Global gitignore and file attributes
+
+- **`programs/fzf.nix`** - Fuzzy finder with custom keybindings and colors
+
+- **`programs/vim.nix`** - Editor configuration with essential settings
 
 ## Adding Packages
 
@@ -128,6 +154,9 @@ Add to `users/diego/home-manager-common.nix` in the appropriate category.
 **System packages** (available system-wide):
 Add to the respective machine configuration in `machines/`.
 
+**Program configurations**:
+Add new modules in `users/diego/programs/` and import them in `home-manager-common.nix`.
+
 ## Philosophy
 
 This configuration follows modern Nix best practices:
@@ -136,6 +165,8 @@ This configuration follows modern Nix best practices:
 - **Function-based modules** - Clean, reusable components
 - **Direct input access** - No complex overlays for simple cases
 - **Organized structure** - Logical separation of concerns
+- **Modular design** - Program configs split into focused files
+- **Declarative configuration** - Pure Nix without external file dependencies
 - **Consistent formatting** - Automated code styling
 
 ## Troubleshooting
@@ -159,5 +190,12 @@ darwin-rebuild --rollback
 make nix-gc      # Remove old generations
 ```
 
-**Brew apps not in the Application folder**
-`PATH="/opt/homebrew/bin:$PATH" brew reinstall --cask <app>`
+**Brew apps not in the Application folder:**
+```bash
+PATH="/opt/homebrew/bin:$PATH" brew reinstall --cask <app>
+```
+
+**Modular configuration issues:**
+- Ensure new program modules are imported in `home-manager-common.nix`
+- Check for configuration conflicts between modules
+- Validate module syntax with `nix flake check`
