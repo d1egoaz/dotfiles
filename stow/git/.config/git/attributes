@@ -1,6 +1,0 @@
-*.el    diff=lisp
-*.go    diff=golang
-*.lisp  diff=lisp
-*.md    diff=markdown
-*.rb    diff=ruby
-*.rs    diff=rust

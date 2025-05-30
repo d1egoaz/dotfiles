@@ -1,6 +1,0 @@
-aliases:
-    pc: pr checkout
-    pv: pr view
-editor: ''
-git_protocol: https
-version: "1"

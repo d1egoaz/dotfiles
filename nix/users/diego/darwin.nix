@@ -13,4 +13,9 @@
     home = "/Users/diego";
     shell = pkgs.zsh;
   };
+
+  # User-specific homebrew configuration
+  homebrew.casks = [
+    "discord"
+  ];
 }

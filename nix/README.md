@@ -158,3 +158,6 @@ darwin-rebuild --rollback
 ```bash
 make nix-gc      # Remove old generations
 ```
+
+**Brew apps not in the Application folder**
+`PATH="/opt/homebrew/bin:$PATH" brew reinstall --cask <app>`

@@ -1,9 +1,0 @@
-StylesPath = ~/dotfiles/stow/vale/styles/
-
-MinAlertLevel = suggestion
-Vocab = Base
-
-Packages = Google, proselint, write-good, alex, Readability, Joblint
-
-[*]
-BasedOnStyles = Vale, Google, proselint, write-good, alex, Readability, Joblint
