@@ -20,84 +20,116 @@
     stateVersion = "25.05";
 
     # ========================================================================
-    # Packages - Only packages that are in devbox global
+    # Packages - Organized by category
     # ========================================================================
     packages = with pkgs; [
-      # Development tools
-      btop
-      cargo
-      gh
-      git
-      go
-      golangci-lint
-      gopls
+      # ======================================================================
+      # Development Tools
+      # ======================================================================
+      cargo # Rust package manager
+      gh # GitHub CLI tool
+      git # Version control system
+      go # Go programming language
+      golangci-lint # Go linter
+      gopls # Go language server
 
-      # Build tools
-      cmake
-      glibtool
+      # ======================================================================
+      # Build and System Tools
+      # ======================================================================
+      cmake # Cross-platform build system
+      glibtool # GNU libtool
+      nix-tree # Visualize Nix package dependencies
 
-      # Editor
-      emacs-custom
-      aspell
-      aspellDicts.en
+      # ======================================================================
+      # Terminal and Shell Utilities
+      # ======================================================================
+      bat # Cat with syntax highlighting and git integration
+      btop # Resource monitor (htop alternative)
+      direnv # Environment variable manager per directory
+      fd # Fast find alternative
+      fzf # Fuzzy finder for files and commands
+      gum # Glamorous shell scripts
+      lsd # ls deluxe with colors and icons
+      ripgrep # Fast grep alternative
+      starship # Cross-shell prompt
+      tmux # Terminal multiplexer
+      tree # Directory structure display
+      zoxide # Smart cd command
 
-      # Shell and terminal utilities
-      bat
-      direnv
-      fd
-      fzf
-      gum
-      htop
-      lsd
-      ripgrep
-      starship
-      tmux
-      tree
-      zoxide
+      # ======================================================================
+      # System and Network Utilities
+      # ======================================================================
+      bash # Bourne Again Shell
+      coreutils # GNU core utilities
+      curl # URL transfer tool
+      gnupg # GNU Privacy Guard for encryption
+      htop # Process viewer
+      jq # JSON processor
+      less # Pager program
+      socat # Socket CAT
+      unzip # Archive extraction tool
+      wget # Web file downloader
+      xh # Friendly HTTP client
+      yq # YAML processor
+      zsh # Advanced shell with features
 
-      # Text processing and formatting
-      delta
-      graphviz
-      jq
-      nixfmt-rfc-style
-      pandoc
-      prettierd
-      shellcheck
-      shfmt
-      taplo-cli
-      yamllint
-      yq
-      shellcheck
-      yaml-language-server
+      # ======================================================================
+      # Text Processing and Formatting
+      # ======================================================================
+      delta # Git diff viewer
+      graphviz # Graph visualization software
+      nixfmt-rfc-style # Nix code formatter
+      pandoc # Universal document converter
+      prettierd # Prettier daemon
+      shellcheck # Shell script analyzer
+      shfmt # Shell script formatter
+      taplo-cli # TOML toolkit
+      yamllint # YAML linter
+      yaml-language-server # YAML language server
 
-      # System utilities
-      bash
-      coreutils
-      gnupg
-      socat
-      xh
+      # ======================================================================
+      # Development and Productivity
+      # ======================================================================
+      # Custom Emacs with native compilation (direct from inputs)
+      inputs.emacs-flake.packages.${pkgs.system}.default
 
-      # Cloud and Kubernetes tools
-      kubernetes-helm
-      argocd
-      kubecolor
-      cloudflared
+      # ======================================================================
+      # Editor Support
+      # ======================================================================
+      aspell # Spell checker
+      aspellDicts.en # English dictionary for aspell
 
-      # Database tools
-      mysql-client
-      postgresql
+      # ======================================================================
+      # Cloud and Infrastructure
+      # ======================================================================
+      argocd # GitOps continuous delivery tool
+      cloudflared # Cloudflare tunnel client
+      kubecolor # Colorized kubectl
+      kubernetes-helm # Kubernetes package manager
 
-      # Media
-      ffmpeg
+      # ======================================================================
+      # Database Tools
+      # ======================================================================
+      mysql-client # MySQL command-line client
+      postgresql # PostgreSQL client tools
 
-      # AI tools
-      ollama
+      # ======================================================================
+      # Media and Graphics
+      # ======================================================================
+      ffmpeg # Multimedia framework
 
+      # ======================================================================
+      # AI and Machine Learning
+      # ======================================================================
+      ollama # Local AI model runner
+
+      # ======================================================================
       # Fonts
-      atkinson-hyperlegible-next
-      nerd-fonts.fira-code
-      nerd-fonts.hack
-      nerd-fonts.jetbrains-mono
+      # ======================================================================
+      atkinson-hyperlegible-next # Hyperlegible font family
+      nerd-fonts.fira-code # Fira Code with Nerd Font patches
+      nerd-fonts.hack # Hack font with Nerd Font patches
+      nerd-fonts.jetbrains-mono # JetBrains Mono with Nerd Font patches
     ];
 
     # ========================================================================
@@ -403,12 +435,11 @@
     enableSshSupport = true;
     enableZshIntegration = true;
     maxCacheTtl = 86400;
-    pinentry.package = pkgs.pinentry_mac;
   };
 
   services.emacs = {
     # run as daemon
     enable = true;
-    package = pkgs.emacs-custom;
+    package = inputs.emacs-flake.packages.${pkgs.system}.default;
   };
 }

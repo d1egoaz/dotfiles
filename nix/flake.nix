@@ -1,106 +1,172 @@
 {
   description = "d1egoaz's Nix System Configuration";
 
+  # ============================================================================
+  # Nix Configuration
+  # ============================================================================
+  # Extra binary caches and public keys for faster builds
+  # https://app.cachix.org/cache/nix-community
   nixConfig = {
     extra-substituters = [
       "https://nix-community.cachix.org"
     ];
-    extra-trusted-public-keys = [
+    extra-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
 
+  # ============================================================================
+  # Inputs - External Dependencies
+  # ============================================================================
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # Main nixpkgs (using unstable)
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Code formatting and linting
+    treefmt-nix.url = "github:numtide/treefmt-nix";
 
-    darwin = {
-      url = "github:LnL7/nix-darwin/nix-darwin-25.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
+    # Utility functions for flakes
     flake-utils.url = "github:numtide/flake-utils";
 
+    # Home Manager for user environment management
+    home-manager = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # nix-darwin for macOS system management
+    darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Emacs packages and overlay
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Custom Emacs configuration
     emacs-flake = {
       url = "path:./flakes/emacs";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
       inputs.emacs-overlay.follows = "emacs-overlay";
       inputs.flake-utils.follows = "flake-utils";
     };
 
+    # Tokyo Night theme
     tokyonight = {
       url = "github:mrjones2014/tokyonight.nix";
     };
   };
 
+  # ============================================================================
+  # Outputs - What This Flake Provides
+  # ============================================================================
   outputs =
-    { nixpkgs, ... }@inputs:
+    {
+      nixpkgs,
+      flake-utils,
+      darwin,
+      home-manager,
+      emacs-flake,
+      ...
+    }@inputs:
     let
-      overlays = [
-        # This overlay makes unstable packages available through pkgs.unstable
-        (final: prev: {
-          unstable = import inputs.nixpkgs-unstable {
-            system = prev.system;
-            config.allowUnfree = true;
+      # ========================================================================
+      # System Builder Function
+      # ========================================================================
+
+      # macOS system builder
+      mkSystem =
+        {
+          system,
+          user,
+          modules ? [ ],
+        }:
+        darwin.lib.darwinSystem {
+          inherit system;
+          modules = [
+            # Apply basic nixpkgs config
+            {
+              nixpkgs.config.allowUnfree = true;
+            }
+
+            # Home Manager integration
+            home-manager.darwinModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.${user} = import ./users/${user}/home-manager-darwin.nix;
+                extraSpecialArgs = { inherit inputs; };
+              };
+            }
+          ] ++ modules;
+        };
+
+      # ========================================================================
+      # Code Formatting Setup (treefmt-nix)
+      # ========================================================================
+      treefmtOutputs = flake-utils.lib.eachDefaultSystem (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+        in
+        {
+          formatter = treefmtEval.config.build.wrapper;
+          checks = {
+            formatting = treefmtEval.config.build.check inputs.self;
           };
-
-          nh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.nh;
-
-          # Add emacs from our custom flake
-          emacs-custom = inputs.emacs-flake.packages.${prev.system}.default;
-        })
-      ];
-
-      mkSystem = import ./lib/mksystem.nix {
-        inherit overlays nixpkgs inputs;
-      };
+        }
+      );
     in
     {
-      # macOS configurations
+      # ========================================================================
+      # macOS System Configurations
+      # ========================================================================
+      # Apply with: darwin-rebuild switch --flake .#<config-name>
+      # or with nh: nh os switch --hostname <config-name>
       darwinConfigurations = {
-        # Office MacBook Pro M-chip
-        office-mbp = mkSystem "macbook-pro" {
+
+        office-mbp = mkSystem {
           system = "aarch64-darwin";
           user = "diego.albeiroalvarezzuluag";
-          darwin = true;
+          modules = [
+            ./machines/macbook-pro.nix
+            ./users/diego.albeiroalvarezzuluag/darwin.nix
+          ];
         };
 
-        # Personal MacBook Pro M-chip
-        personal-mbp = mkSystem "macbook-pro" {
+        personal-mbp = mkSystem {
           system = "aarch64-darwin";
           user = "diego";
-          darwin = true;
+          modules = [
+            ./machines/macbook-pro.nix
+            ./users/diego/darwin.nix
+          ];
         };
 
-        # Personal Mac Mini M-chip
-        personal-mini = mkSystem "mac-mini" {
+        personal-mini = mkSystem {
           system = "aarch64-darwin";
           user = "diego";
-          darwin = true;
+          modules = [
+            ./machines/mac-mini.nix
+            ./users/diego/darwin.nix
+          ];
         };
       };
 
-      # Linux configurations
-      # Note: Commented out because personal-server runs Ubuntu Server + Nix,
-      # not NixOS. System configuration is handled by Ubuntu.
-      # Uncomment and configure if migrating to NixOS in the future.
-      #
-      # nixosConfigurations = {
-      #   # Personal Linux server
-      #   personal-server = mkSystem "linux-server" {
-      #     system = "x86_64-linux";
-      #     user = "diego";
-      #   };
-      # };
+      # ========================================================================
+      # Development Tools
+      # ========================================================================
+      # Code formatter - formats all code in the repository
+      # Usage: nix fmt
+      formatter = treefmtOutputs.formatter;
+
+      # Formatting checks - validates code formatting (useful for CI)
+      # Usage: nix flake check
+      checks = treefmtOutputs.checks;
     };
 }

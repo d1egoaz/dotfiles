@@ -53,4 +53,12 @@
   xdg.configFile = {
     "sketchybar".source = ../../../stow/sketchybar/.config/sketchybar;
   };
+
+  # ============================================================================
+  # macOS-specific Services
+  # ============================================================================
+
+  services.gpg-agent = {
+    pinentry.package = pkgs.pinentry_mac;
+  };
 }

@@ -1,14 +1,24 @@
-.PHONY: devbox-pull devbox-backup devbox-diff nix-office-mbp nix-personal-mbp nix-personal-mini nix-personal-server nix-switch nix-check nix-install-darwin
+.PHONY: devbox-pull devbox-backup devbox-diff nix-office-mbp nix-personal-mbp nix-personal-mini nix-switch nix-check nix-install-darwin nix-fmt nix-update nix-gc
 
-# Check if darwin-rebuild is available
-check-darwin:
-	@if ! command -v darwin-rebuild >/dev/null 2>&1; then \
-		echo "❌ nix-darwin not installed. Run 'make nix-install-darwin' first."; \
-		exit 1; \
-	fi
+# ============================================================================
+# Nix System Management
+# ============================================================================
 
 nix-gc:
 	nix-collect-garbage; nix-store --gc
+
+nix-update:
+	cd nix && nix flake update
+
+nix-fmt:
+	cd nix && nix fmt
+
+nix-check:
+	cd nix && nix flake check
+
+# ============================================================================
+# macOS (nix-darwin) Systems
+# ============================================================================
 
 # Install nix-darwin (run this first on macOS)
 nix-install-darwin:
@@ -16,50 +26,57 @@ nix-install-darwin:
 	@echo "📝 Note: This will prompt for sudo password during system activation"
 	sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#$$(if [ "$$(whoami)" = "diego.albeiroalvarezzuluag" ]; then echo "office-mbp"; else echo "personal-mbp"; fi)
 
-nix-update:
-	nix flake update
+# Individual macOS hosts
+nix-office-mbp:
+	$(MAKE) nix-darwin-switch HOST=office-mbp
 
-# macOS machines (using darwin-rebuild)
-nix-office-mbp: check-darwin
-	cd nix && sudo darwin-rebuild switch --flake .#office-mbp
+nix-personal-mbp:
+	$(MAKE) nix-darwin-switch HOST=personal-mbp
 
-nix-personal-mbp: check-darwin
-	cd nix && sudo darwin-rebuild switch --flake .#personal-mbp
+nix-personal-mini:
+	$(MAKE) nix-darwin-switch HOST=personal-mini
 
-nix-personal-mini: check-darwin
-	cd nix && sudo darwin-rebuild switch --flake .#personal-mini
+# macOS system rebuild with diff
+nix-darwin-switch:
+	@echo "💻 Rebuilding Darwin system: $(HOST)"
+	@PREV_GEN=$$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $$1}' | tail -1); \
+	cd nix && sudo darwin-rebuild switch --flake .#$(HOST) --verbose; \
+	NEW_GEN=$$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $$1}' | tail -1); \
+	if [ "$$PREV_GEN" != "$$NEW_GEN" ]; then \
+		echo "📦 Changes between generations $$PREV_GEN → $$NEW_GEN:"; \
+		sudo nix store diff-closures /nix/var/nix/profiles/system-$$PREV_GEN-link /nix/var/nix/profiles/system-$$NEW_GEN-link; \
+	else \
+		echo "✅ No new generation created."; \
+	fi
 
-# Linux server (Ubuntu Server + Nix - no system rebuild needed)
-# Note: personal-server uses Ubuntu Server + Nix package manager,
-# not NixOS, so no system rebuild is needed. Use home-manager directly.
-nix-personal-server:
-	@echo "Ubuntu Server + Nix detected. Use home-manager directly:"
-	@echo "  nix run home-manager/release-25.05 -- switch --flake ~/dotfiles/nix#diego@personal-server"
+# ============================================================================
+# Auto-Detection and Smart Rebuild
+# ============================================================================
 
 # Auto-detect current machine and rebuild
 nix-switch:
-	@echo "Detecting current machine..."
+	@echo "🔍 Auto-detecting macOS system..."
 	@if [ "$$(uname)" = "Darwin" ]; then \
-		if ! command -v darwin-rebuild >/dev/null 2>&1; then \
-			echo "❌ nix-darwin not installed. Installing now..."; \
-			$(MAKE) nix-install-darwin; \
-		else \
-			if [ "$$(whoami)" = "diego.albeiroalvarezzuluag" ]; then \
-				echo "Building for office MacBook Pro..."; \
-				cd nix && sudo darwin-rebuild switch --flake .#office-mbp; \
+		HOST_NAME=$${HOST:-}; \
+		if [ -z "$$HOST_NAME" ]; then \
+			CURRENT_USER=$$(id -un); \
+			if [ "$$CURRENT_USER" = "diego.albeiroalvarezzuluag" ]; then \
+				HOST_NAME=office-mbp; \
 			else \
-				echo "Building for personal MacBook Pro..."; \
-				cd nix && sudo darwin-rebuild switch --flake .#personal-mbp; \
-			fi \
-		fi \
+				MACHINE_TYPE=$$(sysctl -n hw.model 2>/dev/null || echo "unknown"); \
+				if echo "$$MACHINE_TYPE" | grep -qi "mini"; then \
+					HOST_NAME=personal-mini; \
+				else \
+					HOST_NAME=personal-mbp; \
+				fi; \
+			fi; \
+		fi; \
+		echo "💻 Detected macOS host: $$HOST_NAME"; \
+		$(MAKE) nix-darwin-switch HOST=$$HOST_NAME; \
 	else \
-		echo "Ubuntu Server + Nix detected. Use home-manager directly:"; \
-		echo "  nix run home-manager/release-25.05 -- switch --flake ~/dotfiles/nix#diego@personal-server"; \
+		echo "❌ This configuration only supports macOS systems"; \
+		exit 1; \
 	fi
-
-# Check flake configuration without building
-nix-check:
-	cd nix && nix flake check
 
 # ============================================================================
 # Legacy Devbox Commands (for migration reference)

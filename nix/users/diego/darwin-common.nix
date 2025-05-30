@@ -1,12 +1,12 @@
-{ pkgs, currentSystemUser, ... }:
+{ pkgs, ... }:
 
 {
   # ============================================================================
   # macOS System Configuration
   # ============================================================================
 
-  # Primary user for system defaults
-  system.primaryUser = currentSystemUser;
+  # Primary user is set by the individual user config files
+  # No need for currentSystemUser parameter
 
   # System programs
   programs.zsh.enable = true;
