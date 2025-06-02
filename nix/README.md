@@ -44,35 +44,35 @@ nix run nix-darwin -- switch --flake github:d1egoaz/dotfiles#personal-mini
 
 ```bash
 # Auto-detect current machine and rebuild
-make nix-switch
+just nix-switch
 
 # Or target specific machines
-make nix-office-mbp
-make nix-personal-mbp
-make nix-personal-mini
-```
-
-**Manual rebuild:**
-
-```bash
-darwin-rebuild switch --flake .#office-mbp
-# or
-darwin-rebuild switch --flake .#personal-mbp
-# or
-darwin-rebuild switch --flake .#personal-mini
+just nix-office-mbp
+just nix-personal-mbp
+just nix-personal-mini
 ```
 
 ### Development Commands
 
 ```bash
 # Format code
-make nix-fmt
+just nix-fmt
 # Check configuration
-make nix-check
+just nix-check
 # Update flake inputs
-make nix-update
+just nix-update
 # Garbage collection
-make nix-gc
+just nix-gc
+```
+
+### Available Commands
+
+List all available recipes:
+
+```bash
+just --list
+# or simply
+just
 ```
 
 ## Configuration Structure
@@ -132,11 +132,13 @@ nix/
 Program configurations are organized in dedicated modules for maintainability:
 
 - **`programs/zsh.nix`** - Complete shell setup including:
+
   - Extensive alias collection (git, kubernetes, system utilities)
   - Oh My Zsh with plugins (git, kubectl, fzf)
   - Custom initialization and history settings
 
 - **`programs/git.nix`** - Git configuration with:
+
   - Delta integration for better diffs
   - GPG signing setup
   - Conditional includes for work/personal profiles
@@ -174,8 +176,8 @@ This configuration follows modern Nix best practices:
 **Build errors:**
 
 ```bash
-nix flake check  # Validate configuration
-nix fmt          # Fix formatting issues
+just nix-check  # Validate configuration
+just nix-fmt          # Fix formatting issues
 ```
 
 **Rollback changes:**
@@ -187,15 +189,17 @@ darwin-rebuild --rollback
 **Clean up:**
 
 ```bash
-make nix-gc      # Remove old generations
+just nix-gc      # Remove old generations
 ```
 
 **Brew apps not in the Application folder:**
+
 ```bash
 PATH="/opt/homebrew/bin:$PATH" brew reinstall --cask <app>
 ```
 
 **Modular configuration issues:**
+
 - Ensure new program modules are imported in `home-manager-common.nix`
 - Check for configuration conflicts between modules
 - Validate module syntax with `nix flake check`

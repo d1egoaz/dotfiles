@@ -45,6 +45,7 @@
       cmake # Cross-platform build system
       comma # Run programs without installing them
       glibtool # GNU libtool
+      just # Command runner (make alternative)
       nix-tree # Visualize Nix package dependencies
 
       # ======================================================================
