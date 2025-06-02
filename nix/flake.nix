@@ -77,12 +77,13 @@
       # System Builder Function
       # ========================================================================
 
-      # macOS system builder
+      # macOS system builder - now uses host-based configuration
       mkSystem =
         {
           system,
           user,
-          modules ? [ ],
+          host,
+          hostCasks ? [],
         }:
         darwin.lib.darwinSystem {
           inherit system;
@@ -92,17 +93,20 @@
               nixpkgs.config.allowUnfree = true;
             }
 
+            # Shared macOS system configuration with host-specific casks
+            (import ./shared/macos-system.nix { inherit pkgs user; hostCasks = hostCasks; })
+
             # Home Manager integration
             home-manager.darwinModules.home-manager
             {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.${user} = import ./users/${user}/home-manager-darwin.nix;
+                users.${user} = import ./shared/macos-home.nix;
                 extraSpecialArgs = { inherit inputs; };
               };
             }
-          ] ++ modules;
+          ];
           # Pass the user parameter to all modules
           specialArgs = { inherit user; };
         };
@@ -135,28 +139,22 @@
         office-mbp = mkSystem {
           system = "aarch64-darwin";
           user = "diego.albeiroalvarezzuluag";
-          modules = [
-            ./machines/macbook-pro.nix
-            ./users/diego.albeiroalvarezzuluag/darwin.nix
-          ];
+          host = "office-mbp";
+          hostCasks = [ "slack" "notion" ];
         };
 
         personal-mbp = mkSystem {
           system = "aarch64-darwin";
           user = "diego";
-          modules = [
-            ./machines/macbook-pro.nix
-            ./users/diego/darwin.nix
-          ];
+          host = "personal-mbp";
+          hostCasks = [ "discord" ];
         };
 
         personal-mini = mkSystem {
           system = "aarch64-darwin";
           user = "diegoalvarez";
-          modules = [
-            ./machines/mac-mini.nix
-            ./users/diegoalvarez/darwin.nix
-          ];
+          host = "personal-mini";
+          hostCasks = [ "discord" ];
         };
       };
 

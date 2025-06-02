@@ -2,7 +2,7 @@
 
 {
   # ============================================================================
-  # MacBook Pro Machine Configuration
+  # Shared macOS System Configuration
   # ============================================================================
 
   # System packages
@@ -39,9 +39,6 @@
   # System Programs
   # ============================================================================
 
-  # programs = {
-  #   gnupg.agent.enable = true;
-  # };
   programs.gnupg.agent = {
     enable = true;
   };

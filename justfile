@@ -58,8 +58,8 @@ lint: nix-fmt nix-check
 # macOS (nix-darwin) Systems
 # ============================================================================
 
-# Auto-detect and set HOST variable
-_host := if `whoami` == "diego.albeiroalvarezzuluag" { "office-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else if `sysctl -n hw.model 2>/dev/null | grep -qi mini || echo ""` != "" { "personal-mini" } else { "personal-mbp" }
+# Auto-detect host based on user (1:1 relationship)
+_host := if `whoami` == "diego.albeiroalvarezzuluag" { "office-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else { "personal-mbp" }
 
 # Install nix-darwin (run this first on macOS)
 nix-install-darwin:
@@ -67,22 +67,14 @@ nix-install-darwin:
     @echo "📝 Note: This will prompt for sudo password during system activation"
     sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#{{_host}}
 
-# Rebuild office MacBook Pro
-nix-office-mbp:
-    @just _nix-darwin-switch office-mbp
-
-# Rebuild personal MacBook Pro
-nix-personal-mbp:
-    @just _nix-darwin-switch personal-mbp
-
-# Rebuild personal Mac Mini
-nix-personal-mini:
-    @just _nix-darwin-switch personal-mini
-
-# Auto-detect current machine and rebuild
+# Auto-detect current machine and rebuild (main command)
 nix-switch:
     @echo "🔍 Auto-detected macOS host: {{_host}}"
     @just _nix-darwin-switch {{_host}}
+
+# Manual override: rebuild specific host
+nix-rebuild HOST:
+    @just _nix-darwin-switch {{HOST}}
 
 # Internal: macOS system rebuild with diff
 _nix-darwin-switch HOST:
@@ -91,17 +83,3 @@ _nix-darwin-switch HOST:
     echo "💻 Rebuilding Darwin system: {{HOST}}"
 
     # Get current generation
-    PREV_GEN=$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $1}' | tail -1)
-
-    # Rebuild system
-    cd nix && sudo darwin-rebuild switch --flake .#{{HOST}} --verbose
-
-    # Get new generation and show diff
-    NEW_GEN=$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $1}' | tail -1)
-
-    if [ "$PREV_GEN" != "$NEW_GEN" ]; then
-        echo "📦 Changes between generations $PREV_GEN → $NEW_GEN:"
-        sudo nix store diff-closures /nix/var/nix/profiles/system-$PREV_GEN-link /nix/var/nix/profiles/system-$NEW_GEN-link
-    else
-        echo "✅ No new generation created."
-    fi

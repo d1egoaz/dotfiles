@@ -5,6 +5,12 @@
 }:
 
 {
+  # ============================================================================
+  # Consolidated macOS Home Configuration
+  # ============================================================================
+  # This file contains all shared configuration for macOS hosts
+  # Used by all macOS systems (office-mbp, personal-mbp, personal-mini)
+
   imports = [
     inputs.tokyonight.homeManagerModules.default
     ./programs/zsh.nix
@@ -12,10 +18,6 @@
     ./programs/fzf.nix
     ./programs/vim.nix
   ];
-  # ============================================================================
-  # Home Manager Configuration
-  # ============================================================================
-  # https://nix-community.github.io/home-manager/options.xhtml
 
   tokyonight = {
     enable = false;
@@ -139,12 +141,22 @@
       nerd-fonts.fira-code # Fira Code with Nerd Font patches
       nerd-fonts.hack # Hack font with Nerd Font patches
       nerd-fonts.jetbrains-mono # JetBrains Mono with Nerd Font patches
+
+      # ======================================================================
+      # macOS-specific packages
+      # ======================================================================
+      # Security and encryption (macOS)
+      pinentry_mac
+
+      # Window management and UI
+      aerospace
+      jankyborders
+      sketchybar
     ];
 
     # ========================================================================
     # Environment Variables
     # ========================================================================
-    # /etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh
     sessionVariables = {
       # Editor configuration
       EDITOR = "emacsclient -r -a emacs";
@@ -164,16 +176,17 @@
       KUBECONFIG = "$HOME/.kube/config";
 
       ASPELL_CONF = "dict-dir ${pkgs.aspellDicts.en}/lib/aspell";
+
+      # macOS-specific environment variables
+      EMACS_ADDITIONAL_DIR = "$HOME/dotfiles-private/chime";
+      HOMEBREW_NO_ANALYTICS = "1";
+      HOMEBREW_NO_ENV_HINTS = "1";
+      GPG_TTY = "${builtins.getEnv "TTY"}";
     };
 
     # Additional PATH entries
     sessionPath = [
       "$HOME/.local/bin"
-
-      # Development tools
-      # TODO: check disabling these paths
-      # "$GOPATH/bin"
-      # "$HOME/.cargo/bin"
     ];
   };
 
@@ -186,8 +199,11 @@
 
     configFile = {
       # Shell and terminal
-      "starship.toml".source = ../../../stow/starship/.config/starship.toml;
-      "tmux/tmux.conf".source = ../../../stow/tmux/.config/tmux/tmux.conf;
+      "starship.toml".source = ../../stow/starship/.config/starship.toml;
+      "tmux/tmux.conf".source = ../../stow/tmux/.config/tmux/tmux.conf;
+
+      # macOS-specific configs
+      "sketchybar".source = ../../stow/sketchybar/.config/sketchybar;
     };
   };
 
@@ -260,7 +276,18 @@
         "cd"
       ];
     };
+
+    # macOS-specific programs
+    wezterm = {
+      enable = true;
+      # Use your existing Lua configuration
+      extraConfig = builtins.readFile ../../stow/wezterm/.config/wezterm/wezterm.lua;
+    };
   };
+
+  # ============================================================================
+  # Services
+  # ============================================================================
 
   services.gpg-agent = {
     enable = true;
@@ -268,6 +295,8 @@
     enableSshSupport = true;
     enableZshIntegration = true;
     maxCacheTtl = 86400;
+    # macOS-specific pinentry
+    pinentry.package = pkgs.pinentry_mac;
   };
 
   services.emacs = {

@@ -6,7 +6,7 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
 
 - **office-mbp**: Office MacBook Pro M-chip (user: diego.albeiroalvarezzuluag)
 - **personal-mbp**: Personal MacBook Pro M-chip (user: diego)
-- **personal-mini**: Personal Mac Mini M-chip (user: diego)
+- **personal-mini**: Personal Mac Mini M-chip (user: diegoalvarez)
 
 ## Bootstrap
 
@@ -16,6 +16,16 @@ Install Nix using the Determinate Systems installer:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+```
+
+Install just command runner:
+
+```bash
+# On macOS with Homebrew
+brew install just
+
+# Or with cargo
+cargo install just
 ```
 
 ### Initial Setup
@@ -47,9 +57,19 @@ nix run nix-darwin -- switch --flake github:d1egoaz/dotfiles#personal-mini
 just nix-switch
 
 # Or target specific machines
-just nix-office-mbp
-just nix-personal-mbp
-just nix-personal-mini
+just nix-rebuild office-mbp
+just nix-rebuild personal-mbp
+just nix-rebuild personal-mini
+```
+
+**Manual rebuild:**
+
+```bash
+darwin-rebuild switch --flake .#office-mbp
+# or
+darwin-rebuild switch --flake .#personal-mbp
+# or
+darwin-rebuild switch --flake .#personal-mini
 ```
 
 ### Development Commands
@@ -79,31 +99,51 @@ just
 
 ```
 nix/
-├── flake.nix                    # Main flake configuration
+├── flake.nix                    # Main flake configuration with host parameters
 ├── treefmt.nix                  # Code formatting config
-├── machines/
-│   ├── macbook-pro.nix         # MacBook Pro machine config
-│   └── mac-mini.nix            # Mac Mini config (inherits from macbook-pro)
-├── users/
-│   ├── diego/
-│   │   ├── darwin.nix          # macOS system config for diego
-│   │   ├── darwin-common.nix   # Shared macOS settings
-│   │   ├── home-manager-darwin.nix  # macOS-specific home config
-│   │   ├── home-manager-common.nix  # Cross-platform home config
-│   │   ├── programs/           # Modular program configurations
-│   │   │   ├── zsh.nix        # Shell config with aliases and plugins
-│   │   │   ├── git.nix        # Git configuration with profiles
-│   │   │   ├── fzf.nix        # Fuzzy finder settings
-│   │   │   └── vim.nix        # Editor configuration
-│   │   └── services/           # Service configurations
-│   │       └── aerospace.nix   # Window management (AeroSpace)
-│   └── diego.albeiroalvarezzuluag/
-│       ├── darwin.nix          # macOS system config for work user
-│       └── home-manager-darwin.nix  # Work user home config
+├── shared/                      # Consolidated shared configurations
+│   ├── macos-home.nix          # Complete Home Manager configuration
+│   ├── macos-system.nix        # Complete system configuration
+│   ├── system.nix              # Common system settings
+│   ├── darwin-common.nix       # Shared macOS settings
+│   ├── programs/               # Modular program configurations
+│   │   ├── zsh.nix            # Shell config with aliases and plugins
+│   │   ├── git.nix            # Git configuration with profiles
+│   │   ├── fzf.nix            # Fuzzy finder settings
+│   │   └── vim.nix            # Editor configuration
+│   └── services/               # Service configurations
+│       └── aerospace.nix       # Window management (AeroSpace)
 └── flakes/
     └── emacs/                  # Custom Emacs configuration
         └── flake.nix
 ```
+
+## Architecture
+
+This configuration uses a **consolidated architecture** that eliminates code duplication while maintaining host-specific flexibility:
+
+### Single Source of Truth
+
+- **`shared/macos-home.nix`** - Complete Home Manager configuration for all macOS hosts
+- **`shared/macos-system.nix`** - Complete system configuration for all macOS hosts
+- **`flake.nix`** - Host definitions with parameterized differences
+
+### Host Differentiation
+
+Host-specific differences are handled through parameters in `flake.nix`:
+
+- **Usernames** - Different users per host
+- **Homebrew Casks** - Host-specific GUI applications:
+  - `office-mbp`: `slack`
+  - `personal-mbp`: `discord`
+  - `personal-mini`: `discord`, `notion`
+
+### Benefits
+
+- **Zero Duplication** - Each configuration line exists only once
+- **Single Maintenance Point** - Changes apply to all hosts automatically
+- **Type Safety** - Nix ensures consistency across hosts
+- **Parametric Flexibility** - Easy to add host-specific differences
 
 ## Key Features
 
@@ -131,38 +171,66 @@ nix/
 
 Program configurations are organized in dedicated modules for maintainability:
 
-- **`programs/zsh.nix`** - Complete shell setup including:
+- **`shared/programs/zsh.nix`** - Complete shell setup including:
 
   - Extensive alias collection (git, kubernetes, system utilities)
   - Oh My Zsh with plugins (git, kubectl, fzf)
   - Custom initialization and history settings
 
-- **`programs/git.nix`** - Git configuration with:
+- **`shared/programs/git.nix`** - Git configuration with:
 
   - Delta integration for better diffs
   - GPG signing setup
   - Conditional includes for work/personal profiles
   - Global gitignore and file attributes
 
-- **`programs/fzf.nix`** - Fuzzy finder with custom keybindings and colors
+- **`shared/programs/fzf.nix`** - Fuzzy finder with custom keybindings and colors
 
-- **`programs/vim.nix`** - Editor configuration with essential settings
+- **`shared/programs/vim.nix`** - Editor configuration with essential settings
 
-## Adding Packages
+## Adding Configurations
+
+### Packages
 
 **User packages** (installed in home directory):
-Add to `users/diego/home-manager-common.nix` in the appropriate category.
+Add to `shared/macos-home.nix` in the appropriate category.
 
 **System packages** (available system-wide):
-Add to the respective machine configuration in `machines/`.
+Add to `shared/system.nix`.
 
-**Program configurations**:
-Add new modules in `users/diego/programs/` and import them in `home-manager-common.nix`.
+### Program Configurations
+
+Add new modules in `shared/programs/` and import them in `shared/macos-home.nix`.
+
+### Host-Specific Configurations
+
+**For new host-specific parameters:**
+1. Add parameter to `mkSystem` function in `flake.nix`
+2. Use parameter in `shared/macos-system.nix` or `shared/macos-home.nix`
+3. Set parameter value for each host in `darwinConfigurations`
+
+**For host-specific GUI applications:**
+Add to the `hostCasks` array for the specific host in `flake.nix`.
+
+### Adding New Hosts
+
+```nix
+# In flake.nix darwinConfigurations
+new-host = mkSystem {
+  system = "aarch64-darwin";
+  user = "newuser";
+  host = "new-host";
+  hostCasks = [ "app1" "app2" ];
+};
+```
 
 ## Philosophy
 
 This configuration follows modern Nix best practices:
 
+- **Consolidated architecture** - Eliminate duplication through shared configurations
+- **Parameterized differences** - Handle variations through explicit parameters
+- **Single source of truth** - Each configuration exists in exactly one place
 - **Explicit over implicit** - Clear dependency management
 - **Function-based modules** - Clean, reusable components
 - **Direct input access** - No complex overlays for simple cases
@@ -176,8 +244,8 @@ This configuration follows modern Nix best practices:
 **Build errors:**
 
 ```bash
-just nix-check  # Validate configuration
-just nix-fmt          # Fix formatting issues
+nix flake check  # Validate configuration
+nix fmt          # Fix formatting issues
 ```
 
 **Rollback changes:**
@@ -198,8 +266,9 @@ just nix-gc      # Remove old generations
 PATH="/opt/homebrew/bin:$PATH" brew reinstall --cask <app>
 ```
 
-**Modular configuration issues:**
+**Configuration issues:**
 
-- Ensure new program modules are imported in `home-manager-common.nix`
+- Ensure new program modules are imported in `shared/macos-home.nix`
 - Check for configuration conflicts between modules
 - Validate module syntax with `nix flake check`
+- For host-specific issues, verify parameters in `flake.nix`
