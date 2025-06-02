@@ -205,6 +205,7 @@ Add new modules in `shared/programs/` and import them in `shared/macos-home.nix`
 ### Host-Specific Configurations
 
 **For new host-specific parameters:**
+
 1. Add parameter to `mkSystem` function in `flake.nix`
 2. Use parameter in `shared/macos-system.nix` or `shared/macos-home.nix`
 3. Set parameter value for each host in `darwinConfigurations`

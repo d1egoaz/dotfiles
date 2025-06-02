@@ -1,7 +1,7 @@
 {
   pkgs,
   user,
-  hostCasks ? [],
+  hostCasks ? [ ],
   ...
 }:
 

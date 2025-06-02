@@ -83,8 +83,11 @@
           system,
           user,
           host,
-          hostCasks ? [],
+          hostCasks ? [ ],
         }:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
         darwin.lib.darwinSystem {
           inherit system;
           modules = [
@@ -94,7 +97,10 @@
             }
 
             # Shared macOS system configuration with host-specific casks
-            (import ./shared/macos-system.nix { inherit pkgs user; hostCasks = hostCasks; })
+            (import ./shared/macos-system.nix {
+              inherit pkgs user;
+              hostCasks = hostCasks;
+            })
 
             # Home Manager integration
             home-manager.darwinModules.home-manager
@@ -140,7 +146,10 @@
           system = "aarch64-darwin";
           user = "diego.albeiroalvarezzuluag";
           host = "office-mbp";
-          hostCasks = [ "slack" "notion" ];
+          hostCasks = [
+            "slack"
+            "notion"
+          ];
         };
 
         personal-mbp = mkSystem {
