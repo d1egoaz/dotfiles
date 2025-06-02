@@ -19,6 +19,9 @@
   # Inputs - External Dependencies
   # ============================================================================
   inputs = {
+    # Flake framework for better organization
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
     # Main nixpkgs (using unstable)
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
@@ -64,118 +67,17 @@
   # Outputs - What This Flake Provides
   # ============================================================================
   outputs =
-    {
-      nixpkgs,
-      flake-utils,
-      darwin,
-      home-manager,
-      emacs-flake,
-      ...
-    }@inputs:
-    let
-      # ========================================================================
-      # System Builder Function
-      # ========================================================================
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      # Import our modular configuration
+      imports = [
+        ./flake-modules/treefmt.nix
+        ./flake-modules/darwin.nix
+      ];
 
-      # macOS system builder - now uses host-based configuration
-      mkSystem =
-        {
-          system,
-          user,
-          host,
-          hostCasks ? [ ],
-        }:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        darwin.lib.darwinSystem {
-          inherit system;
-          modules = [
-            # Apply basic nixpkgs config
-            {
-              nixpkgs.config.allowUnfree = true;
-            }
-
-            # Shared macOS system configuration with host-specific casks
-            (import ./shared/macos-system.nix {
-              inherit pkgs user;
-              hostCasks = hostCasks;
-            })
-
-            # Home Manager integration
-            home-manager.darwinModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.${user} = import ./shared/macos-home.nix;
-                extraSpecialArgs = { inherit inputs; };
-              };
-            }
-          ];
-          # Pass the user parameter to all modules
-          specialArgs = { inherit user; };
-        };
-
-      # ========================================================================
-      # Code Formatting Setup (treefmt-nix)
-      # ========================================================================
-      treefmtOutputs = flake-utils.lib.eachDefaultSystem (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-        in
-        {
-          formatter = treefmtEval.config.build.wrapper;
-          checks = {
-            formatting = treefmtEval.config.build.check inputs.self;
-          };
-        }
-      );
-    in
-    {
-      # ========================================================================
-      # macOS System Configurations
-      # ========================================================================
-      # Apply with: darwin-rebuild switch --flake .#<config-name>
-      # or with nh: nh os switch --hostname <config-name>
-      darwinConfigurations = {
-
-        office-mbp = mkSystem {
-          system = "aarch64-darwin";
-          user = "diego.albeiroalvarezzuluag";
-          host = "office-mbp";
-          hostCasks = [
-            "slack"
-            "notion"
-          ];
-        };
-
-        personal-mbp = mkSystem {
-          system = "aarch64-darwin";
-          user = "diego";
-          host = "personal-mbp";
-          hostCasks = [ "discord" ];
-        };
-
-        personal-mini = mkSystem {
-          system = "aarch64-darwin";
-          user = "diegoalvarez";
-          host = "personal-mini";
-          hostCasks = [ "discord" ];
-        };
-      };
-
-      # ========================================================================
-      # Development Tools
-      # ========================================================================
-      # Code formatter - formats all code in the repository
-      # Usage: nix fmt
-      formatter = treefmtOutputs.formatter;
-
-      # Formatting checks - validates code formatting (useful for CI)
-      # Usage: nix flake check
-      checks = treefmtOutputs.checks;
+      # Systems I support
+      systems = [
+        "aarch64-darwin"
+      ];
     };
 }
