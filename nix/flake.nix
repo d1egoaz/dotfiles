@@ -103,6 +103,8 @@
               };
             }
           ] ++ modules;
+          # Pass the user parameter to all modules
+          specialArgs = { inherit user; };
         };
 
       # ========================================================================
@@ -150,10 +152,10 @@
 
         personal-mini = mkSystem {
           system = "aarch64-darwin";
-          user = "diego";
+          user = "diegoalvarez";
           modules = [
             ./machines/mac-mini.nix
-            ./users/diego/darwin.nix
+            ./users/diegoalvarez/darwin.nix
           ];
         };
       };

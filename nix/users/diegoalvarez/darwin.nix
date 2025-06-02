@@ -16,6 +16,7 @@
 
   # User-specific homebrew configuration
   homebrew.casks = [
-    "slack"
+    "discord"
+    "notion"
   ];
 }
