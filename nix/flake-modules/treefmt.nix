@@ -20,16 +20,41 @@
             package = pkgs.nixfmt-rfc-style;
           };
 
+          # Shell script formatting
+          shfmt.enable = true;
+          shellcheck.enable = true;
+
+          # YAML formatting
+          yamlfmt.enable = true;
+
+          # TOML formatting
+          taplo.enable = true;
+
           # Prettier for various file types
           prettier = {
             enable = true;
             includes = [
-              "*.md"
               "*.json"
+              "*.md"
               "*.yaml"
               "*.yml"
             ];
           };
+        };
+
+        # Additional settings
+        settings = {
+          # Global excludes
+          global.excludes = [
+            # Ignore generated files
+            "flake.lock"
+            # Ignore hidden directories
+            ".git/"
+            ".direnv/"
+          ];
+
+          # Formatter-specific excludes can be added here if needed
+          # formatter.nixfmt.excludes = [ "some-file.nix" ];
         };
       };
     };

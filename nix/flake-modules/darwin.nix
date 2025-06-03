@@ -16,13 +16,14 @@
         inputs.darwin.lib.darwinSystem {
           inherit system;
           modules = [
-            # Apply basic nixpkgs config
+            # Apply basic nixpkgs config with emacs overlay
             {
               nixpkgs.config.allowUnfree = true;
+              nixpkgs.overlays = [ inputs.emacs-overlay.overlays.default ];
             }
 
-            # Shared macOS system configuration with host-specific casks
-            (import "${inputs.self}/shared/macos-system.nix" {
+            # macOS system configuration
+            (import ../systems/darwin/default.nix {
               inherit pkgs user;
               hostCasks = hostCasks;
             })
@@ -33,8 +34,8 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.${user} = import "${inputs.self}/shared/macos-home.nix";
-                extraSpecialArgs = { inherit inputs; };
+                users.${user} = import ../home-manager;
+                extraSpecialArgs = { inherit inputs user; };
               };
             }
           ];

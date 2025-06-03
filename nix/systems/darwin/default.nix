@@ -6,15 +6,21 @@
 }:
 
 {
-  # ============================================================================
-  # Consolidated macOS System Configuration
-  # ============================================================================
-  # Shared system configuration for all macOS hosts
-  # Used by all macOS systems (office-mbp, personal-mbp, personal-mini)
-
   imports = [
-    ./system.nix
-    ./darwin-common.nix
+    # Services
+    ./services/aerospace.nix
+    ./services/jankyborders.nix
+
+    # System configuration
+    ./system/defaults.nix
+    ./system/programs.nix
+    ./system/security.nix
+
+    # Nix configuration
+    ./nix-settings.nix
+
+    # Darwin-specific packages/apps
+    (import ./homebrew.nix { inherit hostCasks; })
   ];
 
   # ============================================================================
@@ -31,10 +37,14 @@
     shell = pkgs.zsh;
   };
 
+  # System packages
+  environment.systemPackages = with pkgs; [
+    home-manager
+  ];
+
   # ============================================================================
-  # Host-specific Applications
+  # System State
   # ============================================================================
 
-  # Host-specific homebrew applications (passed as parameter)
-  homebrew.casks = hostCasks;
+  system.stateVersion = 5;
 }

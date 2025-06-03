@@ -76,10 +76,18 @@ nix-switch:
 nix-rebuild HOST:
     @just _nix-darwin-switch {{HOST}}
 
+# Quick dry run for office-mbp
+nix-dry-run:
+    @echo "🧪 Dry run for office-mbp - showing what would change without applying..."
+    darwin-rebuild build --flake ./nix#office-mbp --dry-run
+
 # Internal: macOS system rebuild with diff
 _nix-darwin-switch HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     echo "💻 Rebuilding Darwin system: {{HOST}}"
 
-    # Get current generation
+    # Build and switch
+    darwin-rebuild switch --flake ./nix#{{HOST}}
+
+    echo "✅ Darwin system rebuild complete!"

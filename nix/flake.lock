@@ -21,28 +21,6 @@
         "type": "github"
       }
     },
-    "emacs-flake": {
-      "inputs": {
-        "emacs-overlay": [
-          "emacs-overlay"
-        ],
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "path": "./flakes/emacs",
-        "type": "path"
-      },
-      "original": {
-        "path": "./flakes/emacs",
-        "type": "path"
-      },
-      "parent": []
-    },
     "emacs-overlay": {
       "inputs": {
         "nixpkgs": [
@@ -187,7 +165,6 @@
     "root": {
       "inputs": {
         "darwin": "darwin",
-        "emacs-flake": "emacs-flake",
         "emacs-overlay": "emacs-overlay",
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils",

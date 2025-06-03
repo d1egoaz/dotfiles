@@ -49,14 +49,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Custom Emacs configuration
-    emacs-flake = {
-      url = "path:./flakes/emacs";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.emacs-overlay.follows = "emacs-overlay";
-      inputs.flake-utils.follows = "flake-utils";
-    };
-
     # Tokyo Night theme
     tokyonight = {
       url = "github:mrjones2014/tokyonight.nix";
