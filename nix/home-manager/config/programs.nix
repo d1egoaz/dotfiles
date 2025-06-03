@@ -15,9 +15,6 @@ in
   # ============================================================================
 
   fonts.fontconfig.enable = true;
-  home.packages = with pkgs; [
-    atkinson-hyperlegible
-  ];
 
   # ============================================================================
   # Program Configurations
@@ -36,9 +33,6 @@ in
       };
       extraPackages = with pkgs.bat-extras; [ batman ];
     };
-
-    starship.enable = true;
-    tmux.enable = true;
 
     lsd = {
       enable = true;
@@ -88,17 +82,6 @@ in
         default-key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
         encrypt-to = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
       };
-    };
-
-    # ========================================================================
-    # Applications
-    # ========================================================================
-
-    # macOS-specific programs
-    wezterm = {
-      enable = true;
-      # Use your existing Lua configuration
-      extraConfig = builtins.readFile ../../../stow/wezterm/.config/wezterm/wezterm.lua;
     };
   };
 
