@@ -25,6 +25,7 @@
     casks = [
       "alfred"
       "1password"
+      "cursor"
       "excalidrawz"
       "google-chrome"
       "shottr"

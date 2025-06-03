@@ -22,7 +22,7 @@ in
     # ========================================================================
     cmake # Cross-platform build system
     comma # Run programs without installing them
-    just # Command runner (make alternative)
+    just # Command runner (make alternative) https://just.systems/man/en/
     nix-tree # Visualize Nix package dependencies
 
     # ========================================================================
@@ -48,17 +48,18 @@ in
     coreutils # GNU core utilities
     curl # Command line tool for transferring data
     direnv # Environment variable manager per directory
+    dust # Intuitive disk usage analyzer (du + rust)
     fd # Find alternative
     fzf # Fuzzy finder
     gnupg # GNU Privacy Guard for encryption
     gum # Glamorous shell scripts
+    hyperfine # Command-line benchmarking tool
     jq # JSON processor
     less # Pager
     lsd # ls deluxe with colors and icons
     ripgrep # Fast text search
     socat # Socket CAT
     starship # Cross-shell prompt
-    tmux # Terminal multiplexer
     tree # Directory listing
     wget # File downloader
     xh # Friendly HTTP client
