@@ -100,26 +100,27 @@ in
         encrypt-to = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
       };
     };
+
+    emacs = {
+      enable = true;
+      package = customEmacs;
+    };
   };
 
   # ============================================================================
   # Services
   # ============================================================================
 
-  # GPG Agent service
-  services.gpg-agent = {
-    enable = true;
-    defaultCacheTtl = 43200;
-    enableSshSupport = true;
-    enableZshIntegration = true;
-    maxCacheTtl = 86400;
-    # macOS-specific pinentry
-    pinentry.package = pkgs.pinentry_mac;
-  };
-
-  services.emacs = {
-    # run as daemon
-    enable = true;
-    package = customEmacs;
+  services = {
+    # GPG Agent service
+    gpg-agent = {
+      enable = true;
+      defaultCacheTtl = 43200;
+      enableSshSupport = true;
+      enableZshIntegration = true;
+      maxCacheTtl = 86400;
+      # macOS-specific pinentry
+      pinentry.package = pkgs.pinentry_mac;
+    };
   };
 }
