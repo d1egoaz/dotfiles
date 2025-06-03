@@ -3,8 +3,6 @@
 {
   programs.zsh = {
     enable = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
 
     # History settings
     history = {
@@ -25,7 +23,7 @@
       gpu = "git pull";
 
       # tmux
-      tm = "zellij -s default";
+      tm = "zellij attach -s default";
 
       # utilities
       fkill = "ps -fea | fzf | cut -d\" \" -f1 | xargs kill -9";
@@ -53,6 +51,13 @@
       kgpis = "kgp -o jsonpath='{.items[*].spec.containers[*].image}' | tr -s '[[:space:]]' '\\n' | sort | uniq -c";
       kgpi = "k get pod $(kgpn | fzf-tmux) -o jsonpath=\"{.spec.containers[*].image}\" | tr -s \"[[:space:]]\" \"\\n\" | sort";
     };
+
+    completionInit = ''
+      zstyle ':completion:*' use-cache on
+      zstyle ':completion:*' cache-path ~/.zcompcache
+      autoload -Uz compinit
+      compinit -C
+    '';
 
     # Shell options and initialization
     initContent = ''
@@ -157,11 +162,33 @@
         'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
         'r:|=*' 'l:|=* r:|=*'
       unset CASE_SENSITIVE HYPHEN_INSENSITIVE
-      autoload -Uz compinit && compinit
+
+      if [[ -z $WEZTERM_EXECUTABLE ]]; then
+        unset -f __wezterm_set_user_var
+        unset -f __wezterm_user_vars_precmd
+        unset -f __wezterm_osc7
+      fi
     '';
 
-    # Additional plugins
     plugins = [
+      {
+        name = "zsh-autosuggestions";
+        src = pkgs.fetchFromGitHub {
+          owner = "zsh-users";
+          repo = "zsh-autosuggestions";
+          rev = "v0.7.1";
+          sha256 = "sha256-iJdWopZwHpSyYl5/FQXEW7gl/SrKaYDEtTH9cGP7iPo";
+        };
+      }
+      {
+        name = "zsh-syntax-highlighting";
+        src = pkgs.fetchFromGitHub {
+          owner = "zsh-users";
+          repo = "zsh-syntax-highlighting";
+          rev = "0.8.0";
+          sha256 = "sha256-iJdWopZwHpSyYl5/FQXEW7gl/SrKaYDEtTH9cGP7iPo";
+        };
+      }
       {
         name = "fzf-tab";
         src = pkgs.fetchFromGitHub {

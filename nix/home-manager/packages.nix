@@ -35,6 +35,7 @@ in
     prettierd # Prettier daemon
     shellcheck # Shell script analyzer
     shfmt # Shell script formatter
+    stylua # Lua code formatter
     taplo-cli # TOML toolkit
     yamllint # YAML linter
     yaml-language-server # YAML language server
@@ -66,6 +67,7 @@ in
     yq # YAML processor
     zoxide # Smart cd command
     zsh # Advanced shell with features
+    fish # Friendly interactive shell
 
     # ========================================================================
     # Cloud and Infrastructure

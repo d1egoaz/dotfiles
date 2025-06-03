@@ -24,6 +24,9 @@
           shfmt.enable = true;
           shellcheck.enable = true;
 
+          # Lua formatting
+          stylua.enable = true;
+
           # YAML formatting
           yamlfmt.enable = true;
 
