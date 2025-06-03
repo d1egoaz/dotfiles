@@ -49,23 +49,6 @@
       ];
     };
 
-    # Modern terminal workspace
-    # https://github.com/zellij-org/zellij/blob/main/zellij-utils/assets/config/default.kdl
-    zellij = {
-      enable = true;
-      enableZshIntegration = false;
-      attachExistingSession = false;
-      exitShellOnExit = false;
-      settings = {
-        default_mode = "normal";
-        default_layout = "compact";
-        simplified_ui = true;
-        pane_frames = false;
-        theme = "tokyo-night-storm";
-        session_serialization = false;
-      };
-    };
-
     # ========================================================================
     # Development Tools
     # ========================================================================

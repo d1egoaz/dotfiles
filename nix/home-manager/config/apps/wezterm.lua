@@ -1,0 +1,50 @@
+local wezterm = require("wezterm")
+local config = wezterm.config_builder()
+local action = wezterm.action
+
+config.enable_scroll_bar = true
+config.scrollback_lines = 6400
+config.window_close_confirmation = "NeverPrompt"
+
+-- (here will be added actual configuration)
+--config.font = wezterm.font {
+--family = 'Essential PragmataPro',
+--}
+config.font = wezterm.font_with_fallback({
+	"Essential PragmataPro",
+	"Menlo",
+	"DengXian", -- test with: wezterm ls-fonts --text '显示中文'
+})
+config.font_size = 18.0
+config.line_height = 1.0
+
+-- config.color_scheme = "Tokyo Night"
+config.color_scheme = "tokyonight_night" -- or tokyonight_day, or whatever style
+
+config.enable_tab_bar = false
+config.window_padding = { left = "0.5cell", right = "0.5cell", top = "0.5cell", bottom = "0.5cell" }
+config.default_cursor_style = "BlinkingBlock"
+
+config.window_decorations = "RESIZE|INTEGRATED_BUTTONS"
+
+config.leader = { key = "b", mods = "CTRL" }
+config.keys = {
+	{ key = "p", mods = "CMD|SHIFT", action = action.ActivateCommandPalette },
+	{ key = "k", mods = "CMD", action = wezterm.action.ClearScrollback("ScrollbackAndViewport") },
+	{ key = "w", mods = "CMD", action = action.CloseCurrentPane({ confirm = false }) },
+	{ key = "d", mods = "CMD|SHIFT", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+	{ key = "d", mods = "CMD", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+	{ key = "c", mods = "LEADER", action = action.SpawnTab("CurrentPaneDomain") },
+	-- CTRL + (h,j,k,l) to move between panes
+	{ key = "h", mods = "CTRL", action = action.ActivatePaneDirection("Left") },
+	{ key = "j", mods = "CTRL", action = action.ActivatePaneDirection("Down") },
+	{ key = "k", mods = "CTRL", action = action.ActivatePaneDirection("Up") },
+	{ key = "l", mods = "CTRL", action = action.ActivatePaneDirection("Right") },
+	{ key = "/", mods = "LEADER", action = action.SplitHorizontal },
+	{ key = "-", mods = "LEADER", action = action.SplitVertical },
+}
+
+config.use_fancy_tab_bar = true
+config.pane_focus_follows_mouse = true
+
+return config

@@ -64,7 +64,6 @@ in
     wget # File downloader
     xh # Friendly HTTP client
     yq # YAML processor
-    zellij # Modern terminal workspace
     zoxide # Smart cd command
     zsh # Advanced shell with features
 

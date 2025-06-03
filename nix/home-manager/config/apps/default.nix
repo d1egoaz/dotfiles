@@ -1,3 +1,7 @@
+# Application Configuration Module
+#
+# This file is imported by nix/home-manager/default.nix as "./config/apps"
+
 {
   imports = [
     ./fzf.nix
