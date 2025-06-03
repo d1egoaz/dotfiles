@@ -23,11 +23,12 @@
 
     # Shared applications for all hosts
     casks = [
-      "alfred"
       "1password"
+      "alfred"
       "cursor"
       "excalidrawz"
       "google-chrome"
+      "iterm2"
       "shottr"
       "tidal"
     ] ++ hostCasks; # Add host-specific casks
