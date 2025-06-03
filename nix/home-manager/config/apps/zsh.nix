@@ -25,7 +25,7 @@
       gpu = "git pull";
 
       # tmux
-      tm = "tmux new -A -n 'default' -s default";
+      tm = "zellij -s default";
 
       # utilities
       fkill = "ps -fea | fzf | cut -d\" \" -f1 | xargs kill -9";

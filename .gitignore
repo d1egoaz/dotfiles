@@ -1,17 +1,1 @@
-/stow/tmux/.config/tmux/plugins/tmux-sensible/
-/stow/tmux/.config/tmux/plugins/tmux-resurrect/
-/stow/tmux/.config/tmux/plugins/tmux-pain-control/
-/stow/tmux/.config/tmux/plugins/tmux-jump/
-/stow/tmux/.config/tmux/plugins/tmux-fzf-url/
-/stow/tmux/.config/tmux/plugins/tmux-continuum/
-/stow/vale/styles/
-stow/bin/.local/share/
-stow/bin/.local/state/
 .DS_Store
-
-# gpg
-stow/gnupg/.gnupg/*
-# Exception: Re-include
-!stow/gnupg/.gnupg/gpg-agent.conf
-!stow/gnupg/.gnupg/gpg.conf
-stow/zsh/dot-zprivate
