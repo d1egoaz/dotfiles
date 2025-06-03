@@ -72,10 +72,6 @@ nix-switch:
     @echo "🔍 Auto-detected macOS host: {{_host}}"
     @just _nix-darwin-switch {{_host}}
 
-# Manual override: rebuild specific host
-nix-rebuild HOST:
-    @just _nix-darwin-switch {{HOST}}
-
 # Quick dry run for office-mbp
 nix-dry-run:
     @echo "🧪 Dry run for office-mbp - showing what would change without applying..."
@@ -86,8 +82,15 @@ _nix-darwin-switch HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     echo "💻 Rebuilding Darwin system: {{HOST}}"
-
     # Build and switch
-    darwin-rebuild switch --flake ./nix#{{HOST}}
-
+    PREV_GEN=$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $1}' | tail -1)
+    sudo darwin-rebuild switch --flake ./nix#{{HOST}}
     echo "✅ Darwin system rebuild complete!"
+    NEW_GEN=$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $1}' | tail -1)
+
+    if [ "$PREV_GEN" != "$NEW_GEN" ]; then
+        echo "📦 Changes between generations $PREV_GEN → $NEW_GEN:"
+        sudo nix store diff-closures /nix/var/nix/profiles/system-$PREV_GEN-link /nix/var/nix/profiles/system-$NEW_GEN-link
+    else
+        echo "✅ No new generation created."
+    fi
