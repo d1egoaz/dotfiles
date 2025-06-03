@@ -32,6 +32,7 @@
     lsd = {
       enable = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
     };
 
     # Environment and navigation
@@ -43,6 +44,7 @@
     zoxide = {
       enable = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
       options = [
         "--cmd"
         "cd"
@@ -91,6 +93,7 @@
       defaultCacheTtl = 43200;
       enableSshSupport = true;
       enableZshIntegration = true;
+      enableFishIntegration = true;
       maxCacheTtl = 86400;
       # macOS-specific pinentry
       pinentry.package = pkgs.pinentry_mac;

@@ -4,6 +4,7 @@
 
 {
   imports = [
+    ./fish.nix
     ./fzf.nix
     ./git.nix
     ./starship.nix

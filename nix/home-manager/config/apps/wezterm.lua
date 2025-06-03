@@ -27,21 +27,35 @@ config.default_cursor_style = "BlinkingBlock"
 
 config.window_decorations = "RESIZE|INTEGRATED_BUTTONS"
 
-config.leader = { key = "b", mods = "CTRL" }
+config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
 	{ key = "p", mods = "CMD|SHIFT", action = action.ActivateCommandPalette },
 	{ key = "k", mods = "CMD", action = wezterm.action.ClearScrollback("ScrollbackAndViewport") },
 	{ key = "w", mods = "CMD", action = action.CloseCurrentPane({ confirm = false }) },
-	{ key = "d", mods = "CMD|SHIFT", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
-	{ key = "d", mods = "CMD", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
 	{ key = "c", mods = "LEADER", action = action.SpawnTab("CurrentPaneDomain") },
 	-- CTRL + (h,j,k,l) to move between panes
 	{ key = "h", mods = "CTRL", action = action.ActivatePaneDirection("Left") },
 	{ key = "j", mods = "CTRL", action = action.ActivatePaneDirection("Down") },
 	{ key = "k", mods = "CTRL", action = action.ActivatePaneDirection("Up") },
 	{ key = "l", mods = "CTRL", action = action.ActivatePaneDirection("Right") },
-	{ key = "/", mods = "LEADER", action = action.SplitHorizontal },
-	{ key = "-", mods = "LEADER", action = action.SplitVertical },
+
+	-- new panes
+	{ key = "d", mods = "CMD|SHIFT", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+	{ key = "d", mods = "CMD", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+	{ key = "/", mods = "LEADER", action = action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+	{ key = "-", mods = "LEADER", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+
+	-- maximize
+	{ key = "m", mods = "LEADER", action = wezterm.action.TogglePaneZoomState },
+
+	-- resize
+	{ key = "h", mods = "CTRL|SHIFT", action = action.AdjustPaneSize({ "Left", 5 }) },
+	{ key = "l", mods = "CTRL|SHIFT", action = action.AdjustPaneSize({ "Right", 5 }) },
+	{ key = "j", mods = "CTRL|SHIFT", action = action.AdjustPaneSize({ "Down", 5 }) },
+	{ key = "k", mods = "CTRL|SHIFT", action = action.AdjustPaneSize({ "Up", 5 }) },
+
+	-- yank mode
+	{ key = "y", mods = "LEADER", action = action.ActivateCopyMode },
 }
 
 config.use_fancy_tab_bar = true
