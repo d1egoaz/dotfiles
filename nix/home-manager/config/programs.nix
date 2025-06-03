@@ -4,11 +4,6 @@
   ...
 }:
 
-let
-  # Import custom packages
-  customEmacs = import ../../packages/emacs.nix { inherit pkgs; };
-in
-
 {
   # ============================================================================
   # Fonts
@@ -99,11 +94,6 @@ in
         default-key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
         encrypt-to = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
       };
-    };
-
-    emacs = {
-      enable = true;
-      package = customEmacs;
     };
   };
 
