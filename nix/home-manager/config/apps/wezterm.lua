@@ -15,6 +15,8 @@ config.font = wezterm.font_with_fallback({
 	"Menlo",
 	"DengXian", -- test with: wezterm ls-fonts --text '显示中文'
 })
+config.default_prog = { "fish", "-l" }
+
 config.font_size = 18.0
 config.line_height = 1.0
 

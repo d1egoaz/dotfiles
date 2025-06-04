@@ -12,8 +12,13 @@
       gpu = "git pull";
     };
 
-    # Shell aliases (direct port from zsh)
+    # Shell aliases
     shellAliases = {
+      ".." = "cd ..";
+      "..." = "cd ../..";
+      "...." = "cd ../../../";
+      "....." = "cd ../../../../";
+      "d" = "cd ~/.dotfiles";
       # bat everywhere
       b = "command bat";
 
