@@ -93,11 +93,8 @@
       # Disable fish greeting
       set -g fish_greeting
 
-      # Enable vi mode to match zsh
-      fish_vi_key_bindings
-
-      # Ctrl-x Ctrl-e to edit command line
-      bind \cx\ce edit_command_buffer
+      # Enable emacs keybindings
+      fish_default_key_bindings
 
       # Remove wezterm functions if not in wezterm
       if not set -q WEZTERM_EXECUTABLE

@@ -2,7 +2,7 @@
 
 {
   programs.zsh = {
-    enable = true;
+    enable = false;
 
     # History settings
     history = {
