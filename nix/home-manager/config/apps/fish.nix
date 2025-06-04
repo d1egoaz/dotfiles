@@ -51,6 +51,8 @@
 
     # Startup initialization
     interactiveShellInit = ''
+      set -U fish_greeting
+
       # Handle dumb/tramp terminals gracefully
       if test "$TERM" = "dumb"; or test "$TERM" = "tramp"
         function fish_prompt
@@ -62,9 +64,6 @@
       # Set file descriptor limit
       ulimit -n 2048
 
-      # GPG TTY setup
-      #set -gx GPG_TTY (tty)
-
       # Source private environment variables if they exist
       if test -f ~/.zprivate
         source ~/.zprivate
@@ -75,9 +74,11 @@
         source "$EMACS_VTERM_PATH/etc/emacs-vterm-fish.sh"
       end
 
-      set -g fish_greeting
-      fish_default_key_bindings
-      fzf_key_bindings
+      # fzf.fish
+      set fzf_fd_opts --hidden --max-depth 5 --exclude .git
+      set fzf_diff_highlighter delta --paging=never --width=20
+
+      fzf_configure_bindings
 
       # Remove wezterm functions if not in wezterm
       if not set -q WEZTERM_EXECUTABLE

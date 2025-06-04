@@ -3,8 +3,6 @@
 {
   programs.fzf = {
     enable = true;
-    enableZshIntegration = true;
-    enableFishIntegration = true;
     tokyonight.enable = true;
     defaultOptions = [
       "--exact"
