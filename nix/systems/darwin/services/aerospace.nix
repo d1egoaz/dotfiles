@@ -296,6 +296,11 @@
           "if".app-id = "com.apple.QuickTimePlayerX";
           run = "layout floating";
         }
+        {
+          "if".app-id = "com.apple.SecurityAgent";
+          run = "layout floating";
+        }
+
         # Catch-all tiling rule with fallback
         {
           check-further-callbacks = true;
