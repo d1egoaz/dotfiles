@@ -10,17 +10,7 @@
       gs = "git status -s";
       gd = "git diff";
       gpu = "git pull";
-    };
-
-    # Shell aliases
-    shellAliases = {
-      ".." = "cd ..";
-      "..." = "cd ../..";
-      "...." = "cd ../../../";
-      "....." = "cd ../../../../";
-      "d" = "cd ~/.dotfiles";
-      # bat everywhere
-      b = "command bat";
+      d = "cd ~/dotfiles";
 
       # utilities
       fkill = "ps -fea | fzf | cut -d' ' -f1 | xargs kill -9";
@@ -49,19 +39,14 @@
       kgpi = "k get pod (kgpn | fzf) -o jsonpath='{.spec.containers[*].image}' | tr -s ' ' '\\n' | sort";
     };
 
-    # Fish functions (only for complex logic)
-    functions = {
-      # Emacs ediff function
-      ediff = {
-        description = "Launch Emacs ediff between two files";
-        body = ''
-          if test (count $argv) -ne 2
-            echo "Usage: ediff <FILE1> <FILE2>"
-            return 1
-          end
-          emacsclient -r --eval "(ediff-files \"$argv[1]\" \"$argv[2]\")"
-        '';
-      };
+    # Shell aliases
+    shellAliases = {
+      ".." = "cd ..";
+      "..." = "cd ../..";
+      "...." = "cd ../../../";
+      "....." = "cd ../../../../";
+      # bat everywhere
+      b = "command bat";
     };
 
     # Startup initialization
@@ -78,7 +63,7 @@
       ulimit -n 2048
 
       # GPG TTY setup
-      set -gx GPG_TTY (tty)
+      #set -gx GPG_TTY (tty)
 
       # Source private environment variables if they exist
       if test -f ~/.zprivate
@@ -90,16 +75,9 @@
         source "$EMACS_VTERM_PATH/etc/emacs-vterm-fish.sh"
       end
 
-      # Enable fzf key bindings if available
-      if command -q fzf_key_bindings
-        fzf_key_bindings
-      end
-
-      # Disable fish greeting
       set -g fish_greeting
-
-      # Enable emacs keybindings
       fish_default_key_bindings
+      fzf_key_bindings
 
       # Remove wezterm functions if not in wezterm
       if not set -q WEZTERM_EXECUTABLE
