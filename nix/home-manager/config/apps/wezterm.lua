@@ -23,8 +23,7 @@ config.line_height = 1.0
 -- config.color_scheme = "Tokyo Night"
 config.color_scheme = "tokyonight_night" -- or tokyonight_day, or whatever style
 
-config.enable_tab_bar = false
-config.window_padding = { left = "0.5cell", right = "0.5cell", top = "0.5cell", bottom = "0.5cell" }
+config.enable_tab_bar = true
 config.default_cursor_style = "BlinkingBlock"
 
 config.window_decorations = "RESIZE|INTEGRATED_BUTTONS"
@@ -32,14 +31,14 @@ config.window_decorations = "RESIZE|INTEGRATED_BUTTONS"
 config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
 	{ key = "p", mods = "CMD|SHIFT", action = action.ActivateCommandPalette },
-	{ key = "k", mods = "CMD", action = wezterm.action.ClearScrollback("ScrollbackAndViewport") },
+	{ key = "k", mods = "CTRL|ALT", action = wezterm.action.ClearScrollback("ScrollbackAndViewport") },
 	{ key = "w", mods = "CMD", action = action.CloseCurrentPane({ confirm = false }) },
 	{ key = "c", mods = "LEADER", action = action.SpawnTab("CurrentPaneDomain") },
 	-- CTRL + (h,j,k,l) to move between panes
-	{ key = "h", mods = "CTRL", action = action.ActivatePaneDirection("Left") },
-	{ key = "j", mods = "CTRL", action = action.ActivatePaneDirection("Down") },
-	{ key = "k", mods = "CTRL", action = action.ActivatePaneDirection("Up") },
-	{ key = "l", mods = "CTRL", action = action.ActivatePaneDirection("Right") },
+	{ key = "h", mods = "CMD", action = action.ActivatePaneDirection("Left") },
+	{ key = "j", mods = "CMD", action = action.ActivatePaneDirection("Down") },
+	{ key = "k", mods = "CMD", action = action.ActivatePaneDirection("Up") },
+	{ key = "l", mods = "CMD", action = action.ActivatePaneDirection("Right") },
 
 	-- new panes
 	{ key = "d", mods = "CMD|SHIFT", action = action.SplitVertical({ domain = "CurrentPaneDomain" }) },
