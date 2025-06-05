@@ -6,6 +6,7 @@
   # ============================================================================
 
   programs = {
+    zsh.enable = true;
     fish.enable = true;
     gnupg.agent.enable = true;
   };

@@ -60,6 +60,6 @@ config.keys = {
 }
 
 config.use_fancy_tab_bar = true
-config.pane_focus_follows_mouse = true
+config.pane_focus_follows_mouse = false
 
 return config

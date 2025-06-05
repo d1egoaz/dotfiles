@@ -10,6 +10,7 @@
       show-recents = false;
       orientation = "left";
       magnification = true;
+      show-process-indicators = true;
       largesize = 112;
     };
 
