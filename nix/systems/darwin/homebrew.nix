@@ -11,9 +11,15 @@
   homebrew = {
     enable = true;
     onActivation = {
-      autoUpdate = false;
-      upgrade = true;
+      autoUpdate = true; # Update Homebrew itself before installing/upgrading
+      upgrade = true; # Upgrade all formulae and casks to latest versions
+      cleanup = "zap"; # Remove unmanaged packages and all associated files
     };
+
+    # Custom taps
+    taps = [
+      "fastrepl/hyprnote"
+    ];
 
     # Global settings
     global = {
@@ -24,10 +30,12 @@
     # Shared applications for all hosts
     casks = [
       "1password"
+      "OpenSuperWhisper"
       "alfred"
       "cursor"
       "excalidrawz"
       "google-chrome"
+      "hyprnote"
       "iterm2"
       "shottr"
       "tidal"
