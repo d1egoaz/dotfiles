@@ -8,6 +8,10 @@
       # Get editor completions based on the config schema
       "$schema" = "https://starship.rs/config-schema.json";
 
+      format = "$all$directory\n$character ";
+      right_format = "$time";
+      add_newline = true;
+
       ###################
       # Enabled modules #
       ###################
@@ -28,11 +32,12 @@
 
       aws = {
         disabled = false;
-        format = "on [$symbol($profile )(\\($region\\) )(\\[$duration\\] )]($style)";
+        format = "[$symbol](bold yellow)aws [$profile/$region]($style) ";
       };
 
       git_branch = {
         disabled = false;
+        format = "[$symbol$branch(:$remote_branch)]($style) ";
       };
 
       git_status = {
@@ -68,10 +73,12 @@
 
       directory = {
         disabled = false;
+        truncate_to_repo = false;
         style = "blue";
       };
 
       nodejs = {
+        format = "[$symbol($version )]($style)";
         disabled = false;
       };
 
@@ -81,14 +88,23 @@
 
       terraform = {
         disabled = false;
+        format = "[$symbol](bold purple)terraform ";
+        detect_files = [ ".terraformignore" ".terraform" ];
       };
 
       nix_shell = {
         disabled = false;
+        format = "[$symbol](bold blue)nix$state ";
+        symbol = "❄️ ";
+        style = "bold blue";
+        impure_msg = "";
+        pure_msg = "pure";
       };
 
       direnv = {
         disabled = false;
+        allowed_msg = "";
+        loaded_msg = "";
       };
 
       # =====================================================
@@ -97,22 +113,23 @@
 
       custom.direnv = {
         detect_files = [ ".envrc" ];
-        format = "[ direnv](bold bright-yellow)";
-        disabled = false;
+        format = "[direnv]($style) ";
+        style = "bright-yellow";
+        disabled = true;
       };
 
       custom.devbox = {
         when = "test -n \"$IN_NIX_SHELL\"";
-        # command = "echo devbox";
-        # style = "dimmed fg:white bg:black";
-        format = "[ \\[devbox\\]](bold white)";
+        format = "[devbox]($style) ";
+        style = "bold white";
         disabled = false;
       };
 
       custom.kubeinfo = {
         command = "sed -n 's/KUBE_CONTEXT=\\(.*\\)/Kube Context: \\1,/p; s/KUBE_NAMESPACE=\\(.*\\)/namespace: \\1/p' .kube-env | paste -sd ' ' -";
         detect_files = [ ".kube-env" ];
-        format = " [$output]($style)";
+        format = "[k8s:$output]($style) ";
+        style = "bold cyan";
         disabled = false;
       };
 
