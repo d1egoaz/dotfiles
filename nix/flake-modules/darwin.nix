@@ -57,13 +57,19 @@
       personal-mbp = mkDarwinSystem {
         user = "diego";
         hostname = "personal-mbp";
-        hostCasks = [ "discord" ];
+        hostCasks = [
+          "discord"
+          "nordvpn"
+        ];
       };
 
       personal-mini = mkDarwinSystem {
         user = "diegoalvarez";
         hostname = "personal-mini";
-        hostCasks = [ "discord" ];
+        hostCasks = [
+          "discord"
+          "nordvpn"
+        ];
       };
     };
 }
