@@ -126,9 +126,9 @@
       };
 
       custom.kubeinfo = {
-        command = "sed -n 's/KUBE_CONTEXT=\\(.*\\)/Kube Context: \\1,/p; s/KUBE_NAMESPACE=\\(.*\\)/namespace: \\1/p' .kube-env | paste -sd ' ' -";
+        command = "sed -n 's/KUBE_CONTEXT=\\(.*\\)/Ctx:\\1,/p; s/KUBE_NAMESPACE=\\(.*\\)/NS:\\1/p' .kube-env | paste -sd ' ' -";
         detect_files = [ ".kube-env" ];
-        format = "[k8s:$output]($style) ";
+        format = "[k8s $output]($style) ";
         style = "bold cyan";
         disabled = false;
       };
