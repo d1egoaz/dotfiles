@@ -22,6 +22,7 @@ in
     # ========================================================================
     cmake # Cross-platform build system
     comma # Run programs without installing them
+    devbox # Portable, isolated dev environments
     just # Command runner (make alternative) https://just.systems/man/en/
     nix-tree # Visualize Nix package dependencies
 
