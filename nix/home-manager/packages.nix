@@ -84,6 +84,12 @@ in
     postgresql # PostgreSQL client tools
 
     # ========================================================================
+    # Media Tools
+    # ========================================================================
+    imagemagick # Image manipulation tool suite
+    ghostscript # PostScript and PDF interpreter
+
+    # ========================================================================
     # AI and Machine Learning
     # ========================================================================
     ollama # Local AI model runner
