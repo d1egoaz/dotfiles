@@ -86,6 +86,15 @@
         functions -e __wezterm_user_vars_precmd 2>/dev/null
         functions -e __wezterm_osc7 2>/dev/null
       end
+
+      # Custom functions
+      function pwd_tilde
+        string replace --regex "^$HOME" "~" "$PWD"
+      end
+
+      function fish_title
+        echo (pwd_tilde)": "(status current-command)
+      end
     '';
 
     # Fish plugins
