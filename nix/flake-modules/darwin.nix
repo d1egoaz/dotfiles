@@ -60,6 +60,10 @@
         hostCasks = [
           "discord"
           "nordvpn"
+          {
+            name = "google-chrome";
+            greedy = true;
+          }
         ];
       };
 
@@ -69,6 +73,10 @@
         hostCasks = [
           "discord"
           "nordvpn"
+          {
+            name = "google-chrome";
+            greedy = true;
+          }
         ];
       };
     };

@@ -14,6 +14,7 @@
       autoUpdate = true; # Update Homebrew itself before installing/upgrading
       upgrade = true; # Upgrade all formulae and casks to latest versions
       cleanup = "zap"; # Remove unmanaged packages and all associated files
+      extraFlags = [ ];
     };
 
     # Custom taps
@@ -32,9 +33,11 @@
       "1password"
       "OpenSuperWhisper"
       "alfred"
-      "cursor"
+      {
+        name = "cursor";
+        greedy = true;
+      }
       "excalidrawz"
-      "google-chrome"
       "hyprnote"
       "iterm2"
       "shottr"
