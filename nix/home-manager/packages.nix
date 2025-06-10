@@ -16,6 +16,7 @@ in
     go # Go programming language
     golangci-lint # Go linter
     gopls # Go language server
+    nixd # Nix language server
 
     # ========================================================================
     # Build and System Tools
