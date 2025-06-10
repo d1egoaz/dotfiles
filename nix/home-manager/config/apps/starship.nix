@@ -89,7 +89,10 @@
       terraform = {
         disabled = false;
         format = "[$symbol](bold purple)terraform ";
-        detect_files = [ ".terraformignore" ".terraform" ];
+        detect_files = [
+          ".terraformignore"
+          ".terraform"
+        ];
       };
 
       nix_shell = {
