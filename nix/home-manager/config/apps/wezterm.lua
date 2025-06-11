@@ -26,6 +26,8 @@ config.color_scheme = "tokyonight_night" -- or tokyonight_day, or whatever style
 config.enable_tab_bar = true
 config.default_cursor_style = "BlinkingBlock"
 
+config.inactive_pane_hsb = { saturation = 0.5, brightness = 0.5 }
+
 config.window_decorations = "RESIZE|INTEGRATED_BUTTONS"
 
 config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
