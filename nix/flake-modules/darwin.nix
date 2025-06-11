@@ -9,25 +9,25 @@
       # macOS System Configurations
       office-mbp = mkDarwinSystem {
         user = "diego.albeiroalvarezzuluag";
-        hostname = "office-mbp";
         taps = common.officeTaps;
         casks = common.officeCasks;
+        brews = common.officeBrews;
         masApps = common.officeMasApps;
       };
 
       personal-mbp = mkDarwinSystem {
         user = "diego";
-        hostname = "personal-mbp";
         taps = common.personalTaps;
         casks = common.personalCasks;
+        brews = common.personalBrews;
         masApps = common.personalMasApps;
       };
 
       personal-mini = mkDarwinSystem {
         user = "diegoalvarez";
-        hostname = "personal-mini";
         taps = common.personalTaps;
         casks = common.personalCasks;
+        brews = common.personalBrews;
         masApps = common.personalMasApps;
       };
     };

@@ -2,9 +2,9 @@
 { inputs }:
 {
   user,
-  hostname,
   taps,
   casks,
+  brews,
   masApps,
 }:
 let
@@ -27,6 +27,7 @@ inputs.darwin.lib.darwinSystem {
         user
         taps
         casks
+        brews
         masApps
         ;
     })

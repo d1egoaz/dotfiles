@@ -16,15 +16,16 @@ let
       greedy = true;
     }
   ];
+  commonBrews = [ ];
   commonMasApps = { };
-in {
-  inherit commonTaps commonCasks commonMasApps;
+in
+{
 
   # ============================================================================
   # Taps
   # ============================================================================
-  personalTaps = commonTaps ++ [];
-  officeTaps = commonTaps ++ [];
+  personalTaps = commonTaps ++ [ ];
+  officeTaps = commonTaps ++ [ "1debit/chime" ];
 
   # ============================================================================
   # Casks
@@ -42,6 +43,12 @@ in {
     "notion"
     "slack"
   ];
+
+  # ============================================================================
+  # Brews
+  # ============================================================================
+  personalBrews = commonBrews ++ [ ];
+  officeBrews = commonBrews ++ [ ];
 
   # ============================================================================
   # Mac App Store Apps

@@ -1,7 +1,8 @@
 {
-  casks ? [ ],
-  taps ? [ ],
-  masApps ? { },
+  taps,
+  casks,
+  brews,
+  masApps,
   ...
 }:
 
@@ -12,6 +13,7 @@
 
   homebrew = {
     enable = true;
+
     onActivation = {
       autoUpdate = true; # Update Homebrew itself before installing/upgrading
       upgrade = true; # Upgrade all formulae and casks to latest versions
@@ -19,20 +21,17 @@
       extraFlags = [ "--force" ]; # Force re-installation of packages
     };
 
-    # Custom taps
-    taps = taps;
-
     # Global settings
     global = {
       brewfile = true;
       lockfiles = false;
     };
 
-    # Shared applications for all hosts
-    # FAQ: /opt/homebrew/bin/brew uninstall --cask <app> --zap --force
+    # Custom taps, brews, casks, and Mac App Store apps
+    taps = taps;
     casks = casks;
-
-    # Mac App Store apps
+    brews = brews;
     masApps = masApps;
+    # FAQ: /opt/homebrew/bin/brew uninstall --cask <app> --zap --force
   };
 }
