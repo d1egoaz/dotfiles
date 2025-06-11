@@ -32,6 +32,7 @@ in {
   personalCasks = commonCasks ++ [
     "discord"
     "nordvpn"
+    "plex"
     {
       name = "google-chrome";
       greedy = true;
