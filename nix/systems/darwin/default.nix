@@ -1,7 +1,9 @@
 {
   pkgs,
   user,
-  hostCasks ? [ ],
+  casks,
+  taps,
+  masApps,
   ...
 }:
 
@@ -20,7 +22,9 @@
     ./nix-settings.nix
 
     # Darwin-specific packages/apps
-    (import ./homebrew.nix { inherit hostCasks; })
+    (import ./homebrew.nix {
+      inherit casks taps masApps;
+    })
   ];
 
   # ============================================================================
