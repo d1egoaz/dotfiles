@@ -10,7 +10,6 @@ let
     "OpenSuperWhisper"
     "shottr"
     "tidal"
-    "zoom"
     {
       name = "cursor";
       greedy = true;
@@ -34,6 +33,7 @@ in
     "discord"
     "nordvpn"
     "plex"
+    "zoom"
     {
       name = "google-chrome";
       greedy = true;
