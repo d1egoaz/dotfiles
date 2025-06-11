@@ -77,6 +77,7 @@ in
     argocd # GitOps continuous delivery tool
     cloudflared # Cloudflare tunnel client
     kubecolor # Colorized kubectl
+    kubectl # Kubernetes command-line tool
 
     # ========================================================================
     # Database Tools
@@ -94,6 +95,7 @@ in
     # AI and Machine Learning
     # ========================================================================
     ollama # Local AI model runner
+    github-mcp-server # GitHub MCP server
 
     # ========================================================================
     # Emacs Editor Support
@@ -106,7 +108,6 @@ in
     # Fonts
     # ========================================================================
     atkinson-hyperlegible-next # Hyperlegible font family
-    nerd-fonts.fira-code # Fira Code with Nerd Font patches
     nerd-fonts.hack # Hack font with Nerd Font patches
     nerd-fonts.jetbrains-mono # JetBrains Mono with Nerd Font patches
 
