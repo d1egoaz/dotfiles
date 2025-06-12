@@ -37,6 +37,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Utility functions for macOS
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # nix-darwin for macOS system management
     darwin = {
       url = "github:LnL7/nix-darwin/master";

@@ -24,7 +24,12 @@
 
     # Darwin-specific packages/apps
     (import ./homebrew.nix {
-      inherit taps casks brews masApps;
+      inherit
+        taps
+        casks
+        brews
+        masApps
+        ;
     })
   ];
 

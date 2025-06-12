@@ -1,128 +1,27 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  profile,
+  ...
+}:
+
+# Ensure profile is valid (compile-time check).
+assert builtins.elem profile [
+  "personal"
+  "office"
+];
+
+# ---------------------------------------------------------------------------
+# Package Sets
+# ---------------------------------------------------------------------------
+# The `profile` argument (passed through `specialArgs` in mkDarwinSystem) is
+# used to decide which of the profile-specific sets is merged with the common
+# packages.
+# ---------------------------------------------------------------------------
 
 let
-  # Import custom packages
-  customEmacs = import ../packages/emacs.nix { inherit pkgs; };
+  base = import ../profiles/base.nix { inherit pkgs; };
+  cfg = import ../profiles/${profile}.nix { inherit pkgs base; };
 in
-
 {
-  home.packages = with pkgs; [
-    # ========================================================================
-    # Programming Languages and Core Dev Tools
-    # ========================================================================
-    cargo # Rust package manager
-    gh # GitHub CLI tool
-    git # Version control system
-    go # Go programming language
-    golangci-lint # Go linter
-    gopls # Go language server
-    nixd # Nix language server
-
-    # ========================================================================
-    # Build and System Tools
-    # ========================================================================
-    cmake # Cross-platform build system
-    comma # Run programs without installing them
-    devbox # Portable, isolated dev environments
-    just # Command runner (make alternative) https://just.systems/man/en/
-    nix-tree # Visualize Nix package dependencies
-
-    # ========================================================================
-    # Text Processing and Formatting
-    # ========================================================================
-    delta # Git diff viewer
-    graphviz # Graph visualization software
-    nixfmt-rfc-style # Nix code formatter
-    pandoc # Universal document converter
-    prettierd # Prettier daemon
-    shellcheck # Shell script analyzer
-    shfmt # Shell script formatter
-    stylua # Lua code formatter
-    taplo-cli # TOML toolkit
-    yamllint # YAML linter
-    yaml-language-server # YAML language server
-
-    # ========================================================================
-    # Terminal and CLI Tools
-    # ========================================================================
-    bash # Bourne Again Shell
-    bat # Better cat with syntax highlighting
-    btop # Resource monitor
-    coreutils # GNU core utilities
-    curl # Command line tool for transferring data
-    direnv # Environment variable manager per directory
-    dust # Intuitive disk usage analyzer (du + rust)
-    fd # Find alternative
-    fzf # Fuzzy finder
-    gnupg # GNU Privacy Guard for encryption
-    gum # Glamorous shell scripts
-    hyperfine # Command-line benchmarking tool
-    jq # JSON processor
-    less # Pager
-    lsd # ls deluxe with colors and icons
-    ripgrep # Fast text search
-    socat # Socket CAT
-    starship # Cross-shell prompt
-    tree # Directory listing
-    wget # File downloader
-    xh # Friendly HTTP client
-    yq # YAML processor
-    zoxide # Smart cd command
-    zsh # Advanced shell with features
-    fish # Friendly interactive shell
-
-    # ========================================================================
-    # Cloud and Infrastructure
-    # ========================================================================
-    argocd # GitOps continuous delivery tool
-    cloudflared # Cloudflare tunnel client
-    kubecolor # Colorized kubectl
-    kubectl # Kubernetes command-line tool
-
-    # ========================================================================
-    # Database Tools
-    # ========================================================================
-    mysql-client # MySQL command-line client
-    postgresql # PostgreSQL client tools
-
-    # ========================================================================
-    # Media Tools
-    # ========================================================================
-    imagemagick # Image manipulation tool suite
-    ghostscript # PostScript and PDF interpreter
-
-    # ========================================================================
-    # AI and Machine Learning
-    # ========================================================================
-    ollama # Local AI model runner
-    github-mcp-server # GitHub MCP server
-
-    # ========================================================================
-    # Emacs Editor Support
-    # ========================================================================
-    glibtool # GNU libtool
-    aspell # Spell checker
-    aspellDicts.en # English dictionary for aspell
-
-    # ========================================================================
-    # Fonts
-    # ========================================================================
-    atkinson-hyperlegible-next # Hyperlegible font family
-    nerd-fonts.hack # Hack font with Nerd Font patches
-    nerd-fonts.jetbrains-mono # JetBrains Mono with Nerd Font patches
-
-    # ========================================================================
-    # macOS-Specific Tools and Window Management
-    # ========================================================================
-    aerospace # Window manager for macOS
-    jankyborders # Window borders for macOS
-    pinentry_mac # GPG pinentry for macOS
-    sketchybar # Status bar for macOS
-
-    # ========================================================================
-    # Custom Applications
-    # ========================================================================
-    # Custom Emacs with macOS enhancements
-    customEmacs
-  ];
+  home.packages = cfg.hmPackages;
 }

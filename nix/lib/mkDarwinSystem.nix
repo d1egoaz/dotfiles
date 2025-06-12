@@ -2,14 +2,20 @@
 { inputs }:
 {
   user,
-  taps,
-  casks,
-  brews,
-  masApps,
+  profile,
 }:
+# Ensure that an allowed profile was provided.
+assert builtins.elem profile [
+  "personal"
+  "office"
+];
+
 let
   system = "aarch64-darwin";
   pkgs = inputs.nixpkgs.legacyPackages.${system};
+  # Load base & profile configurations
+  base = import ../profiles/base.nix { inherit pkgs; };
+  profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
 in
 inputs.darwin.lib.darwinSystem {
   inherit system;
@@ -22,15 +28,15 @@ inputs.darwin.lib.darwinSystem {
 
     # macOS system configuration
     (import ../systems/darwin/default.nix {
-      inherit
-        pkgs
-        user
-        taps
-        casks
-        brews
-        masApps
-        ;
+      inherit pkgs user;
+      taps = profileCfg.taps;
+      casks = profileCfg.casks;
+      brews = profileCfg.brews;
+      masApps = profileCfg.masApps;
     })
+
+    # Mac App Util for better .app handling
+    inputs.mac-app-util.darwinModules.default
 
     # Home Manager integration
     inputs.home-manager.darwinModules.home-manager
@@ -39,10 +45,12 @@ inputs.darwin.lib.darwinSystem {
         useGlobalPkgs = true;
         useUserPackages = true;
         users.${user} = import ../home-manager;
-        extraSpecialArgs = { inherit inputs user; };
+        # Pass additional arguments to all Home-Manager modules so they can
+        # customize behaviour based on the current work profile.
+        extraSpecialArgs = { inherit inputs user profile; };
       };
     }
   ];
   # Pass the user parameter to all modules
-  specialArgs = { inherit user; };
+  specialArgs = { inherit user profile; };
 }

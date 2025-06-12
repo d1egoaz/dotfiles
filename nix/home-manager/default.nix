@@ -13,6 +13,9 @@
     # Tokyo Night theme support
     inputs.tokyonight.homeManagerModules.default
 
+    # Mac App Util for better .app handling
+    inputs.mac-app-util.homeManagerModules.default
+
     # Application configurations
     ./config/apps
 
