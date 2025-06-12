@@ -1,7 +1,5 @@
 { pkgs, base }:
 
-# Office profile: extends `base` with company-specific tools.
-
 {
   # ---------------- Homebrew ----------------
   taps = base.taps ++ [
@@ -14,6 +12,7 @@
   ];
 
   brews = base.brews ++ [ ];
+
   masApps = base.masApps // { };
 
   # ---------------- Home-Manager packages ----------------

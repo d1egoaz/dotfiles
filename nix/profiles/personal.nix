@@ -1,7 +1,5 @@
 { pkgs, base }:
 
-# Personal profile: extends `base` with packages/apps used on personal machines.
-
 {
   # ---------------- Homebrew ----------------
   taps = base.taps ++ [ ];
@@ -12,6 +10,7 @@
   ];
 
   brews = base.brews ++ [ ];
+
   masApps = base.masApps // {
     "Emby" = 992180193; # Emby media
     "Infuse" = 1136220934; # Infuse player

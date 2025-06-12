@@ -28,10 +28,12 @@
     };
 
     # Custom taps, brews, casks, and Mac App Store apps
-    taps = taps;
-    casks = casks;
-    brews = brews;
-    masApps = masApps;
+    inherit
+      taps
+      casks
+      brews
+      masApps
+      ;
     # FAQ: /opt/homebrew/bin/brew uninstall --cask <app> --zap --force
   };
 }

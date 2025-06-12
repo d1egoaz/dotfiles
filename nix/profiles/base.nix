@@ -1,7 +1,6 @@
 { pkgs }:
 
 # Base profile: packages and Homebrew selections common to ALL machines.
-# Consumers may extend this via `personal.nix`, `office.nix`, etc.
 
 let
   # ---------------- Custom Packages ----------------
@@ -33,7 +32,7 @@ let
   masApps = { }; # Mac App Store apps common to all machines
 
   # ---------------- Home-Manager packages ----------------
-  hmCommon = with pkgs; [
+  hmPackages = with pkgs; [
     # =====================================================================
     # Programming Languages and Core Dev Tools
     # =====================================================================
@@ -149,10 +148,9 @@ let
     pinentry_mac # GPG pinentry for macOS
     sketchybar # Status bar
   ];
-  # Keep hmPackages for compatibility with other profiles
-  hmPackages = hmCommon;
 in
 {
+  # Export all base configuration sets for use by system profiles
   inherit
     taps
     casks

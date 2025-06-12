@@ -3,6 +3,7 @@
 {
   user,
   profile,
+  system,
 }:
 # Ensure that an allowed profile was provided.
 assert builtins.elem profile [
@@ -11,7 +12,6 @@ assert builtins.elem profile [
 ];
 
 let
-  system = "aarch64-darwin";
   pkgs = inputs.nixpkgs.legacyPackages.${system};
   # Load base & profile configurations
   base = import ../profiles/base.nix { inherit pkgs; };
@@ -51,6 +51,4 @@ inputs.darwin.lib.darwinSystem {
       };
     }
   ];
-  # Pass the user parameter to all modules
-  specialArgs = { inherit user profile; };
 }

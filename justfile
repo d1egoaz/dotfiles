@@ -52,7 +52,7 @@ nix-check:
     cd nix && nix flake check
 
 # Quick format and check
-lint: nix-fmt nix-check
+nix-lint: nix-fmt nix-check
 
 # ============================================================================
 # macOS (nix-darwin) Systems
