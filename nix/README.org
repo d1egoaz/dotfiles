@@ -1,0 +1,195 @@
+#+TITLE: Diego's Nix Configuration
+#+AUTHOR: Diego Alvarez
+
+A clean, modern macOS configuration using nix-darwin and Home Manager with flakes.
+
+* Machines
+
+  - *office-mbp*: Office MacBook Pro M-chip (user: diego.albeiroalvarezzuluag)
+  - *personal-mbp*: Personal MacBook Pro M-chip (user: diego)
+  - *personal-mini*: Personal Mac Mini M-chip (user: diegoalvarez)
+
+* Bootstrap
+
+** Prerequisites
+
+   Install Nix using the Determinate Systems installer:
+
+   #+begin_src bash
+   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+   #+end_src
+
+   Install just command runner:
+
+   #+begin_src bash
+   # On macOS with Homebrew
+   brew install just
+
+   # Or with cargo
+   cargo install just
+   #+end_src
+
+** Initial Setup
+
+   Bootstrap machine by running:
+
+   *Office MacBook Pro:*
+
+   #+begin_src bash
+   nix run nix-darwin -- switch --flake github:d1egoaz/dotfiles#office-mbp
+   #+end_src
+
+   *Personal MacBook Pro:*
+
+   #+begin_src bash
+   nix run nix-darwin -- switch --flake github:d1egoaz/dotfiles#personal-mbp
+   #+end_src
+
+   *Personal Mac Mini:*
+
+   #+begin_src bash
+   nix run nix-darwin -- switch --flake github:d1egoaz/dotfiles#personal-mini
+   #+end_src
+
+** Apply Changes Locally
+
+   #+begin_src bash
+   # Auto-detect current machine and rebuild
+   just nix-switch
+
+   # Or target specific machines
+   just nix-rebuild office-mbp
+   just nix-rebuild personal-mbp
+   just nix-rebuild personal-mini
+   #+end_src
+
+   *Manual rebuild:*
+
+   #+begin_src bash
+   darwin-rebuild switch --flake .#office-mbp
+   # or
+   darwin-rebuild switch --flake .#personal-mbp
+   # or
+   darwin-rebuild switch --flake .#personal-mini
+   #+end_src
+
+** Development Commands
+
+   #+begin_src bash
+   # Format code
+   just nix-fmt
+   # Check configuration
+   just nix-check
+   # Update flake inputs
+   just nix-update
+   # Garbage collection
+   just nix-gc
+   #+end_src
+
+** Available Commands
+
+   List all available recipes:
+
+   #+begin_src bash
+   just --list
+   # or simply
+   just
+   #+end_src
+
+* Architecture
+
+  This configuration uses a **modular flake-based architecture** that provides clean separation of concerns while maintaining host-specific flexibility:
+
+** Profile-Based Configuration
+
+   - *profiles/base.nix* - Common configuration shared across all machines
+   - *profiles/office.nix* - Office-specific settings and packages
+   - *profiles/personal.nix* - Personal machine configurations
+   - *flake.nix* - Host definitions with profile assignments
+
+** Modular System Design
+
+*** Home Manager Structure
+    - *home-manager/default.nix* - Main entry point for user environment
+    - *home-manager/packages.nix* - Organized package collections
+    - *home-manager/config/* - Modular configuration files:
+      - Program configurations
+      - Environment settings
+      - Application-specific configs
+
+*** System Configuration
+    - *systems/darwin/* - macOS system-level settings
+    - *lib/mkDarwinSystem.nix* - Reusable system builder function
+    - *flake-modules/* - Flake configuration modules
+
+* Adding Configurations
+
+** Packages
+
+   *User packages* (installed in home directory):
+   Add to ~home-manager/packages.nix~ in the appropriate category.
+
+   *Profile-specific packages*:
+   Add to the relevant profile in ~profiles/~ directory.
+
+** Program Configurations
+
+   Add new modules in ~home-manager/config/apps/~ and import them in ~home-manager/config/apps/default.nix~.
+
+** Profile-Specific Configurations
+
+   *For profile-based differences:*
+
+   1. Add configuration to appropriate profile in ~profiles/~
+   2. Use profile-specific settings in ~flake.nix~
+   3. Reference profiles in host definitions
+
+   *For host-specific GUI applications:*
+   Add to the appropriate profile or modify ~systems/darwin/homebrew.nix~.
+
+** Adding New Hosts
+
+   #+begin_src nix
+   # In flake.nix darwinConfigurations
+   new-host = lib.mkDarwinSystem {
+     system = "aarch64-darwin";
+     user = "newuser";
+     host = "new-host";
+     profiles = [ ./profiles/base.nix ./profiles/personal.nix ];
+   };
+   #+end_src
+
+* Troubleshooting
+
+  *Build errors:*
+
+  #+begin_src bash
+  nix flake check  # Validate configuration
+  nix fmt          # Fix formatting issues
+  #+end_src
+
+  *Rollback changes:*
+
+  #+begin_src bash
+  darwin-rebuild --rollback
+  #+end_src
+
+  *Clean up:*
+
+  #+begin_src bash
+  just nix-gc      # Remove old generations
+  #+end_src
+
+  *Brew apps not in the Application folder:*
+
+  #+begin_src bash
+  /opt/homebrew/bin/brew reinstall --cask <app>
+  #+end_src
+
+  *Configuration issues:*
+
+  - Ensure new program modules are imported in ~home-manager/config/apps/default.nix~
+  - Check for configuration conflicts between modules
+  - Validate module syntax with ~nix flake check~
+  - For profile-specific issues, verify profile assignments in ~flake.nix~
+  - Check that profiles are properly imported in host configurations
