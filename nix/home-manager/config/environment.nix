@@ -34,7 +34,7 @@
     # Homebrew
     HOMEBREW_NO_ANALYTICS = "1";
     HOMEBREW_NO_INSECURE_REDIRECT = "1";
-    HOMEBREW_CASK_OPTS = "--require-sha";
+    # HOMEBREW_CASK_OPTS = "--require-sha";
     HOMEBREW_NO_ENV_HINTS = "1";
   };
 
