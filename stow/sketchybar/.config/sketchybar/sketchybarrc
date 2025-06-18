@@ -50,11 +50,12 @@ source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/ip.sh"
 source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/chym.sh"
 source "$ITEM_DIR/battery.sh"
 
 # Bracket
 
-sketchybar --add bracket status ip_address volume battery
+sketchybar --add bracket status ip_address volume battery chym
 
 # sketchybar --add bracket spaces '/space\..*/' \
 #     --set spaces background.color=$SPACE_BACKGROUND \

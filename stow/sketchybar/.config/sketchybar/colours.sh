@@ -7,6 +7,7 @@ ICON_FONT="Symbols Nerd Font Mono"
 MONO_FONT="Essential PragmataPro"
 
 BLUE=0xff8aadf4
+GREEN=0xff9ece6a
 ORANGE=0xAAffc777
 RED=0xffed8796
 PURPLE=0xAAbb9af7
