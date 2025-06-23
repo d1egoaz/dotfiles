@@ -5,8 +5,12 @@
   taps = base.taps ++ [ ];
 
   casks = base.casks ++ [
+    "chatgpt" # ChatGPT desktop
+    "google-chrome" # Google Chrome browser
     "nordvpn" # NordVPN client
     "plex" # Plex media server
+    "whatsapp" # WhatsApp desktop
+    "zoom" # Zoom meetings
   ];
 
   brews = base.brews ++ [ ];
@@ -21,9 +25,6 @@
 
   # ---------------- System packages ----------------
   systemPackages = base.systemPackages ++ (with pkgs; [
-      google-chrome # Google Chrome browser
-      whatsapp-for-mac # WhatsApp desktop
-      zoom-us # Zoom meetings
   ]);
 
   # ---------------- Home-Manager packages ----------------
