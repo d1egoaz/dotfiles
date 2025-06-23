@@ -43,4 +43,4 @@ fi
 LABEL=$(printf "CHYM $%.2f %s%.2f (%s%.2f%%)" "$PRICE" "$sign" "$abschange" "$sign" "$abspct")
 
 # Set the SketchyBar item with color
-sketchybar --set "$NAME" label="$LABEL" label.color="$color"
+sketchybar --set "$NAME" label="$LABEL" label.color="$color" icon.color="$color"
