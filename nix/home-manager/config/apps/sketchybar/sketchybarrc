@@ -48,10 +48,10 @@ source "$ITEM_DIR/front_app.sh"
 
 # Right
 source "$ITEM_DIR/clock.sh"
-source "$ITEM_DIR/ip.sh"
 source "$ITEM_DIR/volume.sh"
-source "$ITEM_DIR/chym.sh"
 source "$ITEM_DIR/battery.sh"
+source "$ITEM_DIR/ip.sh"
+source "$ITEM_DIR/chym.sh"
 
 # Bracket
 

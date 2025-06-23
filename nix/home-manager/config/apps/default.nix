@@ -7,6 +7,7 @@
     ./fish.nix
     ./fzf.nix
     ./git.nix
+    ./sketchybar.nix
     ./starship.nix
     ./vim.nix
     ./wezterm.nix
