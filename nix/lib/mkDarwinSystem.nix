@@ -33,6 +33,7 @@ inputs.darwin.lib.darwinSystem {
       casks = profileCfg.casks;
       brews = profileCfg.brews;
       masApps = profileCfg.masApps;
+      systemPackages = profileCfg.systemPackages;
     })
 
     # Mac App Util for better .app handling
@@ -44,6 +45,7 @@ inputs.darwin.lib.darwinSystem {
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
+        backupFileExtension = "backup";
         users.${user} = import ../home-manager;
         # Pass additional arguments to all Home-Manager modules so they can
         # customize behaviour based on the current work profile.

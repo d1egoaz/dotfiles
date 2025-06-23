@@ -19,14 +19,18 @@
     "Unifi" = 1057750338; # UniFi Network
   };
 
+  # ---------------- System packages ----------------
+  systemPackages = base.systemPackages ++ (with pkgs; [
+      google-chrome # Google Chrome browser
+      whatsapp-for-mac # WhatsApp desktop
+      zoom-us # Zoom meetings
+  ]);
+
   # ---------------- Home-Manager packages ----------------
   hmPackages =
     base.hmPackages
     ++ (with pkgs; [
       discord # Discord chat
-      google-chrome # Google Chrome browser
       tailscale # WireGuard mesh VPN
-      whatsapp-for-mac # WhatsApp desktop
-      zoom-us # Zoom meetings
     ]);
 }

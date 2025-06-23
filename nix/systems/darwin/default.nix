@@ -5,6 +5,7 @@
   casks,
   brews,
   masApps,
+  systemPackages,
   ...
 }:
 
@@ -47,10 +48,8 @@
     shell = pkgs.zsh;
   };
 
-  # System packages
-  environment.systemPackages = with pkgs; [
-    home-manager
-  ];
+  # System packages from profile configuration
+  environment.systemPackages = systemPackages;
 
   # ============================================================================
   # System State

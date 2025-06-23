@@ -31,6 +31,11 @@ let
   brews = [ ]; # add formulae common to every machine here
   masApps = { }; # Mac App Store apps common to all machines
 
+  # ---------------- System packages ----------------
+  systemPackages = with pkgs; [
+    home-manager # Home Manager itself needs to be system-wide
+  ];
+
   # ---------------- Home-Manager packages ----------------
   hmPackages = with pkgs; [
     # =====================================================================
@@ -44,7 +49,11 @@ let
     golangci-lint # Go linter
     gopls # Go language server
     nixd # Nix language server
+    nodejs # Node.js
     _1password-cli # 1Password CLI
+    python3 # Python 3
+    uv # Python package manager
+    black # Python code formatter
 
     # =====================================================================
     # Build and System Tools
@@ -156,6 +165,7 @@ in
     casks
     brews
     masApps
+    systemPackages
     hmPackages
     ;
 }
