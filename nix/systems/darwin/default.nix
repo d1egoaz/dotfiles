@@ -52,8 +52,10 @@
   environment.systemPackages = systemPackages;
 
   system.activationScripts.postActivation.text = ''
+    if command -v /opt/homebrew/bin/mas >/dev/null 2>&1; then
     echo "Upgrading Mac App Store apps..."
-    /opt/homebrew/bin/mas upgrade --verbose
+      /opt/homebrew/bin/mas upgrade --verbose
+    fi
   '';
 
   # ============================================================================
