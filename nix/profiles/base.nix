@@ -22,6 +22,7 @@ let
     "shottr" # Screenshot tool
     "tidal" # TIDAL desktop client
     "cursor" # The Cursor IDE
+    "font-sf-pro" # SF Pro font
   ];
 
   brews = [ ]; # add formulae common to every machine here
@@ -142,8 +143,7 @@ let
     # Fonts
     # =====================================================================
     atkinson-hyperlegible-next # Hyperlegible font
-    nerd-fonts.hack # Hack Nerd Font
-    nerd-fonts.jetbrains-mono # JetBrains Mono Nerd Font
+    nerd-fonts.symbols-only # Symbols Nerd Font Mono
 
     # =====================================================================
     # macOS-Specific Tools & Window Management

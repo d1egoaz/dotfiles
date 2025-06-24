@@ -14,6 +14,7 @@ config.font = wezterm.font_with_fallback({
     "Essential PragmataPro",
     "Menlo",
     "DengXian", -- test with: wezterm ls-fonts --text '显示中文'
+    "SF Pro Display",
 })
 config.default_prog = { "fish", "-l" }
 
