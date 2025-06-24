@@ -11,7 +11,9 @@
     "slack" # Slack messenger
   ];
 
-  brews = base.brews ++ [ ];
+  brews = base.brews ++ [ 
+    "compass"
+  ];
 
   masApps = base.masApps // { };
 

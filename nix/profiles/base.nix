@@ -21,11 +21,7 @@ let
     "OpenSuperWhisper" # OpenSuperWhisper
     "shottr" # Screenshot tool
     "tidal" # TIDAL desktop client
-    # The Cursor IDE (needs greedy install)
-    {
-      name = "cursor";
-      greedy = true;
-    }
+    "cursor" # The Cursor IDE
   ];
 
   brews = [ ]; # add formulae common to every machine here
