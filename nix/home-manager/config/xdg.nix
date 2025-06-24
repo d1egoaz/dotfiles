@@ -9,6 +9,7 @@
     enable = true;
     # Configuration files
     configFile = {
+      "sketchybar".source = ./apps/sketchybar;
     };
 
     # Data files

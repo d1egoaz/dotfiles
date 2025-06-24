@@ -13,16 +13,16 @@ let
 
   casks = [
     "1password" # 1Password
+    "OpenSuperWhisper" # OpenSuperWhisper
     "alfred" # Alfred launcher
+    "cursor" # The Cursor IDE
     "excalidrawz" # ExcalidrawZ whiteboard
+    "font-sf-pro" # SF Pro font
     "gpg-suite" # GPG Suite
     "hyprnote" # Hyprnote markdown notes
     "iterm2" # iTerm2 terminal
-    "OpenSuperWhisper" # OpenSuperWhisper
     "shottr" # Screenshot tool
     "tidal" # TIDAL desktop client
-    "cursor" # The Cursor IDE
-    "font-sf-pro" # SF Pro font
   ];
 
   brews = [ ]; # add formulae common to every machine here

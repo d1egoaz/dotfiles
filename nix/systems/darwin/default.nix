@@ -18,7 +18,7 @@
     # System configuration
     ./system/defaults.nix
     ./system/programs.nix
-    ./system/security.nix
+    (import ./system/security.nix { inherit user pkgs; })
 
     # Nix configuration
     ./nix-settings.nix

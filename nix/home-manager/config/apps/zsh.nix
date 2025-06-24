@@ -5,9 +5,9 @@
     enable = true;
 
     initExtra = ''
-      if [[ -z "$FISH_VERSION" ]]; then
-        exec ${pkgs.fish}/bin/fish
-      fi
+      # if [[ -z "$FISH_VERSION" ]]; then
+      #   exec ${pkgs.fish}/bin/fish
+      # fi
     '';
 
     # Shell options and initialization
