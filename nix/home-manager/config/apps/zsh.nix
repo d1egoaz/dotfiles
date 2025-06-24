@@ -1,8 +1,14 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   programs.zsh = {
     enable = true;
+
+    initExtra = ''
+      if [[ -z "$FISH_VERSION" ]]; then
+        exec ${pkgs.fish}/bin/fish
+      fi
+    '';
 
     # Shell options and initialization
     initContent = ''
