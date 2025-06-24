@@ -51,6 +51,11 @@
   # System packages from profile configuration
   environment.systemPackages = systemPackages;
 
+  system.activationScripts.postActivation.text = ''
+    echo "Upgrading Mac App Store apps..."
+    /opt/homebrew/bin/mas upgrade --verbose
+  '';
+
   # ============================================================================
   # System State
   # ============================================================================
