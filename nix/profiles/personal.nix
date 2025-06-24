@@ -29,8 +29,10 @@
   };
 
   # ---------------- System packages ----------------
-  systemPackages = base.systemPackages ++ (with pkgs; [
-  ]);
+  systemPackages =
+    base.systemPackages
+    ++ (with pkgs; [
+    ]);
 
   # ---------------- Home-Manager packages ----------------
   hmPackages =

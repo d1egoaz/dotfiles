@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# shellcheck disable=SC2034
+
 # General Icons
 LOADING=􀖇
 APPLE=

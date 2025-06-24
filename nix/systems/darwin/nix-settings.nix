@@ -12,7 +12,10 @@
         "flakes"
       ];
       auto-optimise-store = false;
-      trusted-users = [ "root" "@admin" ];
+      trusted-users = [
+        "root"
+        "@admin"
+      ];
     };
     gc = {
       automatic = true;

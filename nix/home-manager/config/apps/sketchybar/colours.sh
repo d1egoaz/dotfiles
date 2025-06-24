@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# shellcheck disable=SC2034
+
 # https://github.com/tokyo-night/tokyo-night-vscode-theme
 
 FONT="Atkinson Hyperlegible Next"

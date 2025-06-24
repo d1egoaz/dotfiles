@@ -11,15 +11,16 @@
     "slack" # Slack messenger
   ];
 
-  brews = base.brews ++ [ 
-    "compass"
+  brews = base.brews ++ [
   ];
 
   masApps = base.masApps // { };
 
   # ---------------- System packages ----------------
-  systemPackages = base.systemPackages ++ (with pkgs; [
-  ]);
+  systemPackages =
+    base.systemPackages
+    ++ (with pkgs; [
+    ]);
 
   # ---------------- Home-Manager packages ----------------
   hmPackages = base.hmPackages ++ (with pkgs; [ ]);

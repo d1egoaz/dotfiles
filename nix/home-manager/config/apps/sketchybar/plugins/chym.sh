@@ -2,6 +2,7 @@
 set -euo pipefail
 
 # Source colors
+# shellcheck source=/dev/null
 source "${CONFIG_DIR}/colours.sh"
 
 SYMBOL=CHYM
@@ -17,7 +18,7 @@ PRICE=$(echo "$API_DATA" | jq -r '.chart.result[0].meta.regularMarketPrice // em
 PREV_CLOSE=$(echo "$API_DATA" | jq -r '.chart.result[0].meta.previousClose // empty' 2>/dev/null)
 
 # Check if we got valid data
-if [[ -z "$PRICE" || -z "$PREV_CLOSE" || "$PRICE" == "null" || "$PREV_CLOSE" == "null" ]]; then
+if [[ -z $PRICE || -z $PREV_CLOSE || $PRICE == "null" || $PREV_CLOSE == "null" ]]; then
   sketchybar --set "$NAME" label="Error: No data" label.color="$RED"
   exit 1
 fi
@@ -27,7 +28,7 @@ CHANGE=$(awk -v price="$PRICE" -v prev="$PREV_CLOSE" 'BEGIN{print price - prev}'
 PCT=$(awk -v price="$PRICE" -v prev="$PREV_CLOSE" 'BEGIN{print ((price - prev) / prev) * 100}')
 
 # Determine sign, color, and get absolute values
-if (( $(awk -v change="$CHANGE" 'BEGIN{print (change<0)}') )); then
+if (($(awk -v change="$CHANGE" 'BEGIN{print (change<0)}'))); then
   sign="−"
   color="$RED"
   abschange=$(awk -v change="$CHANGE" 'BEGIN{print -change}')
