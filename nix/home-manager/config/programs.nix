@@ -87,6 +87,7 @@
 
   services = {
     # GPG Agent service
+    # Run once: `gpg --decrypt ~/.authinfo.gpg` to save it in keychain
     gpg-agent = {
       enable = true;
       defaultCacheTtl = 43200;
