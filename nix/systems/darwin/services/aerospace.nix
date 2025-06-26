@@ -300,19 +300,22 @@
           "if".app-id = "com.apple.SecurityAgent";
           run = "layout floating";
         }
-
-        # Catch-all tiling rule with fallback
         {
-          check-further-callbacks = true;
+          "if".app-id = "com.apple.systempreferences";
+          run = "layout floating";
+        }
+        {
+          "if".app-id = "cc.ffitch.shottr";
+          run = "layout floating";
+        }
+
+        # Catch-all tiling rule
+        {
           "if".app-name-regex-substring = ".*";
           run = [
             "layout tiling"
             "move-node-to-workspace 3"
           ];
-        }
-        {
-          "if".app-name-regex-substring = ".*";
-          run = "layout floating";
         }
       ];
     };
