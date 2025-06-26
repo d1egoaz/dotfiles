@@ -39,6 +39,7 @@ let
     # Programming Languages and Core Dev Tools
     # =====================================================================
     cargo # Rust package manager
+    claude-code # Claude Code CLI tool
     customEmacs # Custom Emacs with macOS enhancements
     gh # GitHub CLI tool
     git # Version control system
@@ -59,6 +60,7 @@ let
     comma # Run programs without installing them
     devbox # Portable, isolated dev environments
     just # Command runner (make alternative)
+    nh # Nix helper
     nix-tree # Visualise Nix package dependencies
     watch # Execute a program periodically
 

@@ -94,3 +94,6 @@ _nix-darwin-switch HOST:
     else
         echo "✅ No new generation created."
     fi
+
+nh-switch:
+    nh darwin switch ./nix#darwinConfigurations.{{_host}}
