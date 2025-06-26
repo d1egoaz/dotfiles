@@ -11,10 +11,10 @@ if [ "$SENDER" = "volume_change" ]; then
     ICON="􀊩"
     ;;
   [3-5][0-9])
-    ICON="􀊥"
+    ICON="􀊧"
     ;;
   [1-9] | [1-2][0-9])
-    ICON="􀊡"
+    ICON="􀊥"
     ;;
   *) ICON="􀊣" ;;
   esac
