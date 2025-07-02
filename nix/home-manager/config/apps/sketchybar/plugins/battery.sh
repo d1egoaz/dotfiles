@@ -7,21 +7,17 @@ if [ "$PERCENTAGE" = "" ]; then
   exit 0
 fi
 
-case "${PERCENTAGE}" in
-9[0-9] | 100)
+if [ "$PERCENTAGE" -ge 90 ]; then
   ICON="􀢋"
-  ;;
-[6-8][0-9])
+elif [ "$PERCENTAGE" -ge 60 ]; then
   ICON="􀺸"
-  ;;
-[3-5][0-9])
+elif [ "$PERCENTAGE" -ge 30 ]; then
   ICON="􀺶"
-  ;;
-[1-2][0-9])
+elif [ "$PERCENTAGE" -ge 10 ]; then
   ICON="􀛩"
-  ;;
-*) ICON="􀛪" ;;
-esac
+else
+  ICON="􀛪"
+fi
 
 if [[ $CHARGING != "" ]]; then
   ICON=""
