@@ -5,7 +5,8 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "${CONFIG_DIR}/colours.sh"
 
-SYMBOL=CHYM
+# Get stock symbol from parameter or default to CHYM
+SYMBOL=${1:-CHYM}
 API_URL="https://query1.finance.yahoo.com/v8/finance/chart/${SYMBOL}"
 
 # Fetch data from Yahoo Finance API
@@ -41,7 +42,7 @@ else
 fi
 
 # Format the label for SketchyBar
-LABEL=$(printf "CHYM $%.2f %s%.2f (%s%.2f%%)" "$PRICE" "$sign" "$abschange" "$sign" "$abspct")
+LABEL=$(printf "%s $%.2f %s%.2f (%s%.2f%%)" "$SYMBOL" "$PRICE" "$sign" "$abschange" "$sign" "$abspct")
 
 # Set the SketchyBar item with color
 sketchybar --set "$NAME" label="$LABEL" label.color="$color" icon.color="$color"
