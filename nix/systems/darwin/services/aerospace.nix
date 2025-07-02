@@ -201,123 +201,115 @@
       };
 
       # Window detection rules
-      on-window-detected = [
-        # Chrome
-        {
-          "if".app-id = "com.google.Chrome";
-          run = "move-node-to-workspace Chrome";
-        }
-        # Emacs
-        {
-          "if".app-id = "org.gnu.Emacs";
-          run = "move-node-to-workspace Emacs";
-        }
-        {
-          "if".app-name-regex-substring = "emacs.*";
-          run = "move-node-to-workspace Emacs";
-        }
-        # Terminal apps
-        {
-          "if".app-id = "com.googlecode.iterm2";
-          run = "move-node-to-workspace Terminal";
-        }
-        {
-          "if".app-id = "com.github.wez.wezterm";
-          run = "move-node-to-workspace Terminal";
-        }
-        # AI apps
-        {
-          "if".app-id = "com.openai.chat";
-          run = "move-node-to-workspace AI";
-        }
-        {
-          "if".app-name-regex-substring = "ChatGPT";
-          run = "move-node-to-workspace AI";
-        }
-        {
-          "if".app-name-regex-substring = "Gemini";
-          run = "move-node-to-workspace AI";
-        }
-        {
-          "if".app-name-regex-substring = "AI diegoa";
-          run = "move-node-to-workspace AI";
-        }
-        {
-          "if".app-name-regex-substring = "Perplexity";
-          run = "move-node-to-workspace AI";
-        }
-        {
-          "if".app-id = "ai.perplexity.mac";
-          run = "move-node-to-workspace AI";
-        }
-        # Notion
-        {
-          "if".app-id = "notion.id";
-          run = "move-node-to-workspace Notion";
-        }
-        # Slack
-        {
-          "if".app-id = "com.tinyspeck.slackmacgap";
-          run = "move-node-to-workspace Slack";
-        }
-        # Zoom
-        {
-          "if".app-id = "us.zoom.xos";
-          run = "move-node-to-workspace Zoom";
-        }
-        # 1Password
-        {
-          "if".app-id = "com.1password.1password";
-          run = "move-node-to-workspace 9";
-        }
-        # IDEs
-        {
-          "if".app-id = "com.todesktop.230313mzl4w4u92"; # Cursor
-          run = "move-node-to-workspace IDEs";
-        }
-        {
-          "if".app-id = "com.microsoft.VSCode";
-          run = "move-node-to-workspace IDEs";
-        }
-        # Floating apps
-        {
-          "if".app-id = "com.apple.finder";
-          run = "layout floating";
-        }
-        {
-          "if".app-id = "com.apple.ActivityMonitor";
-          run = "layout floating";
-        }
-        {
-          "if".app-id = "com.apple.Preview";
-          run = "layout floating";
-        }
-        {
-          "if".app-id = "com.apple.QuickTimePlayerX";
-          run = "layout floating";
-        }
-        {
-          "if".app-id = "com.apple.SecurityAgent";
-          run = "layout floating";
-        }
-        {
-          "if".app-id = "com.apple.systempreferences";
-          run = "layout floating";
-        }
-        {
-          "if".app-id = "cc.ffitch.shottr";
-          run = "layout floating";
-        }
+      on-window-detected =
+        [
+          # Chrome
+          {
+            "if".app-id = "com.google.Chrome";
+            run = "move-node-to-workspace Chrome";
+          }
+          # Emacs
+          {
+            "if".app-id = "org.gnu.Emacs";
+            run = "move-node-to-workspace Emacs";
+          }
+          {
+            "if".app-name-regex-substring = "emacs.*";
+            run = "move-node-to-workspace Emacs";
+          }
+          # Terminal apps
+          {
+            "if".app-id = "com.googlecode.iterm2";
+            run = "move-node-to-workspace Terminal";
+          }
+          {
+            "if".app-id = "com.github.wez.wezterm";
+            run = "move-node-to-workspace Terminal";
+          }
+          # AI apps
+          {
+            "if".app-id = "com.openai.chat";
+            run = "move-node-to-workspace AI";
+          }
+        ]
+        ++ (map
+          (app-name: {
+            "if".app-name-regex-substring = app-name;
+            run = "move-node-to-workspace AI";
+          })
+          [
+            "ChatGPT"
+            "Gemini"
+            "AI diegoa"
+            "Perplexity"
+          ]
+        )
+        ++ [
+          {
+            "if".app-id = "ai.perplexity.mac";
+            run = "move-node-to-workspace AI";
+          }
+          # Notion
+          {
+            "if".app-id = "notion.id";
+            run = "move-node-to-workspace Notion";
+          }
+          # Slack
+          {
+            "if".app-id = "com.tinyspeck.slackmacgap";
+            run = "move-node-to-workspace Slack";
+          }
+          # Zoom
+          {
+            "if".app-id = "us.zoom.xos";
+            run = "move-node-to-workspace Zoom";
+          }
+          # 1Password
+          {
+            "if".app-id = "com.1password.1password";
+            run = "move-node-to-workspace 9";
+          }
+          {
+            "if".window-title-regex-substring = "Lock Screen — 1Password";
+            run = "move-node-to-workspace 9";
+          }
+          # IDEs
+          {
+            "if".app-id = "com.todesktop.230313mzl4w4u92"; # Cursor
+            run = "move-node-to-workspace IDEs";
+          }
+          {
+            "if".app-id = "com.microsoft.VSCode";
+            run = "move-node-to-workspace IDEs";
+          }
+          # Floating apps
+        ]
+        ++ (map
+          (app-id: {
+            "if".app-id = app-id;
+            run = "layout floating";
+          })
+          [
+            "com.apple.finder"
+            "com.apple.ActivityMonitor"
+            "com.apple.Preview"
+            "com.apple.QuickTimePlayerX"
+            "com.apple.SecurityAgent"
+            "com.apple.systempreferences"
+            "cc.ffitch.shottr"
+          ]
+        )
+        ++ [
 
-        # Catch-all tiling rule
-        {
-          "if".app-name-regex-substring = ".*";
-          run = [
-            "layout tiling"
-            "move-node-to-workspace 3"
-          ];
-        }
-      ];
+          # Catch-all tiling rule
+          {
+            "if".app-name-regex-substring = ".*";
+            run = [
+              "layout tiling"
+              "move-node-to-workspace 3"
+            ];
+          }
+        ];
     };
   };
 }
