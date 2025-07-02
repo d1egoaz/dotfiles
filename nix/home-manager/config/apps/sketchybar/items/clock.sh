@@ -2,8 +2,6 @@
 
 # shellcheck source=/dev/null
 source "${CONFIG_DIR}/colours.sh"
-# shellcheck source=/dev/null
-source "${CONFIG_DIR}/icons.sh"
 
 # label.font="${FONT}:Regular:14.0" \
 sketchybar --add item clock right \

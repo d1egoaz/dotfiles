@@ -2,8 +2,6 @@
 
 # shellcheck source=/dev/null
 source "${CONFIG_DIR}/colours.sh"
-# shellcheck source=/dev/null
-source "${CONFIG_DIR}/icons.sh"
 
 sketchybar --add item front_app left \
   --set front_app \
