@@ -7,6 +7,7 @@
   casks = base.casks ++ [
     "chatgpt" # ChatGPT desktop
     "google-chrome" # Google Chrome browser
+    "little-snitch" # Little Snitch firewall
     "nordvpn" # NordVPN client
     "plex" # Plex media server
     "whatsapp" # WhatsApp desktop
