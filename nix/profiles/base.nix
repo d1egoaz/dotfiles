@@ -145,7 +145,23 @@ let
     # Fonts
     # =====================================================================
     atkinson-hyperlegible-next # Hyperlegible font
-    # symbols are managed by PragmataPro
+    # Custom fonts
+    (pkgs.runCommand "custom-fonts" { } ''
+      mkdir -p $out/share/fonts/opentype
+      mkdir -p $out/share/fonts/truetype
+
+      # PragmataPro OTF fonts
+      cp ${../fonts/PragmataPro-Regular0.9}/"OTF-CFF fonts (optional)"/*.otf $out/share/fonts/opentype/
+
+      # PragmataPro TTF fonts
+      cp ${../fonts/PragmataPro-Regular0.9}/*.ttf $out/share/fonts/truetype/
+
+      # DengXian font
+      cp ${../fonts/DengXian}/*.otf $out/share/fonts/opentype/
+
+      # Essential PragmataPro fonts
+      cp ${../fonts/EssentialPragmataPro}/*.ttf $out/share/fonts/truetype/
+    '')
 
     # =====================================================================
     # macOS-Specific Tools & Window Management

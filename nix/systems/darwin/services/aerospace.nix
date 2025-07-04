@@ -13,7 +13,7 @@
       # Startup commands
       after-login-command = [ ];
       after-startup-command = [
-        "exec-and-forget sleep 5 && sketchybar --config ~/.config/sketchybar/sketchybarrc"
+        "exec-and-forget sketchybar --config ~/.config/sketchybar/sketchybarrc"
       ];
 
       # Workspace change notifications
