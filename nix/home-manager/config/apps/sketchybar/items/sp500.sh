@@ -8,7 +8,7 @@ sketchybar --add item sp500 right \
   script="$CONFIG_DIR/plugins/chym.sh VOO" \
   label.color="$GREEN" \
   label.font="${FONT}:Regular:11.0" \
-  icon=􀈼 \
+  icon="" \
   icon.color="$GREEN" \
   padding_left=4 \
   padding_right=4

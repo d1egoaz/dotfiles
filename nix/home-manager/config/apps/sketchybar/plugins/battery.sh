@@ -7,22 +7,48 @@ if [ "$PERCENTAGE" = "" ]; then
   exit 0
 fi
 
-if [ "$PERCENTAGE" -ge 90 ]; then
-  ICON="􀢋"
-elif [ "$PERCENTAGE" -ge 60 ]; then
-  ICON="􀺸"
-elif [ "$PERCENTAGE" -ge 30 ]; then
-  ICON="􀺶"
-elif [ "$PERCENTAGE" -ge 10 ]; then
-  ICON="􀛩"
-else
-  ICON="􀛪"
-fi
-
 if [[ $CHARGING != "" ]]; then
-  ICON=""
+  if [ "$PERCENTAGE" -ge 100 ]; then
+    ICON="󰂅"
+  elif [ "$PERCENTAGE" -ge 90 ]; then
+    ICON="󰂋"
+  elif [ "$PERCENTAGE" -ge 80 ]; then
+    ICON="󰂊"
+  elif [ "$PERCENTAGE" -ge 60 ]; then
+    ICON="󰂉"
+  elif [ "$PERCENTAGE" -ge 40 ]; then
+    ICON="󰂈"
+  elif [ "$PERCENTAGE" -ge 30 ]; then
+    ICON="󰂇"
+  elif [ "$PERCENTAGE" -ge 20 ]; then
+    ICON="󰂆"
+  else
+    ICON="󰢟"
+  fi
+else
+  if [ "$PERCENTAGE" -ge 100 ]; then
+    ICON="󰁹"
+  elif [ "$PERCENTAGE" -ge 90 ]; then
+    ICON="󰂂"
+  elif [ "$PERCENTAGE" -ge 80 ]; then
+    ICON="󰂁"
+  elif [ "$PERCENTAGE" -ge 70 ]; then
+    ICON="󰂀"
+  elif [ "$PERCENTAGE" -ge 60 ]; then
+    ICON="󰁿"
+  elif [ "$PERCENTAGE" -ge 50 ]; then
+    ICON="󰁾"
+  elif [ "$PERCENTAGE" -ge 40 ]; then
+    ICON="󰁽"
+  elif [ "$PERCENTAGE" -ge 30 ]; then
+    ICON="󰁼"
+  elif [ "$PERCENTAGE" -ge 20 ]; then
+    ICON="󰁻"
+  elif [ "$PERCENTAGE" -ge 10 ]; then
+    ICON="󰁺"
+  else
+    ICON="󰂃"
+  fi
 fi
 
-# The item invoking this script (name $NAME) will get its icon and label
-# updated with the current battery status
-sketchybar --set "$NAME" icon="$ICON" label="${PERCENTAGE}%"
+sketchybar --set "$NAME" icon="${ICON}" label="${PERCENTAGE}%"

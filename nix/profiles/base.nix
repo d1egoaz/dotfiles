@@ -145,7 +145,7 @@ let
     # Fonts
     # =====================================================================
     atkinson-hyperlegible-next # Hyperlegible font
-    nerd-fonts.symbols-only # Symbols Nerd Font Mono
+    # symbols are managed by PragmataPro
 
     # =====================================================================
     # macOS-Specific Tools & Window Management

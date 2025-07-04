@@ -9,7 +9,7 @@ get_wifi_details() {
             awk '/ SSID/ {print $NF}')
         if [ -n "$SSID" ]; then
             WIFI_IFACE="$i"
-            WIFI_SSID="􀙇$SSID"
+            WIFI_SSID="󰖩$SSID"
             return
         fi
     done
@@ -17,9 +17,9 @@ get_wifi_details() {
 
 format_lan_ip() {
     if [[ $1 == 192.168.100.* ]]; then
-        echo "􀤆LAN ISOLATED"
+        echo "󰌗LAN ISOLATED"
     else
-        echo "􀤆${1%.*}.x"
+        echo "󰌗${1%.*}.x"
     fi
 }
 
@@ -42,7 +42,7 @@ IS_VPN=$(scutil --nwi | awk '/utun[0-9]+/ {print; exit}')
 COLOUR=$PURPLE
 
 if [[ -n $IS_VPN ]]; then
-    LABEL="􀎡VPN"
+    LABEL="󰒄VPN"
     [[ -n $WIFI_SSID ]] && LABEL+=" $WIFI_SSID"
     [[ -n $LAN_IP ]] && LABEL+=" $(format_lan_ip "$LAN_IP")"
 
@@ -56,9 +56,7 @@ elif [[ -n $WIFI_SSID || -n $LAN_IP ]]; then
     fi
 else
     COLOUR=$RED
-    LABEL="􀙥Not Connected"
+    LABEL="󰌙Not Connected"
 fi
 
-sketchybar --set "$NAME" \
-    label="$LABEL" \
-    label.color="$COLOUR"
+sketchybar --set "$NAME" label="$LABEL" label.color="$COLOUR"

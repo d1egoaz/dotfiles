@@ -11,14 +11,14 @@ for sid in $(aerospace list-workspaces --all); do
   ICON="$sid"
   case "$sid" in
   # https://www.nerdfonts.com/cheat-sheet
-  "AI") ICON="" ;;
+  "AI") ICON="󱚟" ;;
   "Chrome") ICON="" ;;
   "Emacs") ICON="" ;;
-  "Notion") ICON="" ;;
-  "Slack") ICON="" ;;
-  "Terminal") ICON="" ;;
-  "IDEs") ICON="" ;;
-  "Zoom") ICON="󰰷" ;;
+  "Notion") ICON="" ;;
+  "Slack") ICON="󰒱" ;;
+  "Terminal") ICON="" ;;
+  "IDEs") ICON="󰨞" ;;
+  "Zoom") ICON="ⓩ" ;;
   esac
 
   # label="${ICON} ${sid}" \

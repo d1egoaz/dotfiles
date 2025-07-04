@@ -7,14 +7,14 @@ if [ "$SENDER" = "volume_change" ]; then
     VOLUME="$INFO"
 
     if [ "$VOLUME" -ge 60 ]; then
-        ICON="􀊩"
+        ICON=""
     elif [ "$VOLUME" -ge 30 ]; then
-        ICON="􀊧"
+        ICON="󰕾"
     elif [ "$VOLUME" -ge 1 ]; then
-        ICON="􀊥"
+        ICON=""
     else
-        ICON="􀊣"
+        ICON="󰖁"
     fi
 
-    sketchybar --set "$NAME" icon="$ICON" label="$VOLUME%"
+    sketchybar --set "$NAME" icon="$ICON" label="${VOLUME}%"
 fi

@@ -4,9 +4,11 @@
 
 # https://github.com/tokyo-night/tokyo-night-vscode-theme
 
-FONT="Atkinson Hyperlegible Next"
-ICON_FONT="Symbols Nerd Font Mono"
-MONO_FONT="Essential PragmataPro"
+
+FONT="PragmataPro"
+# FONT="Essential PragmataPro"
+# FONT="Atkinson Hyperlegible Next"
+ICON_FONT="PragmataPro"
 
 BLUE=0xff8aadf4
 GREEN=0xff9ece6a
