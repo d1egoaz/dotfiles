@@ -1,0 +1,260 @@
+Font Designer and Hinting: Fabrizio Schiavi
+https://fsd.it/
+
+
+Copyright Property of Fabrizio Schiavi:
+https://fsd.it/
+
+
+Keep in touch
+Fabrizio
+
+
+
+
+
+__________________________________
+
+FSD FONT LICENSE AGREEMENT:
+Version 4.0 (2025-04)
+
+
+DEFINITIONS
+
+Software: The font software and related files provided under this license.
+
+User: An individual who accesses and uses the Software on a computing device.
+
+Computer: A device capable of processing and displaying the Software.
+
+Licensee: The individual or entity purchasing the license.
+
+Licensor: Fabrizio Schiavi Design (FSD).
+
+Site: A single domain name and its subdomains.
+
+Page View: A single instance of a web page using the Software being loaded in a browser.
+
+App: A software application for mobile or desktop platforms.
+
+
+1. ACCEPTANCE OF TERMS
+
+By purchasing, downloading, installing, or using the Software, you agree to be bound by the terms and conditions of this Agreement.
+
+
+2. LICENSE TYPES AND SCOPE
+
+2.1 Desktop License
+
+    Coverage: Authorizes installation and use on the specific number of computers purchased in the license.
+    Permitted Uses:
+        Print and digital documents
+        Logos and branding
+        Broadcasting (including but not limited to YouTube, Vimeo)
+        eBooks, eMagazines, eNewspapers, and interactive PDFs
+        Static PDFs (with font subsetting)
+    Excluded Uses: Websites, web applications, and mobile/desktop applications.
+
+2.2 Web License
+
+    Coverage: Authorizes use on one (1) website (domain and its subdomains).
+    Usage Limits: Up to 100,000 page views per month per font.
+    Implementation: Must use @font-face implementation with appropriate protection as specified in section 7.1.
+    Excluded Uses: Desktop applications, mobile applications.
+
+2.3 App License
+
+    Coverage: Authorizes use in one (1) specific application.
+    Implementation: Must embed fonts as specified in section 7.2.
+    Excluded Uses: Desktop applications, websites.
+    
+
+3. USER LIMITS AND LICENSING TIERS
+
+3.1 User Counting Method
+
+A "user" is defined as any individual who installs or accesses the Software, regardless of frequency or duration of use.
+3.2 Company Size Tiers
+
+    Tier 1: 1 person
+    Tier 2: 2-50 employees
+    Tier 3: 51-500 employees
+    Tier 4: 501+ employees (requires custom license, see section 8.1)
+
+3.3 Service Bureau Exception
+
+Service bureau output does not count toward user limits, provided the Software is completely removed from the service bureau system upon completion of output.
+
+
+4. LICENSE ACQUISITION AND COMPLIANCE
+
+4.1 Appropriate License Purchase
+
+Licensee must purchase the appropriate license based on:
+
+    Intended use (desktop, web, or app)
+    Number of users or installations
+    Company size tier
+
+4.2 License Upgrading
+
+Licenses may be upgraded by paying the difference between the current license and the desired license. Contact FSD for upgrade pricing.
+
+
+5. PERMITTED AND PROHIBITED ACTIONS
+
+5.1 Permitted Actions
+
+    Create backup copies for personal use
+    Embed fonts in static PDFs with subsetting
+    Transfer the license with written permission from FSD (see section 8.2)
+
+5.2 Prohibited Actions
+
+    File format conversion between desktop, web, and app versions
+    Renting, leasing, lending, or reselling the Software
+    Distributing or networking the Software beyond the licensed scope
+    Reverse engineering or decompiling the Software
+    Modifying the Software in any way
+
+
+6. LICENSE TERM AND RENEWAL
+
+6.1 Duration
+
+This license is perpetual and does not require renewal for continued use within the purchased scope.
+6.2 License Version Applicability
+
+The version of this Agreement in effect at the time of purchase applies to the Software, unless the Licensee opts to adopt a newer version.
+
+
+7. TECHNICAL REQUIREMENTS
+
+7.1 Web Font Implementation
+
+    Implementation must use industry-standard @font-face CSS
+    Files must be converted to formats that protect the original design (WOFF2, WOFF)
+    Access must be restricted through at least one of the following methods:
+        Referrer checking
+        Access control
+        IP restriction
+        User authentication
+    Detailed implementation guide available at: https://fsd.it/how-to-protecting-the-webfont-files/
+
+7.2 App Font Implementation
+
+    Fonts must be embedded within the application code
+    Implementation must use industry-standard obfuscation techniques
+    Original font files must not be accessible to end users
+
+
+8. SPECIAL CIRCUMSTANCES
+
+8.1 Custom License Requirements
+
+A custom license is required when:
+
+    Company has more than 500 employees
+    Project is anticipated to reach more than 1 million viewers/users
+    Web usage exceeds 100,000 page views per month per font
+
+8.2 License Transfer Process
+
+    License transfer requires written approval from FSD
+    Request must be submitted via https://fsd.it/contact-me/
+    A transfer fee may apply (10% of original license cost)
+
+8.3 Company Restructuring
+
+In the event of mergers, acquisitions, or similar corporate restructuring:
+
+    Licensee must notify FSD within 30 days
+    License remains valid for the original scope
+    Additional licensing may be required for expanded use
+
+8.4 Usage Monitoring and Reporting
+
+    Web licensees must implement appropriate analytics to monitor page views
+    If threshold is approached (80% of limit), licensee should contact FSD
+    Exceeding limits without prior arrangement may result in additional fees
+
+9. INTERNATIONAL CONSIDERATIONS
+
+9.1 Governing Law
+
+This Agreement is governed by the laws of Italy.
+
+9.2 Dispute Resolution
+
+Any dispute arising from this Agreement shall be resolved through:
+
+    Informal negotiation (30 days)
+    Mediation in Milan, Italy (if negotiation fails)
+    Binding arbitration in Milan, Italy (if mediation fails)
+
+9.3 Compliance with Local Laws
+
+Licensee is responsible for ensuring compliance with all applicable local laws in addition to this Agreement.
+
+
+10. WARRANTY AND LIABILITY
+
+10.1 Limited Warranty
+
+FSD warrants the Software will perform substantially in accordance with its documentation for 90 days following purchase.
+10.2 Limitation of Liability
+
+In no event will FSD be liable for any damages, including loss of data or other incidental or consequential damages arising out of the use or inability to use the Software. This limitation applies to any failure of performance, error, omission, interruption, deletion, defect, delay, computer virus, theft, destruction, or unauthorized access.
+
+
+11. AMENDMENTS AND NOTIFICATIONS
+
+11.1 Agreement Modifications
+
+FSD reserves the right to modify this Agreement. Current customers will be notified of substantial changes via the email address provided at purchase.
+
+11.2 Notification Methods
+
+All required notifications to FSD must be submitted through:
+
+    Contact form: https://fsd.it/contact-me/
+    Email: info@fsd.it (response within 5 business days)
+
+
+12. REFUND POLICY
+
+12.1 Digital Products
+
+Refunds for digital products are issued within 14 days of the original purchase.
+
+12.2 Ineligible Items
+
+The following items are ineligible for refund:
+
+    Electronic Fonts and Icons Downloads
+    Gift Cards
+    
+
+13. TERMINATION
+
+This Agreement will terminate automatically if the Licensee fails to comply with any term herein. Upon termination, the Licensee must destroy all copies of the Software.
+
+
+14. CONTACT INFORMATION
+
+For licensing questions, custom license requests, or notifications required by this Agreement:
+
+    Website: https://fsd.it/contact-me/
+    Email: info@fsd.it
+    Response time: Within 5 business days
+
+By purchasing or using the Software, you acknowledge that you have read and understood this Agreement and agree to be bound by its terms.
+
+
+__________________________________
+
+UPDATED END USER LICENSE AGREEMENT
+https://fsd.it/shop/terms/
+
+__________________________________
