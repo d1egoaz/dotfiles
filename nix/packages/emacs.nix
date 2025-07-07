@@ -41,7 +41,7 @@ let
     withTreeSitter = true;
     withWebP = true;
     # Native compilation disabled due to nixpkgs issue #395169
-    # withNativeCompilation = true;
+    withNativeCompilation = true;
   };
 
 in
