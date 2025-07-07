@@ -25,7 +25,10 @@ let
     "tidal" # TIDAL desktop client
   ];
 
-  brews = [ ]; # add formulae common to every machine here
+  brews = [
+    "codex" # Codex OpenAI
+  ];
+
   masApps = { }; # Mac App Store apps common to all machines
 
   # ---------------- System packages ----------------
