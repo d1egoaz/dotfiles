@@ -16,7 +16,7 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
    Install Nix using the Determinate Systems installer:
 
    #+begin_src bash
-   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+   just install-nix
    #+end_src
 
    Install just command runner:
@@ -54,13 +54,13 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
 ** Apply Changes Locally
 
    #+begin_src bash
-   # Auto-detect current machine and rebuild
-   just nix-switch
+   # Auto-detect current machine and rebuild using nh
+   just switch
 
    # Or target specific machines
-   just nix-rebuild office-mbp
-   just nix-rebuild personal-mbp
-   just nix-rebuild personal-mini
+   darwin-rebuild switch --flake .#office-mbp
+   darwin-rebuild switch --flake .#personal-mbp
+   darwin-rebuild switch --flake .#personal-mini
    #+end_src
 
    *Manual rebuild:*
@@ -77,13 +77,13 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
 
    #+begin_src bash
    # Format code
-   just nix-fmt
+   just fmt
    # Check configuration
-   just nix-check
+   just check
    # Update flake inputs
-   just nix-update
+   just update
    # Garbage collection
-   just nix-gc
+   just gc
    #+end_src
 
 ** Available Commands
@@ -177,7 +177,7 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
   *Clean up:*
 
   #+begin_src bash
-  just nix-gc      # Remove old generations
+  just gc      # Remove old generations
   #+end_src
 
   *Brew apps not in the Application folder:*
