@@ -14,28 +14,28 @@ This repository contains Diego's dotfiles, primarily focused on Nix-based system
 # List all available commands
 just
 
-# Auto-detect current machine and rebuild (main command)
-just nix-switch
+# Auto-detect current machine and rebuild (uses nh)
+just switch
 
 # Format nix files
-just nix-fmt
+just fmt
 
 # Check nix flake
-just nix-check
+just check
 
 # Quick format and check
-just nix-lint
+just lint
 
 # Update nix flake
-just nix-update
+just update
 
 # Garbage collect nix store
-just nix-gc
+just gc
 
-# Quick dry run for office-mbp
-just nix-dry-run
+# Quick dry run for the current host
+just dry-run
 
-# Use nix-home-manager for darwin switch
+# Run the nh-based switch command directly
 just nh-switch
 ```
 
@@ -99,8 +99,8 @@ cd bin && make uninstall
 ## Workflow
 
 1. Edit configuration files in the `nix/` directory
-2. Test changes with `just nix-check` or `just nix-dry-run`
-3. Apply changes with `just nix-switch`
+2. Test changes with `just check` or `just dry-run`
+3. Apply changes with `just switch`
 4. If needed, roll back with `darwin-rebuild --rollback`
 
 ## Troubleshooting

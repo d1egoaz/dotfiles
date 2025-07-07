@@ -24,7 +24,7 @@
 #   _host := if `whoami` == "diego" { "personal" } else { "office" }
 #   @echo "Silent message"
 #   just _private-recipe {{_host}}
-#   lint: nix-fmt nix-check    (runs nix-fmt, then nix-check)
+#   lint: fmt check    (runs fmt, then check)
 
 # ============================================================================
 # Nix System Management
@@ -34,25 +34,30 @@
 default:
     @just --list
 
+# Install Nix package manager on a new machine
+install-nix:
+    @echo "🚀 Installing Nix package manager..."
+    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+
 # Garbage collect nix store
-nix-gc:
+gc:
     nix-collect-garbage
     nix-store --gc
 
 # Update nix flake
-nix-update:
+update:
     cd nix && nix flake update
 
 # Format nix files
-nix-fmt:
+fmt:
     cd nix && nix fmt
 
 # Check nix flake
-nix-check:
+check:
     cd nix && nix flake check
 
 # Quick format and check
-nix-lint: nix-fmt nix-check
+lint: fmt check
 
 # ============================================================================
 # macOS (nix-darwin) Systems
@@ -62,38 +67,19 @@ nix-lint: nix-fmt nix-check
 _host := if `whoami` == "diego.albeiroalvarezzuluag" { "office-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else { "personal-mbp" }
 
 # Install nix-darwin (run this first on macOS)
-nix-install-darwin:
+install-darwin:
     @echo "🚀 Installing nix-darwin..."
     @echo "📝 Note: This will prompt for sudo password during system activation"
     sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#{{_host}}
 
 # Auto-detect current machine and rebuild (main command)
-nix-switch:
-    @echo "🔍 Auto-detected macOS host: {{_host}}"
-    @just _nix-darwin-switch {{_host}}
+switch: nh-switch
 
-# Quick dry run for office-mbp
-nix-dry-run:
-    @echo "🧪 Dry run for office-mbp - showing what would change without applying..."
-    darwin-rebuild build --flake ./nix#office-mbp --dry-run
-
-# Internal: macOS system rebuild with diff
-_nix-darwin-switch HOST:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    echo "💻 Rebuilding Darwin system: {{HOST}}"
-    # Build and switch
-    PREV_GEN=$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $1}' | tail -1)
-    sudo darwin-rebuild switch --flake ./nix#{{HOST}}
-    echo "✅ Darwin system rebuild complete!"
-    NEW_GEN=$(sudo nix-env -p /nix/var/nix/profiles/system --list-generations | awk '{print $1}' | tail -1)
-
-    if [ "$PREV_GEN" != "$NEW_GEN" ]; then
-        echo "📦 Changes between generations $PREV_GEN → $NEW_GEN:"
-        sudo nix store diff-closures /nix/var/nix/profiles/system-$PREV_GEN-link /nix/var/nix/profiles/system-$NEW_GEN-link
-    else
-        echo "✅ No new generation created."
-    fi
+# Quick dry run for the current host
+dry-run:
+    @echo "🧪 Dry run for {{_host}} - showing what would change without applying..."
+    darwin-rebuild build --flake ./nix#{{_host}} --dry-run
 
 nh-switch:
+    @echo "🔍 Switching host {{_host}} with nh"
     nh darwin switch ./nix#darwinConfigurations.{{_host}}
