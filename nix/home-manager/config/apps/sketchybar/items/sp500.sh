@@ -6,9 +6,7 @@ source "${CONFIG_DIR}/colours.sh"
 sketchybar --add item sp500 right \
   --set sp500 update_freq=300 \
   script="$CONFIG_DIR/plugins/chym.sh VOO" \
-  label.color="$GREEN" \
-  label.font="${FONT}:Regular:11.0" \
+  click_script="$CONFIG_DIR/plugins/sp500.sh" \
   icon="" \
-  icon.color="$GREEN" \
   padding_left=4 \
   padding_right=4

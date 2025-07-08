@@ -34,6 +34,10 @@ let
   # ================================================================
 
   # Build Emacs with native compilation and macOS-specific patches
+
+  # https://github.com/nix-community/emacs-overlay
+  # > These attributes are named emacs-git and emacs-unstable. emacs-git is built from the latest
+  # > master branch and emacs-unstable is built from the latest tag.
   customEmacs = pkgs.emacs-unstable.override {
     # Enable multimedia and modern features
     withImageMagick = false;

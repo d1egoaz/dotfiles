@@ -5,6 +5,7 @@
 # https://github.com/tokyo-night/tokyo-night-vscode-theme
 
 
+# FONT="Essential PragmataPro"
 FONT="PragmataPro"
 # FONT="Essential PragmataPro"
 # FONT="Atkinson Hyperlegible Next"
