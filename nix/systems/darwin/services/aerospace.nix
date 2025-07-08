@@ -242,6 +242,7 @@
             "Gemini"
             "AI diegoa"
             "Perplexity"
+            "Hyprnote"
           ]
         )
         ++ [
