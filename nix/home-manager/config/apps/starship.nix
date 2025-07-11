@@ -4,6 +4,7 @@
   programs.starship = {
     enable = true;
     enableFishIntegration = true;
+    enableZshIntegration = true;
     settings = {
       # Get editor completions based on the config schema
       "$schema" = "https://starship.rs/config-schema.json";

@@ -12,7 +12,7 @@ echo "icon $APPLE $FONT"
 apple_logo=(
   icon="$APPLE"
   # icon=""
-  icon.font="${FONT}:Regular:16.0"
+  icon.font="${FONT}:16.0"
   icon.color="$GREEN"
   padding_right=15
   label.drawing=off

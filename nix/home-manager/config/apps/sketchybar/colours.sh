@@ -6,10 +6,10 @@
 
 
 # FONT="Essential PragmataPro"
-FONT="PragmataPro"
-# FONT="Essential PragmataPro"
+FONT="PragmataPro:Regular"
+FONT_BOLD="Essential PragmataPro:Bold"
 # FONT="Atkinson Hyperlegible Next"
-ICON_FONT="PragmataPro"
+ICON_FONT="PragmataPro:Regular"
 
 BLUE=0xff8aadf4
 GREEN=0xff9ece6a

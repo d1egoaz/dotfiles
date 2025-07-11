@@ -39,7 +39,7 @@
 
     # Utility functions for macOS
     mac-app-util = {
-      url = "github:hraban/mac-app-util";
+      url = "github:hraban/mac-app-util/link-contents";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
