@@ -13,6 +13,7 @@ assert builtins.elem profile [
 
 let
   pkgs = inputs.nixpkgs.legacyPackages.${system};
+  lib = inputs.nixpkgs.lib;
   # Load base & profile configurations
   base = import ../profiles/base.nix { inherit pkgs; };
   profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
@@ -28,7 +29,7 @@ inputs.darwin.lib.darwinSystem {
 
     # macOS system configuration
     (import ../systems/darwin/default.nix {
-      inherit pkgs user;
+      inherit lib pkgs user profile;
       taps = profileCfg.taps;
       casks = profileCfg.casks;
       brews = profileCfg.brews;

@@ -4,7 +4,6 @@
 
 # https://github.com/tokyo-night/tokyo-night-vscode-theme
 
-
 # FONT="Essential PragmataPro"
 FONT="PragmataPro:Regular"
 FONT_BOLD="Essential PragmataPro:Bold"

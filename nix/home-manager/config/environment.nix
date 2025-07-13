@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, profile, ... }:
 
 {
   # ============================================================================
@@ -30,6 +30,9 @@
     # macOS-specific environment variables
     EMACS_ADDITIONAL_DIR = "$HOME/dotfiles-private/chime";
     GPG_TTY = "${builtins.getEnv "TTY"}";
+
+    # Active profile for conditional scripts
+    PROFILE = profile;
 
     # Homebrew
     HOMEBREW_NO_ANALYTICS = "1";
