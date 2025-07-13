@@ -34,6 +34,18 @@
       enableFishIntegration = true;
     };
 
+    fd = {
+      enable = true;
+      hidden = true; # Enables `--hidden`
+      extraOptions = [
+        "--no-ignore" # Ignores `.gitignore` and similar
+      ];
+      ignores = [
+        ".git/"
+        "*.bak"
+      ];
+    };
+
     # Environment and navigation
     direnv = {
       enable = true;

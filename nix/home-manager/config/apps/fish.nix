@@ -47,6 +47,7 @@
       "....." = "cd ../../../../";
       # bat everywhere
       b = "command bat";
+      man = "command batman";
     };
 
     # Startup initialization
