@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   user,
   taps,
   casks,
@@ -13,7 +14,7 @@
 {
   imports = [
     # Services
-    (import ./services/aerospace.nix { inherit pkgs profile; })
+    (import ./services/aerospace.nix { inherit lib pkgs profile; })
     ./services/jankyborders.nix
 
     # System configuration
