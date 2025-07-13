@@ -6,13 +6,14 @@
   brews,
   masApps,
   systemPackages,
+  profile,
   ...
 }:
 
 {
   imports = [
     # Services
-    ./services/aerospace.nix
+    (import ./services/aerospace.nix { inherit pkgs profile; })
     ./services/jankyborders.nix
 
     # System configuration

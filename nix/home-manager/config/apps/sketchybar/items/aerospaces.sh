@@ -7,7 +7,14 @@ source "${CONFIG_DIR}/colours.sh"
 # Aerospace #
 #############
 sketchybar --add event aerospace_workspace_change
+
+# Determine active profile so we can hide office-only workspaces
+PROFILE="${PROFILE:-}"
+
 for sid in $(aerospace list-workspaces --all); do
+  if [ "$PROFILE" != "office" ] && [[ "$sid" == "Notion" || "$sid" == "Slack" || "$sid" == "Zoom" ]]; then
+    continue
+  fi
   ICON="$sid"
   case "$sid" in
   # https://www.nerdfonts.com/cheat-sheet

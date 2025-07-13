@@ -147,6 +147,9 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
    *For host-specific GUI applications:*
    Add to the appropriate profile or modify ~systems/darwin/homebrew.nix~.
 
+   The active profile is exported to the shell as the ~PROFILE~
+   environment variable for use in scripts.
+
 ** Adding New Hosts
 
    #+begin_src nix

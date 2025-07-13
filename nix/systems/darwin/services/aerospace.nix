@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, profile, ... }:
 
 {
   services.aerospace = {
@@ -57,7 +57,26 @@
 
       # Mode configurations
       mode = {
-        main.binding = {
+        main.binding =
+          let
+            officeBindings = lib.optionalAttrs (profile == "office") {
+              alt-n = "workspace Notion";
+              alt-s = "workspace Slack";
+              alt-z = "workspace Zoom";
+              alt-shift-n = [
+                "move-node-to-workspace Notion"
+                "workspace Notion"
+              ];
+              alt-shift-s = [
+                "move-node-to-workspace Slack"
+                "workspace Slack"
+              ];
+              alt-shift-z = [
+                "move-node-to-workspace Zoom"
+                "workspace Zoom"
+              ];
+            };
+          in {
           # Terminal and config
           alt-enter = "exec-and-forget open -n -a Wezterm";
           alt-shift-r = "reload-config";
@@ -90,10 +109,7 @@
           alt-c = "workspace Chrome";
           alt-e = "workspace Emacs";
           alt-i = "workspace IDEs";
-          alt-n = "workspace Notion";
-          alt-s = "workspace Slack";
           alt-t = "workspace Terminal";
-          alt-z = "workspace Zoom";
 
           # Move to workspace
           alt-shift-3 = [
@@ -120,21 +136,9 @@
             "move-node-to-workspace IDEs"
             "workspace IDEs"
           ];
-          alt-shift-n = [
-            "move-node-to-workspace Notion"
-            "workspace Notion"
-          ];
-          alt-shift-s = [
-            "move-node-to-workspace Slack"
-            "workspace Slack"
-          ];
           alt-shift-t = [
             "move-node-to-workspace Terminal"
             "workspace Terminal"
-          ];
-          alt-shift-z = [
-            "move-node-to-workspace Zoom"
-            "workspace Zoom"
           ];
 
           # Workspace switching
@@ -143,7 +147,7 @@
 
           # Mode switching
           alt-shift-semicolon = "mode service";
-        };
+        } // officeBindings;
 
         service.binding = {
           esc = [
@@ -250,21 +254,22 @@
             "if".app-id = "ai.perplexity.mac";
             run = "move-node-to-workspace AI";
           }
-          # Notion
+        ]
+        ++ (lib.optionals (profile == "office") [
           {
             "if".app-id = "notion.id";
             run = "move-node-to-workspace Notion";
           }
-          # Slack
           {
             "if".app-id = "com.tinyspeck.slackmacgap";
             run = "move-node-to-workspace Slack";
           }
-          # Zoom
           {
             "if".app-id = "us.zoom.xos";
             run = "move-node-to-workspace Zoom";
           }
+        ])
+        ++ [
           # 1Password
           {
             "if".app-id = "com.1password.1password";
