@@ -1,4 +1,9 @@
-{ lib, pkgs, profile, ... }:
+{
+  lib,
+  pkgs,
+  profile,
+  ...
+}:
 
 {
   services.aerospace = {
@@ -76,78 +81,80 @@
                 "workspace Zoom"
               ];
             };
-          in {
-          # Terminal and config
-          alt-enter = "exec-and-forget open -n -a Wezterm";
-          alt-shift-r = "reload-config";
-          alt-r = "mode resize";
+          in
+          {
+            # Terminal and config
+            alt-enter = "exec-and-forget open -n -a Wezterm";
+            alt-shift-r = "reload-config";
+            alt-r = "mode resize";
 
-          # Layout commands
-          alt-slash = "layout tiles horizontal vertical";
-          alt-comma = "layout accordion horizontal vertical";
+            # Layout commands
+            alt-slash = "layout tiles horizontal vertical";
+            alt-comma = "layout accordion horizontal vertical";
 
-          # Focus commands
-          alt-h = "focus --boundaries-action wrap-around-the-workspace left";
-          alt-j = "focus --boundaries-action wrap-around-the-workspace down";
-          alt-k = "focus --boundaries-action wrap-around-the-workspace up";
-          alt-l = "focus --boundaries-action wrap-around-the-workspace right";
+            # Focus commands
+            alt-h = "focus --boundaries-action wrap-around-the-workspace left";
+            alt-j = "focus --boundaries-action wrap-around-the-workspace down";
+            alt-k = "focus --boundaries-action wrap-around-the-workspace up";
+            alt-l = "focus --boundaries-action wrap-around-the-workspace right";
 
-          # Move commands
-          alt-shift-h = "move left";
-          alt-shift-j = "move down";
-          alt-shift-k = "move up";
-          alt-shift-l = "move right";
+            # Move commands
+            alt-shift-h = "move left";
+            alt-shift-j = "move down";
+            alt-shift-k = "move up";
+            alt-shift-l = "move right";
 
-          # Resize commands
-          alt-minus = "resize smart -50";
-          alt-equal = "resize smart +50";
+            # Resize commands
+            alt-minus = "resize smart -50";
+            alt-equal = "resize smart +50";
 
-          # Workspace navigation
-          alt-3 = "workspace 3";
-          alt-9 = "workspace 9";
-          alt-a = "workspace AI";
-          alt-c = "workspace Chrome";
-          alt-e = "workspace Emacs";
-          alt-i = "workspace IDEs";
-          alt-t = "workspace Terminal";
+            # Workspace navigation
+            alt-3 = "workspace 3";
+            alt-9 = "workspace 9";
+            alt-a = "workspace AI";
+            alt-c = "workspace Chrome";
+            alt-e = "workspace Emacs";
+            alt-i = "workspace IDEs";
+            alt-t = "workspace Terminal";
 
-          # Move to workspace
-          alt-shift-3 = [
-            "move-node-to-workspace 3"
-            "workspace 3"
-          ];
-          alt-shift-9 = [
-            "move-node-to-workspace 9"
-            "workspace 9"
-          ];
-          alt-shift-a = [
-            "move-node-to-workspace AI"
-            "workspace AI"
-          ];
-          alt-shift-c = [
-            "move-node-to-workspace Chrome"
-            "workspace Chrome"
-          ];
-          alt-shift-e = [
-            "move-node-to-workspace Emacs"
-            "workspace Emacs"
-          ];
-          alt-shift-i = [
-            "move-node-to-workspace IDEs"
-            "workspace IDEs"
-          ];
-          alt-shift-t = [
-            "move-node-to-workspace Terminal"
-            "workspace Terminal"
-          ];
+            # Move to workspace
+            alt-shift-3 = [
+              "move-node-to-workspace 3"
+              "workspace 3"
+            ];
+            alt-shift-9 = [
+              "move-node-to-workspace 9"
+              "workspace 9"
+            ];
+            alt-shift-a = [
+              "move-node-to-workspace AI"
+              "workspace AI"
+            ];
+            alt-shift-c = [
+              "move-node-to-workspace Chrome"
+              "workspace Chrome"
+            ];
+            alt-shift-e = [
+              "move-node-to-workspace Emacs"
+              "workspace Emacs"
+            ];
+            alt-shift-i = [
+              "move-node-to-workspace IDEs"
+              "workspace IDEs"
+            ];
+            alt-shift-t = [
+              "move-node-to-workspace Terminal"
+              "workspace Terminal"
+            ];
 
-          # Workspace switching
-          alt-tab = "workspace-back-and-forth";
-          alt-shift-tab = "move-workspace-to-monitor --wrap-around next";
+            # Workspace switching
+            alt-tab = "workspace-back-and-forth";
+            alt-shift-tab = "move-workspace-to-monitor --wrap-around next";
 
-          # Mode switching
-          alt-shift-semicolon = "mode service";
-        } // officeBindings;
+            # Mode switching
+            alt-shift-semicolon = "mode service";
+          }
+          // officeBindings;
 
         service.binding = {
           esc = [

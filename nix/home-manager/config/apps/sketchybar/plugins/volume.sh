@@ -4,17 +4,17 @@
 # percentage is passed to the script.
 
 if [ "$SENDER" = "volume_change" ]; then
-    VOLUME="$INFO"
+  VOLUME="$INFO"
 
-    if [ "$VOLUME" -ge 60 ]; then
-        ICON=""
-    elif [ "$VOLUME" -ge 30 ]; then
-        ICON="󰕾"
-    elif [ "$VOLUME" -ge 1 ]; then
-        ICON=""
-    else
-        ICON="󰖁"
-    fi
+  if [ "$VOLUME" -ge 60 ]; then
+    ICON=""
+  elif [ "$VOLUME" -ge 30 ]; then
+    ICON="󰕾"
+  elif [ "$VOLUME" -ge 1 ]; then
+    ICON=""
+  else
+    ICON="󰖁"
+  fi
 
-    sketchybar --set "$NAME" icon="$ICON" label="${VOLUME}%"
+  sketchybar --set "$NAME" icon="$ICON" label="${VOLUME}%"
 fi
