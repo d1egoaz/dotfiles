@@ -74,10 +74,11 @@ install-darwin:
 
 # Auto-detect current machine and rebuild (main command)
 switch:
+    #!/usr/bin/env bash
     if command -v nh > /dev/null; then
-    just nh-switch
+        just nh-switch
     else
-    just darwin-switch
+        just darwin-switch
     fi
 
 # Quick dry run for the current host
