@@ -14,8 +14,11 @@ This repository contains Diego's dotfiles, primarily focused on Nix-based system
 # List all available commands
 just
 
-# Auto-detect current machine and rebuild (uses nh)
+# Auto-detect current machine and rebuild (uses nh if installed)
 just switch
+
+# Rebuild using darwin-rebuild (fallback when nh isn't available)
+just darwin-switch
 
 # Format nix files
 just fmt
@@ -37,6 +40,8 @@ just dry-run
 
 # Run the nh-based switch command directly
 just nh-switch
+# Run the darwin-rebuild switch command directly
+just darwin-switch
 ```
 
 ### Manual Rebuild Commands

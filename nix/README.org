@@ -54,8 +54,11 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
 ** Apply Changes Locally
 
    #+begin_src bash
-   # Auto-detect current machine and rebuild using nh
-   just switch
+    # Auto-detect current machine and rebuild using nh if available
+    just switch
+
+    # Manually rebuild using darwin-rebuild
+    just darwin-switch
 
    # Or target specific machines
    darwin-rebuild switch --flake .#office-mbp
