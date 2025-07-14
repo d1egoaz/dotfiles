@@ -23,7 +23,6 @@ bar=(
     sticky=on
 )
 
-100
 default=(
     background.color="$ITEM_BG_COLOUR"
     background.corner_radius=5
