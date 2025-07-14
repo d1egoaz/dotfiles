@@ -73,7 +73,12 @@ install-darwin:
     sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#{{_host}}
 
 # Auto-detect current machine and rebuild (main command)
-switch: nh-switch
+switch:
+    if command -v nh > /dev/null; then
+    just nh-switch
+    else
+    just darwin-switch
+    fi
 
 # Quick dry run for the current host
 dry-run:
@@ -83,3 +88,7 @@ dry-run:
 nh-switch:
     @echo "🔍 Switching host {{_host}} with nh"
     nh darwin switch ./nix#darwinConfigurations.{{_host}}
+
+darwin-switch:
+    @echo "🔍 Switching host {{_host}} with darwin-rebuild"
+    darwin-rebuild switch --flake ./nix#{{_host}}
