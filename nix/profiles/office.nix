@@ -14,6 +14,7 @@
   brews = base.brews ++ [
   ];
 
+  # // is the same as lib.trivial.mergeAttrs
   masApps = base.masApps // { };
 
   # ---------------- System packages ----------------

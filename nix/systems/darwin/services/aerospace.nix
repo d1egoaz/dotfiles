@@ -154,6 +154,7 @@
             # Mode switching
             alt-shift-semicolon = "mode service";
           }
+          # // is the same as lib.trivial.mergeAttrs
           // officeBindings;
 
         service.binding = {

@@ -18,6 +18,7 @@
     "mas" # Mac App Store
   ];
 
+  # // is the same as lib.trivial.mergeAttrs
   masApps = base.masApps // {
     "Emby" = 992180193; # Emby media
     "Infuse" = 1136220934; # Infuse player

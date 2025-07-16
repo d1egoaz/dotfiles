@@ -29,7 +29,12 @@ inputs.darwin.lib.darwinSystem {
 
     # macOS system configuration
     (import ../systems/darwin/default.nix {
-      inherit lib pkgs user profile;
+      inherit
+        lib
+        pkgs
+        user
+        profile
+        ;
       taps = profileCfg.taps;
       casks = profileCfg.casks;
       brews = profileCfg.brews;
