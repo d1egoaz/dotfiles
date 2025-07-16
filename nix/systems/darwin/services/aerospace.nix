@@ -304,13 +304,14 @@
             run = "layout floating";
           })
           [
-            "com.apple.finder"
+            "cc.ffitch.shottr"
             "com.apple.ActivityMonitor"
             "com.apple.Preview"
             "com.apple.QuickTimePlayerX"
             "com.apple.SecurityAgent"
+            "com.apple.finder"
             "com.apple.systempreferences"
-            "cc.ffitch.shottr"
+            "com.okta.mobile"
           ]
         )
         ++ [
