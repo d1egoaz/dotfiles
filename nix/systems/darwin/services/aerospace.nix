@@ -304,6 +304,7 @@
             run = "layout floating";
           })
           [
+            "au.csiro.dialog"
             "cc.ffitch.shottr"
             "com.apple.ActivityMonitor"
             "com.apple.Preview"

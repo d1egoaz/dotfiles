@@ -6,7 +6,8 @@
 
 # FONT="Essential PragmataPro"
 FONT="PragmataPro:Regular"
-FONT_BOLD="Essential PragmataPro:Bold"
+FONT_BOLD="$FONT"
+# FONT_BOLD="Essential PragmataPro:Bold"
 # FONT="Atkinson Hyperlegible Next"
 ICON_FONT="PragmataPro:Regular"
 
