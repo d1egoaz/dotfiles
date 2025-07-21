@@ -58,6 +58,21 @@ config.keys = {
 	{ key = "y", mods = "LEADER", action = action.ActivateCopyMode },
 }
 
+config.mouse_bindings = {
+	-- Change the default click behavior so that it only selects text and doesn't open hyperlinks
+	{
+	  event = { Up = { streak = 1, button = 'Left' } },
+	  mods = 'NONE',
+	  action = action.CompleteSelection 'ClipboardAndPrimarySelection',
+	},
+	-- and make Command-Click open hyperlinks
+	{
+	  event = { Up = { streak = 1, button = 'Left' } },
+	  mods = 'CMD',
+	  action = action.OpenLinkAtMouseCursor,
+	},
+  }
+
 config.use_fancy_tab_bar = true
 config.pane_focus_follows_mouse = false
 config.hide_tab_bar_if_only_one_tab = false
