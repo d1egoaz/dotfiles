@@ -180,6 +180,16 @@ A clean, modern macOS configuration using nix-darwin and Home Manager with flake
   darwin-rebuild --rollback
   #+end_src
 
+  *Revert to a specific generation:*
+
+  #+begin_src bash
+  # List available system generations
+  darwin-rebuild --list-generations
+
+  # Switch to a specific generation number
+  darwin-rebuild --switch-generation 23
+  #+end_src
+
   *Clean up:*
 
   #+begin_src bash
