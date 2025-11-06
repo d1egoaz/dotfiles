@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# -*- mode: bash-ts; -*-
+
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+source "$CONFIG_DIR/colours.sh"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items" # Directory where the items are configured
+
+#######
+# BAR #
+#######
+bar=(
+    padding_left=10
+    padding_right=10
+    blur_radius=30
+    color=$BAR_COLOUR
+    height=37
+    position=top
+    shadow=on
+    sticky=on
+)
+
+default=(
+    background.color="$ITEM_BG_COLOUR"
+    background.corner_radius=5
+    background.height=20
+    icon.color=$FG_COLOUR
+    icon.font="${ICON_FONT}:16.0"
+    icon.padding_left=8
+    icon.padding_right=2
+    label.color=$FG_COLOUR
+    label.font="${FONT_BOLD}:16.0"
+    label.padding_left=2
+    label.padding_right=4
+    padding_left=2
+    padding_right=2
+    updates=when_shown
+)
+sketchybar --bar "${bar[@]}" --default "${default[@]}"
+
+# Left
+# source "$ITEM_DIR/apple.sh"
+source "$ITEM_DIR/aerospaces.sh"
+source "$ITEM_DIR/front_app.sh"
+
+# Right
+source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/battery.sh"
+source "$ITEM_DIR/ip.sh"
+# source "$ITEM_DIR/chym.sh"
+# source "$ITEM_DIR/sp500.sh"
+
+# Bracket
+
+sketchybar --add bracket status ip_address volume battery #chym sp500
+
+# sketchybar --add bracket spaces '/space\..*/' \
+#     --set spaces background.color=$SPACE_BACKGROUND \
+#     background.corner_radius=10 \
+#     background.height=30 \
+#     background.shadow.drawing=on \
+#     background.shadow.distance=1 \
+#     background.border_color=0x07f8f8ff \
+#     background.border_width=1 \
+#     background.padding_left=0
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
+echo "sketchybar configuration loaded!"

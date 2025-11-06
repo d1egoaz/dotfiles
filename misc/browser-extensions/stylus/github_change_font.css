@@ -1,0 +1,11 @@
+div .blob-code,
+div .blob-num,
+div .text-mono,
+.CodeMirror-code,
+.branch-name,
+.commit-ref,
+code,
+pre {
+    font-family: Cascadia Code, monospace !important;
+ /* font-size: 1.1em !important; */
+}

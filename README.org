@@ -1,0 +1,203 @@
+#+TITLE: Diego's Dotfiles
+#+AUTHOR: Diego Alvarez
+
+My macOS setup using Nix (nix-darwin + Home Manager) + Homebrew. Clean, modular, and pragmatic.
+
+* History
+
+These dotfiles have been around since 20xx with *thousands* of commits over 20+ years*. Recently did a fresh start to clean things up and remove legacy stuff.
+
+* Quick Start
+
+*Prerequisites:* macOS with Apple Silicon, ~just~ command runner
+
+#+begin_src bash
+# Install just (if not already installed)
+brew install just
+
+# Clone the repo
+git clone git@github.com:d1egoaz/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+
+# Install Nix (Determinate Systems installer with flakes enabled)
+just install-nix
+
+# Install nix-darwin (first time setup)
+just install-darwin
+
+# Apply configuration (auto-detects your machine based on username)
+just switch
+#+end_src
+
+*Note:* Uses nixpkgs 25.05-darwin (stable) for reliability — avoiding constant updates for basic commands. Select packages pull from unstable when needed.
+
+* My Machines
+
+- *office-mbp* — Office MacBook Pro M1 Max (user: diego.albeiroalvarezzuluag)
+- *personal-mbp* — Personal MacBook Air M3 (user: diego)
+- *personal-mini* — Personal Mac Mini M4 (user: diegoalvarez)
+
+All machines use Apple Silicon (aarch64-darwin) and auto-detect based on username.
+
+* Key Features
+
+- *Shell:* Fish & Zsh with Starship prompt
+- *Terminal:* Ghostty, WezTerm
+- *Editor:* Emacs (built from Nix), with custom wrapper
+- *Window Management:* AeroSpace tiling window manager
+- *Status Bar:* SketchyBar with custom plugins
+- *CLI Tools:* ripgrep, fd, bat, jq, yq, eza, and many more
+- *Dev Tools:* Git with GPG signing, GitHub CLI, Docker, kubectl
+- *Secrets:* sops-nix with GPG encryption
+- *AI Tools:* Claude Code with custom agents
+
+* Common Commands
+
+#+begin_src bash
+just switch        # Apply changes (uses nh if available)
+just update        # Update flake inputs
+just fmt           # Format Nix code
+just check         # Validate configuration
+just lint          # Format and check (combines fmt + check)
+just gc            # Clean up old generations
+just brew          # Update and upgrade Homebrew apps
+just dry-run       # Preview changes without applying
+just --list        # See all available commands
+#+end_src
+
+* How It Works
+
+** Profiles
+
+Define what gets installed on each machine:
+
+- =profiles/base.nix= — Shared across all machines
+- =profiles/office.nix= — Work-specific stuff
+- =profiles/personal.nix= — Personal machines
+
+** Home Manager
+
+Manages user environment:
+
+- Packages organized in =home-manager/packages.nix=
+- App configs in =home-manager/config/=
+- Mix of Nix modules and real config files for flexibility
+
+*Direct config editing (hybrid approach):*
+
+Some configs are symlinked directly from the repo for live editing without rebuilds:
+- =config/sketchybar/= → =~/.config/sketchybar=
+- =config/wezterm/= → =~/.config/wezterm=
+- =config/ghostty/= → =~/.config/ghostty=
+- =config/aerospace/= → =~/.config/aerospace=
+
+Edit these directly and changes take effect immediately!
+
+** System Config
+
+macOS-specific settings live in =systems/darwin/=
+
+** Custom Scripts
+
+Custom utility scripts in =bin/files/= are automatically symlinked to =~/.local/bin/= via Nix:
+
+- *Emacs diff tools:* =ediff=, =ediff3= — Git merge/diff wrappers
+- *Kubernetes shortcuts:* =k=, =kc=, =kn=, =kk=, =kstern=, =ktmux= — kubectl helpers
+- *GitHub:* =pr-approve= — PR approval helper
+
+AWS helpers (=awsprofile=) are sourced directly by Fish config as shell functions.
+
+** Secrets
+
+Encrypted with sops-nix. Requires =sops= and =gnupg= installed:
+
+#+begin_src bash
+brew install sops gnupg
+#+end_src
+
+Edit encrypted secrets with:
+
+#+begin_src bash
+sops nix/profiles/office.private.sops.json
+#+end_src
+
+Secrets are decrypted at runtime and never stored in plaintext. Configuration is in =.sops.yaml= with your GPG fingerprint.
+
+* Adding Stuff
+
+** Packages
+
+*User packages* (installed in home directory):
+- Add to relevant profile: =nix/profiles/base.nix=, =nix/profiles/office.nix=, or =nix/profiles/personal.nix=
+- Packages are organized in =hmPackages= list
+
+*System packages* (available system-wide):
+- Add to =darwinPackages= in the profile files
+
+** Config Files
+
+Two approaches:
+
+1. *Nix modules* — Configure under =home-manager/config/programs.nix= or app-specific modules
+   - Example: =programs.git=, =programs.zsh=, =programs.bat=
+   - Managed by Home Manager, changes require =just switch=
+
+2. *Direct files* — Drop configs in =config/<app>/= and link in =home-manager/config/xdg.nix=
+   - Example: =config/sketchybar/=, =config/wezterm/=, =config/ghostty/=
+   - Symlinked directly, changes take effect immediately
+   - Use =config.lib.file.mkOutOfStoreSymlink= for live editing
+
+** GUI Apps (via Homebrew)
+
+Add to =Brewfile= (shared across machines) or =Brewfile.<host>= (machine-specific):
+- =Brewfile= — Shared apps
+- =Brewfile.office-mbp= — Office machine only
+- =Brewfile.personal-mbp= — Personal MBP only
+- =Brewfile.personal-mini= — Personal Mini only
+
+Then run:
+
+#+begin_src bash
+just brew
+#+end_src
+
+* Troubleshooting
+
+#+begin_src bash
+# Build failing? Check and format
+just check          # or: cd nix && nix flake check
+just fmt            # or: cd nix && nix fmt
+just lint           # runs both fmt + check
+
+# Preview changes before applying
+just dry-run
+
+# Need to rollback?
+darwin-rebuild --rollback
+
+# Or jump to a specific generation
+darwin-rebuild --list-generations
+darwin-rebuild --switch-generation 23
+
+# Clean up old generations
+just gc
+
+# Brew app not showing up in Applications?
+brew reinstall --cask <app>
+
+# Secrets not decrypting?
+# Check GPG key is properly configured and imported
+gpg --list-secret-keys
+#+end_src
+
+* Why This Setup?
+
+*nix-darwin + Home Manager* give you:
+- Declarative system configuration
+- Easy rollbacks when things break
+- Reproducible setup across machines
+
+*+ Homebrew* for:
+- GUI apps that work better through Brew
+- Things that need macOS-native integration
+- Pragmatic balance between purity and practicality
