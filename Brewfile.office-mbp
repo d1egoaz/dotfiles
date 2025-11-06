@@ -1,0 +1,8 @@
+# -*- mode: ruby; -*-
+
+tap "1debit/chime"
+tap "aws/tap"
+
+brew "argocd" # GitOps continuous delivery CLI
+brew "1debit/chime/compass"
+brew "eks-node-viewer"

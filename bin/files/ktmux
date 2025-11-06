@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+directory=$1
+source "$directory"/.kube-env 2>/dev/null
+
+if [[ -z "$KUBE_CONTEXT" ]]; then
+    echo "#[fg=red,bold] No context selected "
+else
+    kube_tmux=""
+    kube_tmux+="#[fg=${1}]${KUBE_CONTEXT}"
+    kube_tmux+="#[fg=colour250]:"
+    kube_tmux+="#[fg=${2}]${KUBE_NAMESPACE}"
+
+    echo "${kube_tmux} "
+fi
