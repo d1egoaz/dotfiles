@@ -3,6 +3,8 @@
 
 My macOS setup using Nix (nix-darwin + Home Manager) + Homebrew. Clean, modular, and pragmatic.
 
+[[./assets/desktop-screenshot.png]]
+
 * History
 
 These dotfiles have been around since 20xx with *thousands* of commits over 20+ years*. Recently did a fresh start to clean things up and remove legacy stuff.
