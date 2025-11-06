@@ -76,6 +76,7 @@ let
     curl # Command-line file transfers
     direnv # Directory-local env vars
     dust # Disk usage analyzer
+    eza # ls alternative
     fd # Find alternative
     fzf # Fuzzy finder
     gnupg # GNU Privacy Guard
@@ -83,7 +84,7 @@ let
     hyperfine # CLI benchmarking tool
     jq # JSON processor
     less # Pager
-    lsd # ls deluxe with icons
+    # lsd # ls deluxe with icons
     ripgrep # Fast text search
     socat # Socket CAT
     starship # Prompt
