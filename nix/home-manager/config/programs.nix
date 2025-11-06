@@ -41,9 +41,32 @@
     };
 
     lsd = {
+      enable = false;
+      enableZshIntegration = true;
+      enableFishIntegration = true;
+    };
+
+    eza = {
       enable = true;
       enableZshIntegration = true;
       enableFishIntegration = true;
+      colors = "always";
+      git = false;
+      icons = "always";
+      extraOptions = [
+        "-lah"
+        "--group-directories-first"
+      ];
+      theme.source =
+        let
+          repo = pkgs.fetchFromGitHub {
+            owner = "eza-community";
+            repo = "eza-themes";
+            rev = "c03051f67e84110fbae91ab7cbc377b3460f035c";
+            sha256 = "1kd60fnwd8vh6jvkyz48rk5bs12a2g7yy6b3qbj7i1p0vwgvnh58";
+          };
+        in
+        "${repo}/themes/tokyonight.yml";
     };
 
     fd = {

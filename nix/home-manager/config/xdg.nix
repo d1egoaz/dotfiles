@@ -115,6 +115,7 @@
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/wezterm";
       "ghostty/config".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ghostty/config";
+      # eza theme is configured via programs.eza.theme.source in programs.nix
       # AI assistant configuration
       "agents/AGENTS.md".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ai/AGENTS.md";
