@@ -16,6 +16,7 @@ cask "ghostty"
 cask "gpg-suite" # GPG tools for macOS
 cask "grandperspective" # Graphically shows disk usage within a file system
 #cask "handy" # Speech to text application. using now Narro
+cask "homerow"
 cask "hyprnote" # Hyprnote application
 cask "iterm2" # Terminal emulator
 cask "little-snitch" # Network firewall/monitor
