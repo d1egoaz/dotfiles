@@ -32,7 +32,19 @@ Keep each step tight:
 
 ## Quick Reference
 
-### Search
+## Default Shell
+fish, Make sure the shell commands works on the fish shell.
+
+## Git workflow
+
+Always reserve the main directory for the main branch of the worktree repo. Create a separate
+work-in-progress worktree where you can branch out for new features. The worktrees should live in a
+subdirectory, like this: `<main-repo>-worktrees/`.
+
+For example, for dotfiles:
+`~/dotfiles-worktrees/<worktree-name>`
+
+## Search
 
 ```bash
 # ripgrep with context
@@ -136,3 +148,19 @@ fd -e yaml -e yml -0 | xargs -0 -I{} sh -c 'yq "." "{}" >/dev/null'
 ---
 
 *tl;dr: Be direct. Be safe. Use CLI. Keep it tight.*
+
+
+# Attribution Requirements
+
+AI agents must disclose what tool and model they are using in the "Assisted-by" commit and PR footer:
+
+```
+Assisted-by: [Model Name] via [Tool Name]
+```
+Example:
+
+```
+Assisted-by: Sonnet 4.5 via Claude Code
+or
+Assisted-by: GPT-5-codex (high) via OpenAI Codex
+```
