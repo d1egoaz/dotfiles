@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 options=(
-    active_color=0xaaff00ff
-    hidpi=on
+    active_color=0xff23D5D5
+    hidpi=off
     inactive_color=0xff414550
     style=round
     width=6.0
