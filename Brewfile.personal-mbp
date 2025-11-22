@@ -1,6 +1,7 @@
 # -*- mode: ruby; -*-
 
 brew "tailscale" # WireGuard-based mesh VPN
+brew "gemini-cli" # WireGuard-based mesh VPN
 
 cask "chatgpt" # ChatGPT desktop client
 cask "discord" # Community chat/voice

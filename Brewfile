@@ -10,6 +10,7 @@ cask "alfred" # App launcher and workflows
 cask "claude-code" # Claude Code editor/CLI
 cask "codex" # Coding assistant CLI
 cask "cursor" # AI-first IDE
+cask "cursor-cli" # AI-first IDE
 cask "excalidrawz" # Excalidraw whiteboard
 cask "font-sf-pro" # Apple SF Pro font
 cask "ghostty"
