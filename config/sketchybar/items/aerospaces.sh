@@ -11,6 +11,14 @@ sketchybar --add event aerospace_workspace_change
 # Determine active profile so we can hide office-only workspaces
 PROFILE="${PROFILE:-}"
 
+# Wait for aerospace to start
+for _ in {1..20}; do
+  if aerospace list-workspaces --all &>/dev/null; then
+    break
+  fi
+  sleep 0.5
+done
+
 for sid in $(aerospace list-workspaces --all); do
   if [ "$PROFILE" != "office" ] && [[ $sid == "Notion" || $sid == "Slack" || $sid == "Zoom" ]]; then
     continue

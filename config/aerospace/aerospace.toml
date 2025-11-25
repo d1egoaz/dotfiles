@@ -1,6 +1,10 @@
 # AeroSpace configuration
 # Moved from nix-darwin service to Home Manager with direct symlink for editing
 
+# Config version for compatibility and deprecations
+# Fallback value (if you omit the key): config-version = 1
+config-version = 2
+
 # Enable/disable features
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
@@ -29,6 +33,9 @@ exec-on-workspace-change = [
 
 # Monitor focus behavior
 on-focused-monitor-changed = ["move-mouse monitor-lazy-center"]
+
+# like in i3, all workspaces are phantom
+persistent-workspaces = []
 
 # Execution environment settings
 [exec]

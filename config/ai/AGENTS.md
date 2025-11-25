@@ -155,6 +155,8 @@ fd -e yaml -e yml -0 | xargs -0 -I{} sh -c 'yq "." "{}" >/dev/null'
 
 AI agents must disclose what tool and model they are using in the "Assisted-by" commit and PR footer:
 
+Before committing or opening a PR, run `/status` and copy the exact "Model".
+
 ```
 Assisted-by: [Model Name] via [Tool Name]
 ```
@@ -164,4 +166,12 @@ Example:
 Assisted-by: Sonnet 4.5 via Claude Code
 or
 Assisted-by: GPT-5-codex (high) via OpenAI Codex
+^ These are just examples, make sure to change the model name and tool name accordingly to the current AI session.
 ```
+
+NOTE:
+- `gh pr edit <number> --body` ... is deprecated:
+```
+GraphQL: Projects (classic) is being deprecated in favor of the new Projects experience
+```
+Use `gh api repos/<repo>/pulls/<number> -X PATCH -f body="` instead.
