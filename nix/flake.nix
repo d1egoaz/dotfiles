@@ -25,7 +25,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     # Main nixpkgs (using stable darwin branch)
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
 
     # Unstable nixpkgs for packages that need latest features
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -38,7 +38,7 @@
 
     # Home Manager for user environment management
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -50,7 +50,7 @@
 
     # nix-darwin for macOS system management
     darwin = {
-      url = "github:LnL7/nix-darwin/nix-darwin-25.05";
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -61,9 +61,8 @@
     };
 
     # Tokyo Night theme
-    # Pinned to commit before breaking delta changes (issue: programs.delta doesn't exist in Home Manager)
     tokyonight = {
-      url = "github:mrjones2014/tokyonight.nix/59d22b401b235eed0341b7f3263bd8daec429428";
+      url = "github:mrjones2014/tokyonight.nix";
     };
   };
 

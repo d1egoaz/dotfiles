@@ -62,7 +62,7 @@ let
     shellcheck # Shell script analyzer
     shfmt # Shell script formatter
     stylua # Lua code formatter
-    taplo-cli # TOML toolkit
+    taplo # TOML toolkit
     yamllint # YAML linter
     yaml-language-server # YAML language server
 
@@ -108,7 +108,7 @@ let
     # =====================================================================
     # Database Tools
     # =====================================================================
-    mysql-client # MySQL client
+    mariadb # MariaDB/MySQL client (mysql-client renamed)
     postgresql # PostgreSQL client tools
 
     # =====================================================================
