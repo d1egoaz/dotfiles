@@ -153,6 +153,7 @@ fd -e yaml -e yml -0 | xargs -0 -I{} sh -c 'yq "." "{}" >/dev/null'
 
 # Attribution Requirements
 
+## Disclosure
 AI agents must disclose what tool and model they are using in the "Assisted-by" commit and PR footer:
 
 Before committing or opening a PR, run `/status` and copy the exact "Model".
@@ -168,6 +169,28 @@ or
 Assisted-by: GPT-5-codex (high) via OpenAI Codex
 ^ These are just examples, make sure to change the model name and tool name accordingly to the current AI session.
 ```
+
+## Commit messages
+
+The commit message should be structured as follows:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+The commit contains the following structural elements, to communicate intent to the consumers of your library:
+
+- fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).
+- feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).
+- BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
+- types other than fix: and feat: are allowed, for example: build:, chore:, ci:, docs:, feat:, fix:, style:, refactor:, perf:, test:, and revert:
+- footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
+
+https://www.conventionalcommits.org/en/v1.0.0/
 
 NOTE:
 - `gh pr edit <number> --body` ... is deprecated:
