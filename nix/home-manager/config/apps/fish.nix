@@ -17,27 +17,15 @@
       cwd = "pwd | tr -d '\\r\\n' | pbcopy";
       cdtmp = "cd (mktemp --directory)";
 
-      # kubernetes shortcuts - direct ports from zsh
+      # kubernetes shortcuts - simple ones stay as abbrs
       kaf = "k apply -f";
       kgd = "k get deployments";
       kgn = "k get namespaces";
-      kgnn = "k get nodes -o name | cut -d'/' -f2";
       kgp = "k get pods";
       kgpw = "k get pods -w";
-      kgpn = "k get pods -o name | cut -d'/' -f2";
       kgrs = "k get replicasets";
       kgs = "k get services";
       kgss = "k get statefulsets";
-      kdn = "k describe nodes (kgnn | fzf --prompt 'k8s node > ')";
-      kdp = "k describe pod (kgpn | fzf --prompt 'k8s pod > ')";
-      kl = "k logs -f (kgpn | fzf --prompt 'k8s pod > ')";
-      klk = "k logs -f (k get pods -o name -l app=kafka | cut -d'/' -f2 | fzf --prompt 'k8s pod > ') kafka";
-      kpf = "k port-forward (kgpn | fzf --prompt 'k8s pod > ')";
-      kpip = "k get pod (kgpn | fzf) -o json | jq '.status.podIP'";
-      kx = "k exec -it (kgpn | fzf) -- ";
-      kxb = "kx /bin/bash";
-      kgpis = "kgp -o jsonpath='{.items[*].spec.containers[*].image}' | tr -s ' ' '\\n' | sort | uniq -c";
-      kgpi = "k get pod (kgpn | fzf) -o jsonpath='{.spec.containers[*].image}' | tr -s ' ' '\\n' | sort";
     };
 
     # Custom functions
@@ -53,6 +41,19 @@
             sleep $interval
         end
       '';
+      # kubernetes functions - need to be functions (not abbrs) to work in command substitutions
+      kgpn = "k get pods -o name | cut -d'/' -f2";
+      kgnn = "k get nodes -o name | cut -d'/' -f2";
+      kdn = "k describe nodes (kgnn | fzf --prompt 'k8s node > ')";
+      kdp = "k describe pod (kgpn | fzf --prompt 'k8s pod > ')";
+      kl = "k logs -f (kgpn | fzf --prompt 'k8s pod > ')";
+      klk = "k logs -f (k get pods -o name -l app=kafka | cut -d'/' -f2 | fzf --prompt 'k8s pod > ') kafka";
+      kpf = "k port-forward (kgpn | fzf --prompt 'k8s pod > ')";
+      kpip = "k get pod (kgpn | fzf) -o json | jq '.status.podIP'";
+      kx = "k exec -it (kgpn | fzf) --";
+      kxb = "k exec -it (kgpn | fzf) -- /bin/bash";
+      kgpis = "k get pods -o jsonpath='{.items[*].spec.containers[*].image}' | tr -s ' ' '\\n' | sort | uniq -c";
+      kgpi = "k get pod (kgpn | fzf) -o jsonpath='{.spec.containers[*].image}' | tr -s ' ' '\\n' | sort";
     };
 
     # Shell aliases
