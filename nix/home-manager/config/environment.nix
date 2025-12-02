@@ -11,6 +11,8 @@
     VISUAL = "emacsclient -r -c -a emacs";
     ALTERNATE_EDITOR = "vim";
     PAGER = "less";
+    LESS = "-R -X -F"; # -X: no alternate screen (preserves scrollback), -F: quit if fits, -R: colors
+    KUBECOLOR_PAGER = ""; # disable kubecolor's pager, let output stay in scrollback
     MANPAGER = "bat";
 
     # Locale settings
