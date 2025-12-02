@@ -40,6 +40,21 @@
       kgpi = "k get pod (kgpn | fzf) -o jsonpath='{.spec.containers[*].image}' | tr -s ' ' '\\n' | sort";
     };
 
+    # Custom functions
+    functions = {
+      loop = ''
+        set -l interval $argv[1]
+        set -e argv[1]
+        while true
+            date
+            eval $argv
+            echo "-----"
+            echo
+            sleep $interval
+        end
+      '';
+    };
+
     # Shell aliases
     shellAliases = {
       ".." = "cd ..";
