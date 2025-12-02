@@ -1,31 +1,29 @@
 _:
 
 {
+  # Delta is now a separate program in Home Manager 25.11
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      dark = true;
+      line-numbers = true;
+      navigate = true;
+      side-by-side = false;
+      syntax-theme = "tokyonight_night";
+      plus-color = "#004400";
+      minus-color = "#440000";
+    };
+  };
+
   programs.git = {
     enable = true;
-    delta = {
-      enable = true;
-      tokyonight.enable = true;
-      options = {
-        dark = true;
-        line-numbers = true;
-        navigate = true;
-        side-by-side = false;
-        syntax-theme = "base16-256";
-        plus-color = "#004400";
-        minus-color = "#440000";
+
+    settings = {
+      user = {
+        name = "Diego Alvarez";
+        email = "info@diegoa.ca";
       };
-    };
-
-    userName = "Diego Alvarez";
-    userEmail = "info@diegoa.ca";
-    signing = {
-      key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
-      signByDefault = true;
-      signer = "gpg";
-    };
-
-    extraConfig = {
       init = {
         defaultBranch = "main";
       };
@@ -66,6 +64,12 @@ _:
       advice = {
         detachedHead = false;
       };
+    };
+
+    signing = {
+      key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+      signByDefault = true;
+      signer = "gpg";
     };
 
     # Global gitignore
