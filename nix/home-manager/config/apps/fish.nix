@@ -34,7 +34,7 @@
         set -l interval $argv[1]
         set -e argv[1]
         while true
-            date
+            printf "(UTC %s) %s\n" (TZ=UTC date +"%H:%M") (date +"%a, %b %d %l:%M:%S %p, %Y")
             eval $argv
             echo "-----"
             echo
