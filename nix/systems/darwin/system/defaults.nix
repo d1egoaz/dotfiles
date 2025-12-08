@@ -44,6 +44,8 @@
       NSAutomaticCapitalizationEnabled = true;
       AppleInterfaceStyleSwitchesAutomatically = false;
       "_HIHideMenuBar" = true;
+      NSStatusItemSpacing = 0;
+      NSStatusItemSelectionPadding = 0;
     };
 
     # Input devices
