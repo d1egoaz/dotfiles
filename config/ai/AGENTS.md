@@ -31,6 +31,12 @@ Keep each step tight:
 - Fix (smallest change)
 - Re-run command
 
+## Debugging Principles
+
+- Don't jump to bandaid fixes. Understand the issue, the problem, and how it started before making changes.
+- Trace the history: when did it break? What commit introduced the regression?
+- If something "was working before", find out what changed - don't assume it never worked.
+
 ## Quick Reference
 
 ## Default Shell
