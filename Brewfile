@@ -3,6 +3,7 @@
 tap "fastrepl/hyprnote" # Tap for Hyprnote app
 tap "nikitabobko/tap" # Tap for AeroSpace window manager
 
+brew "libvterm" # Terminal emulator library for Emacs vterm
 #brew "llama.cpp" # Local LLM inference engine
 cask "1password" # Password manager
 cask "aerospace" # Window manager
