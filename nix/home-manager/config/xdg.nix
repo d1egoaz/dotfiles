@@ -41,47 +41,6 @@
       '';
     };
 
-    # Stable emacs wrapper for GUI apps that don't inherit Nix PATH
-    ".local/bin/nix-emacs" = {
-      executable = true;
-      text = ''
-        #!/usr/bin/env bash
-        exec "${import ../../packages/emacs.nix { inherit pkgs; }}/bin/emacs" "$@"
-      '';
-    };
-
-    "Applications/nix-emacs.app/Contents/MacOS/nix-emacs" = {
-      executable = true;
-      text = ''
-        #!/usr/bin/env bash
-        exec "${config.home.homeDirectory}/.local/bin/nix-emacs" "$@"
-      '';
-    };
-
-    # macOS app bundle for nix-emacs (enables `open -a nix-emacs`)
-    "Applications/nix-emacs.app/Contents/Info.plist".text = ''
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-        <key>CFBundleExecutable</key>
-        <string>nix-emacs</string>
-        <key>CFBundleIdentifier</key>
-        <string>com.nixos.nix-emacs</string>
-        <key>CFBundleName</key>
-        <string>nix-emacs</string>
-        <key>CFBundlePackageType</key>
-        <string>APPL</string>
-        <key>CFBundleShortVersionString</key>
-        <string>1.0</string>
-        <key>CFBundleVersion</key>
-        <string>1</string>
-        <key>LSMinimumSystemVersion</key>
-        <string>10.13</string>
-      </dict>
-      </plist>
-    '';
-
     # Custom utility scripts from bin/files/
     ".local/bin/ediff".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/ediff";
@@ -117,6 +76,8 @@
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/wezterm";
       "ghostty/config".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ghostty/config";
+      "emacs-plus/build.yml".source =
+        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/emacs-plus/build.yml";
       # eza theme is configured via programs.eza.theme.source in programs.nix
       # AI assistant configuration
       "agents/AGENTS.md".source =

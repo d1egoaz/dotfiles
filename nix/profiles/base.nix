@@ -4,7 +4,6 @@
 
 let
   # ---------------- Custom Packages ----------------
-  customEmacs = import ../packages/emacs.nix { inherit pkgs; };
 
   # ---------------- External Fonts Repo ----------------
   # Use a private repository for proprietary fonts (Pragmata*).
@@ -26,7 +25,6 @@ let
     # =====================================================================
     black # Python code formatter
     cargo # Rust package manager
-    customEmacs # Custom Emacs with macOS enhancements
     gh # GitHub CLI tool
     git # Version control system
     git-crypt # Git encryption tool

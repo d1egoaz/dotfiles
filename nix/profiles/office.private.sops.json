@@ -1,17 +1,17 @@
 {
-    "OPENAI_API_KEY": "ENC[AES256_GCM,data:HZFYWYZTk0TO9hymE5tMAFsl/7NTHkuAeDpUnRcXW3tFgsger9v+MMdJztDBjekpmILAmREwZFqTZGMHg0Y6Fax9t2Cpp1zGqSjjjUUob4Jwm9ENsOZmIf1fIMguPjUL03ZJ8cKJ27lMxy2XjHar1AZA6DOeWlGPB7W5BRO+DMd6X83C+zUq8GV7/Nth6A5vvCxyVef14eSqr6BpaAxQPTHNJaY=,iv:eybjs9r1iarLe59SD/5a2B/gdffVLw+mCxwVbq3g2AE=,tag:1kpeqJNhBYilCkbu1wkKCg==,type:str]",
-    "HOMEBREW_GITHUB_API_TOKEN": "ENC[AES256_GCM,data:xiyx90d7VFEAk7QLEihD94y6e13KQOnRcN6XBvjj9DS1O2kL37Lqx/+1OMW1JZjuhwC0X07aTT1LDOEJ8ZFNWxD1mICXyTcpjhcNO3vvE1QPNJOcUKlfKSPHmq1F,iv:i3GC/j7oRsDx6TzPtHFud4trH1T+nhaoncgfFwZbBQ8=,tag:u7xAxaFXfrNfEKuHCGLlbQ==,type:str]",
-    "sops": {
-        "lastmodified": "2026-01-06T22:35:31Z",
-        "mac": "ENC[AES256_GCM,data:kOKrRs00ZCHWyT3qolqHfXI/xKIbinIifydm6gdCN5kfFHW/QTiN6XSoKq0E6MI5iw/nZX0E7iyoErPrq1l5o/dj+bv53BhvMG3ENkHXl7X0CC/1G8x/kW74EEkIvQr26oCPLLrPA4jpiJmBaVIsVelOdHaOLy0IXFRiie9O2b8=,iv:LcppN7qv1LgyfTl36NhnFpr4qoQMm0drWXNmqHl2Al0=,tag:RDx0DDCVuTldRT2FpTEQvw==,type:str]",
-        "pgp": [
-            {
-                "created_at": "2026-01-06T22:35:31Z",
-                "enc": "-----BEGIN PGP MESSAGE-----\n\nhQIMA22+nwf4VylCAQ//bKvw/WgoE985NwFvlZld39rMkHxT6P/uA+yTq4SAQbe/\nlmNwMyOoSfkUEVSxGtbKRFXwsIzuKExXccVfAmmghB7EDI0pUe8swYWPaxhVB9WU\nF/Y2hiGVLZf+padlpSYqh0F/RNUJWLojNZsEPrYCuuOwPLhFfBPbJcN3TnAX8/KC\nmuK4OAy/hylesDpvUGM2T7SDXQsZuzyTNqK4G/r/1h3F8oRte02mHQEiffOjzQts\nBAJ7yNR/Pvh+huAjqFrtcKjf4MZEv9oOQkrfNw3SjQyxwjTufcnCI8bR1Dx2pJrE\nJV0LeZJoHoZdwPza9p1M/gL76cGuI+V/ykc62M9GiZ2wY4l/m303//MobQbGA0xj\nMnhwiqe4Nieg6NeeTh2v2HdhCd9Uj3mrvb0CSlGpkPjGUZzvQJuWH4tm9087e+KN\n0yUm3Z4UYyTd9Tl+cgrQcz5I87Ul1mgtk+e+HpKg/MNlzMAH5X0O0h/asbsOR3H7\nyo4X3xIbE0auVT7ne4tSt+pu2/p/Gmc2mMcaHICS/hzsG6XHrApcLjqcr/1XQJKt\nTpAz+CiF+jH4JO2klrB2qyVCzZPUdgpKBO5nStjLUVtg+VHE6WZ2+Sv3t9GeGlpv\nyb1XLu7Dj7XFo388RYOoG3Zk0aJQsz+gGk+sNMZmGSB+XJLYcFERxKEDcQNicIbS\nXgFdHCq7ewXAocqm6tH/ghd3cS5gyRzYvBBIGbv1Fq0Vy54xYpoGHIhQH+nfbUtZ\nKXZBHCuGjO0cGIle55awfCCGqatPaTUoWPHOX+DFWdK7I0NtUpqL2RbLcUIM+h8=\n=QWFf\n-----END PGP MESSAGE-----",
-                "fp": "4DF4C58193BBB0863AB37A6DC63945863D4B9E77"
-            }
-        ],
-        "unencrypted_suffix": "_unencrypted",
-        "version": "3.11.0"
-    }
+  "OPENAI_API_KEY": "ENC[AES256_GCM,data:HZFYWYZTk0TO9hymE5tMAFsl/7NTHkuAeDpUnRcXW3tFgsger9v+MMdJztDBjekpmILAmREwZFqTZGMHg0Y6Fax9t2Cpp1zGqSjjjUUob4Jwm9ENsOZmIf1fIMguPjUL03ZJ8cKJ27lMxy2XjHar1AZA6DOeWlGPB7W5BRO+DMd6X83C+zUq8GV7/Nth6A5vvCxyVef14eSqr6BpaAxQPTHNJaY=,iv:eybjs9r1iarLe59SD/5a2B/gdffVLw+mCxwVbq3g2AE=,tag:1kpeqJNhBYilCkbu1wkKCg==,type:str]",
+  "HOMEBREW_GITHUB_API_TOKEN": "ENC[AES256_GCM,data:xiyx90d7VFEAk7QLEihD94y6e13KQOnRcN6XBvjj9DS1O2kL37Lqx/+1OMW1JZjuhwC0X07aTT1LDOEJ8ZFNWxD1mICXyTcpjhcNO3vvE1QPNJOcUKlfKSPHmq1F,iv:i3GC/j7oRsDx6TzPtHFud4trH1T+nhaoncgfFwZbBQ8=,tag:u7xAxaFXfrNfEKuHCGLlbQ==,type:str]",
+  "sops": {
+    "lastmodified": "2026-01-06T22:35:31Z",
+    "mac": "ENC[AES256_GCM,data:kOKrRs00ZCHWyT3qolqHfXI/xKIbinIifydm6gdCN5kfFHW/QTiN6XSoKq0E6MI5iw/nZX0E7iyoErPrq1l5o/dj+bv53BhvMG3ENkHXl7X0CC/1G8x/kW74EEkIvQr26oCPLLrPA4jpiJmBaVIsVelOdHaOLy0IXFRiie9O2b8=,iv:LcppN7qv1LgyfTl36NhnFpr4qoQMm0drWXNmqHl2Al0=,tag:RDx0DDCVuTldRT2FpTEQvw==,type:str]",
+    "pgp": [
+      {
+        "created_at": "2026-01-06T22:35:31Z",
+        "enc": "-----BEGIN PGP MESSAGE-----\n\nhQIMA22+nwf4VylCAQ//bKvw/WgoE985NwFvlZld39rMkHxT6P/uA+yTq4SAQbe/\nlmNwMyOoSfkUEVSxGtbKRFXwsIzuKExXccVfAmmghB7EDI0pUe8swYWPaxhVB9WU\nF/Y2hiGVLZf+padlpSYqh0F/RNUJWLojNZsEPrYCuuOwPLhFfBPbJcN3TnAX8/KC\nmuK4OAy/hylesDpvUGM2T7SDXQsZuzyTNqK4G/r/1h3F8oRte02mHQEiffOjzQts\nBAJ7yNR/Pvh+huAjqFrtcKjf4MZEv9oOQkrfNw3SjQyxwjTufcnCI8bR1Dx2pJrE\nJV0LeZJoHoZdwPza9p1M/gL76cGuI+V/ykc62M9GiZ2wY4l/m303//MobQbGA0xj\nMnhwiqe4Nieg6NeeTh2v2HdhCd9Uj3mrvb0CSlGpkPjGUZzvQJuWH4tm9087e+KN\n0yUm3Z4UYyTd9Tl+cgrQcz5I87Ul1mgtk+e+HpKg/MNlzMAH5X0O0h/asbsOR3H7\nyo4X3xIbE0auVT7ne4tSt+pu2/p/Gmc2mMcaHICS/hzsG6XHrApcLjqcr/1XQJKt\nTpAz+CiF+jH4JO2klrB2qyVCzZPUdgpKBO5nStjLUVtg+VHE6WZ2+Sv3t9GeGlpv\nyb1XLu7Dj7XFo388RYOoG3Zk0aJQsz+gGk+sNMZmGSB+XJLYcFERxKEDcQNicIbS\nXgFdHCq7ewXAocqm6tH/ghd3cS5gyRzYvBBIGbv1Fq0Vy54xYpoGHIhQH+nfbUtZ\nKXZBHCuGjO0cGIle55awfCCGqatPaTUoWPHOX+DFWdK7I0NtUpqL2RbLcUIM+h8=\n=QWFf\n-----END PGP MESSAGE-----",
+        "fp": "4DF4C58193BBB0863AB37A6DC63945863D4B9E77"
+      }
+    ],
+    "unencrypted_suffix": "_unencrypted",
+    "version": "3.11.0"
+  }
 }
