@@ -2,6 +2,8 @@
 
 tap "fastrepl/hyprnote" # Tap for Hyprnote app
 tap "nikitabobko/tap" # Tap for AeroSpace window manager
+tap "d12frosted/emacs-plus" # Tap for Emacs with macOS enhancements
+
 
 brew "libvterm" # Terminal emulator library for Emacs vterm
 #brew "llama.cpp" # Local LLM inference engine
@@ -12,6 +14,7 @@ cask "claude-code" # Claude Code editor/CLI
 cask "codex" # Coding assistant CLI
 cask "cursor" # AI-first IDE
 cask "cursor-cli" # AI-first IDE
+cask "d12frosted/emacs-plus/emacs-plus-app" # Emacs with macOS enhancements (pre-built binary)
 cask "excalidrawz" # Excalidraw whiteboard
 cask "font-sf-pro" # Apple SF Pro font
 cask "ghostty"
