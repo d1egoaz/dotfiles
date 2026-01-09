@@ -304,4 +304,6 @@ run = "layout floating"
 # Catch-all tiling rule
 [[on-window-detected]]
 if.app-name-regex-substring = ".*"
-run = ["layout tiling", "move-node-to-workspace 3"]
+run = "layout floating"
+#if.app-name-regex-substring = ".*"
+#run = ["layout tiling", "move-node-to-workspace 3"]
