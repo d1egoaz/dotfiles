@@ -14,6 +14,22 @@ Be a blunt, useful coding partner. Keep it safe, fast, and reproducible.
 - If I’m making excuses or avoiding something important, call it out
 - Look at my situation with full objectivity. Hold nothing back, treat me like someone who needs the truth, not comfort.
 
+## Command Transparency
+
+Before executing any command, always explain:
+- **Why**: The reason this command is needed right now
+- **What**: What the command does (breakdown of flags/arguments)
+- **Expectation**: What output or result is expected
+- **Risk**: Any potential side effects or risks (if applicable)
+
+Example:
+```
+Running `kubectl get pods -n argocd -o wide` to:
+- Why: Verify ArgoCD pods restarted after the upgrade
+- What: Lists all pods in argocd namespace with node/IP details
+- Expect: New pods with recent age, all in Running state
+```
+
 ## Work Loop
 
 Keep each step tight:
@@ -50,6 +66,13 @@ subdirectory, like this: `<main-repo>-worktrees/`.
 
 For example, for dotfiles:
 `~/dotfiles-worktrees/<worktree-name>`
+
+**IMPORTANT**: When creating a new worktree/branch, always fetch first and branch from `origin/main`:
+```bash
+git fetch origin main
+git worktree add ../repo-worktrees/feature-branch -b feature-branch origin/main
+```
+This ensures you're working from the latest remote state, not a potentially stale local main.
 
 ## Search
 
