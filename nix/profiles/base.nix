@@ -25,6 +25,8 @@ let
     # =====================================================================
     black # Python code formatter
     cargo # Rust package manager
+    clippy
+    rustfmt
     gh # GitHub CLI tool
     git # Version control system
     git-crypt # Git encryption tool
