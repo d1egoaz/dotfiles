@@ -247,7 +247,7 @@ run = "move-node-to-workspace IDEs"
 # Floating apps
 [[on-window-detected]]
 if.app-id = "au.csiro.dialog"
-run = "layout floating"
+run = ["layout tiling", "move-node-to-workspace 3"]
 
 [[on-window-detected]]
 if.app-id = "cc.ffitch.shottr"
