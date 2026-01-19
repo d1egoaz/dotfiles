@@ -76,6 +76,7 @@ _:
     ignores = [
       ".DS_STORE"
       "TAGS"
+      ".claude/settings.local.json"
     ];
 
     # Git attributes for different file types
