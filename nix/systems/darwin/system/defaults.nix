@@ -7,11 +7,19 @@
     # Dock configuration
     dock = {
       autohide = true;
+      autohide-delay = 0.0;
+      autohide-time-modifier = 0.0;
       show-recents = false;
       orientation = "left";
       magnification = true;
       show-process-indicators = true;
       largesize = 112;
+
+      # Disable hot corners (1 = disabled)
+      wvous-tl-corner = 1;
+      wvous-tr-corner = 1;
+      wvous-bl-corner = 1;
+      wvous-br-corner = 1;
     };
 
     # Finder configuration
@@ -46,6 +54,12 @@
       "_HIHideMenuBar" = true;
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
+
+      # Expand save and print panels by default
+      NSNavPanelExpandedStateForSaveMode = true;
+      NSNavPanelExpandedStateForSaveMode2 = true;
+      PMPrintingExpandedStateForPrint = true;
+      PMPrintingExpandedStateForPrint2 = true;
     };
 
     # Input devices
