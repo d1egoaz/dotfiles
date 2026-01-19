@@ -1,6 +1,3 @@
 # Custom icon to apply
 # See Icons Gallery: https://github.com/d12frosted/homebrew-emacs-plus#icons-gallery
 icon: liquid-glass
-
-# This ensures proper native compilation support when using the pre-built binary
-native_comp_env: true
