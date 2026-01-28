@@ -8,6 +8,7 @@ tap "d12frosted/emacs-plus" # Tap for Emacs with macOS enhancements
 brew "libvterm" # Terminal emulator library for Emacs vterm
 #brew "llama.cpp" # Local LLM inference engine
 cask "1password" # Password manager
+cask "1password-cli"
 cask "aerospace" # Window manager
 cask "alfred" # App launcher and workflows
 cask "claude-code" # Claude Code editor/CLI
