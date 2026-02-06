@@ -33,7 +33,7 @@ just install-darwin
 ### Username-Based Auto-Detection
 
 The system auto-detects which machine configuration to use based on `whoami`:
-- `diego.albeiroalvarezzuluag` → `office-mbp` (profile: office)
+- `diego.alvarez` → `office-mbp` (profile: office)
 - `diego` → `personal-mbp` (profile: personal)
 - `diegoalvarez` → `personal-mini` (profile: personal)
 

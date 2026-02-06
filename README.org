@@ -35,7 +35,7 @@ just switch
 
 * My Machines
 
-- *office-mbp* — Office MacBook Pro M1 Max (user: diego.albeiroalvarezzuluag)
+- *office-mbp* -- Office MacBook Pro (user: diego.alvarez)
 - *personal-mbp* — Personal MacBook Air M3 (user: diego)
 - *personal-mini* — Personal Mac Mini M4 (user: diegoalvarez)
 

@@ -8,7 +8,7 @@
     {
       # macOS System Configurations
       office-mbp = mkDarwinSystem {
-        user = "diego.albeiroalvarezzuluag";
+        user = "diego.alvarez";
         profile = "office";
         inherit system;
       };

@@ -70,7 +70,7 @@ lint: fmt check
 # ============================================================================
 
 # Auto-detect host based on user (1:1 relationship)
-_host := if `whoami` == "diego" { "personal-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else { "office-mbp" }
+_host := if `whoami` == "diego" { "personal-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else if `whoami` == "diego.alvarez" { "office-mbp" } else { error("Unknown user: run `whoami` and add to justfile") }
 
 # Install nix-darwin (run this first on macOS)
 install-darwin:
