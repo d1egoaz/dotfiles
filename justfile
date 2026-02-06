@@ -49,6 +49,11 @@ gc:
 update:
     cd nix && nix flake update --refresh
 
+# Clear Nix tarball cache (fixes "Truncated tar archive" errors during flake update)
+fix-nix-cache:
+    rm -rf ~/.cache/nix/tarball
+    @echo "✅ Nix tarball cache cleared. Re-run: just update"
+
 # Format nix files
 fmt:
     cd nix && nix fmt
