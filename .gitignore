@@ -1,2 +1,5 @@
 .DS_Store
 nix/flake.lock
+
+# Alfred workflow user preferences (may contain API keys, emails, etc.)
+alfred/Alfred.alfredpreferences/workflows/*/prefs.plist

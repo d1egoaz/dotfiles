@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>ca.diegoa.grammarfixer</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<key>0FF1577F-4EB6-4DDA-8352-D0412C3F9F17</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>52BC671A-AA1A-47AD-8CB6-B3E0D02CD10F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>sourceoutputuid</key>
+				<string>6A9A07ED-56CE-416D-954E-5102FB0711E8</string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>45C429C0-0EAC-4DCA-96B1-9C503556D194</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>45C429C0-0EAC-4DCA-96B1-9C503556D194</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>C2A5F805-8598-43DF-8CF6-0A3EFA6B26CB</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>52BC671A-AA1A-47AD-8CB6-B3E0D02CD10F</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>F8F32CAD-14A6-4A98-A1DE-16EC61910CA9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>7B84C518-F388-4911-A185-3CB0EE5385D6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9883FCCC-F472-46C6-A4F6-B62BEB952A3F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>866A9B3E-5003-4626-894A-A53718FD6E7F</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>0FF1577F-4EB6-4DDA-8352-D0412C3F9F17</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>9883FCCC-F472-46C6-A4F6-B62BEB952A3F</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>45C429C0-0EAC-4DCA-96B1-9C503556D194</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>F8F32CAD-14A6-4A98-A1DE-16EC61910CA9</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>0FC20B19-9A1C-4E41-A0BA-9390BA4723AD</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Diego Alvarez</string>
+	<key>description</key>
+	<string>Fix the grammar while maintaining user intent.</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>AI - Grammar Fixer</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>count</key>
+				<integer>1</integer>
+				<key>keychar</key>
+				<string>e</string>
+				<key>keycode</key>
+				<integer>-1</integer>
+				<key>keymod</key>
+				<integer>393216</integer>
+				<key>overridewithargument</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.dispatchkeycombo</string>
+			<key>uid</key>
+			<string>F8F32CAD-14A6-4A98-A1DE-16EC61910CA9</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>count</key>
+				<integer>1</integer>
+				<key>keychar</key>
+				<string>a</string>
+				<key>keycode</key>
+				<integer>-1</integer>
+				<key>keymod</key>
+				<integer>262144</integer>
+				<key>overridewithargument</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.dispatchkeycombo</string>
+			<key>uid</key>
+			<string>52BC671A-AA1A-47AD-8CB6-B3E0D02CD10F</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>count</key>
+				<integer>1</integer>
+				<key>keychar</key>
+				<string>.</string>
+				<key>keycode</key>
+				<integer>-1</integer>
+				<key>keymod</key>
+				<integer>786432</integer>
+				<key>overridewithargument</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.dispatchkeycombo</string>
+			<key>uid</key>
+			<string>0FC20B19-9A1C-4E41-A0BA-9390BA4723AD</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>1</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>13</integer>
+				<key>hotmod</key>
+				<integer>786432</integer>
+				<key>hotstring</key>
+				<string>W</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>866A9B3E-5003-4626-894A-A53718FD6E7F</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>conditions</key>
+				<array>
+					<dict>
+						<key>inputstring</key>
+						<string></string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>4</integer>
+						<key>matchstring</key>
+						<string>^\s*$</string>
+						<key>outputlabel</key>
+						<string>empty</string>
+						<key>uid</key>
+						<string>6A9A07ED-56CE-416D-954E-5102FB0711E8</string>
+					</dict>
+				</array>
+				<key>elselabel</key>
+				<string>text</string>
+				<key>hideelse</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.conditional</string>
+			<key>uid</key>
+			<string>0FF1577F-4EB6-4DDA-8352-D0412C3F9F17</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>1</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>47</integer>
+				<key>hotmod</key>
+				<integer>786432</integer>
+				<key>hotstring</key>
+				<string>.</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>7B84C518-F388-4911-A185-3CB0EE5385D6</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import json
+import os
+import sys
+import urllib.request
+import urllib.error
+
+def main():
+    selection = sys.argv[1] if len(sys.argv) &gt; 1 else ""
+    api_key = os.environ.get("openai_apikey")
+    system_prompt = os.environ.get("prompt")
+    model = os.environ.get("openai_model", "gpt-5-nano")
+
+    data = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": selection}
+        ]
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    try:
+        req = urllib.request.Request(
+            "https://api.openai.com/v1/chat/completions",
+            data=json.dumps(data).encode('utf-8'),
+            headers=headers,
+            method="POST"
+        )
+        
+        with urllib.request.urlopen(req, timeout=15) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            return result["choices"][0]["message"]["content"]
+            
+    except Exception as e:
+        return f"ERROR: {str(e)}"
+
+if __name__ == "__main__":
+    print(main())</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>9</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>45C429C0-0EAC-4DCA-96B1-9C503556D194</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>autopaste</key>
+				<true/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>C2A5F805-8598-43DF-8CF6-0A3EFA6B26CB</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>conditions</key>
+				<array>
+					<dict>
+						<key>inputstring</key>
+						<string></string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>4</integer>
+						<key>matchstring</key>
+						<string>^\s*$</string>
+						<key>outputlabel</key>
+						<string>empty</string>
+						<key>uid</key>
+						<string>6A9A07ED-56CE-416D-954E-5102FB0711E8</string>
+					</dict>
+				</array>
+				<key>elselabel</key>
+				<string>text</string>
+				<key>hideelse</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.conditional</string>
+			<key>uid</key>
+			<string>9883FCCC-F472-46C6-A4F6-B62BEB952A3F</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>## Usage
+
+Fix the grammar while maintaining user intent.
+
+https://diegoa.ca</string>
+	<key>uidata</key>
+	<dict>
+		<key>0FC20B19-9A1C-4E41-A0BA-9390BA4723AD</key>
+		<dict>
+			<key>xpos</key>
+			<real>660</real>
+			<key>ypos</key>
+			<real>40</real>
+		</dict>
+		<key>0FF1577F-4EB6-4DDA-8352-D0412C3F9F17</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>xpos</key>
+			<real>240</real>
+			<key>ypos</key>
+			<real>150</real>
+		</dict>
+		<key>45C429C0-0EAC-4DCA-96B1-9C503556D194</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>note</key>
+			<string>OpenAI API Call</string>
+			<key>xpos</key>
+			<real>455</real>
+			<key>ypos</key>
+			<real>555</real>
+		</dict>
+		<key>52BC671A-AA1A-47AD-8CB6-B3E0D02CD10F</key>
+		<dict>
+			<key>xpos</key>
+			<real>370</real>
+			<key>ypos</key>
+			<real>40</real>
+		</dict>
+		<key>7B84C518-F388-4911-A185-3CB0EE5385D6</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>note</key>
+			<string>rephrase selection
+
+DOUBLE CLICK TO EDIT</string>
+			<key>xpos</key>
+			<real>35</real>
+			<key>ypos</key>
+			<real>540</real>
+		</dict>
+		<key>866A9B3E-5003-4626-894A-A53718FD6E7F</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>note</key>
+			<string>rephrase selection
+
+DOUBLE CLICK TO EDIT</string>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>65</real>
+		</dict>
+		<key>9883FCCC-F472-46C6-A4F6-B62BEB952A3F</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>xpos</key>
+			<real>315</real>
+			<key>ypos</key>
+			<real>560</real>
+		</dict>
+		<key>C2A5F805-8598-43DF-8CF6-0A3EFA6B26CB</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>3</integer>
+			<key>note</key>
+			<string>paste</string>
+			<key>xpos</key>
+			<real>635</real>
+			<key>ypos</key>
+			<real>555</real>
+		</dict>
+		<key>F8F32CAD-14A6-4A98-A1DE-16EC61910CA9</key>
+		<dict>
+			<key>xpos</key>
+			<real>510</real>
+			<key>ypos</key>
+			<real>40</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>OpenAI API Key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>openai_apikey</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>gpt-4.1-mini</string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>OpenAI Model</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>openai_model</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>**Prompt for Text Refinement**
+
+**1. Primary Goal:**
+   Improve the readability, grammar, and language of the provided text.
+
+**3. Specific Instructions &amp; Constraints:**
+   * **Content:**
+     * Do not change the core meaning or content of the original text.
+     * Refrain from making *any* changes if the original writing is already sufficiently clear and concise.
+   * **Grammar/Mechanics:**
+     * Use contractions (e.g., "it's", "we'll") where appropriate.
+     * Avoid using passive voice excessively; prefer active voice.
+     * Do not use the em dash (—) character.
+
+**4. Output Format:**
+   Output *only* the corrected/revised text. Do not include any introductory or concluding phrases (like "Here is the revised text:" or similar).
+
+**5. Input Text:**
+   The text to be corrected is below:</string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<false/>
+				<key>verticalsize</key>
+				<integer>9</integer>
+			</dict>
+			<key>description</key>
+			<string>**Prompt for Text Refinement**
+
+**1. Primary Goal:**
+   Improve the readability, grammar, and language of the provided text.
+
+**3. Specific Instructions &amp; Constraints:**
+   * **Content:**
+     * Do not change the core meaning or content of the original text.
+     * Refrain from making *any* changes if the original writing is already sufficiently clear and concise.
+   * **Grammar/Mechanics:**
+     * Use contractions (e.g., "it's", "we'll") where appropriate.
+     * Avoid using passive voice excessively; prefer active voice.
+     * Do not use the em dash (—) character.
+
+**4. Output Format:**
+   Output *only* the corrected/revised text. Do not include any introductory or concluding phrases (like "Here is the revised text:" or similar).
+
+**5. Input Text:**
+   The text to be corrected is below:</string>
+			<key>label</key>
+			<string>Prompt</string>
+			<key>type</key>
+			<string>textarea</string>
+			<key>variable</key>
+			<string>prompt</string>
+		</dict>
+	</array>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>1.0.0</string>
+	<key>webaddress</key>
+	<string>https://diegoa.ca</string>
+</dict>
+</plist>

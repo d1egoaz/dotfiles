@@ -1,0 +1,64 @@
+{
+  "alfredtheme" : {
+    "result" : {
+      "textSpacing" : 9,
+      "subtext" : {
+        "size" : 12,
+        "colorSelected" : "#8593D3FF",
+        "font" : "System",
+        "color" : "#5A6491FF"
+      },
+      "shortcut" : {
+        "size" : 18,
+        "colorSelected" : "#4F587FFF",
+        "font" : "System",
+        "color" : "#444B70FF"
+      },
+      "backgroundSelected" : "#24283BFF",
+      "text" : {
+        "size" : 20,
+        "colorSelected" : "#ABBAFFFF",
+        "font" : "System",
+        "color" : "#6570A1FF"
+      },
+      "iconPaddingHorizontal" : 4,
+      "roundness" : 0,
+      "paddingVertical" : 11,
+      "iconSize" : 40
+    },
+    "search" : {
+      "backgroundSelected" : "#1C1F2EFF",
+      "paddingHorizontal" : 8,
+      "spacing" : 10,
+      "text" : {
+        "size" : 36,
+        "colorSelected" : "#6570A1FF",
+        "font" : "System Light",
+        "color" : "#B9C6FFFF"
+      },
+      "background" : "#202334FF",
+      "roundness" : 0,
+      "paddingVertical" : 7
+    },
+    "window" : {
+      "color" : "#202334FF",
+      "paddingHorizontal" : 10,
+      "width" : 600,
+      "borderPadding" : 10,
+      "borderColor" : "#858CBB7F",
+      "blur" : 0,
+      "roundness" : 10,
+      "paddingVertical" : 10
+    },
+    "credit" : "enkia",
+    "separator" : {
+      "color" : "#2E334BFF",
+      "thickness" : 1
+    },
+    "scrollbar" : {
+      "color" : "#B2B2B2FF",
+      "thickness" : 2
+    },
+    "name" : "Tokyo Night"
+  }
+}

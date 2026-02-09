@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.github.jsumners.alfred-emoji</string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>connections</key>
+	<dict>
+		<key>05450F7C-3D4F-45BF-ACA3-9422EF54EFDD</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>AEDE6F2A-3933-4CB6-9F5B-0D53DDFE79BA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>69116487-E1CC-4FAE-BBFC-7904198F317B</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>05450F7C-3D4F-45BF-ACA3-9422EF54EFDD</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>AEDE6F2A-3933-4CB6-9F5B-0D53DDFE79BA</key>
+		<array/>
+		<key>F36CDFFD-4057-4FF1-965B-4379AE4B8D90</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>05450F7C-3D4F-45BF-ACA3-9422EF54EFDD</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>James Sumners</string>
+	<key>description</key>
+	<string>Copy emoji to the clipboard</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Emoji search</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>0</integer>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>F36CDFFD-4057-4FF1-965B-4379AE4B8D90</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>e</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading results...</string>
+				<key>script</key>
+				<string>osascript -l JavaScript emoji.js "$1" 2&gt;&amp;1</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Search emoji</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>05450F7C-3D4F-45BF-ACA3-9422EF54EFDD</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>autopaste</key>
+				<true/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>AEDE6F2A-3933-4CB6-9F5B-0D53DDFE79BA</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>focusedappvariable</key>
+				<true/>
+				<key>focusedappvariablename</key>
+				<string>snippetapp</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.snippet</string>
+			<key>uid</key>
+			<string>69116487-E1CC-4FAE-BBFC-7904198F317B</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>
+# Emoji Workflow
+
+Type an emoji name, or alias, to find it and copy it.
+
+    emoji [query]
+
+return (↵) : Copy the symbol of the selected emoji (e.g. 🤣) to your clipboard.
+
+alt + return (⌥↵) : Copy the code of the selected emoji (e.g. ":rofl:") to your clipboard.
+
+cmd + return (⌘↵) : Paste the symbol of the selected emoji (e.g. 🤣) directly to your frontmost application.
+
+ctrl + return (⌃↵): Copy the codepoint of the selected emoji (e.g. "U+1F923") to your clipboard.
+
+## Automatic Updates
+
+This workflow will automatically check for updates at most once per day. If a new release is found, it automatically downloads and installs the latest version of the workflow. All downloads come directly from official GitHub releases.
+
+## Support
+
+For assistance with issues, or to submit a feature request, please visit:
+https://github.com/jsumners/alfred-emoji/issues
+  </string>
+	<key>uidata</key>
+	<dict>
+		<key>05450F7C-3D4F-45BF-ACA3-9422EF54EFDD</key>
+		<dict>
+			<key>note</key>
+			<string>Please submit issues and feature requests at https://github.com/jsumners/alfred-emoji/issues</string>
+			<key>xpos</key>
+			<real>270</real>
+			<key>ypos</key>
+			<real>180</real>
+		</dict>
+		<key>69116487-E1CC-4FAE-BBFC-7904198F317B</key>
+		<dict>
+			<key>xpos</key>
+			<real>50</real>
+			<key>ypos</key>
+			<real>260</real>
+		</dict>
+		<key>AEDE6F2A-3933-4CB6-9F5B-0D53DDFE79BA</key>
+		<dict>
+			<key>note</key>
+			<string>Auto Paste</string>
+			<key>xpos</key>
+			<real>530</real>
+			<key>ypos</key>
+			<real>180</real>
+		</dict>
+		<key>F36CDFFD-4057-4FF1-965B-4379AE4B8D90</key>
+		<dict>
+			<key>xpos</key>
+			<real>50</real>
+			<key>ypos</key>
+			<real>100</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>👍</string>
+						<string></string>
+					</array>
+					<array>
+						<string>👍🏻</string>
+						<string>0</string>
+					</array>
+					<array>
+						<string>👍🏼</string>
+						<string>1</string>
+					</array>
+					<array>
+						<string>👍🏽</string>
+						<string>2</string>
+					</array>
+					<array>
+						<string>👍🏾</string>
+						<string>3</string>
+					</array>
+					<array>
+						<string>👍🏿</string>
+						<string>4</string>
+					</array>
+					<array>
+						<string>Random</string>
+						<string>random</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Skin Tone</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>skin_tone</string>
+		</dict>
+	</array>
+	<key>version</key>
+	<string>2.0.1</string>
+	<key>webaddress</key>
+	<string>https://github.com/jsumners/alfred-emoji</string>
+</dict>
+</plist>

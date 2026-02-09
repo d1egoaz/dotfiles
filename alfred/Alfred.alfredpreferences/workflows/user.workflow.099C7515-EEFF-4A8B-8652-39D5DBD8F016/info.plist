@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>ca.diegoa.prapproval</string>
+	<key>connections</key>
+	<dict>
+		<key>2C010EEB-98B0-4E7F-A5FB-45BE2DABC8D3</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>EB2A61C3-D9F7-4CFF-B9C4-73CDE9F1CBD3</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>32F40115-5198-4077-97D1-1DBFD854E613</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>2C010EEB-98B0-4E7F-A5FB-45BE2DABC8D3</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string></string>
+	<key>description</key>
+	<string></string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>pr review approve</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>pra</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>pr approve</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>32F40115-5198-4077-97D1-1DBFD854E613</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>tell application "Google Chrome"
+    return URL of active tab of front window
+end tell</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>6</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>2C010EEB-98B0-4E7F-A5FB-45BE2DABC8D3</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string></string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string>/Users/diego.albeiroalvarezzuluag/dotfiles/bin/files/pr-approve.sh</string>
+				<key>type</key>
+				<integer>8</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>F78F17A6-21D1-4241-9A0E-BF838260C903</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>#!/usr/bin/env zsh
+
+# Strip trailing newline/whitespace
+url="${1%$'\n'}"
+# url="${url%$'\r'}"
+
+# Debug:
+osascript -e "display notification \"$url\" with title \"Approving PR:\""
+
+if [[ "$url" == https://github.com* ]]; then
+    gh pr review --approve "$url"
+else
+    osascript -e 'display notification "URL is not a GitHub PR" with title "PR Review Failed"'
+fi</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>5</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>EB2A61C3-D9F7-4CFF-B9C4-73CDE9F1CBD3</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>2C010EEB-98B0-4E7F-A5FB-45BE2DABC8D3</key>
+		<dict>
+			<key>xpos</key>
+			<real>205</real>
+			<key>ypos</key>
+			<real>140</real>
+		</dict>
+		<key>32F40115-5198-4077-97D1-1DBFD854E613</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>140</real>
+		</dict>
+		<key>EB2A61C3-D9F7-4CFF-B9C4-73CDE9F1CBD3</key>
+		<dict>
+			<key>xpos</key>
+			<real>490</real>
+			<key>ypos</key>
+			<real>295</real>
+		</dict>
+		<key>F78F17A6-21D1-4241-9A0E-BF838260C903</key>
+		<dict>
+			<key>xpos</key>
+			<real>450</real>
+			<key>ypos</key>
+			<real>140</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array/>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>0.0.0</string>
+	<key>webaddress</key>
+	<string></string>
+</dict>
+</plist>
