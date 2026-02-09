@@ -157,12 +157,86 @@ Profile is also exported as `$PROFILE` environment variable in shell sessions.
 
 ## Secrets Management
 
-Secrets are managed with sops-nix:
-- Encrypted file: `nix/profiles/office.private.sops.json`
-- Edit: `sops nix/profiles/office.private.sops.json`
-- GPG key configured in `.sops.yaml`
-- Secrets defined in `home-manager/config/secrets.nix`
-- Decrypted at runtime to `~/.local/state/sops-nix/secrets/`
+Secrets are managed with 1Password CLI via `op read`, accessed on-demand through shell aliases.
+
+### Vault Layout
+
+| Profile  | Vault      | Items                                    |
+|----------|------------|------------------------------------------|
+| office   | Employee   | `OpenAI API`, `Homebrew GitHub Token`    |
+| personal | Private    | `OpenAI API`                             |
+
+### Shell Aliases
+
+Aliases are profile-aware (account + vault are selected at build time via `--account`):
+
+```bash
+# Office profile expands to:
+op-openai     # op read --account <op_account> "op://<op_vault>/OpenAI API/credential"
+op-homebrew   # op read --account <op_account> "op://<op_vault>/Homebrew GitHub Token/credential"
+
+# Personal profile expands to:
+op-openai     # op read --account my.1password.com "op://Private/OpenAI API/credential"
+```
+
+The `--account` flag ensures the correct 1Password account is targeted regardless of which session is currently active.
+
+Account URLs, vault names, and work email are stored in `nix/profiles/secrets.nix` (gitignored). See `secrets.example.nix` for the template.
+
+### Authentication
+
+```fish
+# Fish
+eval (op signin)
+
+# Zsh/Bash
+eval $(op signin)
+
+# Verify
+op whoami
+```
+
+### Creating 1Password Items (First-Time Setup / Key Rotation)
+
+If the items don't exist yet in 1Password, create them:
+
+```bash
+# Replace <op_account> and <op_vault> with values from secrets.nix
+op item create \
+  --account <op_account> \
+  --vault <op_vault> \
+  --category "API Credential" \
+  --title "OpenAI API" \
+  'credential[password]=sk-YOUR-OPENAI-KEY-HERE'
+
+op item create \
+  --account <op_account> \
+  --vault <op_vault> \
+  --category "API Credential" \
+  --title "Homebrew GitHub Token" \
+  'credential[password]=ghp_YOUR-GITHUB-TOKEN-HERE'
+```
+
+To rotate an existing key:
+
+```bash
+op item edit "OpenAI API" --account <op_account> --vault <op_vault> 'credential[password]=sk-NEW-KEY-HERE'
+```
+
+### Usage
+
+```fish
+# Use alias (account is baked in)
+set -l key (op-openai)
+
+# Use op directly (always specify --account from secrets.nix)
+op read --account <op_account> "op://<op_vault>/OpenAI API/credential"
+
+# One-liner
+curl -H "Authorization: Bearer (op-openai)" https://api.openai.com/v1/models
+```
+
+Alfred workflows fetch the OpenAI key directly via `op read` at runtime (no environment variables needed).
 
 ## Important Concepts
 
@@ -170,7 +244,6 @@ Secrets are managed with sops-nix:
 
 The `--impure` flag is used in `just switch` because:
 - Profile files may use `builtins.fetchGit` for external resources (fonts repo)
-- Office profile may require decrypting sops files at eval time
 
 ### Rollbacks
 
@@ -203,8 +276,8 @@ nix/
 │   └── config/                 # Configuration modules
 │       ├── programs.nix        # Nix-managed programs
 │       ├── xdg.nix            # File symlinks
-│       ├── secrets.nix         # SOPS secrets
 │       └── apps/              # App-specific modules
+│           └── alfred.nix     # Alfred preferences (office)
 ├── systems/darwin/             # macOS system-level settings
 └── packages/                   # Custom package definitions
 

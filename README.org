@@ -111,19 +111,23 @@ AWS helpers (=awsprofile=) are sourced directly by Fish config as shell function
 
 ** Secrets
 
-Encrypted with sops-nix. Requires =sops= and =gnupg= installed:
+Secrets are managed with 1Password CLI for the office profile.
 
+Prerequisites:
 #+begin_src bash
-brew install sops gnupg
+brew install 1password-cli
 #+end_src
 
-Edit encrypted secrets with:
-
-#+begin_src bash
-sops nix/profiles/office.private.sops.json
+Sign in to 1Password:
+#+begin_src fish
+eval (op signin)
 #+end_src
 
-Secrets are decrypted at runtime and never stored in plaintext. Configuration is in =.sops.yaml= with your GPG fingerprint.
+Secrets are loaded at shell startup from the Employee vault. Available secrets:
+- =OPENAI_API_KEY=: OpenAI API key
+- =HOMEBREW_GITHUB_API_TOKEN=: GitHub token for Homebrew
+
+Secrets are session-scoped and require 1Password authentication.
 
 * Adding Stuff
 
@@ -187,9 +191,9 @@ just gc
 # Brew app not showing up in Applications?
 brew reinstall --cask <app>
 
-# Secrets not decrypting?
-# Check GPG key is properly configured and imported
-gpg --list-secret-keys
+# Secrets not loading?
+op whoami  # Check if authenticated
+eval (op signin)  # Sign in if needed
 #+end_src
 
 * Why This Setup?
