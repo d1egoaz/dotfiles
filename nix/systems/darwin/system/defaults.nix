@@ -14,6 +14,8 @@
       magnification = true;
       show-process-indicators = true;
       largesize = 112;
+      tilesize = 64;
+      expose-group-apps = true; # Group windows by app in Mission Control
 
       # Disable hot corners (1 = disabled)
       wvous-tl-corner = 1;
@@ -51,6 +53,12 @@
       NSAutomaticPeriodSubstitutionEnabled = false;
       NSAutomaticCapitalizationEnabled = true;
       AppleInterfaceStyleSwitchesAutomatically = false;
+      AppleAccentColor = 5; # Purple accent color
+      AppleEnableSwipeNavigateWithScrolls = false; # Disable two-finger swipe back/forward
+      AppleWindowTabbingMode = "always"; # Prefer tabs when opening documents
+      NSWindowShouldDragOnGesture = true; # Cmd+Ctrl drag to move windows
+      "com.apple.mouse.scaling" = 1.0; # Mouse tracking speed
+      "com.apple.trackpad.scaling" = 1.0; # Trackpad tracking speed
       "_HIHideMenuBar" = true;
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
@@ -75,6 +83,20 @@
       "com.apple.Siri" = {
         StatusMenuVisible = false;
         VoiceTriggerUserEnabled = false;
+      };
+      "com.apple.screencapture" = {
+        location = "/private/tmp";
+        showsClicks = true;
+      };
+      "com.apple.WindowManager" = {
+        AppWindowGroupingBehavior = true;
+        EnableTiledWindowMargins = false; # No margins around tiled windows
+        HideDesktop = true; # Don't show desktop items on click
+        StageManagerHideWidgets = false;
+        StandardHideWidgets = false;
+      };
+      "com.apple.loginwindow" = {
+        TALLogoutSavesState = false; # Don't restore windows on login
       };
       "com.superultra.Homerow" = {
         "non-search-shortcut" = "⌘;";
