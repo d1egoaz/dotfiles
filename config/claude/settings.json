@@ -1,0 +1,81 @@
+{
+  "env": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "CLAUDE_CODE_USE_BEDROCK": "true",
+    "DISABLE_TELEMETRY": "1",
+    "USE_BUILTIN_RIPGREP": "0"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git checkout:*)"
+    ],
+    "deny": [
+      "Bash(curl:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./config/credentials.json)",
+      "Read(./build)"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay -v 15 /System/Library/Sounds/Glass.aiff"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay -v 15 /System/Library/Sounds/Hero.aiff"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/AGENTS.md\" ]; then cat \"$CLAUDE_PROJECT_DIR/AGENTS.md\"; fi"
+          },
+          {
+            "type": "command",
+            "command": "cat ~/AGENTS.md"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/code/oss/claude-status-line/target/release/statusline",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "infra@infra-skills": true
+  },
+  "outputStyle": "Explanatory",
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "  Turning to the Dark Side  "
+    ]
+  }
+}
