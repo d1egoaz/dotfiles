@@ -53,12 +53,9 @@
       NSAutomaticPeriodSubstitutionEnabled = false;
       NSAutomaticCapitalizationEnabled = true;
       AppleInterfaceStyleSwitchesAutomatically = false;
-      AppleAccentColor = 5; # Purple accent color
       AppleEnableSwipeNavigateWithScrolls = false; # Disable two-finger swipe back/forward
       AppleWindowTabbingMode = "always"; # Prefer tabs when opening documents
       NSWindowShouldDragOnGesture = true; # Cmd+Ctrl drag to move windows
-      "com.apple.mouse.scaling" = 1.0; # Mouse tracking speed
-      "com.apple.trackpad.scaling" = 1.0; # Trackpad tracking speed
       "_HIHideMenuBar" = true;
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
@@ -77,6 +74,11 @@
 
     # Custom user preferences
     CustomUserPreferences = {
+      NSGlobalDomain = {
+        AppleAccentColor = 5; # Purple accent color
+        "com.apple.mouse.scaling" = 1.0; # Mouse tracking speed
+        "com.apple.trackpad.scaling" = 1.0; # Trackpad tracking speed
+      };
       "com.apple.assistant.support" = {
         "Assistant Enabled" = false;
       };
