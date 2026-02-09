@@ -1,4 +1,4 @@
-_:
+{ opConfig, ... }:
 
 {
   # Delta is now a separate program in Home Manager 25.11
@@ -95,7 +95,7 @@ _:
         condition = "gitdir:~/work/";
         contents = {
           user = {
-            email = "diego.alvarez@chime.com";
+            email = opConfig.work_email;
             name = "Diego Alvarez";
             signingKey = "~/.ssh/id_ed25519.pub";
           };

@@ -1,4 +1,9 @@
-{ pkgs, profile, ... }:
+{
+  pkgs,
+  opConfig,
+  profile,
+  ...
+}:
 
 {
   # ============================================================================
@@ -21,7 +26,7 @@
     LC_CTYPE = "en_US.UTF-8";
 
     # Development environment
-    GOPRIVATE = "github.com/1debit/*";
+    GOPRIVATE = opConfig.go_private;
 
     # Kubernetes
     KUBECONFIG = "$HOME/.kube/config";
