@@ -91,6 +91,26 @@
     };
   };
 
+  # ============================================================================
+  # Activation Scripts
+  # ============================================================================
+
+  # Hard link mouseless config into its macOS sandbox container.
+  # Hard links work across sandbox boundaries (same filesystem/inode).
+  # Re-runs on every `just switch` to repair if the app recreated the file.
+  home.activation.mouselessConfig = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    MOUSELESS_DIR="$HOME/Library/Containers/net.sonuscape.mouseless/Data/.mouseless/configs"
+    SOURCE="${config.home.homeDirectory}/dotfiles/config/mouseless/config.yaml"
+    TARGET="$MOUSELESS_DIR/config.yaml"
+
+    if [ -f "$SOURCE" ]; then
+      mkdir -p "$MOUSELESS_DIR"
+      # Remove existing file (might be a regular file or broken link)
+      rm -f "$TARGET"
+      ln "$SOURCE" "$TARGET"
+    fi
+  '';
+
   # Manual launchd service for AeroSpace using external config (disabled on office profile)
   # AeroSpace installed via Homebrew cask: nikitabobko/tap/aerospace
   launchd.agents.aerospace = {

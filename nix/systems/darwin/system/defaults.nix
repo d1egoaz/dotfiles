@@ -76,6 +76,14 @@
         StatusMenuVisible = false;
         VoiceTriggerUserEnabled = false;
       };
+      "com.superultra.Homerow" = {
+        "non-search-shortcut" = "⌘;";
+        "scroll-shortcut" = "⇧⌘J";
+        "label-font-size" = 12;
+        "theme-id" = "light";
+        "use-search-predicate" = false;
+        "launch-at-login" = true;
+      };
     };
   };
 
