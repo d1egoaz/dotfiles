@@ -30,6 +30,20 @@ let
   # Load base & profile configurations with overlaid pkgs
   base = import ../profiles/base.nix { inherit pkgs; };
   profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
+
+  # 1Password account config (gitignored). Falls back to personal defaults
+  # so personal machines work without the file; office machines need it.
+  secretsPath = ../profiles/secrets.nix;
+  opConfig =
+    if builtins.pathExists secretsPath then
+      (import secretsPath).${profile}
+    else
+      {
+        op_account = "my.1password.com";
+        op_vault = "Private";
+        work_email = "";
+        go_private = "";
+      };
 in
 inputs.darwin.lib.darwinSystem {
   inherit system;
@@ -58,7 +72,14 @@ inputs.darwin.lib.darwinSystem {
         users.${user} = import ../home-manager;
         # Pass additional arguments to all Home-Manager modules so they can
         # customize behaviour based on the current work profile.
-        extraSpecialArgs = { inherit inputs user profile; };
+        extraSpecialArgs = {
+          inherit
+            inputs
+            user
+            profile
+            opConfig
+            ;
+        };
       };
     }
   ];
