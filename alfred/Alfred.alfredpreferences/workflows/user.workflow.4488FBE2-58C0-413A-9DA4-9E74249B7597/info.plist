@@ -128,27 +128,6 @@
 				<key>count</key>
 				<integer>1</integer>
 				<key>keychar</key>
-				<string>e</string>
-				<key>keycode</key>
-				<integer>-1</integer>
-				<key>keymod</key>
-				<integer>393216</integer>
-				<key>overridewithargument</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.dispatchkeycombo</string>
-			<key>uid</key>
-			<string>F8F32CAD-14A6-4A98-A1DE-16EC61910CA9</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>count</key>
-				<integer>1</integer>
-				<key>keychar</key>
 				<string>a</string>
 				<key>keycode</key>
 				<integer>-1</integer>
@@ -161,6 +140,27 @@
 			<string>alfred.workflow.output.dispatchkeycombo</string>
 			<key>uid</key>
 			<string>52BC671A-AA1A-47AD-8CB6-B3E0D02CD10F</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>count</key>
+				<integer>1</integer>
+				<key>keychar</key>
+				<string>e</string>
+				<key>keycode</key>
+				<integer>-1</integer>
+				<key>keymod</key>
+				<integer>393216</integer>
+				<key>overridewithargument</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.dispatchkeycombo</string>
+			<key>uid</key>
+			<string>F8F32CAD-14A6-4A98-A1DE-16EC61910CA9</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
