@@ -287,57 +287,13 @@
 				<key>escaping</key>
 				<integer>68</integer>
 				<key>script</key>
-				<string>#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-import json
-import os
-import sys
-import urllib.request
-import urllib.error
-
-def main():
-    selection = sys.argv[1] if len(sys.argv) &gt; 1 else ""
-    api_key = os.environ.get("openai_apikey")
-    system_prompt = os.environ.get("prompt")
-    model = os.environ.get("openai_model", "gpt-5-nano")
-
-    data = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": selection}
-        ]
-    }
-
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
-
-    try:
-        req = urllib.request.Request(
-            "https://api.openai.com/v1/chat/completions",
-            data=json.dumps(data).encode('utf-8'),
-            headers=headers,
-            method="POST"
-        )
-        
-        with urllib.request.urlopen(req, timeout=15) as response:
-            result = json.loads(response.read().decode('utf-8'))
-            return result["choices"][0]["message"]["content"]
-            
-    except Exception as e:
-        return f"ERROR: {str(e)}"
-
-if __name__ == "__main__":
-    print(main())</string>
+				<string>exec "$HOME/.local/bin/alfred-openai-rewrite" "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>type</key>
-				<integer>9</integer>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
@@ -496,48 +452,6 @@ DOUBLE CLICK TO EDIT</string>
 	</dict>
 	<key>userconfigurationconfig</key>
 	<array>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string></string>
-				<key>placeholder</key>
-				<string></string>
-				<key>required</key>
-				<true/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string></string>
-			<key>label</key>
-			<string>OpenAI API Key</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>openai_apikey</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
-				<string>gpt-4.1-mini</string>
-				<key>placeholder</key>
-				<string></string>
-				<key>required</key>
-				<true/>
-				<key>trim</key>
-				<true/>
-			</dict>
-			<key>description</key>
-			<string></string>
-			<key>label</key>
-			<string>OpenAI Model</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>openai_model</string>
-		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
