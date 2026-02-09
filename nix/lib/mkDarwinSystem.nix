@@ -12,20 +12,30 @@ assert builtins.elem profile [
 ];
 
 let
-  pkgs = inputs.nixpkgs.legacyPackages.${system};
+  pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
   inherit (inputs.nixpkgs) lib;
-  # Load base & profile configurations
+
+  # Import nixpkgs with overlays applied upfront
+  pkgs = import inputs.nixpkgs {
+    inherit system;
+    config.allowUnfree = true;
+    overlays = [
+      # Workaround: use inetutils from unstable (has Clang 17 fix)
+      (_final: _prev: {
+        inherit (pkgs-unstable) inetutils;
+      })
+    ];
+  };
+
+  # Load base & profile configurations with overlaid pkgs
   base = import ../profiles/base.nix { inherit pkgs; };
   profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
 in
 inputs.darwin.lib.darwinSystem {
   inherit system;
   modules = [
-    # Apply basic nixpkgs config with emacs overlay
-    {
-      nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [ inputs.emacs-overlay.overlays.default ];
-    }
+    # Pass pre-configured nixpkgs
+    { nixpkgs.pkgs = pkgs; }
 
     # macOS system configuration
     (import ../systems/darwin/default.nix {
