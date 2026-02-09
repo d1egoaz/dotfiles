@@ -67,9 +67,9 @@ _:
     };
 
     signing = {
-      key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+      key = "~/.ssh/id_ed25519.pub";
       signByDefault = true;
-      signer = "gpg";
+      signer = "ssh";
     };
 
     # Global gitignore
@@ -97,7 +97,7 @@ _:
           user = {
             email = "diego.alvarez@chime.com";
             name = "Diego Alvarez";
-            signingKey = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+            signingKey = "~/.ssh/id_ed25519.pub";
           };
           url = {
             "git@github.com:" = {

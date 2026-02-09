@@ -121,34 +121,34 @@
       };
     };
 
-    # GPG configuration
-    gpg = {
-      enable = true;
-      settings = {
-        auto-key-retrieve = true;
-        no-emit-version = true;
-        default-key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
-        encrypt-to = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
-      };
-    };
+    # GPG configuration - DISABLED (no longer needed, using SSH signing)
+    # gpg = {
+    #   enable = true;
+    #   settings = {
+    #     auto-key-retrieve = true;
+    #     no-emit-version = true;
+    #     default-key = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+    #     encrypt-to = "4DF4C58193BBB0863AB37A6DC63945863D4B9E77";
+    #   };
+    # };
   };
 
   # ============================================================================
   # Services
   # ============================================================================
 
-  services = {
-    # GPG Agent service
-    # Run once: `gpg --decrypt ~/.authinfo.gpg` to save it in keychain
-    gpg-agent = {
-      enable = true;
-      defaultCacheTtl = 43200;
-      enableSshSupport = true;
-      enableZshIntegration = true;
-      enableFishIntegration = true;
-      maxCacheTtl = 86400;
-      # macOS-specific pinentry
-      pinentry.package = pkgs.pinentry_mac;
-    };
-  };
+  # services = {
+  #   # GPG Agent service - DISABLED (no longer needed)
+  #   # Run once: `gpg --decrypt ~/.authinfo.gpg` to save it in keychain
+  #   gpg-agent = {
+  #     enable = true;
+  #     defaultCacheTtl = 43200;
+  #     enableSshSupport = true;
+  #     enableZshIntegration = true;
+  #     enableFishIntegration = true;
+  #     maxCacheTtl = 86400;
+  #     # macOS-specific pinentry
+  #     pinentry.package = pkgs.pinentry_mac;
+  #   };
+  # };
 }
