@@ -7,6 +7,7 @@ cask "chatgpt" # ChatGPT desktop client
 cask "discord" # Community chat/voice
 cask "google-chrome" # Web browser
 cask "nordvpn" # VPN client
+cask "plexamp" # Music player focusing on visuals
 cask "plex" # Media server app
 cask "cloudflare-warp"
 cask "zoom" # Video conferencing
