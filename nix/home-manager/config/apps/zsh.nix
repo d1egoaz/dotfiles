@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  opConfig,
+  profile,
+  ...
+}:
 
 {
   programs.zsh = {
@@ -15,7 +20,17 @@
       # bat everywhere
       b = "command bat";
       man = "command batman";
-    };
+      # 1Password secret aliases (--account ensures correct vault regardless of active session)
+      op-openai = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/OpenAI API/credential'";
+    }
+    // (
+      if profile == "office" then
+        {
+          op-homebrew = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/Homebrew GitHub Token/credential'";
+        }
+      else
+        { }
+    );
 
     # Fish-style abbreviations (expand inline)
     zsh-abbr = {
@@ -88,14 +103,6 @@
       export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
       export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
       export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-
-      if [[ -r "${config.sops.secrets.OPENAI_API_KEY.path}" ]]; then
-        export OPENAI_API_KEY="$(<"${config.sops.secrets.OPENAI_API_KEY.path}")"
-      fi
-
-      if [[ -r "${config.sops.secrets.HOMEBREW_GITHUB_API_TOKEN.path}" ]]; then
-        export HOMEBREW_GITHUB_API_TOKEN="$(<"${config.sops.secrets.HOMEBREW_GITHUB_API_TOKEN.path}")"
-      fi
 
       # work
       export WORK_DIR_PATH=~/work

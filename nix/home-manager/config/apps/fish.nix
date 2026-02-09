@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  opConfig,
+  profile,
+  ...
+}:
 
 {
   programs.fish = {
@@ -65,7 +70,17 @@
       # bat everywhere
       b = "command bat";
       man = "command batman";
-    };
+      # 1Password secret aliases (--account ensures correct vault regardless of active session)
+      op-openai = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/OpenAI API/credential'";
+    }
+    // (
+      if profile == "office" then
+        {
+          op-homebrew = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/Homebrew GitHub Token/credential'";
+        }
+      else
+        { }
+    );
 
     # Startup initialization
     interactiveShellInit = ''
@@ -85,15 +100,6 @@
       set -gx BAT_THEME "tokyonight_night"
       set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
       set -gx _ZO_DOCTOR 0
-
-      # Load SOPS-encrypted secrets
-      if test -r "${config.sops.secrets.OPENAI_API_KEY.path}"
-        set -gx OPENAI_API_KEY (cat "${config.sops.secrets.OPENAI_API_KEY.path}")
-      end
-
-      if test -r "${config.sops.secrets.HOMEBREW_GITHUB_API_TOKEN.path}"
-        set -gx HOMEBREW_GITHUB_API_TOKEN (cat "${config.sops.secrets.HOMEBREW_GITHUB_API_TOKEN.path}")
-      end
 
       # Work environment variables
       set -gx WORK_DIR_PATH ~/work
