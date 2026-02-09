@@ -42,12 +42,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # sops-nix for secret management with SOPS
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # nix-darwin for macOS system management
     darwin = {
       url = "github:LnL7/nix-darwin/nix-darwin-25.11";

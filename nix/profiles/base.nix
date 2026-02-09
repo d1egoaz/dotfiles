@@ -37,7 +37,6 @@ let
     nodejs # Node.js
     python3 # Python 3
     uv # Python package manager
-    sops # Encrypted file storage
 
     # =====================================================================
     # Build and System Tools

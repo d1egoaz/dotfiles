@@ -10,9 +10,6 @@
   # ============================================================================
 
   imports = [
-    # sops-nix for SOPS secret management
-    inputs.sops-nix.homeManagerModules.sops
-
     # Tokyo Night theme support
     inputs.tokyonight.homeManagerModules.default
 
@@ -26,7 +23,6 @@
     ./config/environment.nix
     ./config/xdg.nix
     ./config/programs.nix
-    ./config/secrets.nix
   ];
 
   # ============================================================================
