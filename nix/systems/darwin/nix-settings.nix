@@ -4,28 +4,10 @@
   # ============================================================================
 
   nix = {
-    enable = true;
+    # Disabled for Determinate Nix - it manages its own daemon
+    enable = false;
 
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      auto-optimise-store = false;
-      trusted-users = [
-        "root"
-        "@admin"
-      ];
-    };
-    optimise.automatic = true;
-    gc = {
-      automatic = true;
-      interval = {
-        Weekday = 0;
-        Hour = 2;
-        Minute = 0;
-      };
-      options = "--delete-older-than 10d";
-    };
+    # Note: All nix.* options are disabled when enable = false
+    # Configure GC, optimization, and settings via Determinate Nix instead
   };
 }
