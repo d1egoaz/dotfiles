@@ -28,7 +28,6 @@ cask "iterm2" # Terminal emulator
 cask "little-snitch" # Network firewall/monitor
 cask "mouseless@preview"
 #cask "opensuperwhisper" # Whisper dictation/transcription app
-cask "plexamp" # Music player focusing on visuals
 cask "shottr" # Screenshot measurement and annotation tool
 # vscode "alefragnani.project-manager"
 # vscode "anysphere.pyright"
