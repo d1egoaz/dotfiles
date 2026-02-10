@@ -33,7 +33,9 @@ let
 
   # 1Password account config (gitignored). Falls back to personal defaults
   # so personal machines work without the file; office machines need it.
-  secretsPath = ../profiles/secrets.nix;
+  # NOTE: Uses absolute path via $HOME because Nix flakes filter gitignored
+  # files from the source tree, making relative path literals invisible.
+  secretsPath = builtins.toPath (builtins.getEnv "HOME" + "/dotfiles/nix/profiles/secrets.nix");
   opConfig =
     if builtins.pathExists secretsPath then
       (import secretsPath).${profile}
