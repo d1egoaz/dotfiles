@@ -19,7 +19,6 @@ cask "d12frosted/emacs-plus/emacs-plus-app" # Emacs with macOS enhancements (pre
 cask "excalidrawz" # Excalidraw whiteboard
 cask "font-sf-pro" # Apple SF Pro font
 cask "ghostty"
-cask "gpg-suite" # GPG tools for macOS
 cask "grandperspective" # Graphically shows disk usage within a file system
 #cask "handy" # Speech to text application. using now Narro
 cask "homerow"
