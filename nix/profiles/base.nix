@@ -159,7 +159,6 @@ let
     jankyborders # Window borders
     mas # Mac App Store
     pinentry_mac # GPG pinentry for macOS
-    sketchybar # Status bar (config via XDG symlink)
   ];
 in
 {
