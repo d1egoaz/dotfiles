@@ -1,5 +1,4 @@
 .DS_Store
-nix/flake.lock
 
 # 1Password account config (contains employer-specific values)
 nix/profiles/secrets.nix
