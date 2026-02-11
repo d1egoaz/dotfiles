@@ -2,6 +2,7 @@
   config,
   lib,
   profile,
+  opConfig,
   ...
 }:
 
@@ -15,8 +16,8 @@ in
   # ============================================================================
   # Alfred Configuration
   # ============================================================================
-  # OpenAI model is baked in at build time. 1Password account/vault come from
-  # OP_ACCOUNT and OP_VAULT env vars at runtime.
+  # All values (model, 1Password account/vault) are baked in at build time.
+  # This is required because Alfred workflows don't inherit shell env vars.
   # ============================================================================
 
   # Generated script for Alfred OpenAI workflows (Grammar Fixer, Tone Fixer).
@@ -26,7 +27,7 @@ in
     executable = true;
     text = ''
       #!/usr/bin/env bash
-      KEY=$(op read --account "$OP_ACCOUNT" "op://$OP_VAULT/OpenAI API/credential" 2>/dev/null)
+      KEY=$(op read --account "${opConfig.op_account}" "op://${opConfig.op_vault}/OpenAI API/credential" 2>/dev/null)
       if [ -z "$KEY" ]; then
         echo "ERROR: OpenAI API key not found. Authenticate: eval \$(op signin)"
         exit 0
