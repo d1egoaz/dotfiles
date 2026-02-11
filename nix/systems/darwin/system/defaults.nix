@@ -60,7 +60,6 @@
       "_HIHideMenuBar" = profile != "office";
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
-      SLSMenuBarUseBlurredAppearance = 1; # Show menu bar background
 
       # Expand save and print panels by default
       NSNavPanelExpandedStateForSaveMode = true;
@@ -78,6 +77,7 @@
     CustomUserPreferences = {
       NSGlobalDomain = {
         AppleAccentColor = 5; # Purple accent color
+        SLSMenuBarUseBlurredAppearance = 1; # Show menu bar background
         "com.apple.mouse.scaling" = 1.0; # Mouse tracking speed
         "com.apple.trackpad.scaling" = 1.0; # Trackpad tracking speed
       };
