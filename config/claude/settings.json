@@ -1,5 +1,6 @@
 {
   "env": {
+    "ANTHROPIC_MODEL": "us.anthropic.claude-opus-4-5-20251101-v1:0",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
     "CLAUDE_CODE_USE_BEDROCK": "true",
@@ -23,6 +24,7 @@
       "Read(./build)"
     ]
   },
+  "model": "us.anthropic.claude-opus-4-5-20251101-v1:0",
   "hooks": {
     "Notification": [
       {
@@ -77,6 +79,5 @@
     "verbs": [
       "  Turning to the Dark Side  "
     ]
-  },
-  "model": "us.anthropic.claude-opus-4-6-v1"
+  }
 }
