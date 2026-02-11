@@ -1,3 +1,4 @@
+{ profile }:
 {
   # ============================================================================
   # macOS System Defaults and Preferences
@@ -56,9 +57,10 @@
       AppleEnableSwipeNavigateWithScrolls = false; # Disable two-finger swipe back/forward
       AppleWindowTabbingMode = "always"; # Prefer tabs when opening documents
       NSWindowShouldDragOnGesture = true; # Cmd+Ctrl drag to move windows
-      "_HIHideMenuBar" = true;
+      "_HIHideMenuBar" = profile != "office";
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
+      SLSMenuBarUseBlurredAppearance = 1; # Show menu bar background
 
       # Expand save and print panels by default
       NSNavPanelExpandedStateForSaveMode = true;
