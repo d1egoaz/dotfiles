@@ -11,5 +11,5 @@ cask "nordvpn" # VPN client
 cask "plexamp" # Music player focusing on visuals
 cask "plex" # Media server app
 cask "cloudflare-warp"
-cask "telegram"
+cask "signal"
 cask "zoom" # Video conferencing
