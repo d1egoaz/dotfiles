@@ -1,15 +1,23 @@
 # -*- mode: ruby; -*-
 
-brew "tailscale" # WireGuard-based mesh VPN
+tap "fastrepl/hyprnote" # Tap for Hyprnote app
+
 brew "gemini-cli" # WireGuard-based mesh VPN
+brew "tailscale" # WireGuard-based mesh VPN
 
 cask "chatgpt" # ChatGPT desktop client
+cask "cloudflare-warp"
 cask "codex-app"
 cask "discord" # Community chat/voice
+cask "excalidrawz" # Excalidraw whiteboard
 cask "google-chrome" # Web browser
+cask "grandperspective" # Graphically shows disk usage within a file system
+cask "hyprnote" # Hyprnote application
+cask "little-snitch" # Network firewall/monitor
+cask "mouseless@preview"
 cask "nordvpn" # VPN client
-cask "plexamp" # Music player focusing on visuals
 cask "plex" # Media server app
-cask "cloudflare-warp"
+cask "plexamp" # Music player focusing on visuals
+cask "shottr" # Screenshot measurement and annotation tool
 cask "signal"
 cask "zoom" # Video conferencing
