@@ -1,13 +1,19 @@
-{ opConfig, lib, ... }:
+{
+  opConfig,
+  allSigningKeys,
+  lib,
+  ...
+}:
 
 {
   # SSH allowed signers for git signature verification
-  home.file.".ssh/allowed_signers".text = lib.optionalString (opConfig.ssh_signing_key != "") ''
-    info@diegoa.ca ${opConfig.ssh_signing_key}
-    ${lib.optionalString (
-      opConfig.work_email != ""
-    ) "${opConfig.work_email} ${opConfig.ssh_signing_key}"}
-  '';
+  # Personal email trusts all keys; work email only trusts the work key
+  home.file.".ssh/allowed_signers".text =
+    lib.concatMapStringsSep "\n" (key: "info@diegoa.ca ${key}") allSigningKeys
+    + "\n"
+    + lib.optionalString (
+      opConfig.work_email != "" && opConfig.ssh_signing_key != ""
+    ) "${opConfig.work_email} ${opConfig.ssh_signing_key}\n";
   # Delta is now a separate program in Home Manager 25.11
   programs.delta = {
     enable = true;

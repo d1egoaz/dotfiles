@@ -36,17 +36,22 @@ let
   # NOTE: Uses absolute path via $HOME because Nix flakes filter gitignored
   # files from the source tree, making relative path literals invisible.
   secretsPath = builtins.toPath (builtins.getEnv "HOME" + "/dotfiles/nix/profiles/secrets.nix");
+  allSecrets = if builtins.pathExists secretsPath then import secretsPath else { };
   opConfig =
-    if builtins.pathExists secretsPath then
-      (import secretsPath).${profile}
-    else
-      {
-        op_account = "my.1password.com";
-        op_vault = "Private";
-        work_email = "";
-        go_private = "";
-        ssh_signing_key = "";
-      };
+    allSecrets.${profile} or {
+      op_account = "my.1password.com";
+      op_vault = "Private";
+      work_email = "";
+      go_private = "";
+      ssh_signing_key = "";
+    };
+  # All SSH signing keys across profiles (for allowed_signers verification)
+  allSigningKeys = builtins.filter (k: k != "") (
+    builtins.map (p: (allSecrets.${p} or { }).ssh_signing_key or "") [
+      "office"
+      "personal"
+    ]
+  );
 in
 inputs.darwin.lib.darwinSystem {
   inherit system;
@@ -81,6 +86,7 @@ inputs.darwin.lib.darwinSystem {
             user
             profile
             opConfig
+            allSigningKeys
             ;
         };
       };
