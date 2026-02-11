@@ -6,3 +6,6 @@ nix/profiles/secrets.nix
 
 # Alfred workflow user preferences (may contain API keys, emails, etc.)
 alfred/Alfred.alfredpreferences/workflows/*/prefs.plist
+
+alfred/Alfred.alfredpreferences/workflows/user.workflow.48B935AF-68CE-4523-81B8-D6EF7DBDEEDD/
+alfred/Alfred.alfredpreferences/workflows/user.workflow.5B413B71-5DB9-4870-BC84-AC92850FFFA9/
