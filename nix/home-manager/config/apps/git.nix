@@ -1,6 +1,13 @@
-{ opConfig, ... }:
+{ opConfig, lib, ... }:
 
 {
+  # SSH allowed signers for git signature verification
+  home.file.".ssh/allowed_signers".text = lib.optionalString (opConfig.ssh_signing_key != "") ''
+    info@diegoa.ca ${opConfig.ssh_signing_key}
+    ${lib.optionalString (
+      opConfig.work_email != ""
+    ) "${opConfig.work_email} ${opConfig.ssh_signing_key}"}
+  '';
   # Delta is now a separate program in Home Manager 25.11
   programs.delta = {
     enable = true;
@@ -67,9 +74,18 @@
     };
 
     signing = {
-      key = "~/.ssh/id_ed25519.pub";
+      key = opConfig.ssh_signing_key;
       signByDefault = true;
-      signer = "ssh";
+    };
+
+    settings = {
+      gpg = {
+        format = "ssh";
+        ssh = {
+          program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+          allowedSignersFile = "~/.ssh/allowed_signers";
+        };
+      };
     };
 
     # Global gitignore
@@ -97,7 +113,7 @@
           user = {
             email = opConfig.work_email;
             name = "Diego Alvarez";
-            signingKey = "~/.ssh/id_ed25519.pub";
+            signingKey = opConfig.ssh_signing_key;
           };
           url = {
             "git@github.com:" = {

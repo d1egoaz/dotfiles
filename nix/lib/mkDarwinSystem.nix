@@ -45,6 +45,7 @@ let
         op_vault = "Private";
         work_email = "";
         go_private = "";
+        ssh_signing_key = "";
       };
 in
 inputs.darwin.lib.darwinSystem {

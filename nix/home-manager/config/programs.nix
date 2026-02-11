@@ -121,6 +121,20 @@
       };
     };
 
+    # SSH configuration with 1Password agent integration
+    ssh = {
+      enable = true;
+      enableDefaultConfig = false;
+      matchBlocks = {
+        "*" = {
+          extraOptions = {
+            IdentityAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
+            AddKeysToAgent = "yes";
+          };
+        };
+      };
+    };
+
     # GPG configuration - DISABLED (no longer needed, using SSH signing)
     # gpg = {
     #   enable = true;
