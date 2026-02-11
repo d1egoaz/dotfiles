@@ -1,26 +1,22 @@
 {
   config,
   lib,
-  opConfig,
   profile,
   ...
 }:
 
 let
   # Centralized Alfred workflow configuration
-  # Change these values and run `just switch` to update all workflows
   alfredConfig = {
     openai_model = "gpt-4.1-nano";
-    inherit (opConfig) op_account op_vault;
   };
 in
 {
   # ============================================================================
   # Alfred Configuration
   # ============================================================================
-  # Workflow settings (model, 1Password account/vault) are baked into the
-  # generated alfred-openai-rewrite script at build time. No runtime config
-  # file needed.
+  # OpenAI model is baked in at build time. 1Password account/vault come from
+  # OP_ACCOUNT and OP_VAULT env vars at runtime.
   # ============================================================================
 
   # Generated script for Alfred OpenAI workflows (Grammar Fixer, Tone Fixer).
@@ -30,7 +26,7 @@ in
     executable = true;
     text = ''
       #!/usr/bin/env bash
-      KEY=$(op read --account "${alfredConfig.op_account}" "op://${alfredConfig.op_vault}/OpenAI API/credential" 2>/dev/null)
+      KEY=$(op read --account "$OP_ACCOUNT" "op://$OP_VAULT/OpenAI API/credential" 2>/dev/null)
       if [ -z "$KEY" ]; then
         echo "ERROR: OpenAI API key not found. Authenticate: eval \$(op signin)"
         exit 0

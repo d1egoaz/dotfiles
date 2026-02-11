@@ -99,12 +99,15 @@ brew:
     #!/usr/bin/env bash
     set -euo pipefail
     if [[ "{{_host}}" == "office-mbp" ]]; then
-      echo "🏢 Work machine detected ({{_host}}): upgrading Compass..."
+      if [[ -z "${OP_ACCOUNT:-}" || -z "${OP_VAULT:-}" ]]; then
+        echo "❌ OP_ACCOUNT/OP_VAULT not set. Run 'just switch' first to export them."
+        exit 1
+      fi
+      echo "🏢 Work machine detected: setting up Homebrew token from 1Password..."
+      export HOMEBREW_GITHUB_API_TOKEN=$(op read "op://$OP_VAULT/Homebrew GitHub Token/credential" --account "$OP_ACCOUNT")
+      echo "🏢 Upgrading Compass..."
       brew upgrade 1debit/chime/compass
     fi
-
-    #!/usr/bin/env bash
-    set -euo pipefail
     brew update
     if [[ -f ./Brewfile ]]; then
       echo "Bundling base Brewfile..."

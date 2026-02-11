@@ -41,6 +41,10 @@
     # Active profile for conditional scripts
     PROFILE = profile;
 
+    # 1Password configuration (for scripts that need op access)
+    OP_ACCOUNT = opConfig.op_account;
+    OP_VAULT = opConfig.op_vault;
+
     # Homebrew
     HOMEBREW_NO_ANALYTICS = "1";
     HOMEBREW_NO_INSECURE_REDIRECT = "1";
