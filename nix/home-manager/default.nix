@@ -51,4 +51,10 @@
     enable = true;
     style = "night"; # Options: "night", "storm", "day", "moon"
   };
+
+  # ============================================================================
+  # macOS Per-Host Defaults (uses defaults -currentHost write)
+  # ============================================================================
+
+  targets.darwin.currentHostDefaults."com.apple.controlcenter".BatteryShowPercentage = true;
 }
