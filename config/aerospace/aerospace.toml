@@ -20,7 +20,7 @@ start-at-login = false
 
 # Commands to run after startup
 after-startup-command = [
-  "exec-and-forget sketchybar --config ~/.config/sketchybar/sketchybarrc",
+  "exec-and-forget command -v sketchybar && sketchybar --config ~/.config/sketchybar/sketchybarrc",
   "exec-and-forget borders"
 ]
 
@@ -28,7 +28,7 @@ after-startup-command = [
 exec-on-workspace-change = [
   "/bin/bash",
   "-c",
-  "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE",
+  "command -v sketchybar && sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE || true",
 ]
 
 # Monitor focus behavior
@@ -58,7 +58,7 @@ left = 3
 right = 3
 bottom = 2
 # Different top gaps for different monitors
-top = [{ monitor."LG" = 40 }, { monitor."^built-in retina display$" = 15 }, 30]
+top = [{ monitor."LG" = 0 }, { monitor."^built-in retina display$" = 15 }, 30]
 
 # Main mode bindings
 [mode.main.binding]
