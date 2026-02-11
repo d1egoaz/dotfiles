@@ -24,7 +24,7 @@
       "Read(./build)"
     ]
   },
-  "model": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+  "model": "us.anthropic.claude-opus-4-6-v1",
   "hooks": {
     "Notification": [
       {
