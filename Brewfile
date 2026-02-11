@@ -16,3 +16,4 @@ cask "d12frosted/emacs-plus/emacs-plus-app" # Emacs with macOS enhancements (pre
 cask "font-sf-pro" # Apple SF Pro font
 cask "ghostty"
 cask "homerow"
+cask "mouseless@preview"

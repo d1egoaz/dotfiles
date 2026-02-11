@@ -14,7 +14,6 @@ cask "google-chrome" # Web browser
 cask "grandperspective" # Graphically shows disk usage within a file system
 cask "hyprnote" # Hyprnote application
 cask "little-snitch" # Network firewall/monitor
-cask "mouseless@preview"
 cask "nordvpn" # VPN client
 cask "plex" # Media server app
 cask "plexamp" # Music player focusing on visuals
