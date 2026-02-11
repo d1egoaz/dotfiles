@@ -59,11 +59,11 @@ fmt:
     cd nix && nix fmt
 
 # Check nix flake
-check:
+check: fmt
     cd nix && nix flake check --show-trace
 
 # Quick format and check
-lint: fmt check
+lint: check
 
 # ============================================================================
 # macOS (nix-darwin) Systems
