@@ -1,5 +1,7 @@
 {
   pkgs,
+  lib,
+  profile,
   ...
 }:
 
@@ -122,18 +124,31 @@
     };
 
     # SSH configuration with 1Password agent integration
-    ssh = {
-      enable = true;
-      enableDefaultConfig = false;
-      matchBlocks = {
-        "*" = {
-          extraOptions = {
-            IdentityAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
-            AddKeysToAgent = "yes";
+    ssh =
+      let
+        op1PasswordAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
+      in
+      {
+        enable = true;
+        enableDefaultConfig = false; # Manually configure defaults in matchBlocks."*"
+        matchBlocks =
+          # Work GitHub - forces work SSH key
+          lib.optionalAttrs (profile == "office") {
+            "github.com-work" = {
+              hostname = "github.com";
+              user = "git";
+              identityFile = "~/.ssh/github-work-auth.pub";
+              identitiesOnly = true;
+              extraOptions.IdentityAgent = op1PasswordAgent;
+            };
+          }
+          // {
+            "*".extraOptions = {
+              IdentityAgent = op1PasswordAgent;
+              AddKeysToAgent = "yes";
+            };
           };
-        };
       };
-    };
 
     # GPG configuration - DISABLED (no longer needed, using SSH signing)
     # gpg = {

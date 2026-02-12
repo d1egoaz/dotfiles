@@ -2,6 +2,7 @@
   opConfig,
   allSigningKeys,
   lib,
+  profile,
   ...
 }:
 
@@ -14,6 +15,12 @@
     + lib.optionalString (
       opConfig.work_email != "" && opConfig.ssh_signing_key != ""
     ) "${opConfig.work_email} ${opConfig.ssh_signing_key}\n";
+
+  # Work SSH public key for 1Password agent matching (office profile only)
+  # This allows SSH config to specify which key to use for work repos
+  home.file.".ssh/github-work-auth.pub" = lib.mkIf (profile == "office") {
+    text = "${opConfig.ssh_signing_key}\n";
+  };
   # Delta is now a separate program in Home Manager 25.11
   programs.delta = {
     enable = true;
@@ -122,6 +129,14 @@
             signingKey = opConfig.ssh_signing_key;
           };
           url = {
+            # Work repos: use work SSH key (handles both HTTPS and SSH URLs)
+            "git@github.com-work:1debit/" = {
+              insteadOf = "https://github.com/1debit/";
+            };
+            "git@github.com-work:" = {
+              insteadOf = "git@github.com:1debit/";
+            };
+            # Other repos: HTTPS -> SSH
             "git@github.com:" = {
               insteadOf = "https://github.com/";
             };
