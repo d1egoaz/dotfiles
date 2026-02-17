@@ -1,23 +1,19 @@
 {
   config,
   lib,
-  profile,
+  llmConfig,
   opConfig,
+  profile,
   ...
 }:
 
-let
-  # Centralized Alfred workflow configuration
-  alfredConfig = {
-    openai_model = "gpt-4.1-nano";
-  };
-in
 {
   # ============================================================================
   # Alfred Configuration
   # ============================================================================
-  # All values (model, 1Password account/vault) are baked in at build time.
-  # This is required because Alfred workflows don't inherit shell env vars.
+  # All values (model, provider, endpoint, 1Password account/vault) are baked
+  # in at build time. This is required because Alfred workflows don't inherit
+  # shell env vars.
   # ============================================================================
 
   # Generated script for Alfred OpenAI workflows (Grammar Fixer, Tone Fixer).
@@ -27,18 +23,23 @@ in
     executable = true;
     text = ''
       #!/usr/bin/env bash
-      KEY=$(op read --account "${opConfig.op_account}" "op://${opConfig.op_vault}/OpenAI API/credential" 2>/dev/null)
+
+      KEY=$(op read --account "${opConfig.op_account}" "op://${opConfig.op_vault}/${llmConfig.key_item}/credential" 2>/dev/null)
       if [ -z "$KEY" ]; then
-        echo "ERROR: OpenAI API key not found. Authenticate: eval \$(op signin)"
+        echo "ERROR: ${llmConfig.provider} API key not found. Authenticate: eval \$(op signin)"
         exit 0
       fi
 
-      curl -s https://api.openai.com/v1/chat/completions \
+      BASE_URL="${llmConfig.base_url}"
+      MODEL="${llmConfig.model}"
+      PROVIDER="${llmConfig.provider}"
+
+      curl -s "$BASE_URL/chat/completions" \
         -H "Authorization: Bearer $KEY" \
         -H "Content-Type: application/json" \
-        -d "$(jq -n --arg model "${alfredConfig.openai_model}" --arg system "$prompt" --arg user "$1" \
+        -d "$(jq -n --arg model "$MODEL" --arg system "$prompt" --arg user "$1" \
           '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}]}')" \
-      | jq -r '.choices[0].message.content'
+      | jq -r 'if .error then "ERROR (" + $provider + "): " + (.error.message // "unknown") else .choices[0].message.content end' --arg provider "$PROVIDER"
     '';
   };
 
