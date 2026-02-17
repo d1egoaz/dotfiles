@@ -7,8 +7,12 @@ function awsprofile -d "Select and set AWS profile with fzf"
         return 1
     end
 
-    # Use fzf to select profile directly from command pipeline
-    set selected_profile (grep '\[profile' ~/.aws/config | awk '{print $2}' | tr -d '[]' | fzf --prompt 'AWS Profile > ')
+    set -l history_file ~/.aws/.awsprofile_history
+    set -l all_profiles (grep '\[profile' ~/.aws/config | awk '{print $2}' | tr -d '[]')
+    set -l recent (test -f $history_file; and tac $history_file)
+    set -l sorted (printf '%s\n' $recent $all_profiles | awk '!seen[$0]++')
+
+    set selected_profile (printf '%s\n' $sorted | fzf --prompt 'AWS Profile > ')
 
     # Check if a profile was selected
     if test -z "$selected_profile"
@@ -16,12 +20,18 @@ function awsprofile -d "Select and set AWS profile with fzf"
         return 1
     end
 
+    echo $selected_profile >> $history_file
+
     # Set the AWS_PROFILE environment variable for the current session
     set -gx AWS_PROFILE $selected_profile
-    echo "set AWS_PROFILE $selected_profile"
+    echo "AWS_PROFILE set to $selected_profile"
 
-    # Run aws sso login
-    echo "Running 'aws sso login'..."
-    aws sso login
+    # Ask if SSO login is needed (skip if already authenticated via another profile)
+    read -P "Run 'aws sso login'? [y/N] " -l do_login
+    if test "$do_login" = y -o "$do_login" = Y
+        echo "Running 'aws sso login'..."
+        aws sso login
+    end
+
     aws sts get-caller-identity
 end
