@@ -158,7 +158,6 @@ let
     # aerospace # Window manager (installed via Homebrew cask)
     jankyborders # Window borders
     mas # Mac App Store
-    pinentry_mac # GPG pinentry for macOS
   ];
 in
 {

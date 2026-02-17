@@ -34,9 +34,6 @@
     # Spell checker for emacs
     ASPELL_CONF = "dict-dir ${pkgs.aspellDicts.en}/lib/aspell";
 
-    # macOS-specific environment variables
-    GPG_TTY = "${builtins.getEnv "TTY"}";
-
     # Active profile for conditional scripts
     PROFILE = profile;
 

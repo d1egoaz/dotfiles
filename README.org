@@ -49,8 +49,8 @@ All machines use Apple Silicon (aarch64-darwin) and auto-detect based on usernam
 - *Window Management:* AeroSpace tiling window manager
 - *Status Bar:* SketchyBar with custom plugins
 - *CLI Tools:* ripgrep, fd, bat, jq, yq, eza, and many more
-- *Dev Tools:* Git with GPG signing, GitHub CLI, Docker, kubectl
-- *Secrets:* sops-nix with GPG encryption
+- *Dev Tools:* Git with SSH signing (via 1Password), GitHub CLI, Docker, kubectl
+- *Secrets:* 1Password CLI for on-demand secret access
 - *AI Tools:* Claude Code with custom agents
 
 * Common Commands
