@@ -31,6 +31,10 @@ let
   base = import ../profiles/base.nix { inherit pkgs; };
   profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
 
+  # Shared LLM provider configuration by profile
+  llmProfiles = import ../profiles/llm.nix;
+  llmConfig = llmProfiles.forProfile profile;
+
   # 1Password account config (gitignored). Falls back to personal defaults
   # so personal machines work without the file; office machines need it.
   # NOTE: Uses absolute path via $HOME because Nix flakes filter gitignored
@@ -86,6 +90,7 @@ inputs.darwin.lib.darwinSystem {
             user
             profile
             opConfig
+            llmConfig
             allSigningKeys
             ;
         };
