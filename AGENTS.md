@@ -33,9 +33,9 @@ just install-darwin
 ### Username-Based Auto-Detection
 
 The system auto-detects which machine configuration to use based on `whoami`:
-- `diego.alvarez` → `office-mbp` (profile: office)
-- `diego` → `personal-mbp` (profile: personal)
-- `diegoalvarez` → `personal-mini` (profile: personal)
+- `diego.alvarez` -> `office-mbp` (profile: office)
+- `diego` -> `personal-mbp` (profile: personal)
+- `diegoalvarez` -> `personal-mini` (profile: personal)
 
 This mapping is defined in:
 - `justfile` line 68: `_host` variable
@@ -54,7 +54,12 @@ The configuration uses a three-tier profile system:
    - Imports base profile and adds/overrides
    - Profile is passed as `specialArgs` to all Home Manager modules
 
-3. **Per-Host Customization**
+3. **Machine Configuration** (`nix/profiles/machines.nix`)
+   - Per-profile settings: 1Password account/vault, SSH keys, work org, paths
+   - Passed to modules via `machineConfig` specialArg
+   - Edit directly when rotating keys or changing work settings
+
+4. **Per-Host Customization**
    - Host-specific Brewfiles: `Brewfile.{office-mbp,personal-mbp,personal-mini}`
    - Conditional logic using the `profile` variable in modules
 
@@ -62,18 +67,18 @@ The configuration uses a three-tier profile system:
 
 ```
 flake.nix
-  ↓
+  |
 flake-modules/darwin.nix (defines hosts)
-  ↓
+  |
 lib/mkDarwinSystem.nix (system builder)
-  ↓
-├─ systems/darwin/default.nix (system-level config)
-└─ home-manager/default.nix (user-level config)
-     ↓
-     ├─ config/programs.nix (Nix-managed programs)
-     ├─ config/xdg.nix (file symlinks)
-     ├─ config/apps/* (app-specific modules)
-     └─ packages.nix (pulls from profiles)
+  |
++-- systems/darwin/default.nix (system-level config)
++-- home-manager/default.nix (user-level config)
+     |
+     +-- config/programs.nix (Nix-managed programs)
+     +-- config/xdg.nix (file symlinks)
+     +-- config/apps/* (app-specific modules)
+     +-- packages.nix (pulls from profiles)
 ```
 
 ### Hybrid Configuration Approach
@@ -146,18 +151,63 @@ Scripts in `bin/files/` are symlinked to `~/.local/bin/` via `home.file` entries
 
 Access the current profile in any Home Manager module:
 ```nix
-{ profile, ... }:
+{ profile, machineConfig, ... }:
 {
   # Profile is available as specialArg
   home.packages = if profile == "office" then [ pkgs.tool ] else [];
+
+  # machineConfig contains per-profile settings
+  home.sessionVariables.OP_ACCOUNT = machineConfig.op_account;
 }
 ```
 
 Profile is also exported as `$PROFILE` environment variable in shell sessions.
 
+## Machine Configuration
+
+Machine-specific settings live in `nix/profiles/machines.nix`. This file is committed to git (it contains no secrets - just public keys, email addresses, and org names).
+
+### What's in machines.nix
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `op_account` | 1Password account domain | `my.1password.com` |
+| `op_vault` | 1Password vault name | `Private` |
+| `work_email` | Git email for work repos | `user@company.com` |
+| `go_private` | GOPRIVATE pattern | `github.com/org/*` |
+| `ssh_signing_key` | Public SSH key for signing | `ssh-ed25519 AAAA...` |
+| `work_org` | GitHub org for URL rewrites | `mycompany` |
+| `work_dir` | Base directory for work repos | `~/work` |
+| `emacs_additional_dir` | Private emacs config path | `$HOME/dotfiles-private/company` |
+| `aws_region` | Default AWS region | `us-east-1` |
+| `llm.provider` | LLM provider name | `OpenAI` |
+| `llm.model` | Model identifier | `gpt-5-mini` |
+| `llm.base_url` | API endpoint | `https://api.openai.com/v1` |
+| `llm.key_item` | 1Password item name for API key | `OpenAI API` |
+
+### Editing machines.nix
+
+Edit `nix/profiles/machines.nix` directly, then run `just switch`:
+
+```nix
+office = {
+  op_account = "company.1password.com";
+  op_vault = "Employee";
+  work_email = "you@company.com";
+  # ... other fields
+};
+
+personal = {
+  op_account = "my.1password.com";
+  op_vault = "Private";
+  work_email = "";  # Empty for personal
+  # ... other fields
+};
+```
+
 ## Secrets Management
 
-Secrets are managed with 1Password CLI via `op read`, accessed on-demand through shell aliases.
+Actual secrets (API keys, tokens) are stored in 1Password and accessed on-demand via `op read`.
 
 ### Vault Layout
 
@@ -181,8 +231,6 @@ op-openai     # op read --account my.1password.com "op://Private/OpenAI API/cred
 
 The `--account` flag ensures the correct 1Password account is targeted regardless of which session is currently active.
 
-Account URLs, vault names, and work email are stored in `nix/profiles/secrets.nix` (gitignored). See `secrets.example.nix` for the template.
-
 ### Authentication
 
 ```fish
@@ -201,7 +249,7 @@ op whoami
 If the items don't exist yet in 1Password, create them:
 
 ```bash
-# Replace <op_account> and <op_vault> with values from secrets.nix
+# Replace <op_account> and <op_vault> with values from machines.nix
 op item create \
   --account <op_account> \
   --vault <op_vault> \
@@ -229,7 +277,7 @@ op item edit "OpenAI API" --account <op_account> --vault <op_vault> 'credential[
 # Use alias (account is baked in)
 set -l key (op-openai)
 
-# Use op directly (always specify --account from secrets.nix)
+# Use op directly (always specify --account from machines.nix)
 op read --account <op_account> "op://<op_vault>/OpenAI API/credential"
 
 # One-liner
@@ -261,25 +309,26 @@ The flake uses nix-community cachix for binary caches (configured in `flake.nix`
 
 ```
 nix/
-├── flake.nix                    # Entry point
-├── flake-modules/               # Modular flake config
-│   └── darwin.nix              # Host definitions
-├── lib/
-│   └── mkDarwinSystem.nix      # System builder function
-├── profiles/                    # Profile-based configs
-│   ├── base.nix                # Shared across all machines
-│   ├── office.nix              # Work-specific
-│   └── personal.nix            # Personal machines
-├── home-manager/               # User environment
-│   ├── default.nix             # Entry point
-│   ├── packages.nix            # Pulls from profiles
-│   └── config/                 # Configuration modules
-│       ├── programs.nix        # Nix-managed programs
-│       ├── xdg.nix            # File symlinks
-│       └── apps/              # App-specific modules
-│           └── alfred.nix     # Alfred preferences (office)
-├── systems/darwin/             # macOS system-level settings
-└── packages/                   # Custom package definitions
++-- flake.nix                    # Entry point
++-- flake-modules/               # Modular flake config
+|   +-- darwin.nix              # Host definitions
++-- lib/
+|   +-- mkDarwinSystem.nix      # System builder function
++-- profiles/                    # Profile-based configs
+|   +-- base.nix                # Shared across all machines
+|   +-- office.nix              # Work-specific
+|   +-- personal.nix            # Personal machines
+|   +-- machines.nix            # Per-profile settings (1Password, SSH keys, LLM, etc.)
++-- home-manager/               # User environment
+|   +-- default.nix             # Entry point
+|   +-- packages.nix            # Pulls from profiles
+|   +-- config/                 # Configuration modules
+|       +-- programs.nix        # Nix-managed programs
+|       +-- xdg.nix            # File symlinks
+|       +-- apps/              # App-specific modules
+|           +-- alfred.nix     # Alfred preferences (office)
++-- systems/darwin/             # macOS system-level settings
++-- packages/                   # Custom package definitions
 
 config/                         # Direct config files (symlinked)
 bin/files/                      # Custom scripts (symlinked to ~/.local/bin)

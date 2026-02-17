@@ -1,6 +1,6 @@
 {
   pkgs,
-  opConfig,
+  machineConfig,
   profile,
   ...
 }:
@@ -26,7 +26,7 @@
     LC_CTYPE = "en_US.UTF-8";
 
     # Development environment
-    GOPRIVATE = opConfig.go_private;
+    GOPRIVATE = machineConfig.go_private;
 
     # Kubernetes
     KUBECONFIG = "$HOME/.kube/config";
@@ -35,22 +35,27 @@
     ASPELL_CONF = "dict-dir ${pkgs.aspellDicts.en}/lib/aspell";
 
     # macOS-specific environment variables
-    EMACS_ADDITIONAL_DIR = "$HOME/dotfiles-private/chime";
     GPG_TTY = "${builtins.getEnv "TTY"}";
 
     # Active profile for conditional scripts
     PROFILE = profile;
 
     # 1Password configuration (for scripts that need op access)
-    OP_ACCOUNT = opConfig.op_account;
-    OP_VAULT = opConfig.op_vault;
+    OP_ACCOUNT = machineConfig.op_account;
+    OP_VAULT = machineConfig.op_vault;
 
     # Homebrew
     HOMEBREW_NO_ANALYTICS = "1";
     HOMEBREW_NO_INSECURE_REDIRECT = "1";
     # HOMEBREW_CASK_OPTS = "--require-sha";
     HOMEBREW_NO_ENV_HINTS = "1";
-  };
+  }
+  // (
+    if machineConfig.emacs_additional_dir != "" then
+      { EMACS_ADDITIONAL_DIR = machineConfig.emacs_additional_dir; }
+    else
+      { }
+  );
 
   home.sessionPath = [
     "$HOME/.local/bin"

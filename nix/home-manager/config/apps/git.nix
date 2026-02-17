@@ -1,6 +1,5 @@
 {
-  opConfig,
-  allSigningKeys,
+  machineConfig,
   lib,
   profile,
   ...
@@ -8,19 +7,17 @@
 
 {
   # SSH allowed signers for git signature verification
-  # Personal email trusts all keys; work email only trusts the work key
-  home.file.".ssh/allowed_signers".text =
-    lib.concatMapStringsSep "\n" (key: "info@diegoa.ca ${key}") allSigningKeys
-    + "\n"
-    + lib.optionalString (
-      opConfig.work_email != "" && opConfig.ssh_signing_key != ""
-    ) "${opConfig.work_email} ${opConfig.ssh_signing_key}\n";
+  # Generated from machineConfig.signing_identities - each profile declares what it trusts
+  home.file.".ssh/allowed_signers".text = lib.concatMapStringsSep "\n" (
+    id: "${id.email} ${id.key}"
+  ) machineConfig.signing_identities;
 
   # Work SSH public key for 1Password agent matching (office profile only)
   # This allows SSH config to specify which key to use for work repos
   home.file.".ssh/github-work-auth.pub" = lib.mkIf (profile == "office") {
-    text = "${opConfig.ssh_signing_key}\n";
+    text = "${machineConfig.ssh_signing_key}\n";
   };
+
   # Delta is now a separate program in Home Manager 25.11
   programs.delta = {
     enable = true;
@@ -42,7 +39,7 @@
     settings = {
       user = {
         name = "Diego Alvarez";
-        email = "info@diegoa.ca";
+        email = machineConfig.personal_email;
       };
       init = {
         defaultBranch = "main";
@@ -87,7 +84,7 @@
     };
 
     signing = {
-      key = opConfig.ssh_signing_key;
+      key = machineConfig.ssh_signing_key;
       signByDefault = true;
     };
 
@@ -119,22 +116,22 @@
     ];
 
     # Include work-specific config for work directories
-    includes = [
+    includes = lib.optionals (machineConfig.work_org != "") [
       {
-        condition = "gitdir:~/work/";
+        condition = "gitdir:${machineConfig.work_dir}/";
         contents = {
           user = {
-            email = opConfig.work_email;
+            email = machineConfig.work_email;
             name = "Diego Alvarez";
-            signingKey = opConfig.ssh_signing_key;
+            signingKey = machineConfig.ssh_signing_key;
           };
           url = {
             # Work repos: use work SSH key (handles both HTTPS and SSH URLs)
-            "git@github.com-work:1debit/" = {
-              insteadOf = "https://github.com/1debit/";
+            "git@github.com-work:${machineConfig.work_org}/" = {
+              insteadOf = "https://github.com/${machineConfig.work_org}/";
             };
             "git@github.com-work:" = {
-              insteadOf = "git@github.com:1debit/";
+              insteadOf = "git@github.com:${machineConfig.work_org}/";
             };
             # Other repos: HTTPS -> SSH
             "git@github.com:" = {
