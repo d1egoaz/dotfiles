@@ -15,6 +15,7 @@ shell-integration = fish
 cursor-color = ff00ff
 selection-background = 610079
 macos-titlebar-style = tabs
+macos-option-as-alt = true
 
 keybind = ctrl+alt+h=previous_tab
 keybind = ctrl+alt+l=next_tab
