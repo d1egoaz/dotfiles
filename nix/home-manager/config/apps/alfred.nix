@@ -1,8 +1,7 @@
 {
   config,
   lib,
-  llmConfig,
-  opConfig,
+  machineConfig,
   profile,
   ...
 }:
@@ -24,15 +23,15 @@
     text = ''
       #!/usr/bin/env bash
 
-      KEY=$(op read --account "${opConfig.op_account}" "op://${opConfig.op_vault}/${llmConfig.key_item}/credential" 2>/dev/null)
+      KEY=$(op read --account "${machineConfig.op_account}" "op://${machineConfig.op_vault}/${machineConfig.llm.key_item}/credential" 2>/dev/null)
       if [ -z "$KEY" ]; then
-        echo "ERROR: ${llmConfig.provider} API key not found. Authenticate: eval \$(op signin)"
+        echo "ERROR: ${machineConfig.llm.provider} API key not found. Authenticate: eval \$(op signin)"
         exit 0
       fi
 
-      BASE_URL="${llmConfig.base_url}"
-      MODEL="${llmConfig.model}"
-      PROVIDER="${llmConfig.provider}"
+      BASE_URL="${machineConfig.llm.base_url}"
+      MODEL="${machineConfig.llm.model}"
+      PROVIDER="${machineConfig.llm.provider}"
 
       curl -s "$BASE_URL/chat/completions" \
         -H "Authorization: Bearer $KEY" \

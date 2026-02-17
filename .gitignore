@@ -1,8 +1,5 @@
 .DS_Store
 
-# 1Password account config (contains employer-specific values)
-nix/profiles/secrets.nix
-
 # Alfred workflow user preferences (may contain API keys, emails, etc.)
 alfred/Alfred.alfredpreferences/workflows/*/prefs.plist
 

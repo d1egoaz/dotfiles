@@ -1,6 +1,6 @@
 {
   pkgs,
-  opConfig,
+  machineConfig,
   profile,
   ...
 }:
@@ -71,12 +71,12 @@
       b = "command bat";
       man = "command batman";
       # 1Password secret aliases (--account ensures correct vault regardless of active session)
-      op-openai = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/OpenAI API/credential'";
+      op-openai = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/OpenAI API/credential'";
     }
     // (
       if profile == "office" then
         {
-          op-homebrew = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/Homebrew GitHub Token/credential'";
+          op-homebrew = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Homebrew GitHub Token/credential'";
         }
       else
         { }
@@ -100,12 +100,26 @@
       set -gx BAT_THEME "tokyonight_night"
       set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
       set -gx _ZO_DOCTOR 0
-
-      # Work environment variables
-      set -gx WORK_DIR_PATH ~/work
-      set -gx LOCAL_GEM_PATH $WORK_DIR_PATH
-      set -gx AWS_REGION us-east-1
-
+    ''
+    + (
+      if machineConfig.work_dir != "" then
+        ''
+          # Work environment variables
+          set -gx WORK_DIR_PATH ${machineConfig.work_dir}
+          set -gx LOCAL_GEM_PATH $WORK_DIR_PATH
+        ''
+      else
+        ""
+    )
+    + (
+      if machineConfig.aws_region != "" then
+        ''
+          set -gx AWS_REGION ${machineConfig.aws_region}
+        ''
+      else
+        ""
+    )
+    + ''
       # Source private environment variables if they exist
       if test -f ~/.zprivate
         source ~/.zprivate

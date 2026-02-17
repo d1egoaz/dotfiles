@@ -31,31 +31,11 @@ let
   base = import ../profiles/base.nix { inherit pkgs; };
   profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
 
-  # Shared LLM provider configuration by profile
-  llmProfiles = import ../profiles/llm.nix;
-  llmConfig = llmProfiles.forProfile profile;
-
-  # 1Password account config (gitignored). Falls back to personal defaults
-  # so personal machines work without the file; office machines need it.
-  # NOTE: Uses absolute path via $HOME because Nix flakes filter gitignored
-  # files from the source tree, making relative path literals invisible.
-  secretsPath = builtins.toPath (builtins.getEnv "HOME" + "/dotfiles/nix/profiles/secrets.nix");
-  allSecrets = if builtins.pathExists secretsPath then import secretsPath else { };
-  opConfig =
-    allSecrets.${profile} or {
-      op_account = "my.1password.com";
-      op_vault = "Private";
-      work_email = "";
-      go_private = "";
-      ssh_signing_key = "";
-    };
-  # All SSH signing keys across profiles (for allowed_signers verification)
-  allSigningKeys = builtins.filter (k: k != "") (
-    builtins.map (p: (allSecrets.${p} or { }).ssh_signing_key or "") [
-      "office"
-      "personal"
-    ]
-  );
+  # Machine-specific configuration (1Password, git identity, work paths, LLM)
+  # This is NOT secrets - just profile-specific config that differs by machine.
+  # See machines.nix header for what each field controls.
+  machines = import ../profiles/machines.nix;
+  machineConfig = machines.${profile};
 in
 inputs.darwin.lib.darwinSystem {
   inherit system;
@@ -89,9 +69,7 @@ inputs.darwin.lib.darwinSystem {
             inputs
             user
             profile
-            opConfig
-            llmConfig
-            allSigningKeys
+            machineConfig
             ;
         };
       };

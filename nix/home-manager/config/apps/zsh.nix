@@ -1,6 +1,6 @@
 {
   pkgs,
-  opConfig,
+  machineConfig,
   profile,
   ...
 }:
@@ -21,12 +21,12 @@
       b = "command bat";
       man = "command batman";
       # 1Password secret aliases (--account ensures correct vault regardless of active session)
-      op-openai = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/OpenAI API/credential'";
+      op-openai = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/OpenAI API/credential'";
     }
     // (
       if profile == "office" then
         {
-          op-homebrew = "op read --account ${opConfig.op_account} 'op://${opConfig.op_vault}/Homebrew GitHub Token/credential'";
+          op-homebrew = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Homebrew GitHub Token/credential'";
         }
       else
         { }
@@ -103,12 +103,26 @@
       export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
       export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
       export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
-
-      # work
-      export WORK_DIR_PATH=~/work
-      export LOCAL_GEM_PATH=$WORK_DIR_PATH
-      export AWS_REGION=us-east-1
-
+    ''
+    + (
+      if machineConfig.work_dir != "" then
+        ''
+          # Work environment variables
+          export WORK_DIR_PATH=${machineConfig.work_dir}
+          export LOCAL_GEM_PATH=$WORK_DIR_PATH
+        ''
+      else
+        ""
+    )
+    + (
+      if machineConfig.aws_region != "" then
+        ''
+          export AWS_REGION=${machineConfig.aws_region}
+        ''
+      else
+        ""
+    )
+    + ''
       # Disable zoxide doctor warnings
       export _ZO_DOCTOR=0
     '';
