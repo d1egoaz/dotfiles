@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay -v 15 /System/Library/Sounds/Glass.aiff"
+            "command": "afplay -v 15 /System/Library/Sounds/Bottle.aiff"
           }
         ]
       }
