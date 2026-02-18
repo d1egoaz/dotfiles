@@ -110,6 +110,11 @@
         "use-search-predicate" = false;
         "launch-at-login" = true;
       };
+      # Control Center menu bar items (standard domain)
+      "com.apple.controlcenter" = {
+        "NSStatusItem VisibleCC Sound" = 1; # Show Sound in menu bar
+        "NSStatusItem VisibleCC AudioVideoModule" = 0; # Hide Now Playing
+      };
     };
   };
 

@@ -40,10 +40,18 @@
   environment.systemPackages = systemPackages;
 
   system.activationScripts.postActivation.text = ''
+    # Upgrade Mac App Store apps
     if command -v /opt/homebrew/bin/mas >/dev/null 2>&1; then
-    echo "Upgrading Mac App Store apps..."
+      echo "Upgrading Mac App Store apps..."
       /opt/homebrew/bin/mas upgrade --verbose
     fi
+
+    # Control Center menu bar items (requires -currentHost for ByHost plist)
+    echo "Configuring Control Center menu bar items..."
+    /usr/bin/defaults -currentHost write com.apple.controlcenter Weather -int 2
+    /usr/bin/defaults -currentHost write com.apple.controlcenter Sound -int 16
+    /usr/bin/defaults -currentHost write com.apple.controlcenter NowPlaying -int 8
+    /usr/bin/killall ControlCenter 2>/dev/null || true
   '';
 
   # ============================================================================
