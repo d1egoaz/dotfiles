@@ -54,10 +54,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/AGENTS.md\" ]; then cat \"$CLAUDE_PROJECT_DIR/AGENTS.md\"; fi"
-          },
-          {
-            "type": "command",
             "command": "cat ~/AGENTS.md"
           }
         ]

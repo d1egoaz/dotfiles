@@ -1,5 +1,11 @@
 # AI Assistant Instructions
-<!-- Version: 1.1.0 | Updated: 2026-02-17 -->
+<!-- Version: 1.2.0 | Updated: 2026-02-20 -->
+
+## Instruction Files
+Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
+- Read them from the project root and parent directories
+- Follow all instructions contained within them
+- `AGENTS.local.md` overrides `AGENTS.md` (like `CLAUDE.local.md` overrides `CLAUDE.md`)
 
 ## Environment
 - **Shell**: fish (all commands must work in fish)
@@ -12,6 +18,7 @@
 4. CLI over GUI.
 5. Never use the em dash character.
 6. Never assume facts not provided - ask or leave blank.
+7. Never break commands across lines - they must be copy-paste ready.
 
 ## Behavior
 - Challenge ideas, question assumptions, expose blind spots.
