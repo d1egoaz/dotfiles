@@ -68,7 +68,7 @@ in
     # key_item must exist in op_vault above
     llm = {
       provider = "OpenAI";
-      model = "gpt-5-mini";
+      model = "gpt-5-nano";
       base_url = "https://api.openai.com/v1";
       key_item = "OpenAI API";
     };
