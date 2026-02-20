@@ -51,12 +51,7 @@
     "SessionStart": [
       {
         "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cat ~/AGENTS.md"
-          }
-        ]
+        "hooks": []
       }
     ]
   },
@@ -72,8 +67,6 @@
   "outputStyle": "Explanatory",
   "spinnerVerbs": {
     "mode": "replace",
-    "verbs": [
-      "  Turning to the Dark Side  "
-    ]
+    "verbs": ["  Turning to the Dark Side  "]
   }
 }
