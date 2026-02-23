@@ -147,6 +147,9 @@ AI commits/PRs must include footer:
 Assisted-by: [Model] via [Tool]
 ```
 Example: `Assisted-by: Opus 4.5 via Claude Code`
+- Before pushing a branch, verify attribution is present in the last commit: `git log -1 --pretty=%B | rg -n "^Assisted-by: .+ via .+$"`.
+- Before marking a PR ready, verify attribution is present in the PR body: `gh pr view --json body --jq ".body" | rg -n "^Assisted-by: .+ via .+$"`.
+- If either verification command returns no match, stop and fix the commit message or PR body before proceeding.
 
 ## Commit Messages
 Follow Conventional Commits (https://conventionalcommits.org/):
