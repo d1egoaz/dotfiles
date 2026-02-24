@@ -287,7 +287,7 @@
 				<key>escaping</key>
 				<integer>68</integer>
 				<key>script</key>
-				<string>exec "$HOME/.local/bin/alfred-openai-rewrite" "$1"</string>
+				<string>exec "$HOME/.local/bin/alfred-openai-rewrite" --mode tone "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -456,29 +456,7 @@ DOUBLE CLICK TO EDIT</string>
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string>**Prompt for Text Refinement**
-
-**1. Primary Goal:**
-   Improve the readability, grammar, and language of the following text. Simultaneously, adjust the writing style to achieve a specific tone.
-
-**2. Desired Tone &amp; Style:**
-   The revised text should sound collaborative and friendly. The target tone is casual yet professional, reflecting the style of a staff engineer working in infrastructure or DevOps.
-
-**3. Specific Instructions &amp; Constraints:**
-   * **Content:**
-     * Do not change the core meaning or content of the original text.
-     * Refrain from making excessive changes if the original writing is already sufficiently clear and concise.
-   * **Grammar/Mechanics:**
-     * Use contractions (e.g., "it's", "we'll") where appropriate.
-     * Avoid using passive voice excessively; prefer active voice.
-     * Do not use the em dash (—) character.
-   * **Focus Areas:** (None specified)
-
-**4. Output Format:**
-   Output *only* the corrected/revised text. Do not include any introductory or concluding phrases (like "Here's the revised text:" or similar).
-
-**5. Input Text:**
-   The text to be corrected is below:</string>
+				<string>Prompt is managed in ~/dotfiles/config/ai/tone-fixer-prompt.md and loaded by ~/.local/bin/alfred-openai-rewrite.</string>
 				<key>required</key>
 				<true/>
 				<key>trim</key>
@@ -487,29 +465,7 @@ DOUBLE CLICK TO EDIT</string>
 				<integer>9</integer>
 			</dict>
 			<key>description</key>
-			<string>**Prompt for Text Refinement**
-
-**1. Primary Goal:**
-   Improve the readability, grammar, and language of the following text. Simultaneously, adjust the writing style to achieve a specific tone.
-
-**2. Desired Tone &amp; Style:**
-   The revised text should sound collaborative and friendly. The target tone is casual yet professional, reflecting the style of a staff engineer working in infrastructure or DevOps.
-
-**3. Specific Instructions &amp; Constraints:**
-   * **Content:**
-     * Do not change the core meaning or content of the original text.
-     * Refrain from making excessive changes if the original writing is already sufficiently clear and concise.
-   * **Grammar/Mechanics:**
-     * Use contractions (e.g., "it's", "we'll") where appropriate.
-     * Avoid using passive voice excessively; prefer active voice.
-     * Do not use the em dash (—) character.
-   * **Focus Areas:** (None specified)
-
-**4. Output Format:**
-   Output *only* the corrected/revised text. Do not include any introductory or concluding phrases (like "Here's the revised text:" or similar). Do not use the em dash (—) character in the output
-
-**5. Input Text:**
-   The text to be corrected is below:</string>
+			<string>Prompt is managed in ~/dotfiles/config/ai/tone-fixer-prompt.md and loaded by ~/.local/bin/alfred-openai-rewrite.</string>
 			<key>label</key>
 			<string>Prompt</string>
 			<key>type</key>
