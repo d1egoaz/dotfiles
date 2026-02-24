@@ -1,2 +1,10 @@
 model = "gpt-5.3-codex"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-window-size", "used-tokens", "context-remaining", "context-used"]
+
+[features]
+multi_agent = true
+prevent_idle_sleep = true
