@@ -40,6 +40,7 @@
     # 1Password configuration (for scripts that need op access)
     OP_ACCOUNT = machineConfig.op_account;
     OP_VAULT = machineConfig.op_vault;
+    SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
 
     # Homebrew
     HOMEBREW_NO_ANALYTICS = "1";
