@@ -28,6 +28,21 @@ just install-nix
 just install-darwin
 ```
 
+## Git Confirmation Policy
+
+Default to executing git commands without asking for confirmation when they are not destructive and do not publish changes outside the local machine.
+
+Ask for confirmation only when a git command is destructive or publishes externally.
+
+Confirmation required:
+- Destructive or local-loss operations (for example: `git reset --hard`, `git clean -fd`, `git checkout -- <path>`, history rewrites that can drop work)
+- External publish operations (for example: `git push`, creating or updating remote branches, or any command that sends commits or tags to a remote)
+
+No confirmation needed:
+- Inspection (`git status`, `git diff`, `git log`, `git show`, `git blame`)
+- Local sync or read operations (`git fetch`, `git remote -v`, `git branch -a`)
+- Local authoring operations (`git add`, `git commit`, `git commit --amend`, `git rebase`, `git merge`, `git cherry-pick`, `git stash`)
+
 ## Architecture
 
 ### Username-Based Auto-Detection
