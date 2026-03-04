@@ -30,6 +30,7 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - Sandbox approval persistence is controlled by `~/.codex/rules/*.rules`, not by repository `AGENTS.md` files.
 - Keep shared approvals in a tracked rules file (for example `~/.codex/rules/10-shared.rules` via dotfiles).
 - Keep work-only approvals in local-only rules files (for example `~/.codex/rules/90-work-local.rules`).
+- For multi-repo work, run git commands in each repo's working directory (`cwd`) and avoid `git -C` unless explicitly requested by the user.
 
 ## Command Transparency
 Default to concise command updates.
