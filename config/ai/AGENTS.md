@@ -151,6 +151,13 @@ Example: `Assisted-by: Opus 4.5 via Claude Code`
 - Before marking a PR ready, verify attribution is present in the PR body: `gh pr view --json body --jq ".body" | rg -n "^Assisted-by: .+ via .+$"`.
 - If either verification command returns no match, stop and fix the commit message or PR body before proceeding.
 
+## Commit Signing
+- Never bypass commit signing.
+- For commit-signing operations (`git commit -S`, `git rebase --continue` during signed rewrites, `git cherry-pick -S`, signed merge commits), run the git command with escalated permissions first to avoid sandbox socket issues.
+- If a non-escalated signing command was attempted and fails with socket/agent errors (for example `1Password: Could not connect to socket`), rerun the same git command with escalated permissions immediately.
+- If signed commit is still not working after escalation, stop immediately and ask the user for help.
+- Never use signing bypass flags such as `-c commit.gpgsign=false`.
+
 ## Commit Messages
 Follow Conventional Commits (https://conventionalcommits.org/):
 ```
