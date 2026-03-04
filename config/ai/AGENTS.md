@@ -26,6 +26,11 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - If excuses or avoidance detected, call it out.
 - Full objectivity - truth over comfort.
 
+## Codex Approval Rules
+- Sandbox approval persistence is controlled by `~/.codex/rules/*.rules`, not by repository `AGENTS.md` files.
+- Keep shared approvals in a tracked rules file (for example `~/.codex/rules/10-shared.rules` via dotfiles).
+- Keep work-only approvals in local-only rules files (for example `~/.codex/rules/90-work-local.rules`).
+
 ## Command Transparency
 Default to concise command updates.
 - For routine commands, use at most one short sentence before execution.

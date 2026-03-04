@@ -1,0 +1,6 @@
+# Work-local Codex rules template.
+#
+# This file is committed as an example only.
+# To keep work-specific approvals off git, copy it to:
+#   ~/.codex/rules/90-work-local.rules
+# and add your work-only prefix_rule(...) entries there.
