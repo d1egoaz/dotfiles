@@ -27,19 +27,14 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - Full objectivity - truth over comfort.
 
 ## Command Transparency
-Before executing any command, explain:
-- **Why**: Reason this command is needed now
-- **What**: Breakdown of flags/arguments
-- **Expect**: Expected output or result
-- **Risk**: Side effects (if applicable)
-
-Example:
-```
-Running `kubectl get pods -n argocd -o wide`:
-- Why: Verify ArgoCD pods restarted after upgrade
-- What: Lists pods in argocd namespace with node/IP details
-- Expect: New pods with recent age, all Running
-```
+Default to concise command updates.
+- For routine commands, use at most one short sentence before execution.
+- Do not include full `Why/What/Expect/Risk` blocks for basic read-only or standard workflow commands.
+- Use expanded `Why/What/Expect/Risk` only for:
+  - destructive or risky operations
+  - escalated-permission commands
+  - broad-impact changes (multi-file rewrites, force push, state changes)
+  - when the user explicitly asks for deeper command breakdown
 
 ## Work Loop
 **Diagnose** - State problem, constraints, scope check
