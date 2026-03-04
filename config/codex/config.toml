@@ -1,13 +1,43 @@
+file_opener = "cursor"
 model = "gpt-5.3-codex"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
+model_verbosity = "medium"
+#notify = ["say", "Codex done"]
 personality = "pragmatic"
+# sandbox_mode = "read-only"
+sandbox_mode = "workspace-write"
 suppress_unstable_features_warning = true
+web_search = "cached"
 
-[tui]
-status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-window-size", "used-tokens", "context-remaining", "context-used"]
+# You can also add custom .tmTheme files under $CODEX_HOME/themes.
+theme = "tokyo-night"
+
+[agents]
+max_threads = 10
+max_depth = 1
 
 [features]
 multi_agent = true
 prevent_idle_sleep = true
+responses_websockets = false
+responses_websockets_v2 = false
 voice_transcription = true
 
+[sandbox_workspace_write]
+exclude_slash_tmp = false      # Allow /tmp
+exclude_tmpdir_env_var = false # Allow $TMPDIR
+network_access = false
+
+[tui]
+animations = true
+status_line = [
+  "model-with-reasoning",
+  "current-dir",
+  "git-branch",
+  "context-window-size",
+  "used-tokens",
+  "context-remaining",
+  "context-used",
+]
+notifications = ["agent-turn-complete", "approval-requested"]
+theme = "tokyo-night"
