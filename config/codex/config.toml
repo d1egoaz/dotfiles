@@ -1,5 +1,5 @@
 file_opener = "cursor"
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
 model_reasoning_effort = "xhigh"
 model_verbosity = "medium"
 notify = ["/bin/sh", "-c", "$HOME/dotfiles/bin/files/codex-notify.sh \"$1\"", "codex-notify"]
