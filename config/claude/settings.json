@@ -13,7 +13,46 @@
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
       "Bash(gh pr checkout:*)",
-      "Bash(git checkout:*)"
+      "Bash(git fetch:*)",
+      "Bash(git worktree:*)",
+      "Bash(git checkout:*)",
+      "Bash(aws sts get-caller-identity:*)",
+      "Bash(aws ec2 describe-*:*)",
+      "Bash(aws rds describe-*:*)",
+      "Bash(aws dynamodb describe-*:*)",
+      "Bash(aws dynamodb list-*:*)",
+      "Bash(aws cloudformation describe-*:*)",
+      "Bash(aws cloudformation list-*:*)",
+      "Bash(aws elbv2 describe-*:*)",
+      "Bash(aws autoscaling describe-*:*)",
+      "Bash(aws application-autoscaling describe-*:*)",
+      "Bash(aws route53 get-*:*)",
+      "Bash(aws route53 list-*:*)",
+      "Bash(aws acm describe-*:*)",
+      "Bash(aws acm list-*:*)",
+      "Bash(aws eks describe-*:*)",
+      "Bash(aws eks list-*:*)",
+      "Bash(aws ecs describe-*:*)",
+      "Bash(aws ecs list-*:*)",
+      "Bash(aws ecr describe-*:*)",
+      "Bash(aws ecr list-*:*)",
+      "Bash(aws elasticache describe-*:*)",
+      "Bash(aws cloudwatch describe-*:*)",
+      "Bash(aws cloudwatch list-*:*)",
+      "Bash(aws cloudwatch get-metric-statistics:*)",
+      "Bash(aws cloudwatch get-metric-data:*)",
+      "Bash(aws cloudwatch get-insight-rule-report:*)",
+      "Bash(aws cloudwatch list-managed-insight-rules:*)",
+      "Bash(aws logs describe-*:*)",
+      "Bash(aws logs filter-log-events:*)",
+      "Bash(aws logs start-query:*)",
+      "Bash(aws logs get-query-results:*)",
+      "Bash(terraform version:*)",
+      "Bash(terraform providers:*)",
+      "Bash(terraform validate:*)",
+      "Bash(terraform fmt -check:*)",
+      "Bash(terraform workspace show:*)",
+      "Bash(terraform graph:*)"
     ],
     "deny": [
       "Bash(curl:*)",
@@ -24,7 +63,7 @@
       "Read(./build)"
     ]
   },
-  "model": "us.anthropic.claude-opus-4-6-v1",
+  "model": "opus",
   "hooks": {
     "Notification": [
       {
@@ -64,9 +103,19 @@
     "typescript-lsp@claude-plugins-official": true,
     "infra@infra-skills": true
   },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    }
+  },
   "outputStyle": "Explanatory",
   "spinnerVerbs": {
     "mode": "replace",
-    "verbs": ["  Turning to the Dark Side  "]
+    "verbs": [
+      "  Turning to the Dark Side  "
+    ]
   }
 }
