@@ -65,21 +65,15 @@
       # Normalize whitespace to reduce token overhead.
       SYSTEM_PROMPT=$(cat "$PROMPT_FILE" | tr '\n' ' ' | tr -s '[:space:]' ' ')
 
-      # Keep responses quick: cap output size based on input length.
-      INPUT_CHARS=''${#USER_TEXT}
-      MAX_TOKENS=$(( (INPUT_CHARS / 3) + 120 ))
-      if [ "$MAX_TOKENS" -lt 160 ]; then MAX_TOKENS=160; fi
-      if [ "$MAX_TOKENS" -gt 700 ]; then MAX_TOKENS=700; fi
-
       if [ "$PROVIDER" = "OpenAI" ]; then
-        REQUEST_BODY=$(jq -n --arg model "$MODEL" --arg system "$SYSTEM_PROMPT" --arg user "$USER_TEXT" --argjson max_tokens "$MAX_TOKENS" \
-          '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], reasoning_effort:"minimal", max_completion_tokens:$max_tokens}')
+        REQUEST_BODY=$(jq -n --arg model "$MODEL" --arg system "$SYSTEM_PROMPT" --arg user "$USER_TEXT" \
+          '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], reasoning_effort:"none"}')
       else
-        REQUEST_BODY=$(jq -n --arg model "$MODEL" --arg system "$SYSTEM_PROMPT" --arg user "$USER_TEXT" --argjson max_tokens "$MAX_TOKENS" \
-          '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], max_tokens:$max_tokens}')
+        REQUEST_BODY=$(jq -n --arg model "$MODEL" --arg system "$SYSTEM_PROMPT" --arg user "$USER_TEXT" \
+          '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], reasoning_effort:"low"}')
       fi
 
-      RESPONSE=$(curl -sS --connect-timeout 3 --max-time 45 "$BASE_URL/chat/completions" \
+      RESPONSE=$(curl -sS --connect-timeout 2 --max-time 5 "$BASE_URL/chat/completions" \
         -H "Authorization: Bearer $KEY" \
         -H "Content-Type: application/json" \
         -d "$REQUEST_BODY")

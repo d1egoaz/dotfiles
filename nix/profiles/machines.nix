@@ -68,7 +68,7 @@ in
     # key_item must exist in op_vault above
     llm = {
       provider = "OpenAI";
-      model = "gpt-5-nano";
+      model = "gpt-5.4-nano";
       base_url = "https://api.openai.com/v1";
       key_item = "OpenAI API";
     };
@@ -107,7 +107,7 @@ in
     # key_item must exist in op_vault above
     llm = {
       provider = "Cerebras";
-      model = "gpt-oss-120b";
+      model = "qwen-3-235b-a22b-instruct-2507";
       base_url = "https://api.cerebras.ai/v1";
       key_item = "Cerebras API";
     };
