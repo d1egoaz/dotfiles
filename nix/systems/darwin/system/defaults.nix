@@ -55,7 +55,7 @@
       NSAutomaticCapitalizationEnabled = true;
       AppleInterfaceStyleSwitchesAutomatically = false;
       AppleEnableSwipeNavigateWithScrolls = false; # Disable two-finger swipe back/forward
-      AppleWindowTabbingMode = "always"; # Prefer tabs when opening documents
+      AppleWindowTabbingMode = "manual"; # Do not automatically tab windows
       NSWindowShouldDragOnGesture = true; # Cmd+Ctrl drag to move windows
       "_HIHideMenuBar" = profile != "office";
       NSStatusItemSpacing = 0;
@@ -101,6 +101,14 @@
       };
       "com.apple.loginwindow" = {
         TALLogoutSavesState = false; # Don't restore windows on login
+      };
+      "com.mitchellh.ghostty" = {
+        # macOS routes Cmd+H to the native "Hide Ghostty" menu item before
+        # Ghostty can handle the keypress, so move hide to Ctrl+Cmd+H to free
+        # Cmd+H for Ghostty's split navigation keybind.
+        NSUserKeyEquivalents = {
+          "Hide Ghostty" = "@^h";
+        };
       };
       "com.superultra.Homerow" = {
         "non-search-shortcut" = "⌘;";
