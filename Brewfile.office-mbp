@@ -5,5 +5,7 @@ tap "aws/tap"
 
 brew "argocd" # GitOps continuous delivery CLI
 brew "1debit/chime/compass"
+brew "1debit/chime/tfe"
+
 brew "aws/tap/eks-node-viewer"
 cask "claude"

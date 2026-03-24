@@ -6,6 +6,9 @@ notify = ["/bin/sh", "-c", "$HOME/dotfiles/bin/files/codex-notify.sh \"$1\"", "c
 personality = "pragmatic"
 approval_policy = "untrusted"
 allow_login_shell = false
+model_context_window = 1050000
+model_auto_compact_token_limit = 800000
+
 # sandbox_mode = "read-only"
 sandbox_mode = "workspace-write"
 suppress_unstable_features_warning = true
@@ -13,6 +16,8 @@ web_search = "cached"
 
 # You can also add custom .tmTheme files under $CODEX_HOME/themes.
 theme = "tokyo-night"
+plan_mode_reasoning_effort = "xhigh"
+service_tier = "fast"
 
 [agents]
 max_threads = 10
