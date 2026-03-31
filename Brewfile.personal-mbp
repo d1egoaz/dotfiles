@@ -4,6 +4,7 @@ tap "fastrepl/hyprnote" # Tap for Hyprnote app
 
 brew "gemini-cli" # WireGuard-based mesh VPN
 brew "tailscale" # WireGuard-based mesh VPN
+brew "opencode"
 
 cask "chatgpt" # ChatGPT desktop client
 cask "cloudflare-warp"
