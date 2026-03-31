@@ -7,7 +7,7 @@ personality = "pragmatic"
 approval_policy = "untrusted"
 allow_login_shell = false
 model_context_window = 1050000
-model_auto_compact_token_limit = 800000
+model_auto_compact_token_limit = 400000
 
 # sandbox_mode = "read-only"
 sandbox_mode = "workspace-write"
@@ -45,3 +45,4 @@ notification_method = "bel"
 status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-window-size", "used-tokens", "context-remaining", "context-used", "project-root"]
 notifications = ["agent-turn-complete"]
 theme = "tokyo-night"
+terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
