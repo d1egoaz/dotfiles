@@ -38,14 +38,12 @@
           # TOML formatting
           taplo.enable = true;
 
-          # Prettier for various file types
+          # Prettier for JSON and Markdown (YAML handled by yamlfmt)
           prettier = {
             enable = true;
             includes = [
               "*.json"
               "*.md"
-              "*.yaml"
-              "*.yml"
             ];
           };
         };

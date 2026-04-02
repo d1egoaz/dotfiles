@@ -48,8 +48,6 @@ let
     nh # Nix helper
     nix-tree # Visualise Nix package dependencies
     watch # Execute a program periodically
-    grandperspective # Disk usage analyzer
-
     # =====================================================================
     # Text Processing and Formatting
     # =====================================================================

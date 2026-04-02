@@ -61,10 +61,11 @@
       ];
       theme.source =
         let
+          # https://github.com/eza-community/eza-themes
           repo = pkgs.fetchFromGitHub {
             owner = "eza-community";
             repo = "eza-themes";
-            rev = "c03051f67e84110fbae91ab7cbc377b3460f035c";
+            rev = "c03051f67e84110fbae91ab7cbc377b3460f035c"; # 2025-01
             sha256 = "1kd60fnwd8vh6jvkyz48rk5bs12a2g7yy6b3qbj7i1p0vwgvnh58";
           };
         in

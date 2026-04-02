@@ -33,9 +33,6 @@
     # Code formatting and linting
     treefmt-nix.url = "github:numtide/treefmt-nix";
 
-    # Utility functions for flakes
-    flake-utils.url = "github:numtide/flake-utils";
-
     # Home Manager for user environment management
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";

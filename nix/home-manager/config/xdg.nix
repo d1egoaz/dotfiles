@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   profile,
   ...
@@ -49,26 +50,33 @@
       '';
     };
 
-    # Custom utility scripts from bin/files/
-    ".local/bin/ediff".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/ediff";
-    ".local/bin/ediff3".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/ediff3";
-    ".local/bin/k".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/k";
-    ".local/bin/kc".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/kc";
-    ".local/bin/kk".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/kk";
-    ".local/bin/kn".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/kn";
-    ".local/bin/kstern".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/kstern";
-    ".local/bin/ktmux".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/ktmux";
-    ".local/bin/pr-approve".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/pr-approve.sh";
-  };
+    # Custom utility scripts from bin/files/ symlinked to ~/.local/bin/
+    # To add a new script: drop it in bin/files/ and append the filename here.
+    # .sh suffix is stripped from the symlink name.
+    # Excluded: awsprofile.fish (sourced by fish), codex-notify.sh (invoked by absolute path).
+  }
+  // (
+    let
+      binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
+      scripts = [
+        "ediff"
+        "ediff3"
+        "k"
+        "kc"
+        "kk"
+        "kn"
+        "kstern"
+        "ktmux"
+        "pr-approve.sh"
+      ];
+    in
+    lib.listToAttrs (
+      map (name: {
+        name = ".local/bin/${lib.removeSuffix ".sh" name}";
+        value.source = config.lib.file.mkOutOfStoreSymlink "${binDir}/${name}";
+      }) scripts
+    )
+  );
 
   xdg = {
     enable = true;
