@@ -129,12 +129,13 @@
 
     # Zsh plugins
     plugins = [
+      # https://github.com/Aloxaf/fzf-tab/releases
       {
         name = "fzf-tab";
         src = pkgs.fetchFromGitHub {
           owner = "Aloxaf";
           repo = "fzf-tab";
-          rev = "v1.2.0";
+          rev = "v1.2.0"; # 2025-02
           sha256 = "sha256-q26XVS/LcyZPRqDNwKKA9exgBByE0muyuNb0Bbar2lY=";
         };
       }

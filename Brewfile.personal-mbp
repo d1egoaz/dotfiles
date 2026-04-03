@@ -2,7 +2,7 @@
 
 tap "fastrepl/hyprnote" # Tap for Hyprnote app
 
-brew "gemini-cli" # WireGuard-based mesh VPN
+brew "gemini-cli" # Google Gemini CLI
 brew "tailscale" # WireGuard-based mesh VPN
 brew "opencode"
 

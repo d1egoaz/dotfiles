@@ -4,7 +4,7 @@ This file provides guidance to Code agents  when working with code in this repos
 
 ## Repository Overview
 
-This is a macOS dotfiles repository using nix-darwin + Home Manager + Homebrew for system configuration across multiple machines. The setup prioritizes stability (nixpkgs-25.05-darwin) while maintaining a pragmatic hybrid approach where some configs are managed by Nix and others are direct symlinks for immediate editing.
+This is a macOS dotfiles repository using nix-darwin + Home Manager + Homebrew for system configuration across multiple machines. The setup prioritizes stability (nixpkgs-25.11-darwin) while maintaining a pragmatic hybrid approach where some configs are managed by Nix and others are direct symlinks for immediate editing.
 
 ## Core Commands
 
