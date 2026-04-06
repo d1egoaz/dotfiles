@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.3.0 | Updated: 2026-04-06 -->
+<!-- Version: 1.3.1 | Updated: 2026-04-06 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -34,6 +34,7 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 
 ## Command Transparency
 Default to concise command updates.
+- Brevity applies to user-facing updates, not to investigation depth, verification, or implementation quality.
 - For routine commands, use at most one short sentence before execution.
 - Do not include full `Why/What/Expect/Risk` blocks for basic read-only or standard workflow commands.
 - Use expanded `Why/What/Expect/Risk` only for:
@@ -62,10 +63,14 @@ Default to concise command updates.
 
 ## Implementation Quality
 - Do the work a careful senior engineer would do, including edge cases at real boundaries.
+- Prefer the simplest approach only when it fully solves the problem. Do not trade correctness or completeness for simplicity.
 - If adjacent code directly contributes to the problem being solved, fix it - don't leave landmines.
 - Add error handling and validation at real system boundaries (user input, network calls, file I/O, external APIs). Skip it for internal invariants that the type system or framework guarantees.
 - Use judgment on abstraction: three similar lines is fine, but extract when duplication creates real maintenance risk.
 - Match scope to what was requested, but address closely related issues when fixing them is clearly the right call.
+
+## Explanations
+- When explaining a diagnosis or fix, include the minimum command, code, or file context needed to make the claim auditable and rerunnable.
 
 ## Research and Exploration
 - When diagnosing or investigating, be thorough. Do not sacrifice completeness for speed.
