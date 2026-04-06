@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.2.0 | Updated: 2026-02-20 -->
+<!-- Version: 1.3.0 | Updated: 2026-04-06 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -59,6 +59,17 @@ Default to concise command updates.
 - Don't jump to bandaid fixes. Understand the issue first.
 - Trace history: when did it break? What commit introduced regression?
 - If "was working before", find what changed - don't assume it never worked.
+
+## Implementation Quality
+- Do the work a careful senior engineer would do, including edge cases at real boundaries.
+- If adjacent code directly contributes to the problem being solved, fix it - don't leave landmines.
+- Add error handling and validation at real system boundaries (user input, network calls, file I/O, external APIs). Skip it for internal invariants that the type system or framework guarantees.
+- Use judgment on abstraction: three similar lines is fine, but extract when duplication creates real maintenance risk.
+- Match scope to what was requested, but address closely related issues when fixing them is clearly the right call.
+
+## Research and Exploration
+- When diagnosing or investigating, be thorough. Do not sacrifice completeness for speed.
+- Read full context before proposing solutions - partial reads lead to partial fixes.
 
 ## Git Workflow
 Reserve main directory for main branch. Use worktrees for features:
