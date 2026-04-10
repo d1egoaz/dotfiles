@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  machineConfig,
   pkgs,
   profile,
   ...
@@ -47,6 +48,33 @@
       text = ''
         #!/usr/bin/env bash
         exec "/Applications/Ghostty.app/Contents/MacOS/ghostty" "$@"
+      '';
+    };
+
+    ".local/bin/aa" = {
+      executable = true;
+      text = ''
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        if ! command -v op >/dev/null 2>&1; then
+          echo "aa: 1Password CLI ('op') is not available in PATH" >&2
+          exit 1
+        fi
+
+        if ! command -v agent >/dev/null 2>&1; then
+          echo "aa: 'agent' is not available in PATH" >&2
+          exit 1
+        fi
+
+        key="$(op read --account "${machineConfig.op_account}" "op://${machineConfig.op_vault}/Cursor api key/API_KEY" 2>/dev/null || true)"
+        if [ -z "$key" ]; then
+          echo "aa: failed to read Cursor API key from 1Password. Authenticate with 'op signin' and verify the item exists." >&2
+          exit 1
+        fi
+
+        export CURSOR_API_KEY="$key"
+        exec agent "$@"
       '';
     };
 

@@ -18,7 +18,6 @@
     # Shell aliases - keep navigation and bat as instant aliases
     shellAliases = {
       # bat everywhere
-      aa = "env CURSOR_API_KEY=\"$(op-cursor)\" agent";
       b = "command bat";
       man = "command batman";
       # 1Password secret aliases (--account ensures correct vault regardless of active session)
