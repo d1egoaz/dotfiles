@@ -18,10 +18,12 @@
     # Shell aliases - keep navigation and bat as instant aliases
     shellAliases = {
       # bat everywhere
+      aa = "env CURSOR_API_KEY=\"$(op-cursor)\" agent";
       b = "command bat";
       man = "command batman";
       # 1Password secret aliases (--account ensures correct vault regardless of active session)
       op-openai = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/OpenAI API/credential'";
+      op-cursor = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Cursor api key/API_KEY'";
     }
     // (
       if profile == "office" then
