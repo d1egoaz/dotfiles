@@ -1,14 +1,18 @@
 {
   "env": {
-    "ANTHROPIC_MODEL": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+    "ANTHROPIC_MODEL": "claude-opus-4-6",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "400000",
+    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "true",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "CLAUDE_CODE_NO_FLICKER": "1",
     "CLAUDE_CODE_USE_BEDROCK": "true",
     "DISABLE_TELEMETRY": "1",
-    "USE_BUILTIN_RIPGREP": "0",
-    "CLAUDE_CODE_NO_FLICKER": "1"
+    "USE_BUILTIN_RIPGREP": "0"
   },
   "includeCoAuthoredBy": false,
+  "showThinkingSummaries": true,
+  "effortLevel": "high",
   "permissions": {
     "allow": [
       "Bash(gh pr view:*)",
@@ -121,8 +125,6 @@
   "outputStyle": "Explanatory",
   "spinnerVerbs": {
     "mode": "replace",
-    "verbs": [
-      "  Turning to the Dark Side  "
-    ]
+    "verbs": ["  Turning to the Dark Side  "]
   }
 }
