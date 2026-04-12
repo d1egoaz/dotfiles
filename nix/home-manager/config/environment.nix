@@ -27,6 +27,8 @@
 
     # Development environment
     GOPRIVATE = machineConfig.go_private;
+    # User-writable npm global installs for Nix-managed Node.js
+    NPM_CONFIG_PREFIX = "$HOME/.local/share/npm-global";
 
     # Kubernetes
     KUBECONFIG = "$HOME/.kube/config";
@@ -56,6 +58,7 @@
   );
 
   home.sessionPath = [
+    "$HOME/.local/share/npm-global/bin"
     "$HOME/.local/bin"
     "$HOME/.nix-profile/bin"
     "/etc/profiles/per-user/$USER/bin"

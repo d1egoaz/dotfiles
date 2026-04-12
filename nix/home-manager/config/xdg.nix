@@ -146,6 +146,11 @@
   # Activation Scripts
   # ============================================================================
 
+  # Ensure the user-level npm global prefix exists for Nix-managed Node.js.
+  home.activation.npmGlobalPrefix = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.local/share/npm-global/bin"
+  '';
+
   # Hard link mouseless config into its macOS sandbox container.
   # Hard links work across sandbox boundaries (same filesystem/inode).
   # Re-runs on every `just switch` to repair if the app recreated the file.
