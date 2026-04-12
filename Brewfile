@@ -4,6 +4,7 @@ tap "nikitabobko/tap" # Tap for AeroSpace window manager
 tap "d12frosted/emacs-plus" # Tap for Emacs with macOS enhancements
 
 brew "libvterm" # Terminal emulator library for Emacs vterm
+brew "pi-coding-agent"
 cask "1password" # Password manager
 cask "1password-cli"
 cask "aerospace" # Window manager
