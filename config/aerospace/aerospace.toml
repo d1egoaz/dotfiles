@@ -194,6 +194,11 @@ if.app-name-regex-substring = "Codex"
 run = "move-node-to-workspace AI"
 
 [[on-window-detected]]
+if.app-id = "com.todesktop.230313mzl4w4u92" # Cursor
+if.window-title-regex-substring = "Cursor Agents"
+run = "move-node-to-workspace AI"
+
+[[on-window-detected]]
 if.app-name-regex-substring = "Gemini"
 run = "move-node-to-workspace AI"
 
