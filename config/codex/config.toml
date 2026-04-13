@@ -46,27 +46,23 @@ status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-win
 notifications = ["agent-turn-complete"]
 theme = "tokyo-night"
 
-[projects."/Users/diego/dotfiles"]
-trust_level = "trusted"
-
-[projects."/Users/diego/code/R2-Claw2"]
-trust_level = "trusted"
-
-[projects."/"]
-trust_level = "trusted"
-
 [plugins."github@openai-curated"]
 enabled = true
 
-[model_providers.z_ai]
-# Name of the provider that will be displayed in the Codex UI.
-name = "z.ai - GLM Coding Plan"
-# The path `/chat/completions` will be amended to this URL to make the POST
-# request for the chat completions.
-base_url = "https://api.z.ai/api/coding/paas/v4"
-env_key = "ZAI"
-#env_key = "806d5a77475643828d7ef868dc27680a.7ai12jaQvV5NrjMqj"
+terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
 
-[profiles.glm_5_1]
-model = "glm-5.1"
-model_provider = "z_ai"
+[mcp_servers.datadog-mcp]
+enabled = false
+url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
+
+[mcp_servers.glean_default]
+url = "https://chime-prod-be.glean.com/mcp/default"
+
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"
+
+[mcp_servers.slack]
+url = "https://mcp.slack.com/mcp"
+
+[plugins."slack@openai-curated"]
+enabled = true

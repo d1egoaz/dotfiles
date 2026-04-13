@@ -11,8 +11,6 @@
     "USE_BUILTIN_RIPGREP": "0"
   },
   "includeCoAuthoredBy": false,
-  "showThinkingSummaries": true,
-  "effortLevel": "high",
   "permissions": {
     "allow": [
       "Bash(gh pr view:*)",
@@ -125,6 +123,10 @@
   "outputStyle": "Explanatory",
   "spinnerVerbs": {
     "mode": "replace",
-    "verbs": ["  Turning to the Dark Side  "]
-  }
+    "verbs": [
+      "  Turning to the Dark Side  "
+    ]
+  },
+  "effortLevel": "high",
+  "showThinkingSummaries": true
 }
