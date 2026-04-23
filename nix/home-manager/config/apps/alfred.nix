@@ -67,7 +67,7 @@
 
       if [ "$PROVIDER" = "OpenAI" ]; then
         REQUEST_BODY=$(jq -n --arg model "$MODEL" --arg system "$SYSTEM_PROMPT" --arg user "$USER_TEXT" \
-          '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], reasoning_effort:"none"}')
+          '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], reasoning_effort:"none", store:false}')
       else
         REQUEST_BODY=$(jq -n --arg model "$MODEL" --arg system "$SYSTEM_PROMPT" --arg user "$USER_TEXT" \
           '{model:$model, messages:[{role:"system",content:$system},{role:"user",content:$user}], reasoning_effort:"low"}')
