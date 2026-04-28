@@ -1,7 +1,5 @@
 # -*- mode: ruby; -*-
 
-tap "fastrepl/hyprnote" # Tap for Hyprnote app
-
 brew "gemini-cli" # Google Gemini CLI
 brew "tailscale" # WireGuard-based mesh VPN
 brew "opencode"
@@ -13,7 +11,6 @@ cask "discord" # Community chat/voice
 cask "excalidrawz" # Excalidraw whiteboard
 cask "google-chrome" # Web browser
 cask "grandperspective" # Graphically shows disk usage within a file system
-cask "hyprnote" # Hyprnote application
 cask "little-snitch" # Network firewall/monitor
 cask "mouseless@preview"
 cask "nordvpn" # VPN client

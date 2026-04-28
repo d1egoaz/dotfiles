@@ -42,7 +42,7 @@ persistent-workspaces = []
 inherit-env-vars = true
 
 [exec.env-vars]
-PATH = "/etc/profiles/per-user/${USER}/bin:${PATH}"
+# PATH = "/opt/homebrew/bin:${HOME}/.local/share/npm-global/bin:${HOME}/.local/bin:${HOME}/.nix-profile/bin:/etc/profiles/per-user/${USER}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:${PATH}"
 
 # Key mapping preset
 [key-mapping]
@@ -204,18 +204,6 @@ run = "move-node-to-workspace AI"
 
 [[on-window-detected]]
 if.app-name-regex-substring = "AI diegoa"
-run = "move-node-to-workspace AI"
-
-[[on-window-detected]]
-if.app-name-regex-substring = "Perplexity"
-run = "move-node-to-workspace AI"
-
-[[on-window-detected]]
-if.app-name-regex-substring = "Hyprnote"
-run = "move-node-to-workspace AI"
-
-[[on-window-detected]]
-if.app-id = "ai.perplexity.mac"
 run = "move-node-to-workspace AI"
 
 [[on-window-detected]]

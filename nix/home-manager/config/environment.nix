@@ -58,12 +58,12 @@
   );
 
   home.sessionPath = [
+    "/opt/homebrew/bin"
     "$HOME/.local/share/npm-global/bin"
     "$HOME/.local/bin"
     "$HOME/.nix-profile/bin"
     "/etc/profiles/per-user/$USER/bin"
     "/run/current-system/sw/bin"
     "/nix/var/nix/profiles/default/bin"
-    "/opt/homebrew/bin"
   ];
 }
