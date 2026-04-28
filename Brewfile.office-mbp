@@ -4,7 +4,6 @@ tap "1debit/chime"
 tap "aws/tap"
 tap "datadog-labs/pack"
 
-brew "argocd" # GitOps continuous delivery CLI
 brew "1debit/chime/compass"
 brew "datadog-labs/pack/pup"
 brew "1debit/chime/tfe"

@@ -114,7 +114,4 @@ brew:
       echo "Bundling host Brewfile: Brewfile.{{ _host }}..."
       brew bundle --file ./Brewfile.{{ _host }}
     fi
-    brew upgrade
-    # brew reinstall hyprnote
-    brew upgrade --cask
     brew cleanup --prune=all
