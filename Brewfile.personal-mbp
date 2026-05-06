@@ -18,4 +18,3 @@ cask "plex" # Media server app
 cask "plexamp" # Music player focusing on visuals
 cask "signal"
 cask "zoom" # Video conferencing
-cask "steipete/tap/codexbar"
