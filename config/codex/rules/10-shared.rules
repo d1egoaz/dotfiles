@@ -1,18 +1,37 @@
 # Shared Codex approval rules synced via dotfiles.
 #
 # Keep portable, low-risk rules here so they can be pushed and reused across
-# machines. Keep work-only or machine-local rules in ~/.codex/rules/default.rules
-# or another local *.rules file.
+# machines. Keep work-only rules in ~/.codex/rules/90-work-local.rules.
+# Keep one-off local approvals in ~/.codex/rules/default.rules.
 
 prefix_rule(pattern=["git", "add"], decision="allow")
 prefix_rule(pattern=["git", "commit"], decision="allow")
 prefix_rule(pattern=["git", "clone"], decision="allow")
 prefix_rule(pattern=["git", "fetch"], decision="allow")
 prefix_rule(pattern=["git", "push"], decision="allow")
+prefix_rule(pattern=["git", "rebase"], decision="allow")
+prefix_rule(pattern=["git", "cherry-pick"], decision="allow")
+
+prefix_rule(pattern=["gh", "auth", "status"], decision="allow")
+prefix_rule(pattern=["gh", "issue", "view"], decision="allow")
 prefix_rule(pattern=["gh", "pr", "create"], decision="allow")
 prefix_rule(pattern=["gh", "pr", "view"], decision="allow")
+prefix_rule(pattern=["gh", "pr", "checks"], decision="allow")
+prefix_rule(pattern=["gh", "pr", "diff"], decision="allow")
+prefix_rule(pattern=["gh", "search", "code"], decision="allow")
+prefix_rule(pattern=["gh", "search", "issues"], decision="allow")
+prefix_rule(pattern=["gh", "search", "prs"], decision="allow")
+prefix_rule(pattern=["gh", "workflow", "list"], decision="allow")
 
 prefix_rule(pattern=["git", "-C", "add"], decision="allow")
 prefix_rule(pattern=["git", "-C", "commit"], decision="allow")
 prefix_rule(pattern=["git", "-C", "fetch"], decision="allow")
+
+prefix_rule(pattern=["jq"], decision="allow")
 prefix_rule(pattern=["rg"], decision="allow")
+prefix_rule(pattern=["sort"], decision="allow")
+prefix_rule(pattern=["sleep"], decision="allow")
+
+# Local Variables:
+# mode: conf-toml
+# End:

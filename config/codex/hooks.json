@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/afplay -v 15 /System/Library/Sounds/Hero.aiff >/dev/null 2>&1",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/afplay -v 15 /System/Library/Sounds/Blow.aiff >/dev/null 2>&1",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/afplay -v 15 /System/Library/Sounds/Blow.aiff >/dev/null 2>&1",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

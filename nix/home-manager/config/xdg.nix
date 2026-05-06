@@ -30,6 +30,8 @@
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/rules/10-shared.rules";
     ".codex/config.toml".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/config.toml";
+    ".codex/hooks.json".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/hooks.json";
     ".codex/themes".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/themes";
 

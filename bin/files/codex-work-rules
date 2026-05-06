@@ -86,6 +86,20 @@ verify_round_trip() {
   rm -f "$tmp_decrypted"
 }
 
+rules_already_synced() {
+  local tmp_decrypted
+  tmp_decrypted="$(mktemp)"
+  decrypt_rules > "$tmp_decrypted"
+
+  if cmp -s "$live_path" "$tmp_decrypted"; then
+    rm -f "$tmp_decrypted"
+    return 0
+  fi
+
+  rm -f "$tmp_decrypted"
+  return 1
+}
+
 sync_rules() {
   require_tools
 
@@ -95,6 +109,11 @@ sync_rules() {
   fi
 
   if [[ -f "$sops_file" ]]; then
+    if rules_already_synced; then
+      echo "codex-work-rules: $sops_file already matches $live_path"
+      return
+    fi
+
     local json_value
     json_value="$("$jq_bin" -Rs . < "$live_path")"
     SOPS_AGE_KEY_FILE="$key_file" "$sops_bin" set "$sops_file" '["codex_work_local_rules"]' "$json_value" >/dev/null

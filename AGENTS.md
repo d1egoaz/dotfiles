@@ -102,6 +102,45 @@ The `mkOutOfStoreSymlink` function is key: it creates symlinks that point to the
 
 Scripts in `bin/files/` are symlinked to `~/.local/bin/` via `home.file` entries in `xdg.nix`. AWS helper functions (awsprofile, aws-sso-automator) are sourced directly by shell configs rather than symlinked.
 
+### Codex Config And Hooks
+
+Codex config lives in `config/codex/config.toml`. Codex hooks live in `config/codex/hooks.json`. Home Manager links them to `~/.codex/config.toml` and `~/.codex/hooks.json` from `nix/home-manager/config/xdg.nix` using `mkOutOfStoreSymlink`.
+
+Keep Codex hooks in `config/codex/hooks.json`, not inline in `config.toml`. Codex loads both forms if both exist in the same layer and warns, so use one representation per layer. Keep `[features].codex_hooks = true` in `config.toml`.
+
+Use documented Codex hook events only:
+- `Stop`: runs when a turn stops. `matcher` is ignored. Commands should exit `0` with no output or emit valid JSON. Redirect sound commands with `>/dev/null 2>&1`.
+- `PermissionRequest`: runs before Codex asks for approval. `matcher` filters the tool name such as `Bash`, `apply_patch`, or an MCP tool.
+- `UserPromptSubmit`: runs before a user prompt is submitted. `matcher` is ignored.
+- `SessionStart`: runs on session start. `matcher` filters `startup`, `resume`, or `clear`.
+
+Do not add a `Notification` hook to `hooks.json`; Codex does not document that as a hook event. Use the top-level `notify = [...]` setting in `config.toml` for Codex notification payloads, and keep `bin/files/codex-notify.sh` for filtered `agent-turn-complete` sounds. Do not add Desktop log-watcher or launchd sound hacks unless the user explicitly asks for that workaround.
+
+Validate Codex config changes with:
+
+```fish
+jq . config/codex/hooks.json >/dev/null
+taplo check config/codex/config.toml
+codex debug prompt-input hooks-json-smoke
+```
+
+If `codex debug prompt-input hooks-json-smoke` fails because the sandbox cannot read `~/.codex/sessions`, rerun the same command with escalated permissions.
+
+To test sounds directly:
+
+```fish
+/bin/sh -c '$HOME/dotfiles/bin/files/codex-notify.sh "$1"' codex-notify '{"type":"agent-turn-complete"}'
+/usr/bin/afplay -v 15 /System/Library/Sounds/Hero.aiff >/dev/null 2>&1
+```
+
+To verify the `Stop` hook dispatches through Codex, run:
+
+```fish
+codex exec --ephemeral -C /Users/diego.alvarez/dotfiles -s read-only "Reply with: ok"
+```
+
+Successful `Stop` hook dispatch prints `hook: Stop` and `hook: Stop Completed`.
+
 ## Adding New Functionality
 
 ### Adding Packages
