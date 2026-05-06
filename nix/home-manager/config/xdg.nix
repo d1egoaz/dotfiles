@@ -152,15 +152,17 @@
     mkdir -p "$HOME/.local/share/npm-global/bin"
   '';
 
-  # Restore private Codex work-local rules from SOPS on new machines.
+  # Restore private Codex work-local rules from SOPS on office machines only.
   # Day-to-day edits happen in ~/.codex/rules/90-work-local.rules; just switch
   # syncs that live file back into the encrypted repo copy before activation.
-  home.activation.codexWorkLocalRules = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    RULES_HELPER="$HOME/dotfiles/bin/files/codex-work-rules"
-    if [ -x "$RULES_HELPER" ]; then
-      "$RULES_HELPER" restore-if-missing
-    fi
-  '';
+  home.activation.codexWorkLocalRules = lib.mkIf (profile == "office") (
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      RULES_HELPER="$HOME/dotfiles/bin/files/codex-work-rules"
+      if [ -x "$RULES_HELPER" ]; then
+        "$RULES_HELPER" restore-if-missing
+      fi
+    ''
+  );
 
   # Hard link mouseless config into its macOS sandbox container.
   # Hard links work across sandbox boundaries (same filesystem/inode).

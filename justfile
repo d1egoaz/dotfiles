@@ -66,7 +66,7 @@ lint: check
 
 # Sync live Codex work-local rules into the encrypted SOPS file
 codex-rules-sync:
-    ./bin/files/codex-work-rules sync
+    @if [ "{{ _host }}" = "office-mbp" ]; then ./bin/files/codex-work-rules sync; else echo "codex-rules-sync: skipped for {{ _host }}; work-local rules are office-only"; fi
 
 # ============================================================================
 # macOS (nix-darwin) Systems
@@ -78,7 +78,7 @@ _host := if `whoami` == "diego" { "personal-mbp" } else if `whoami` == "diegoalv
 
 [private]
 _codex-rules-pre-switch:
-    ./bin/files/codex-work-rules pre-switch
+    @if [ "{{ _host }}" = "office-mbp" ]; then ./bin/files/codex-work-rules pre-switch; fi
 
 # Install nix-darwin (run this first on macOS)
 install-darwin:
