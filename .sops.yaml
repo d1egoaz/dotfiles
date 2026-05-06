@@ -1,0 +1,8 @@
+keys:
+  - &diego_personal age1edz2vhj80vmuqd005z9lr53h4as60l5l9z8839s4wpn9e73wayfsw0msrk
+
+creation_rules:
+  - path_regex: ^secrets/.*\.yaml$
+    key_groups:
+      - age:
+          - *diego_personal

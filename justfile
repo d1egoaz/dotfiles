@@ -64,6 +64,10 @@ check: fmt
 # Quick format and check
 lint: check
 
+# Sync live Codex work-local rules into the encrypted SOPS file
+codex-rules-sync:
+    ./bin/files/codex-work-rules sync
+
 # ============================================================================
 # macOS (nix-darwin) Systems
 # ============================================================================
@@ -72,6 +76,10 @@ lint: check
 [private]
 _host := if `whoami` == "diego" { "personal-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else if `whoami` == "diego.alvarez" { "office-mbp" } else { error("Unknown user: run `whoami` and add to justfile") }
 
+[private]
+_codex-rules-pre-switch:
+    ./bin/files/codex-work-rules pre-switch
+
 # Install nix-darwin (run this first on macOS)
 install-darwin:
     @echo "🚀 Installing nix-darwin..."
@@ -79,7 +87,7 @@ install-darwin:
     sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#{{ _host }}
 
 # Auto-detect current machine and rebuild (main command)
-switch:
+switch: _codex-rules-pre-switch
     nh darwin switch ./nix#darwinConfigurations.{{ _host }} -- --impure
 
 # Quick dry run for the current host

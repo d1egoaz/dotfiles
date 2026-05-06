@@ -3,8 +3,10 @@
 tap "nikitabobko/tap" # Tap for AeroSpace window manager
 tap "d12frosted/emacs-plus" # Tap for Emacs with macOS enhancements
 
+brew "age" # File encryption tool used by SOPS
 brew "libvterm" # Terminal emulator library for Emacs vterm
 brew "pi-coding-agent"
+brew "sops" # Encrypted secrets editor for dotfiles
 cask "1password" # Password manager
 cask "1password-cli"
 cask "aerospace" # Window manager

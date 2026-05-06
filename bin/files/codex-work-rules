@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/../.." && pwd)"
+
+live_path="${CODEX_WORK_RULES_LIVE_PATH:-$HOME/.codex/rules/90-work-local.rules}"
+sops_file="${CODEX_WORK_RULES_SOPS_FILE:-$repo_root/secrets/codex.yaml}"
+key_file="${SOPS_AGE_KEY_FILE:-$HOME/Library/Application Support/sops/age/keys.txt}"
+
+find_bin() {
+  local override="$1"
+  local name="$2"
+
+  if [[ -n "$override" ]]; then
+    printf '%s\n' "$override"
+    return
+  fi
+
+  if command -v "$name" >/dev/null 2>&1; then
+    command -v "$name"
+    return
+  fi
+
+  for path in "/opt/homebrew/bin/$name" "/usr/local/bin/$name" "$HOME/.nix-profile/bin/$name" "/etc/profiles/per-user/$(id -un)/bin/$name"; do
+    if [[ -x "$path" ]]; then
+      printf '%s\n' "$path"
+      return
+    fi
+  done
+
+  return 1
+}
+
+require_bin() {
+  local bin="$1"
+  local name="$2"
+
+  if [[ -z "$bin" || ! -x "$bin" ]]; then
+    echo "codex-work-rules: $name is not available. Install it and re-run." >&2
+    exit 1
+  fi
+}
+
+sops_bin="$(find_bin "${SOPS_BIN:-}" sops || true)"
+jq_bin="$(find_bin "${JQ_BIN:-}" jq || true)"
+yq_bin="$(find_bin "${YQ_BIN:-}" yq || true)"
+
+require_tools() {
+  require_bin "$sops_bin" sops
+  require_bin "$jq_bin" jq
+  require_bin "$yq_bin" yq
+
+  if [[ ! -f "$key_file" ]]; then
+    echo "codex-work-rules: age key is missing: $key_file" >&2
+    echo "codex-work-rules: restore it from 1Password before switching." >&2
+    exit 1
+  fi
+}
+
+decrypt_rules() {
+  SOPS_AGE_KEY_FILE="$key_file" "$sops_bin" --decrypt --extract '["codex_work_local_rules"]' "$sops_file"
+}
+
+create_secret_file() {
+  local tmp_plain
+  tmp_plain="$(mktemp)"
+  "$jq_bin" -n --rawfile rules "$live_path" '{codex_work_local_rules: $rules}' > "$tmp_plain"
+  mkdir -p "$(dirname "$sops_file")"
+  SOPS_AGE_KEY_FILE="$key_file" "$sops_bin" --encrypt --input-type json --output-type yaml --filename-override "$sops_file" "$tmp_plain" > "$sops_file"
+  rm -f "$tmp_plain"
+}
+
+verify_round_trip() {
+  local tmp_decrypted
+  tmp_decrypted="$(mktemp)"
+  decrypt_rules > "$tmp_decrypted"
+
+  if ! diff -u "$live_path" "$tmp_decrypted" >/dev/null; then
+    echo "codex-work-rules: decrypted SOPS value does not match $live_path" >&2
+    diff -u "$live_path" "$tmp_decrypted" >&2 || true
+    rm -f "$tmp_decrypted"
+    exit 1
+  fi
+
+  rm -f "$tmp_decrypted"
+}
+
+sync_rules() {
+  require_tools
+
+  if [[ ! -f "$live_path" ]]; then
+    echo "codex-work-rules: live rules file is missing: $live_path" >&2
+    exit 1
+  fi
+
+  if [[ -f "$sops_file" ]]; then
+    local json_value
+    json_value="$("$jq_bin" -Rs . < "$live_path")"
+    SOPS_AGE_KEY_FILE="$key_file" "$sops_bin" set "$sops_file" '["codex_work_local_rules"]' "$json_value" >/dev/null
+  else
+    create_secret_file
+  fi
+
+  verify_round_trip
+  echo "codex-work-rules: synced $live_path to $sops_file"
+}
+
+restore_if_missing() {
+  if [[ -f "$live_path" ]]; then
+    exit 0
+  fi
+
+  require_tools
+
+  if [[ ! -f "$sops_file" ]]; then
+    echo "codex-work-rules: SOPS file is missing: $sops_file" >&2
+    exit 1
+  fi
+
+  local tmp_live
+  tmp_live="$(mktemp)"
+  decrypt_rules > "$tmp_live"
+  mkdir -p "$(dirname "$live_path")"
+  install -m 0600 "$tmp_live" "$live_path"
+  rm -f "$tmp_live"
+  echo "codex-work-rules: restored $live_path from $sops_file"
+}
+
+pre_switch() {
+  if [[ -f "$live_path" ]]; then
+    sync_rules
+  else
+    restore_if_missing
+  fi
+}
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: codex-work-rules sync|restore-if-missing|pre-switch
+EOF
+}
+
+case "${1:-}" in
+  sync)
+    sync_rules
+    ;;
+  restore-if-missing)
+    restore_if_missing
+    ;;
+  pre-switch)
+    pre_switch
+    ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac
