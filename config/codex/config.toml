@@ -1,56 +1,114 @@
-file_opener = "cursor"
-model = "gpt-5.4"
-model_reasoning_effort = "medium"
-model_verbosity = "medium"
-notify = ["/bin/sh", "-c", "$HOME/dotfiles/bin/files/codex-notify.sh \"$1\"", "codex-notify"]
-personality = "pragmatic"
-approval_policy = "untrusted"
+# Shared cross-laptop defaults, safe to sync between personal and work laptops.
 allow_login_shell = false
-model_context_window = 1050000
+# Ask only when Codex needs to leave the sandbox or run a risky command.
+approval_policy = "on-request"
+file_opener = "cursor"
+model = "gpt-5.5"
 model_auto_compact_token_limit = 800000
-
-# sandbox_mode = "read-only"
+model_context_window = 1050000
+model_reasoning_effort = "xhigh"
+model_verbosity = "medium"
+# Notification sounds are handled by this helper; hook sounds live in hooks.json.
+notify = [
+    "/bin/sh",
+    "-c",
+    '$HOME/dotfiles/bin/files/codex-notify.sh "$1"',
+    "codex-notify",
+]
+personality = "pragmatic"
+plan_mode_reasoning_effort = "xhigh"
+# Keep file writes scoped to trusted workspaces unless a command is escalated.
 sandbox_mode = "workspace-write"
+service_tier = "fast"
 suppress_unstable_features_warning = true
+theme = "tokyo-night"
 web_search = "cached"
 
-# You can also add custom .tmTheme files under $CODEX_HOME/themes.
-theme = "tokyo-night"
-plan_mode_reasoning_effort = "xhigh"
-service_tier = "fast"
-
-[agents]
-max_threads = 10
-max_depth = 1
-
+# Feature flags that apply before per-project trust rules.
 [features]
+# Required for config/codex/hooks.json.
+codex_hooks = true
+memories = true
 multi_agent = true
 prevent_idle_sleep = true
 responses_websockets = false
 responses_websockets_v2 = false
 voice_transcription = true
+goals = true
 
+# Agent limits for multi-agent work.
+[agents]
+max_depth = 1
+max_threads = 10
+
+# Keep enough local history for long debugging sessions.
+[history]
+max_bytes = 1073741824
+persistence = "save-all"
+
+# Workspace-write sandbox defaults.
 [sandbox_workspace_write]
-exclude_slash_tmp = false      # Allow /tmp
-exclude_tmpdir_env_var = false # Allow $TMPDIR
+exclude_slash_tmp = false
+exclude_tmpdir_env_var = false
+# Keep network off by default; escalate per command when needed.
 network_access = false
 
-[history]
-persistence = "save-all"
-max_bytes = 1073741824 # 1 GiB history cap
-
+# Shared TUI preferences.
 [tui]
 animations = true
 notification_method = "bel"
-status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-window-size", "used-tokens", "context-remaining", "context-used", "project-root"]
+# These payloads go through notify above, not hooks.json.
 notifications = ["agent-turn-complete"]
+status_line = [
+    "model-with-reasoning",
+    "current-dir",
+    "git-branch",
+    "context-window-size",
+    "used-tokens",
+    "context-remaining",
+    "context-used",
+    "project-root",
+]
 theme = "tokyo-night"
+
+# Shared plugin enablement.
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."github@claude-plugins-official"]
+enabled = true
 
 [plugins."github@openai-curated"]
 enabled = true
+terminal_title = [
+    "spinner",
+    "project",
+    "app-name",
+    "status",
+    "thread",
+    "model",
+    "task-progress",
+]
 
-terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
 
+[plugins."slack@claude-plugins-official"]
+enabled = true
+
+[plugins."slack@openai-curated"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+# Account and work service endpoints.
 [mcp_servers.datadog-mcp]
 enabled = false
 url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
@@ -64,5 +122,3 @@ url = "https://mcp.notion.com/mcp"
 [mcp_servers.slack]
 url = "https://mcp.slack.com/mcp"
 
-[plugins."slack@openai-curated"]
-enabled = true
