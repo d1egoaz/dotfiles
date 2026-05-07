@@ -70,6 +70,10 @@ status_line = [
     "project-root",
 ]
 theme = "tokyo-night"
+terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1
 
 # Shared plugin enablement.
 [plugins."browser-use@openai-bundled"]
@@ -86,15 +90,6 @@ enabled = true
 
 [plugins."github@openai-curated"]
 enabled = true
-terminal_title = [
-    "spinner",
-    "project",
-    "app-name",
-    "status",
-    "thread",
-    "model",
-    "task-progress",
-]
 
 [plugins."presentations@openai-primary-runtime"]
 enabled = true
