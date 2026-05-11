@@ -1,0 +1,7 @@
+interface:
+  display_name: "Multi-Agent Routing"
+  short_description: "Route subagents and models by task risk"
+  default_prompt: "Use $multi-agent-routing to decompose this task and route subagents by risk and model cost."
+
+policy:
+  allow_implicit_invocation: true

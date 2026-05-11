@@ -1,0 +1,7 @@
+interface:
+  display_name: "Signed PR Publish"
+  short_description: "Commit, push, and open draft PRs"
+  default_prompt: "Use $signed-pr-publish to commit signed changes and publish a draft PR."
+
+policy:
+  allow_implicit_invocation: true

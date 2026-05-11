@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.3.1 | Updated: 2026-04-06 -->
+<!-- Version: 1.3.5 | Updated: 2026-05-07 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -9,6 +9,7 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 
 ## Environment
 - **Shell**: fish (all commands must work in fish)
+- Do not wrap every command in `fish -lc`. Run shell-neutral commands directly; use `fish -lc` only when the command relies on fish syntax or needs to be shown exactly as fish.
 - **Platform**: macOS (BSD coreutils, not GNU)
 
 ## Core Rules
@@ -31,6 +32,19 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - Keep shared approvals in a tracked rules file (for example `~/.codex/rules/10-shared.rules` via dotfiles).
 - Keep work-only approvals in local-only rules files (for example `~/.codex/rules/90-work-local.rules`).
 - For multi-repo work, run git commands in each repo's working directory (`cwd`) and avoid `git -C` unless explicitly requested by the user.
+
+## Multi-Agent Model Routing
+Treat `Multi-Agent Routing`, `multi agent routing`, `subagent`, `delegate`, `parallel agents`, or `$multi-agent-routing` as an explicit request to load and follow the `multi-agent-routing` skill. The lead agent still owns scope, high-risk decisions, live mutations, and final synthesis.
+
+## Skill Routing
+Use focused skills for long procedural workflows instead of keeping every runbook in this always-loaded file:
+- `$multi-agent-routing`: subagent decomposition, model/reasoning routing, sidecar scouts, and verifier/auditor use.
+- `$command-discipline`: shell command shape, fish compatibility, escalation, destructive-command safety, bulk refactors, and JSON/YAML validation commands.
+- `$repo-research`: exact-artifact inspection, code-path tracing, repo search, evidence gathering, and root-cause investigation.
+- `$git-worktree-flow`: new branches, worktrees, multi-repo work, keeping primary checkouts on `main`, and stale checkout repair.
+- `$signed-pr-publish`: signed commits, `Assisted-by` attribution, draft PRs, PR body quality, and publish/ready workflows.
+- `$chime-pr-followup`: Chime `chime-tf`, `chime-cd`, `tf-sync`, generated artifacts, CI bot commits, TFE plan review, and Codex reviewer false-positive handling.
+- `$codex-config-maintenance`: Codex config, hooks, approval rules, skills, AGENTS/CLAUDE wiring, and dotfiles-managed AI instructions.
 
 ## Command Transparency
 Default to concise command updates.
@@ -77,86 +91,10 @@ Default to concise command updates.
 - Read full context before proposing solutions - partial reads lead to partial fixes.
 
 ## Git Workflow
-Reserve main directory for main branch. Use worktrees for features:
-```
-<repo>-worktrees/<feature-name>
-```
+Reserve the primary repo checkout for `main` and use worktrees for feature work. Load `$git-worktree-flow` for branch creation, multi-repo work, or stale checkout repair.
 
-**Always fetch and branch from origin/main**:
-```fish
-git fetch origin main
-git worktree add ../(basename $PWD)-worktrees/feature-branch -b feature-branch origin/main
-```
-
-## Search Reference
-
-```fish
-# ripgrep with context
-rg -n -C2 --hidden --glob '!.git/*' 'pattern'
-
-# literal search (fixed string)
-rg -n -F 'exact string'
-
-# by filetype
-rg -n -t go 'pattern'
-
-# filenames only
-rg -l 'TODO:'
-```
-
-## Find & Execute
-
-```fish
-# fd for files
-fd '.env' . -H -E node_modules -d 3
-fd -e go -H -E vendor
-
-# execute per file
-fd -e yaml -H -E .git -x yq -i '.spec.replicas=2' {}
-
-# null-safe piping
-fd -e json -0 | xargs -0 -I{} echo "File: {}"
-```
-
-## Preview Tools
-
-```fish
-# syntax highlighting
-bat -n --paging=never file.go
-
-# JSON
-jq -r '.version' package.json
-
-# YAML
-yq '.kind, .metadata.name' deployment.yaml
-```
-
-## Bulk Refactors
-Always: verify scope - backup - replace - review - cleanup
-
-```fish
-# 1. verify scope
-rg -n 'find_this' --hidden --glob '!.git/*'
-
-# 2. replace with backups (BSD sed: -i requires extension without space)
-rg -l 'find_this' | xargs sed -i.bak 's/find_this/replace_that/g'
-
-# 3. review
-git diff -- . ':!*.bak'
-
-# 4. cleanup
-fd -e bak -0 | xargs -0 rm
-```
-
-## Validation
-
-```fish
-# JSON
-fd -e json -0 | xargs -0 -I{} sh -c 'jq . "{}" >/dev/null'
-
-# YAML
-fd -e yaml -e yml -0 | xargs -0 -I{} sh -c 'yq "." "{}" >/dev/null'
-```
+## Research And Commands
+Load `$repo-research` for search, tracing, comparison, root-cause work, or evidence gathering. Load `$command-discipline` for command shape, command transparency, shell validation, destructive-command checks, and bulk refactors.
 
 ## Attribution
 AI commits/PRs must include footer:
@@ -164,13 +102,16 @@ AI commits/PRs must include footer:
 Assisted-by: [Model] via [Tool]
 ```
 Example: `Assisted-by: Opus 4.5 via Claude Code`
-- Before pushing a branch, verify attribution is present in the last commit: `git log -1 --pretty=%B | rg -n "^Assisted-by: .+ via .+$"`.
-- Before marking a PR ready, verify attribution is present in the PR body: `gh pr view --json body --jq ".body" | rg -n "^Assisted-by: .+ via .+$"`.
-- If either verification command returns no match, stop and fix the commit message or PR body before proceeding.
+- Load `$signed-pr-publish` for commit, push, PR, attribution repair, or ready-for-review workflows.
+- Before pushing or marking ready, verify attribution is present in the commit and PR body.
 
 ## Pull Requests
 - Always open new PRs in draft mode.
 - When using GitHub CLI, include `--draft` in `gh pr create`.
+- PR bodies must explain the "why", not only the diff. Include the problem being solved, the chosen fix, validation performed, and any risk, rollback, or follow-up.
+- For generated artifacts, state which source file owns the change and whether generated output was reviewed or intentionally left to CI.
+- For incident or live production fixes, include the live evidence that proved the root cause and the command or check that validated the fix.
+- Use `$signed-pr-publish` for the full publish runbook.
 
 ## Commit Signing
 - Never bypass commit signing.

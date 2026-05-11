@@ -1,0 +1,7 @@
+interface:
+  display_name: "Chime PR Follow-Up"
+  short_description: "Handle Chime repo PR follow-ups safely"
+  default_prompt: "Use $chime-pr-followup to update Chime PR branches after CI or bot commits."
+
+policy:
+  allow_implicit_invocation: true

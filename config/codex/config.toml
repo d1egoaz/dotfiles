@@ -1,5 +1,6 @@
 # Shared cross-laptop defaults, safe to sync between personal and work laptops.
 allow_login_shell = false
+
 # Ask only when Codex needs to leave the sandbox or run a risky command.
 approval_policy = "on-request"
 file_opener = "cursor"

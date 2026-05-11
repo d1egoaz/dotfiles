@@ -1,0 +1,7 @@
+interface:
+  display_name: "Git Worktree Flow"
+  short_description: "Use worktrees for scoped feature work"
+  default_prompt: "Use $git-worktree-flow to create or repair scoped git worktrees."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Codex Config Maintenance"
+  short_description: "Maintain Codex config, hooks, and skills"
+  default_prompt: "Use $codex-config-maintenance to update Codex config, hooks, rules, or skills."
+
+policy:
+  allow_implicit_invocation: true

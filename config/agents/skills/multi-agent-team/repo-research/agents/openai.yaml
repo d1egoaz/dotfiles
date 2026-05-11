@@ -1,0 +1,7 @@
+interface:
+  display_name: "Repo Research"
+  short_description: "Find repo context before changing code"
+  default_prompt: "Use $repo-research to inspect the repository before planning changes."
+
+policy:
+  allow_implicit_invocation: true
