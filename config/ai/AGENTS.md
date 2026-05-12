@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.3.5 | Updated: 2026-05-07 -->
+<!-- Version: 1.3.6 | Updated: 2026-05-12 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -108,7 +108,11 @@ Example: `Assisted-by: Opus 4.5 via Claude Code`
 ## Pull Requests
 - Always open new PRs in draft mode.
 - When using GitHub CLI, include `--draft` in `gh pr create`.
-- PR bodies must explain the "why", not only the diff. Include the problem being solved, the chosen fix, validation performed, and any risk, rollback, or follow-up.
+- PR bodies must be concise and reviewer-useful, not a work log. Prefer short sections and bullets over long prose.
+- PR bodies must explain the "why", not only the diff: problem, chosen fix, validation, and real risk or rollback.
+- Omit routine local ceremony such as fresh worktree creation, normal branch mechanics, and attribution/signature checks unless the reviewer needs it to understand risk.
+- Do not include completed intermediate steps as future run-order items. State the current state and only the remaining gates.
+- Include follow-up or rollback only when there is an actual unresolved follow-up or meaningful rollback decision; avoid template filler.
 - For generated artifacts, state which source file owns the change and whether generated output was reviewed or intentionally left to CI.
 - For incident or live production fixes, include the live evidence that proved the root cause and the command or check that validated the fix.
 - Use `$signed-pr-publish` for the full publish runbook.
