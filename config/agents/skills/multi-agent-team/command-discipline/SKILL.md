@@ -1,6 +1,6 @@
 ---
 name: command-discipline
-description: Run safe, transparent, fish-compatible shell workflows. Use when the user asks to run commands, shell commands, fish, copy-paste-ready commands, command transparency, escalation, destructive-command safety, bulk refactors, shell rewrites with `sed`, JSON/YAML validation commands, or asks why commands are wrapped in `fish -lc`.
+description: Run safe, transparent, shell-neutral workflows. Use when the user asks to run commands, shell commands, zsh, bash, copy-paste-ready commands, command transparency, escalation, destructive-command safety, bulk refactors, shell rewrites with `sed`, JSON/YAML validation commands, or asks why commands are wrapped in an explicit shell.
 ---
 
 # Command Discipline
@@ -11,7 +11,7 @@ Use this skill for command shape, command transparency, approval boundaries, and
 
 ## Command Rules
 
-- Run shell-neutral commands directly. Use `fish -lc` only when the command relies on fish syntax or must be shown exactly as fish.
+- Run shell-neutral commands directly. Use an explicit shell such as `zsh -lc` or `bash -lc` only when the command relies on that shell's syntax or must be shown exactly for that shell.
 - Every user-facing command must be copy-paste ready as a single command line. Do not break commands across lines.
 - Prefer CLI over GUI. Use GUI only when the task truly requires it.
 - For multi-repo work, run commands in each repo's working directory. Avoid `git -C` unless the user explicitly requests it.
@@ -36,9 +36,9 @@ Use this sequence for broad text changes:
 4. Review the diff.
 5. Clean up backup files only after review.
 
-Useful fish-compatible examples:
+Useful shell-neutral examples:
 
-```fish
+```bash
 rg -n 'find_this' --hidden --glob '!.git/*'
 rg -l 'find_this' | xargs sed -i.bak 's/find_this/replace_that/g'
 git diff -- . ':!*.bak'
@@ -49,7 +49,7 @@ fd -e bak -0 | xargs -0 rm
 
 Use structured validators when the format has one:
 
-```fish
+```bash
 fd -e json -0 | xargs -0 -I{} sh -c 'jq . "{}" >/dev/null'
 fd -e yaml -e yml -0 | xargs -0 -I{} sh -c 'yq "." "{}" >/dev/null'
 ```

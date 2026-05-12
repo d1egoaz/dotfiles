@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.3.6 | Updated: 2026-05-12 -->
+<!-- Version: 1.3.7 | Updated: 2026-05-12 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -8,8 +8,8 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - `AGENTS.local.md` overrides `AGENTS.md` (like `CLAUDE.local.md` overrides `CLAUDE.md`)
 
 ## Environment
-- **Shell**: fish (all commands must work in fish)
-- Do not wrap every command in `fish -lc`. Run shell-neutral commands directly; use `fish -lc` only when the command relies on fish syntax or needs to be shown exactly as fish.
+- **Shell**: zsh for interactive sessions; agent-executed commands should stay shell-neutral unless shell-specific syntax is required.
+- Do not wrap every command in an explicit shell such as `zsh -lc` or `bash -lc`. Run shell-neutral commands directly; use an explicit shell only when the command relies on that shell's syntax.
 - **Platform**: macOS (BSD coreutils, not GNU)
 
 ## Core Rules
@@ -39,7 +39,7 @@ Treat `Multi-Agent Routing`, `multi agent routing`, `subagent`, `delegate`, `par
 ## Skill Routing
 Use focused skills for long procedural workflows instead of keeping every runbook in this always-loaded file:
 - `$multi-agent-routing`: subagent decomposition, model/reasoning routing, sidecar scouts, and verifier/auditor use.
-- `$command-discipline`: shell command shape, fish compatibility, escalation, destructive-command safety, bulk refactors, and JSON/YAML validation commands.
+- `$command-discipline`: shell command shape, shell compatibility, escalation, destructive-command safety, bulk refactors, and JSON/YAML validation commands.
 - `$repo-research`: exact-artifact inspection, code-path tracing, repo search, evidence gathering, and root-cause investigation.
 - `$git-worktree-flow`: new branches, worktrees, multi-repo work, keeping primary checkouts on `main`, and stale checkout repair.
 - `$signed-pr-publish`: signed commits, `Assisted-by` attribution, draft PRs, PR body quality, and publish/ready workflows.
@@ -140,6 +140,6 @@ Breaking changes: append `!` after type or add `BREAKING CHANGE:` footer.
 
 ## GitHub CLI Note
 `gh pr edit --body` is deprecated. Use:
-```fish
+```bash
 gh api repos/OWNER/REPO/pulls/NUMBER -X PATCH -f body="..."
 ```
