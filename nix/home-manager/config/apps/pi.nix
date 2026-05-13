@@ -14,6 +14,9 @@ let
   };
 in
 {
+  home.file.".pi/agent/keybindings.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/pi/keybindings.json";
+
   # Keep mutable Pi state owned by Pi itself, but make the global default use
   # ChatGPT subscription auth once the user has logged in via /login.
   home.activation.piSettings = config.lib.dag.entryAfter [ "writeBoundary" ] ''
