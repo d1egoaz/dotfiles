@@ -21,8 +21,6 @@
       b = "command bat";
       man = "command batman";
       # 1Password secret aliases (--account ensures correct vault regardless of active session)
-      op-llm = "op-env-cache get alfred-llm-rewrite-${profile} ALFRED_LLM_API_KEY --auto-refresh --sops-file \"$HOME/dotfiles/secrets/codex.yaml\"";
-      op-openai = "op-llm";
       op-cursor = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Cursor api key/API_KEY'";
     }
     // (
