@@ -106,7 +106,7 @@ in
     # API key refs live in secrets/codex.yaml under op_env_cache_specs.
     llm = {
       provider = "Cerebras";
-      model = "qwen-3-235b-a22b-instruct-2507";
+      model = "zai-glm-4.7";
       base_url = "https://api.cerebras.ai/v1";
     };
   };
