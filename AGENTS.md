@@ -334,7 +334,7 @@ op_env_cache_specs:
       ALFRED_LLM_API_KEY: <encrypted op:// ref>
 ```
 
-Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/codex.yaml"` to prewarm a cache, `op-env-cache get <name> <ENV_KEY> --auto-refresh --sops-file "$HOME/dotfiles/secrets/codex.yaml"` inside wrappers, and `op-env-cache logout <name>` to remove a plaintext cache file.
+Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/codex.yaml"` to prewarm a cache, `op-env-cache get <name> <ENV_KEY> --auto-refresh --sops-file "$HOME/dotfiles/secrets/codex.yaml"` inside wrappers, and `op-env-cache logout <name>` to remove the plaintext cache directory.
 
 ## Important Concepts
 
