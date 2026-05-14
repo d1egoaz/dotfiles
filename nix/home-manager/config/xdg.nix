@@ -100,6 +100,7 @@
         "kn"
         "kstern"
         "ktmux"
+        "op-env-cache"
         "pr-approve.sh"
       ];
     in

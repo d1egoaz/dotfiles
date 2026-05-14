@@ -222,7 +222,6 @@ Machine-specific settings live in `nix/profiles/machines.nix`. This file is comm
 | `llm.provider` | LLM provider name | `OpenAI` |
 | `llm.model` | Model identifier | `gpt-5-mini` |
 | `llm.base_url` | API endpoint | `https://api.openai.com/v1` |
-| `llm.key_item` | 1Password item name for API key | `OpenAI API` |
 
 ### Editing machines.nix
 
@@ -246,14 +245,14 @@ personal = {
 
 ## Secrets Management
 
-Actual secrets (API keys, tokens) are stored in 1Password and accessed on-demand via `op read`.
+Actual secrets (API keys, tokens) are stored in 1Password. Public dotfiles should not contain concrete `op://` refs for runtime workflow secrets; keep those refs encrypted in `secrets/codex.yaml`.
 
 ### Vault Layout
 
 | Profile  | Vault      | Items                                    |
 |----------|------------|------------------------------------------|
-| office   | Employee   | `OpenAI API`, `Homebrew GitHub Token`    |
-| personal | Private    | `OpenAI API`                             |
+| office   | Employee   | Runtime workflow items, `Homebrew GitHub Token` |
+| personal | Private    | Runtime workflow items                         |
 
 ### Shell Aliases
 
@@ -261,11 +260,13 @@ Aliases are profile-aware (account + vault are selected at build time via `--acc
 
 ```bash
 # Office profile expands to:
-op-openai     # op read --account <op_account> "op://<op_vault>/OpenAI API/credential"
+op-llm        # resolves the encrypted SOPS-backed Alfred LLM cache spec
+op-openai     # compatibility alias for op-llm
 op-homebrew   # op read --account <op_account> "op://<op_vault>/Homebrew GitHub Token/credential"
 
 # Personal profile expands to:
-op-openai     # op read --account my.1password.com "op://Private/OpenAI API/credential"
+op-llm        # resolves the encrypted SOPS-backed Alfred LLM cache spec
+op-openai     # compatibility alias for op-llm
 ```
 
 The `--account` flag ensures the correct 1Password account is targeted regardless of which session is currently active.
@@ -285,17 +286,12 @@ op whoami
 
 ### Creating 1Password Items (First-Time Setup / Key Rotation)
 
-If the items don't exist yet in 1Password, create them:
+Use the encrypted `op_env_cache_specs` entries in `secrets/codex.yaml` as the source of truth for workflow secret item and field names. Do not duplicate those concrete `op://` refs in public docs or Nix modules.
+
+For non-hidden shared items, create them directly:
 
 ```bash
 # Replace <op_account> and <op_vault> with values from machines.nix
-op item create \
-  --account <op_account> \
-  --vault <op_vault> \
-  --category "API Credential" \
-  --title "OpenAI API" \
-  'credential[password]=sk-YOUR-OPENAI-KEY-HERE'
-
 op item create \
   --account <op_account> \
   --vault <op_vault> \
@@ -307,23 +303,38 @@ op item create \
 To rotate an existing key:
 
 ```bash
-op item edit "OpenAI API" --account <op_account> --vault <op_vault> 'credential[password]=sk-NEW-KEY-HERE'
+op item edit "Homebrew GitHub Token" --account <op_account> --vault <op_vault> 'credential[password]=ghp_NEW-TOKEN-HERE'
 ```
 
 ### Usage
 
 ```fish
 # Use alias (account is baked in)
-set -l key (op-openai)
-
-# Use op directly (always specify --account from machines.nix)
-op read --account <op_account> "op://<op_vault>/OpenAI API/credential"
+set -l key (op-llm)
 
 # One-liner
-curl -H "Authorization: Bearer (op-openai)" https://api.openai.com/v1/models
+curl -H "Authorization: Bearer (op-llm)" https://api.openai.com/v1/models
 ```
 
-Alfred workflows fetch the OpenAI key directly via `op read` at runtime (no environment variables needed).
+Alfred workflows fetch the configured LLM key through `op-env-cache`, using encrypted refs in `secrets/codex.yaml`.
+
+### SOPS-Backed Runtime Cache
+
+Short-lived GUI or agent workflows that repeatedly need 1Password-backed environment variables should use `op-env-cache` instead of copying cache logic.
+Do not use it for high-sensitivity or long-lived credentials: cache values are plaintext on disk until the TTL expires or `op-env-cache logout <name>` removes them.
+
+Specs live in `secrets/codex.yaml`:
+
+```yaml
+op_env_cache_specs:
+  alfred-llm-rewrite-office:
+    account: <account-domain>
+    cache_ttl_seconds: 28800
+    env:
+      ALFRED_LLM_API_KEY: <encrypted op:// ref>
+```
+
+Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/codex.yaml"` to prewarm a cache, `op-env-cache get <name> <ENV_KEY> --auto-refresh --sops-file "$HOME/dotfiles/secrets/codex.yaml"` inside wrappers, and `op-env-cache logout <name>` to remove a plaintext cache file.
 
 ## Important Concepts
 

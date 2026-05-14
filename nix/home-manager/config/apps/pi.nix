@@ -14,6 +14,9 @@ let
   };
 in
 {
+  home.file.".pi/agent/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ai/AGENTS.md";
+
   home.file.".pi/agent/keybindings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/pi/keybindings.json";
 

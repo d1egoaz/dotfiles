@@ -65,12 +65,11 @@ in
     aws_region = "us-east-1"; # Default AWS region
 
     # LLM configuration (for Alfred workflows)
-    # key_item must exist in op_vault above
+    # API key refs live in secrets/codex.yaml under op_env_cache_specs.
     llm = {
       provider = "OpenAI";
       model = "gpt-5.4-nano";
       base_url = "https://api.openai.com/v1";
-      key_item = "OpenAI API";
     };
   };
 
@@ -104,12 +103,11 @@ in
     aws_region = ""; # Use AWS CLI default or profile-based
 
     # LLM configuration (for Alfred workflows)
-    # key_item must exist in op_vault above
+    # API key refs live in secrets/codex.yaml under op_env_cache_specs.
     llm = {
       provider = "Cerebras";
       model = "qwen-3-235b-a22b-instruct-2507";
       base_url = "https://api.cerebras.ai/v1";
-      key_item = "Cerebras API";
     };
   };
 }

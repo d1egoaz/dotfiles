@@ -1,0 +1,552 @@
+#!/usr/bin/env bash
+# Cache 1Password-resolved environment variables for short-lived subprocesses.
+# Values are stored as plaintext JSON with mode 0600 under the per-user cache
+# directory. Use `op-env-cache logout NAME` to remove a cache when done.
+# Caches expire after 8 hours by default. A named SOPS spec can override this
+# with cache_ttl_seconds, and --max-age can override both.
+
+set -euo pipefail
+
+PROGRAM="op-env-cache"
+DEFAULT_MAX_AGE_SECONDS=28800
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  op-env-cache refresh NAME [--account ACCOUNT] [--cache-file FILE] [--env-file FILE] [--env KEY=REF] [--sops-file FILE]
+  op-env-cache get NAME KEY [--account ACCOUNT] [--cache-file FILE] [--auto-refresh] [--env-file FILE] [--env KEY=REF] [--sops-file FILE]
+  op-env-cache run NAME [--account ACCOUNT] [--cache-file FILE] [--auto-refresh] [--env-file FILE] [--env KEY=REF] [--sops-file FILE] -- COMMAND [ARG...]
+  op-env-cache status NAME [--account ACCOUNT] [--cache-file FILE] [--env-file FILE] [--env KEY=REF] [--sops-file FILE]
+  op-env-cache path NAME [--cache-file FILE]
+  op-env-cache logout NAME [--cache-file FILE]
+
+Options:
+  --max-age SECONDS   Override cache expiry. Use 0 to disable expiry.
+  --sops-file FILE    Load account, env refs, and cache_ttl_seconds from FILE at ["op_env_cache_specs"][NAME].
+
+Examples:
+  op-env-cache refresh jira --env-file .env.op
+  op-env-cache run jira --env-file .env.op -- ./jira-fetch.sh search
+  op-env-cache get alfred-llm-rewrite OPENAI_API_KEY --auto-refresh --sops-file "$HOME/dotfiles/secrets/codex.yaml"
+  op-env-cache get example OPENAI_API_KEY --auto-refresh --env "OPENAI_API_KEY=op://Private/Example Item/credential"
+EOF
+}
+
+die() {
+  printf '%s: %s\n' "$PROGRAM" "$*" >&2
+  exit 1
+}
+
+need_command() {
+  command -v "$1" >/dev/null 2>&1 || die "'$1' is not available in PATH"
+}
+
+valid_name() {
+  case "$1" in
+    *[!A-Za-z0-9_.-]* | "") return 1 ;;
+  esac
+
+  case "$1" in
+    *[A-Za-z0-9_-]*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+valid_env_name() {
+  case "$1" in
+    "" | [0-9]* | *[!A-Za-z0-9_]*)
+      return 1
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+
+valid_non_negative_int() {
+  case "$1" in
+    "" | *[!0-9]*)
+      return 1
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+
+cache_base_dir() {
+  if [ -n "${OP_ENV_CACHE_DIR:-}" ]; then
+    printf '%s\n' "${OP_ENV_CACHE_DIR%/}"
+    return
+  fi
+
+  local base_dir="${XDG_RUNTIME_DIR:-}"
+  if [ -z "$base_dir" ]; then
+    base_dir="${TMPDIR:-/tmp}"
+  fi
+
+  printf '%s\n' "${base_dir%/}/op-env-cache"
+}
+
+cache_file_for() {
+  if [ -n "$cache_file_override" ]; then
+    printf '%s\n' "$cache_file_override"
+  else
+    printf '%s/%s.json\n' "$(cache_base_dir)" "$name"
+  fi
+}
+
+file_mode() {
+  local mode
+
+  if mode=$(/usr/bin/stat -f '%Lp' "$1" 2>/dev/null); then
+    printf '%s\n' "$mode"
+    return
+  fi
+
+  stat -c '%a' "$1"
+}
+
+trim() {
+  printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+spec_keys=()
+spec_values=()
+env_files=()
+auto_refresh=0
+account="${OP_ACCOUNT:-}"
+account_explicit=0
+max_age_seconds="${OP_ENV_CACHE_MAX_AGE_SECONDS:-$DEFAULT_MAX_AGE_SECONDS}"
+max_age_explicit=0
+cache_file_override=""
+remaining=()
+name=""
+sops_age_key_file="${SOPS_AGE_KEY_FILE:-$HOME/Library/Application Support/sops/age/keys.txt}"
+
+valid_non_negative_int "$max_age_seconds" || die "OP_ENV_CACHE_MAX_AGE_SECONDS must be a non-negative integer"
+
+add_spec() {
+  local key="$1"
+  local value="$2"
+
+  valid_env_name "$key" || die "invalid environment variable name: $key"
+  case "$value" in
+    op://*) ;;
+    *) die "$key must be a 1Password secret reference starting with op://" ;;
+  esac
+
+  local existing
+  if [ "${#spec_keys[@]}" -gt 0 ]; then
+    for existing in "${spec_keys[@]}"; do
+      [ "$existing" != "$key" ] || die "duplicate environment variable in cache spec: $key"
+    done
+  fi
+
+  spec_keys+=("$key")
+  spec_values+=("$value")
+}
+
+read_env_file_specs() {
+  local env_file="$1"
+  [ -r "$env_file" ] || die "env file is not readable: $env_file"
+
+  local line stripped key value
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%$'\r'}"
+    stripped=$(trim "$line")
+
+    case "$stripped" in
+      "" | \#*)
+        continue
+        ;;
+      export\ *)
+        stripped="${stripped#export }"
+        ;;
+    esac
+
+    case "$stripped" in
+      *=*)
+        key=$(trim "${stripped%%=*}")
+        value=$(trim "${stripped#*=}")
+        add_spec "$key" "$value"
+        ;;
+      *)
+        die "unsupported env-file line in $env_file: $line"
+        ;;
+    esac
+  done < "$env_file"
+}
+
+load_sops_spec() {
+  local sops_file="$1"
+  local extract_path spec_json spec_account spec_max_age
+
+  [ -r "$sops_file" ] || die "SOPS file is not readable: $sops_file"
+  need_command sops
+  need_command jq
+
+  extract_path="[\"op_env_cache_specs\"][\"$name\"]"
+
+  if [ -f "$sops_age_key_file" ]; then
+    spec_json=$(SOPS_AGE_KEY_FILE="$sops_age_key_file" sops --decrypt --output-type json --extract "$extract_path" "$sops_file") || die "failed to decrypt SOPS spec: $extract_path"
+  else
+    spec_json=$(sops --decrypt --output-type json --extract "$extract_path" "$sops_file") || die "failed to decrypt SOPS spec: $extract_path"
+  fi
+
+  spec_account=$(printf '%s\n' "$spec_json" | jq -r '.account // empty')
+  if [ -n "$spec_account" ] && [ "$account_explicit" -eq 0 ]; then
+    account="$spec_account"
+  fi
+
+  spec_max_age=$(printf '%s\n' "$spec_json" | jq -r '.cache_ttl_seconds // empty')
+  if [ -n "$spec_max_age" ]; then
+    valid_non_negative_int "$spec_max_age" || die "cache_ttl_seconds must be a non-negative integer in SOPS spec: $name"
+    if [ "$max_age_explicit" -eq 0 ]; then
+      max_age_seconds="$spec_max_age"
+    fi
+  fi
+
+  printf '%s\n' "$spec_json" | jq -e '.env | type == "object" and length > 0' >/dev/null \
+    || die "SOPS spec must define a non-empty env object: $name"
+
+  while IFS=$'\t' read -r key value; do
+    add_spec "$key" "$value"
+  done < <(printf '%s\n' "$spec_json" | jq -r '.env | to_entries[] | [.key, .value] | @tsv')
+}
+
+parse_spec_assignment() {
+  case "$1" in
+    *=*)
+      add_spec "${1%%=*}" "${1#*=}"
+      ;;
+    *)
+      die "--env expects KEY=VALUE"
+      ;;
+  esac
+}
+
+parse_options() {
+  remaining=()
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --account)
+        [ "$#" -ge 2 ] || die "--account requires a value"
+        account="$2"
+        account_explicit=1
+        shift 2
+        ;;
+      --cache-file)
+        [ "$#" -ge 2 ] || die "--cache-file requires a value"
+        # The cache file remains 0600; parent directory security is caller-owned
+        # when overriding the default per-user cache directory.
+        cache_file_override="$2"
+        shift 2
+        ;;
+      --env-file)
+        [ "$#" -ge 2 ] || die "--env-file requires a value"
+        env_files+=("$2")
+        read_env_file_specs "$2"
+        shift 2
+        ;;
+      --env)
+        [ "$#" -ge 2 ] || die "--env requires KEY=VALUE"
+        parse_spec_assignment "$2"
+        shift 2
+        ;;
+      --sops-file)
+        [ "$#" -ge 2 ] || die "--sops-file requires a value"
+        load_sops_spec "$2"
+        shift 2
+        ;;
+      --auto-refresh)
+        auto_refresh=1
+        shift
+        ;;
+      --max-age)
+        [ "$#" -ge 2 ] || die "--max-age requires a value"
+        valid_non_negative_int "$2" || die "--max-age must be a non-negative integer"
+        max_age_seconds="$2"
+        max_age_explicit=1
+        shift 2
+        ;;
+      --)
+        shift
+        remaining=("$@")
+        return
+        ;;
+      -*)
+        die "unknown option: $1"
+        ;;
+      *)
+        remaining+=("$1")
+        shift
+        ;;
+    esac
+  done
+}
+
+require_name() {
+  name="$1"
+  valid_name "$name" || die "invalid cache name: $name"
+}
+
+require_specs() {
+  [ "${#spec_keys[@]}" -gt 0 ] || die "no environment specs provided; use --env-file or --env"
+}
+
+refs_json() {
+  local jq_args=()
+  local index
+
+  for index in "${!spec_keys[@]}"; do
+    jq_args+=(--arg "${spec_keys[$index]}" "${spec_values[$index]}")
+  done
+
+  jq -n "${jq_args[@]}" '$ARGS.named'
+}
+
+write_cache() {
+  require_specs
+  need_command jq
+  need_command op
+
+  local cache_file cache_dir tmp_file refs created_at created_at_epoch key index
+  cache_file=$(cache_file_for)
+  cache_dir=$(dirname "$cache_file")
+  refs=$(refs_json)
+  created_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  created_at_epoch=$(date -u +"%s")
+
+  mkdir -p "$cache_dir" || die "failed to create cache directory: $cache_dir"
+  chmod 700 "$cache_dir" || die "failed to set cache directory permissions: $cache_dir"
+
+  for index in "${!spec_keys[@]}"; do
+    key="${spec_keys[$index]}"
+    export "$key=${spec_values[$index]}"
+  done
+
+  # BSD mktemp creates 0600 files; chmod below keeps this defensive on GNU paths.
+  tmp_file=$(mktemp "$cache_file.XXXXXX") || die "failed to create temp cache file: $cache_file"
+  cleanup_tmp() {
+    rm -f "$tmp_file"
+  }
+  # Keep the trap on failure so a partially written plaintext cache is removed.
+  trap cleanup_tmp EXIT
+
+  local op_args=(run --no-masking)
+  if [ -n "$account" ]; then
+    op_args+=(--account "$account")
+  fi
+
+  if [ "${#env_files[@]}" -gt 0 ]; then
+    for env_file in "${env_files[@]}"; do
+      op_args+=(--env-file "$env_file")
+    done
+  fi
+
+  # --no-masking is required because stdout is captured into the plaintext cache.
+  # shellcheck disable=SC2016
+  if ! op "${op_args[@]}" -- jq -n \
+    --arg name "$name" \
+    --arg account "$account" \
+    --arg created_at "$created_at" \
+    --argjson created_at_epoch "$created_at_epoch" \
+    --argjson refs "$refs" \
+    '{
+      schema: 1,
+      name: $name,
+      account: $account,
+      refs: $refs,
+      created_at: $created_at,
+      created_at_epoch: $created_at_epoch,
+      values: (
+        reduce ($refs | keys_unsorted[]) as $key
+          ({}; . + {($key): (env[$key] // "")})
+      )
+    }' > "$tmp_file"; then
+    die "failed to write cache with op run"
+  fi
+
+  chmod 600 "$tmp_file" || die "failed to set cache permissions: $tmp_file"
+  mv "$tmp_file" "$cache_file" || die "failed to install cache: $cache_file"
+  trap - EXIT
+
+  printf '%s: cached %s at %s\n' "$PROGRAM" "$name" "$cache_file"
+}
+
+cache_matches_specs() {
+  local cache_file refs now
+  cache_file=$(cache_file_for)
+  now=$(date -u +"%s")
+
+  [ -r "$cache_file" ] || return 1
+  [ "$(file_mode "$cache_file")" = "600" ] || return 1
+  need_command jq
+
+  if [ "${#spec_keys[@]}" -gt 0 ]; then
+    refs=$(refs_json)
+    jq -e \
+      --arg name "$name" \
+      --arg account "$account" \
+      --argjson max_age "$max_age_seconds" \
+      --argjson now "$now" \
+      --argjson refs "$refs" \
+      '. as $cache
+        | $cache.schema == 1
+        and $cache.name == $name
+        and $cache.account == $account
+        and $cache.refs == $refs
+        and ($cache.values | type == "object")
+        and all($refs | keys_unsorted[]; ($cache.values[.]? | type == "string" and length > 0))
+        and (
+          $max_age == 0
+          or (
+            (($cache.created_at_epoch? | tonumber?) // 0) as $created
+            | $created > 0 and ($now - $created) >= 0 and ($now - $created) <= $max_age
+          )
+        )' \
+      "$cache_file" >/dev/null
+  else
+    jq -e \
+      --arg name "$name" \
+      --argjson max_age "$max_age_seconds" \
+      --argjson now "$now" \
+      '. as $cache
+        | $cache.schema == 1
+        and $cache.name == $name
+        and ($cache.refs | type == "object")
+        and ($cache.values | type == "object")
+        and (
+          $max_age == 0
+          or (
+            (($cache.created_at_epoch? | tonumber?) // 0) as $created
+            | $created > 0 and ($now - $created) >= 0 and ($now - $created) <= $max_age
+          )
+        )' \
+      "$cache_file" >/dev/null
+  fi
+}
+
+ensure_cache() {
+  if cache_matches_specs; then
+    return
+  fi
+
+  if [ "$auto_refresh" -eq 1 ]; then
+    # Keep get stdout secret-only; refresh status belongs on stderr.
+    write_cache >&2
+    return
+  fi
+
+  die "no valid cache for '$name'; run: $PROGRAM refresh $name, or pass --auto-refresh for user-triggered workflows"
+}
+
+get_value() {
+  local key="$1"
+  local cache_file
+
+  valid_env_name "$key" || die "invalid environment variable name: $key"
+  ensure_cache
+  cache_file=$(cache_file_for)
+
+  jq -er --arg key "$key" '.values[$key] // empty' "$cache_file"
+}
+
+run_with_cache() {
+  [ "${#remaining[@]}" -gt 0 ] || die "run requires a command after --"
+  ensure_cache
+
+  local cache_file key value
+  cache_file=$(cache_file_for)
+
+  while IFS= read -r key; do
+    valid_env_name "$key" || die "invalid cached environment variable name: $key"
+    value=$(jq -jr --arg key "$key" '.values[$key]' "$cache_file")
+    export "$key=$value"
+  done < <(jq -r '.values | keys_unsorted[]' "$cache_file")
+
+  exec "${remaining[@]}"
+}
+
+status_cache() {
+  local cache_file created_at keys
+  cache_file=$(cache_file_for)
+
+  if ! cache_matches_specs; then
+    die "no valid cache at $cache_file"
+  fi
+
+  created_at=$(jq -r '.created_at // "unknown"' "$cache_file")
+  keys=$(jq -r '.values | keys_unsorted | length' "$cache_file")
+  printf '%s: cache ready for %s at %s (created_at: %s, keys: %s)\n' "$PROGRAM" "$name" "$cache_file" "$created_at" "$keys"
+}
+
+command_name="${1:-}"
+[ -n "$command_name" ] || { usage; exit 1; }
+shift
+
+case "$command_name" in
+  refresh)
+    [ "$#" -ge 1 ] || die "refresh requires NAME"
+    require_name "$1"
+    shift
+    parse_options "$@"
+    [ "${#remaining[@]}" -eq 0 ] || die "unexpected argument: ${remaining[0]}"
+    write_cache
+    ;;
+  get)
+    [ "$#" -ge 2 ] || die "get requires NAME and KEY"
+    require_name "$1"
+    get_key="$2"
+    shift 2
+    parse_options "$@"
+    [ "${#remaining[@]}" -eq 0 ] || die "unexpected argument: ${remaining[0]}"
+    get_value "$get_key"
+    ;;
+  run)
+    [ "$#" -ge 1 ] || die "run requires NAME"
+    require_name "$1"
+    shift
+    parse_options "$@"
+    run_with_cache
+    ;;
+  status)
+    [ "$#" -ge 1 ] || die "status requires NAME"
+    require_name "$1"
+    shift
+    parse_options "$@"
+    [ "${#remaining[@]}" -eq 0 ] || die "unexpected argument: ${remaining[0]}"
+    status_cache
+    ;;
+  path)
+    [ "$#" -ge 1 ] || die "path requires NAME"
+    require_name "$1"
+    shift
+    parse_options "$@"
+    [ "${#remaining[@]}" -eq 0 ] || die "unexpected argument: ${remaining[0]}"
+    printf '%s\n' "$(cache_file_for)"
+    ;;
+  logout | clear)
+    [ "$#" -ge 1 ] || die "$command_name requires NAME"
+    require_name "$1"
+    shift
+    parse_options "$@"
+    [ "${#remaining[@]}" -eq 0 ] || die "unexpected argument: ${remaining[0]}"
+    cache_file=$(cache_file_for)
+    if [ -e "$cache_file" ]; then
+      rm -f "$cache_file"
+      printf '%s: removed %s\n' "$PROGRAM" "$cache_file"
+    else
+      printf '%s: no cache at %s\n' "$PROGRAM" "$cache_file"
+    fi
+    ;;
+  -h | --help | help)
+    usage
+    ;;
+  *)
+    usage
+    die "unknown command: $command_name"
+    ;;
+esac
