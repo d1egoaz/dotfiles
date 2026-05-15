@@ -1,0 +1,7 @@
+interface:
+  display_name: "Git History Orientation"
+  short_description: "Read repo health signals from git history"
+  default_prompt: "Use $git-history-orientation to orient on this repository before reading code."
+
+policy:
+  allow_implicit_invocation: true
