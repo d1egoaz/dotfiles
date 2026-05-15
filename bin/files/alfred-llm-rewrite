@@ -9,8 +9,10 @@ set -u
 
 CONFIG_FILE="${ALFRED_LLM_CONFIG:-$HOME/.config/alfred-llm-rewrite/config.env}"
 MAX_TOKENS="${ALFRED_LLM_MAX_TOKENS:-512}"
+OP_ENV_CACHE_BIN="${OP_ENV_CACHE_BIN:-$HOME/.local/bin/op-env-cache}"
 MODE=""
 USER_TEXT=""
+PROMPT_FILE=""
 
 fail() {
   echo "ERROR${PROVIDER:+ ($PROVIDER)}: $*"
@@ -37,10 +39,10 @@ parse_args() {
   fi
 }
 
-prompt_file_for_mode() {
+set_prompt_file() {
   case "$MODE" in
-    grammar) printf '%s\n' "$HOME/dotfiles/config/ai/grammar-fixer-prompt.md" ;;
-    tone) printf '%s\n' "$HOME/dotfiles/config/ai/tone-fixer-prompt.md" ;;
+    grammar) PROMPT_FILE="$HOME/dotfiles/config/ai/grammar-fixer-prompt.md" ;;
+    tone) PROMPT_FILE="$HOME/dotfiles/config/ai/tone-fixer-prompt.md" ;;
     *) fail "unsupported mode '$MODE' (expected: grammar|tone)" ;;
   esac
 }
@@ -52,7 +54,7 @@ build_request_body() {
   case "$PROVIDER" in
     OpenAI)
       TOKEN_FIELD="max_completion_tokens"
-      REASONING_EFFORT="minimal"
+      REASONING_EFFORT="low"
       ;;
     Cerebras) ;;
     *) fail "unsupported provider: $PROVIDER" ;;
@@ -77,7 +79,7 @@ build_request_body() {
 }
 
 load_key() {
-  KEY=$(op-env-cache get "$CACHE_NAME" "$SECRET_ENV" --account "$OP_ACCOUNT" --auto-refresh --sops-file "$SOPS_SPEC_FILE" 2>&1) || fail "$KEY"
+  KEY=$("$OP_ENV_CACHE_BIN" get "$CACHE_NAME" "$SECRET_ENV" --account "$OP_ACCOUNT" --auto-refresh --sops-file "$SOPS_SPEC_FILE" 2>&1) || fail "$KEY"
 }
 
 main() {
@@ -85,7 +87,7 @@ main() {
   load_config
   parse_args "$@"
 
-  PROMPT_FILE=$(prompt_file_for_mode)
+  set_prompt_file
   if [ ! -f "$PROMPT_FILE" ]; then
     fail "prompt file not found: $PROMPT_FILE"
   fi
