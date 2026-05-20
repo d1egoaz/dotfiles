@@ -20,22 +20,23 @@ personality = "pragmatic"
 plan_mode_reasoning_effort = "xhigh"
 # Keep file writes scoped to trusted workspaces unless a command is escalated.
 sandbox_mode = "workspace-write"
-service_tier = "fast"
 suppress_unstable_features_warning = true
 theme = "tokyo-night"
 web_search = "cached"
 
 # Feature flags that apply before per-project trust rules.
+notify = ["/Users/diego.alvarez/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended", "--previous-notify", "[\"\\/bin\\/sh\",\"-c\",\"$HOME\\/dotfiles\\/bin\\/files\\/codex-notify.sh \\\"$1\\\"\",\"codex-notify\"]"]
+
 [features]
 # Required for config/codex/hooks.json.
-codex_hooks = true
+goals = true
+hooks = true
 memories = true
 multi_agent = true
 prevent_idle_sleep = true
 responses_websockets = false
 responses_websockets_v2 = false
 voice_transcription = true
-goals = true
 
 # Agent limits for multi-agent work.
 [agents]
@@ -57,8 +58,11 @@ network_access = false
 # Shared TUI preferences.
 [tui]
 animations = true
-notification_method = "bel"
+notification_method = "auto"
+notification_condition = "always" # unfocused | always
+
 # These payloads go through notify above, not hooks.json.
+#notifications = true
 notifications = ["agent-turn-complete"]
 status_line = [
     "model-with-reasoning",
