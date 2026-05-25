@@ -18,6 +18,22 @@ Use this skill for command shape, command transparency, approval boundaries, and
 - Explain routine read-only commands with at most one short sentence.
 - Use expanded risk explanation only for destructive operations, escalated permissions, broad rewrites, force pushes, live state changes, or when the user asks for it.
 
+## Process Inspection
+
+Do not run broad process-command scans such as `ps -axo pid,ppid,command | rg ...` in Codex sessions. Codex app processes can include full transcript JSON in their arguments, and a broad match can dump huge unrelated context.
+
+Use command-name inspection first:
+
+```bash
+ps -axo pid,ppid,comm | rg '(^|/)git$|(^|/)ssh$|(^|/)gh$'
+```
+
+Only after identifying a specific PID should you inspect full arguments:
+
+```bash
+ps -p PID -o pid,ppid,args=
+```
+
 ## Safety Gates
 
 - Confirm before destructive changes such as removing files, resetting branches, force pushing, or changing live state.

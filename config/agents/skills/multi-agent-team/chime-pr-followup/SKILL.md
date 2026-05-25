@@ -24,6 +24,23 @@ Use this skill for Chime-specific PR follow-up rules that are too repo-specific 
 - In `chime-cd`, generated outputs include `zz.auto-generated/**`, merged config vars, and Helm override aggregates.
 - `chime-cd/overrides/terraform/**` is downstream of `chime-tf`; point changes at the owning source repo when needed.
 - Do not hand-edit or hand-commit generated files unless the repo instructions or user explicitly require it.
+- If a new `chime-cd` manifest-generation run fails immediately after PR creation with `no pull requests found for branch`, treat it as the known push-before-PR-association race. Verify the PR exists and rerun the failed manifest workflow once before doing a YAML or generator investigation.
+
+## GitHub Network Auth In Codex
+
+For Chime GitHub fetch/push from Codex, use HTTPS plus the `gh` credential helper as the first attempt instead of relying on SSH remotes. Escalation can fix sandbox access, but it does not make the 1Password/SSH agent reliable for GitHub network authentication.
+
+Fetch a branch:
+
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' fetch https://github.com/1debit/REPO.git BRANCH:refs/remotes/origin/BRANCH
+```
+
+Push the current branch:
+
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' push https://github.com/1debit/REPO.git HEAD:BRANCH
+```
 
 ## Follow-Up Commit Workflow
 
@@ -36,13 +53,13 @@ After a PR is open on `chime-tf` or `chime-cd`, assume the remote branch has mov
 5. Verify signature and attribution survived.
 6. Push normally after the rebase.
 
-Fish-compatible checks:
+Checks:
 
-```fish
-git fetch origin <branch>
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' fetch https://github.com/1debit/REPO.git BRANCH:refs/remotes/origin/BRANCH
 git log -1 --pretty='%G? %s'
 git log -1 --pretty=%B | rg '^Assisted-by: .+ via .+$'
-git push
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' push https://github.com/1debit/REPO.git HEAD:BRANCH
 ```
 
 Do not force-push over CI bot commits unless the user explicitly authorizes it and you have verified no shared bot or reviewer state will be lost.

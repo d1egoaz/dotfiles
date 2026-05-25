@@ -42,11 +42,18 @@ git log -1 --pretty=%B | rg -n "^Assisted-by: .+ via .+$"
 ## Push And PR
 
 1. Push the current branch.
+   - In Codex, if the GitHub remote is SSH or the repo is under `/Users/diego.alvarez/work/github.com/1debit`, push through HTTPS with the `gh` credential helper as the first attempt. The SSH/1Password agent path is a known unreliable network-auth path for fetch/push in sandboxed Codex sessions.
 2. Open new PRs in draft mode.
 3. Use the repo PR template when present.
-4. PR bodies must explain the problem, chosen fix, validation, risk, rollback, and follow-up.
+4. PR bodies must explain the problem, chosen fix, validation, and real risk. Include rollback or follow-up only when there is an actual unresolved follow-up or meaningful rollback decision.
 5. For generated artifacts, state the source file and whether generated output was reviewed or left to CI.
 6. For incident or live production fixes, include the live evidence and validation command.
+
+GitHub HTTPS push pattern:
+
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' push https://github.com/1debit/REPO.git HEAD:BRANCH
+```
 
 Use `gh api` for PR body updates because `gh pr edit --body` is deprecated:
 

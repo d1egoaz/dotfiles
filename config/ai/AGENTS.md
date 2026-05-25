@@ -33,6 +33,26 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - Keep work-only approvals in local-only rules files (for example `~/.codex/rules/90-work-local.rules`).
 - For multi-repo work, run git commands in each repo's working directory (`cwd`) and avoid `git -C` unless explicitly requested by the user.
 
+## GitHub Network Git In Codex
+GitHub fetch/push from Codex should not rely on SSH remotes when the repo is under `/Users/diego.alvarez/work/github.com/1debit` or when the remote is `git@github.com:*`. Escalation can fix sandbox access, but it does not make the 1Password/SSH agent reliable for GitHub network authentication. Keep signed commits on the normal `git commit -S` path, but use HTTPS plus the GitHub CLI credential helper for GitHub network fetch/push.
+
+Fetch `main`:
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' fetch https://github.com/1debit/REPO.git main:refs/remotes/origin/main
+```
+
+Fetch a PR branch:
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' fetch https://github.com/1debit/REPO.git BRANCH:refs/remotes/origin/BRANCH
+```
+
+Push the current branch:
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' push https://github.com/1debit/REPO.git HEAD:BRANCH
+```
+
+Do not use an unquoted `credential.https://github.com.helper=!gh auth git-credential`; shell splitting turns `auth` into a bogus git subcommand. Prefer the absolute `gh` helper path above.
+
 ## Multi-Agent Model Routing
 Treat `Multi-Agent Routing`, `multi agent routing`, `subagent`, `delegate`, `parallel agents`, or `$multi-agent-routing` as an explicit request to load and follow the `multi-agent-routing` skill. The lead agent still owns scope, high-risk decisions, live mutations, and final synthesis.
 
@@ -41,6 +61,7 @@ Use focused skills for long procedural workflows instead of keeping every runboo
 - `$multi-agent-routing`: subagent decomposition, model/reasoning routing, sidecar scouts, and verifier/auditor use.
 - `$command-discipline`: shell command shape, shell compatibility, escalation, destructive-command safety, bulk refactors, and JSON/YAML validation commands.
 - `$repo-research`: exact-artifact inspection, code-path tracing, repo search, evidence gathering, and root-cause investigation.
+- `$scratch-log`: local decision logs for large refactors, multi-file changes, ambiguous requirements, review fixes, and tradeoff-heavy work.
 - `$git-worktree-flow`: new branches, worktrees, multi-repo work, keeping primary checkouts on `main`, and stale checkout repair.
 - `$signed-pr-publish`: signed commits, `Assisted-by` attribution, draft PRs, PR body quality, and publish/ready workflows.
 - `$chime-pr-followup`: Chime `chime-tf`, `chime-cd`, `tf-sync`, generated artifacts, CI bot commits, TFE plan review, and Codex reviewer false-positive handling.

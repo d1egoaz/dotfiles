@@ -14,14 +14,15 @@ Use this skill to keep the primary checkout on `main` and put feature work in si
 1. Start in the primary repo checkout.
 2. Confirm current branch and dirty state. Do not overwrite unrelated changes.
 3. Fetch `origin/main`.
+   - In Codex, if the GitHub remote is SSH or the repo is under `/Users/diego.alvarez/work/github.com/1debit`, use HTTPS with the `gh` credential helper as the first attempt. The SSH/1Password agent path is a known unreliable network-auth path in sandboxed Codex sessions.
 4. Create a sibling worktree using `<repo>-worktrees/<feature-name>`.
 5. Run subsequent git commands from the worktree's own working directory.
 
-Fish-compatible pattern:
+GitHub HTTPS pattern:
 
-```fish
-git fetch origin main
-git worktree add ../(basename $PWD)-worktrees/feature-branch -b feature-branch origin/main
+```bash
+env GIT_CONFIG_GLOBAL=/dev/null git -c credential.helper= -c 'credential.https://github.com.helper=/etc/profiles/per-user/diego.alvarez/bin/gh auth git-credential' fetch https://github.com/1debit/REPO.git main:refs/remotes/origin/main
+git worktree add ../REPO-worktrees/feature-branch -b feature-branch origin/main
 ```
 
 ## Multi-Repo Work
