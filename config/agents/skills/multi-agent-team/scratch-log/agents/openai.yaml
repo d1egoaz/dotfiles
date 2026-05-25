@@ -1,0 +1,7 @@
+interface:
+  display_name: "Scratch Log"
+  short_description: "Track decisions during large changes"
+  default_prompt: "Use $scratch-log to keep a local decision log during a large refactor."
+
+policy:
+  allow_implicit_invocation: true
