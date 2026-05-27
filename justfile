@@ -46,7 +46,18 @@ gc:
 
 # Update nix flake
 update:
-    nix flake update --flake ./nix --refresh
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "{{ _host }}" == "office-mbp" ]]; then
+      if [[ -z "${OP_ACCOUNT:-}" || -z "${OP_VAULT:-}" ]]; then
+        echo "OP_ACCOUNT/OP_VAULT not set. Run 'just switch' first to export them."
+        exit 1
+      fi
+      github_token=$(op read "op://$OP_VAULT/Homebrew GitHub Token/credential" --account "$OP_ACCOUNT")
+      NIX_CONFIG="access-tokens = github.com=$github_token" nix flake update --flake ./nix --refresh
+    else
+      nix flake update --flake ./nix --refresh
+    fi
 
 # Clear Nix tarball cache (fixes "Truncated tar archive" errors during flake update)
 fix-nix-cache:
