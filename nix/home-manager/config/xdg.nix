@@ -171,6 +171,20 @@
     ''
   );
 
+  # Home Manager skips collision checks for this forced file, but still backs
+  # up a non-symlink target during linkGeneration. Clear only the stale backup
+  # so the current hooks file can be preserved as the fresh backup.
+  home.activation.codexHooksBackup =
+    config.lib.dag.entryBetween [ "linkGeneration" ] [ "writeBoundary" ]
+      ''
+        TARGET="$HOME/.codex/hooks.json"
+        BACKUP="$TARGET.backup"
+
+        if [ -e "$BACKUP" ] && [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
+          rm -f "$BACKUP"
+        fi
+      '';
+
   # Hard link mouseless config into its macOS sandbox container.
   # Hard links work across sandbox boundaries (same filesystem/inode).
   # Re-runs on every `just switch` to repair if the app recreated the file.
