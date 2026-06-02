@@ -1,5 +1,10 @@
 .DS_Store
 
+# Local Codex profile fragments can contain machine or work-only state.
+config/codex/profiles/*.local.toml
+config/codex/hooks.*.local.json
+config/agents/skills/work.local/
+
 # Alfred workflow user preferences (may contain API keys, emails, etc.)
 alfred/Alfred.alfredpreferences/workflows/*/prefs.plist
 

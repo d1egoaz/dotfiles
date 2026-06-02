@@ -1,13 +1,13 @@
 # Shared cross-laptop defaults, safe to sync between personal and work laptops.
+# Home Manager composes this with config/codex/profiles/<profile>.toml into ~/.codex/config.toml.
 allow_login_shell = false
 
 # Ask only when Codex needs to leave the sandbox or run a risky command.
 approval_policy = "on-request"
 file_opener = "cursor"
 model = "gpt-5.5"
-model_auto_compact_token_limit = 800000
 model_context_window = 1050000
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "high"
 model_verbosity = "medium"
 # Notification sounds are handled by this helper; hook sounds live in hooks.json.
 notify = [
@@ -24,9 +24,6 @@ suppress_unstable_features_warning = true
 theme = "tokyo-night"
 web_search = "cached"
 
-# Feature flags that apply before per-project trust rules.
-notify = ["/Users/diego.alvarez/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended", "--previous-notify", "[\"\\/bin\\/sh\",\"-c\",\"$HOME\\/dotfiles\\/bin\\/files\\/codex-notify.sh \\\"$1\\\"\",\"codex-notify\"]"]
-
 [features]
 # Required for config/codex/hooks.json.
 goals = true
@@ -37,6 +34,7 @@ prevent_idle_sleep = true
 responses_websockets = false
 responses_websockets_v2 = false
 voice_transcription = true
+js_repl = false
 
 # Agent limits for multi-agent work.
 [agents]
@@ -78,47 +76,44 @@ theme = "tokyo-night"
 terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
 
 [tui.model_availability_nux]
-"gpt-5.5" = 1
+"gpt-5.5" = 4
 
-# Shared plugin enablement.
-[plugins."browser-use@openai-bundled"]
-enabled = true
+# Environment inherited by tool commands. Claude-related variables are here so
+# Claude Code launched from Codex shell tools follows the same local policy.
+[shell_environment_policy]
+inherit = "core"
 
-[plugins."computer-use@openai-bundled"]
-enabled = true
+[desktop]
+appearanceTheme = "system"
 
-[plugins."documents@openai-primary-runtime"]
-enabled = true
+[desktop.appearanceLightChromeTheme]
+accent = "#339cff"
+contrast = 45
+ink = "#1a1c1f"
+opaqueWindows = false
+surface = "#ffffff"
 
-[plugins."github@claude-plugins-official"]
-enabled = true
+[desktop.appearanceLightChromeTheme.fonts]
+ui = "Atkinson Hyperlegible Next, PragmataPro"
+code = "PragmataPro"
 
-[plugins."github@openai-curated"]
-enabled = true
+[desktop.appearanceLightChromeTheme.semanticColors]
+diffAdded = "#00a240"
+diffRemoved = "#ba2623"
+skill = "#924ff7"
 
-[plugins."presentations@openai-primary-runtime"]
-enabled = true
+[desktop.appearanceDarkChromeTheme]
+accent = "#339cff"
+contrast = 45
+ink = "#ffffff"
+opaqueWindows = false
+surface = "#181818"
 
-[plugins."slack@claude-plugins-official"]
-enabled = true
+[desktop.appearanceDarkChromeTheme.fonts]
+ui = "Atkinson Hyperlegible Next, PragmataPro"
+code = "PragmataPro"
 
-[plugins."slack@openai-curated"]
-enabled = true
-
-[plugins."spreadsheets@openai-primary-runtime"]
-enabled = true
-
-# Account and work service endpoints.
-[mcp_servers.datadog-mcp]
-enabled = false
-url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
-
-[mcp_servers.glean_default]
-url = "https://chime-prod-be.glean.com/mcp/default"
-
-[mcp_servers.notion]
-url = "https://mcp.notion.com/mcp"
-
-[mcp_servers.slack]
-url = "https://mcp.slack.com/mcp"
-
+[desktop.appearanceDarkChromeTheme.semanticColors]
+diffAdded = "#40c977"
+diffRemoved = "#fa423e"
+skill = "#ad7bf9"

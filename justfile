@@ -75,9 +75,9 @@ check: fmt
 # Quick format and check
 lint: check
 
-# Sync live Codex work-local rules into the encrypted SOPS file
-codex-rules-sync:
-    @if [ "{{ _host }}" = "office-mbp" ]; then ./bin/files/codex-work-rules sync; else echo "codex-rules-sync: skipped for {{ _host }}; work-local rules are office-only"; fi
+# Sync ignored local state into the encrypted SOPS file
+local-state-sync:
+    @if [ "{{ _host }}" = "office-mbp" ]; then DOTFILES_LOCAL_STATE_PROFILE=office ./bin/files/dotfiles-local-state sync; else echo "local-state-sync: skipped for {{ _host }}; encrypted local state is office-only"; fi
 
 # ============================================================================
 # macOS (nix-darwin) Systems
@@ -88,8 +88,8 @@ codex-rules-sync:
 _host := if `whoami` == "diego" { "personal-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else if `whoami` == "diego.alvarez" { "office-mbp" } else { error("Unknown user: run `whoami` and add to justfile") }
 
 [private]
-_codex-rules-pre-switch:
-    @if [ "{{ _host }}" = "office-mbp" ]; then ./bin/files/codex-work-rules pre-switch; fi
+_local-state-pre-switch:
+    @if [ "{{ _host }}" = "office-mbp" ]; then DOTFILES_LOCAL_STATE_PROFILE=office ./bin/files/dotfiles-local-state pre-switch; fi
 
 # Install nix-darwin (run this first on macOS)
 install-darwin:
@@ -98,7 +98,7 @@ install-darwin:
     sudo nix --extra-experimental-features nix-command --extra-experimental-features flakes run nix-darwin -- switch --flake ./nix#{{ _host }}
 
 # Auto-detect current machine and rebuild (main command)
-switch: _codex-rules-pre-switch
+switch: _local-state-pre-switch
     nh darwin switch ./nix#darwinConfigurations.{{ _host }} -- --impure
 
 # Quick dry run for the current host

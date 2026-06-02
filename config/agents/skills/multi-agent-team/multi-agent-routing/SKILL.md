@@ -68,7 +68,7 @@ Use two or three agents for broad work:
 - Scout: map relevant files, logs, or PR facts.
 - Verifier/auditor: check blast radius or tests while implementation proceeds.
 
-Compose this skill with focused workflow skills when they apply. For example, use `$repo-research` for discovery, `$signed-pr-publish` for publishing, `$chime-pr-followup` for Chime PR branches, and `$codex-config-maintenance` for Codex config or skill changes.
+Compose this skill with focused workflow skills when they apply. For example, use `$repo-research` for discovery, `$signed-pr-publish` for publishing, work-local follow-up skills when present, and `$codex-config-maintenance` for Codex config or skill changes.
 
 Use separate write sets for parallel implementation:
 - Worker A owns one module or repo.

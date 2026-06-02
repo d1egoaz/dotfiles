@@ -1,0 +1,35 @@
+# Personal Codex profile.
+# Keep this file free of work endpoints, work project paths, and connector state.
+# This tracked file keeps personal-safe plugin choices explicit while Home
+# Manager composes the same profile shape on every machine.
+
+# Personal-safe plugin enablement.
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."github@claude-plugins-official"]
+enabled = false
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."slack@claude-plugins-official"]
+enabled = false
+
+[plugins."slack@openai-curated"]
+enabled = false
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = false
+
+[plugins."google-drive@openai-curated"]
+enabled = false
+
+[plugins."browser@openai-bundled"]
+enabled = true

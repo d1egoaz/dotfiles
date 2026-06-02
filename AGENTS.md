@@ -104,7 +104,19 @@ Scripts in `bin/files/` are symlinked to `~/.local/bin/` via `home.file` entries
 
 ### Codex Config And Hooks
 
-Codex config lives in `config/codex/config.toml`. Codex hooks live in `config/codex/hooks.json`. Home Manager links them to `~/.codex/config.toml` and `~/.codex/hooks.json` from `nix/home-manager/config/xdg.nix` using `mkOutOfStoreSymlink`.
+Codex shared config lives in `config/codex/config.toml`. Profile-specific fragments live in `config/codex/profiles/`:
+- `personal.toml` is tracked and safe to sync.
+- `work.local.toml` is ignored by git and can contain work-only endpoints, project trust, or machine-local state.
+
+Codex 0.134.0 and later no longer supports a top-level `profile = "name"` selector in `config.toml`. Home Manager composes `~/.codex/config.toml` from the shared file plus the Nix-selected profile fragment:
+- `profile == "office"` -> work profile
+- `profile == "personal"` -> personal profile
+
+Work machines use ignored `config/codex/profiles/work.local.toml` when it exists. If it is missing, `just switch` falls back to shared Codex config and prints a warning. Do not put work-internal MCP URLs or work project trust entries in the shared `config/codex/config.toml`.
+
+Codex shared hooks live in `config/codex/hooks.json`. Office machines can use ignored local hooks from `config/codex/hooks.work.local.json`. Home Manager links the selected hooks file to `~/.codex/hooks.json` from `nix/home-manager/config/xdg.nix`, falling back to shared hooks if the ignored local file is absent.
+
+Work-only Codex profile/hooks, approval rules, and agent skills live as ignored plaintext and are backed up through encrypted `local_state` entries in `secrets/codex.yaml`. Use `just local-state-sync` to push local ignored-state edits into SOPS. `just switch` only restores missing local-state files on office machines before activation; it does not rewrite encrypted state. Restored `local_state` files are plaintext copies on disk, not runtime-decrypted files.
 
 Keep Codex hooks in `config/codex/hooks.json`, not inline in `config.toml`. Codex loads both forms if both exist in the same layer and warns, so use one representation per layer. Keep `[features].codex_hooks = true` in `config.toml`.
 
@@ -121,6 +133,9 @@ Validate Codex config changes with:
 ```fish
 jq . config/codex/hooks.json >/dev/null
 taplo check config/codex/config.toml
+taplo check config/codex/profiles/personal.toml
+test ! -f config/codex/profiles/work.local.toml || taplo check config/codex/profiles/work.local.toml
+sh -c 'tmp=$(mktemp "${TMPDIR:-/tmp}/codex-profile.XXXXXX.toml"); { cat config/codex/config.toml; printf "\n"; cat config/codex/profiles/personal.toml; } > "$tmp"; taplo check "$tmp"; rm -f "$tmp"'
 codex debug prompt-input hooks-json-smoke
 ```
 

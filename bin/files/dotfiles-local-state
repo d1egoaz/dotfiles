@@ -1,0 +1,366 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+prog="dotfiles-local-state"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/../.." && pwd)"
+dotfiles_root="${DOTFILES:-$repo_root}"
+state_profile="${DOTFILES_LOCAL_STATE_PROFILE:-${PROFILE:-}}"
+
+sops_file="${DOTFILES_LOCAL_STATE_SOPS_FILE:-$repo_root/secrets/codex.yaml}"
+key_file="${SOPS_AGE_KEY_FILE:-$HOME/Library/Application Support/sops/age/keys.txt}"
+tmp_paths=""
+
+cleanup() {
+  local path
+  while IFS= read -r path; do
+    [[ -n "$path" ]] && rm -f "$path"
+  done <<< "$tmp_paths"
+  return 0
+}
+
+track_tmp() {
+  tmp_paths="${tmp_paths}${1}"$'\n'
+}
+
+trap cleanup EXIT
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: dotfiles-local-state list
+       dotfiles-local-state check [RESOURCE ...]
+       dotfiles-local-state sync [RESOURCE ...]
+       dotfiles-local-state restore-if-missing [RESOURCE ...]
+       dotfiles-local-state pre-switch [RESOURCE ...]
+EOF
+}
+
+find_bin() {
+  local override="$1"
+  local name="$2"
+  local path
+
+  if [[ -n "$override" ]]; then
+    printf '%s\n' "$override"
+    return
+  fi
+
+  if command -v "$name" >/dev/null 2>&1; then
+    command -v "$name"
+    return
+  fi
+
+  for path in "/opt/homebrew/bin/$name" "/usr/local/bin/$name" "/etc/profiles/per-user/$(id -un)/bin/$name"; do
+    [[ -x "$path" ]] && printf '%s\n' "$path" && return
+  done
+
+  return 1
+}
+
+sops_bin="$(find_bin "${SOPS_BIN:-}" sops || true)"
+jq_bin="$(find_bin "${JQ_BIN:-}" jq || true)"
+
+die() {
+  echo "$prog: $*" >&2
+  exit 1
+}
+
+require_ready() {
+  [[ -n "$sops_bin" && -x "$sops_bin" ]] || die "sops is not available. Install it and re-run."
+  [[ -n "$jq_bin" && -x "$jq_bin" ]] || die "jq is not available. Install it and re-run."
+  [[ -f "$sops_file" ]] || die "SOPS file is missing: $sops_file"
+
+  if [[ ! -f "$key_file" ]]; then
+    echo "$prog: age key is missing: $key_file" >&2
+    die "restore it from 1Password before switching."
+  fi
+}
+
+expand_path() {
+  local path="$1"
+
+  case "$path" in
+    "~")
+      path="$HOME"
+      ;;
+    "~/"*)
+      path="$HOME/${path#~/}"
+      ;;
+  esac
+
+  path="${path//\$\{HOME\}/$HOME}"
+  path="${path//\$HOME/$HOME}"
+  path="${path//\$\{DOTFILES\}/$dotfiles_root}"
+  path="${path//\$DOTFILES/$dotfiles_root}"
+  printf '%s\n' "$path"
+}
+
+resource_expr() {
+  "$jq_bin" -nr --arg resource "$1" '"[\"local_state\"][\($resource | @json)]"'
+}
+
+decrypt_expr() {
+  SOPS_AGE_KEY_FILE="$key_file" "$sops_bin" --decrypt --output-type json --extract "$1" "$sops_file"
+}
+
+resource_json_file() {
+  local resource="$1"
+  local output="$2"
+  local expr resource_profile
+
+  expr="$(resource_expr "$resource")"
+  decrypt_expr "$expr" > "$output" || die "failed to decrypt local-state resource: $resource"
+  resource_profile="$("$jq_bin" -r '.profile // ""' "$output")"
+  if [[ -n "$state_profile" && -n "$resource_profile" && "$resource_profile" != "$state_profile" ]]; then
+    die "$resource is for profile $resource_profile, current profile is $state_profile"
+  fi
+  "$jq_bin" -e '.files | type == "array" and length > 0' "$output" >/dev/null ||
+    die "resource must define a non-empty files array: $resource"
+}
+
+list_resources() {
+  decrypt_expr '["local_state"]' | "$jq_bin" -r --arg profile "$state_profile" '
+    to_entries[]
+    | select($profile == "" or ((.value.profile // "") == "" or .value.profile == $profile))
+    | .key
+  '
+}
+
+resolve_resources() {
+  if [[ "$#" -gt 0 ]]; then
+    printf '%s\n' "$@"
+    return
+  fi
+
+  list_resources
+}
+
+file_count() {
+  "$jq_bin" -r '.files | length' "$1"
+}
+
+file_path_at() {
+  "$jq_bin" -r --argjson index "$2" '.files[$index].path' "$1"
+}
+
+file_mode_at() {
+  "$jq_bin" -r --argjson index "$2" '.files[$index].mode // "0600"' "$1"
+}
+
+file_allow_empty_at() {
+  "$jq_bin" -r --argjson index "$2" '.files[$index].allow_empty // false' "$1"
+}
+
+write_content_at() {
+  "$jq_bin" -rj --argjson index "$2" '.files[$index].content // ""' "$1" > "$3"
+}
+
+all_files_exist() {
+  local resource_file="$1"
+  local count index path
+
+  count="$(file_count "$resource_file")"
+  for ((index = 0; index < count; index++)); do
+    path="$(expand_path "$(file_path_at "$resource_file" "$index")")"
+    [[ -f "$path" ]] || return 1
+  done
+
+  return 0
+}
+
+guard_unlisted_files() {
+  local resource="$1"
+  local resource_file="$2"
+  local root allow count index path allowed unexpected
+
+  allow="$("$jq_bin" -r '.allow_unlisted_files // true' "$resource_file")"
+  [[ "$allow" == "false" ]] || return 0
+
+  root="$("$jq_bin" -r '.root // ""' "$resource_file")"
+  [[ -n "$root" ]] || die "$resource sets allow_unlisted_files=false without root"
+  root="$(expand_path "$root")"
+  [[ -d "$root" ]] || return 0
+
+  allowed="$(mktemp)"
+  track_tmp "$allowed"
+  count="$(file_count "$resource_file")"
+  for ((index = 0; index < count; index++)); do
+    path="$(expand_path "$(file_path_at "$resource_file" "$index")")"
+    case "$path" in
+      "$root"/*)
+        printf '%s\n' "${path#"$root"/}" >> "$allowed"
+        ;;
+      *)
+        die "$resource file is outside root: $path"
+        ;;
+    esac
+  done
+
+  unexpected="$(
+    cd "$root"
+    find . -type f ! -name .DS_Store -print | sed 's#^\./##' | grep -Fxv -f "$allowed" | head -n 1 || true
+  )"
+
+  [[ -z "$unexpected" ]] || die "unexpected file is not backed by local state: $root/$unexpected"
+}
+
+resource_is_synced() {
+  local resource_file="$1"
+  local count index path content_file
+
+  count="$(file_count "$resource_file")"
+  for ((index = 0; index < count; index++)); do
+    path="$(expand_path "$(file_path_at "$resource_file" "$index")")"
+    [[ -f "$path" ]] || return 1
+
+    content_file="$(mktemp)"
+    track_tmp "$content_file"
+    write_content_at "$resource_file" "$index" "$content_file"
+    cmp -s "$path" "$content_file" || return 1
+  done
+
+  return 0
+}
+
+sync_resource() {
+  local resource="$1"
+  local resource_file updated_file count index path expr
+
+  resource_file="$(mktemp)"
+  track_tmp "$resource_file"
+  resource_json_file "$resource" "$resource_file"
+  guard_unlisted_files "$resource" "$resource_file"
+
+  if resource_is_synced "$resource_file"; then
+    echo "$prog: $resource already matches local files"
+    return
+  fi
+
+  count="$(file_count "$resource_file")"
+  for ((index = 0; index < count; index++)); do
+    path="$(expand_path "$(file_path_at "$resource_file" "$index")")"
+    [[ -f "$path" ]] || die "local file is missing for $resource: $path"
+    [[ "$(file_allow_empty_at "$resource_file" "$index")" == "true" || -s "$path" ]] ||
+      die "refusing to sync empty local file for $resource: $path"
+
+    updated_file="$(mktemp)"
+    track_tmp "$updated_file"
+    "$jq_bin" --rawfile content "$path" --argjson index "$index" \
+      '.files[$index].content = $content' "$resource_file" > "$updated_file"
+    mv "$updated_file" "$resource_file"
+  done
+
+  expr="$(resource_expr "$resource")"
+  # `--value-file` is a boolean flag; the third positional argument is the
+  # file containing the replacement JSON value.
+  SOPS_AGE_KEY_FILE="$key_file" "$sops_bin" set --value-file "$sops_file" "$expr" "$resource_file" >/dev/null
+
+  resource_json_file "$resource" "$resource_file"
+  resource_is_synced "$resource_file" || die "decrypted SOPS state does not match local files for $resource"
+  echo "$prog: synced $resource to $sops_file"
+}
+
+check_resource() {
+  local resource="$1"
+  local resource_file
+
+  resource_file="$(mktemp)"
+  track_tmp "$resource_file"
+  resource_json_file "$resource" "$resource_file"
+  guard_unlisted_files "$resource" "$resource_file"
+
+  if resource_is_synced "$resource_file"; then
+    echo "$prog: $resource matches encrypted state"
+    return 0
+  fi
+
+  echo "$prog: $resource differs from encrypted state; run just local-state-sync to persist local edits" >&2
+  return 1
+}
+
+restore_resource_if_missing() {
+  local resource="$1"
+  local resource_file count index path mode content_file restored=0
+
+  resource_file="$(mktemp)"
+  track_tmp "$resource_file"
+  resource_json_file "$resource" "$resource_file"
+
+  count="$(file_count "$resource_file")"
+  for ((index = 0; index < count; index++)); do
+    path="$(expand_path "$(file_path_at "$resource_file" "$index")")"
+    [[ -f "$path" ]] && continue
+
+    mode="$(file_mode_at "$resource_file" "$index")"
+    content_file="$(mktemp)"
+    track_tmp "$content_file"
+    write_content_at "$resource_file" "$index" "$content_file"
+    [[ "$(file_allow_empty_at "$resource_file" "$index")" == "true" || -s "$content_file" ]] ||
+      die "refusing empty SOPS value for $path"
+
+    mkdir -p "$(dirname "$path")"
+    install -m "$mode" "$content_file" "$path"
+    restored=1
+  done
+
+  if [[ "$restored" == "1" ]]; then
+    echo "$prog: restored missing files for $resource"
+  fi
+}
+
+pre_switch_resource() {
+  local resource="$1"
+
+  restore_resource_if_missing "$resource"
+  if ! check_resource "$resource"; then
+    echo "$prog: local state drift detected for $resource; review the local file and run just local-state-sync to persist it" >&2
+  fi
+}
+
+run_for_resources() {
+  local action="$1"
+  shift
+  local resource status=0
+
+  while IFS= read -r resource; do
+    [[ -n "$resource" ]] || continue
+    case "$action" in
+      check)
+        check_resource "$resource" || status=1
+        ;;
+      sync)
+        sync_resource "$resource"
+        ;;
+      restore-if-missing)
+        restore_resource_if_missing "$resource"
+        ;;
+      pre-switch)
+        pre_switch_resource "$resource"
+        ;;
+    esac
+  done < <(resolve_resources "$@")
+
+  return "$status"
+}
+
+action="${1:-}"
+[[ -n "$action" ]] || {
+  usage
+  exit 2
+}
+shift || true
+
+require_ready
+
+case "$action" in
+  list)
+    list_resources
+    ;;
+  check | sync | restore-if-missing | pre-switch)
+    run_for_resources "$action" "$@"
+    ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac
