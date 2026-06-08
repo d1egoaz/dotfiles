@@ -130,6 +130,11 @@
         source ~/dotfiles/bin/files/awsprofile.fish
       end
 
+      # Source interactive ,, wrapper (pi-backed command generator)
+      if test -f ~/dotfiles/bin/files/comma-command.fish
+        source ~/dotfiles/bin/files/comma-command.fish
+      end
+
       # Emacs vterm integration setup
       if test "$INSIDE_EMACS" = "vterm"; and test -n "$EMACS_VTERM_PATH"; and test -f "$EMACS_VTERM_PATH/etc/emacs-vterm-fish.sh"
         source "$EMACS_VTERM_PATH/etc/emacs-vterm-fish.sh"

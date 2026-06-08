@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+
+set -u
+set -o pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: ,, [--model MODEL] [--provider PROVIDER] [--thinking LEVEL] [--shell SHELL] <description>
+
+Generate one single-line shell command with pi and print it.
+
+Options:
+  -m, --model MODEL       Override pi's model for this call.
+  --provider PROVIDER    Override pi's provider for this call.
+  --thinking LEVEL        Override pi's thinking level for this call.
+  --shell SHELL           Target shell for generated commands.
+  -h, --help             Show this help.
+
+Environment:
+  PI_COMMA_MODEL         Default model when --model is omitted.
+  PI_COMMA_PROVIDER      Default provider when --provider is omitted.
+  PI_COMMA_THINKING      Default thinking level. Defaults to low.
+  PI_COMMA_SHELL         Default target shell. Defaults to $SHELL basename.
+  PI_SETTINGS_FILE       Pi settings file. Defaults to ~/.pi/agent/settings.json.
+  PI_BIN                 pi executable to run. Defaults to pi.
+EOF
+}
+
+fail() {
+  echo ",,: $*" >&2
+  exit 1
+}
+
+trim_first_line() {
+  awk '
+    function trim(s) {
+      sub(/^[[:space:]]+/, "", s)
+      sub(/[[:space:]]+$/, "", s)
+      return s
+    }
+
+    {
+      line = trim($0)
+      if (line == "") {
+        next
+      }
+
+      if (line ~ /^```[[:alnum:]_-]*[[:space:]]*$/) {
+        in_fence = 1
+        next
+      }
+
+      if (in_fence && line ~ /^```[[:space:]]*$/) {
+        in_fence = 0
+        next
+      }
+
+      if (line ~ /^```/ && line ~ /```$/) {
+        sub(/^```[[:alnum:]_-]*/, "", line)
+        sub(/```$/, "", line)
+      }
+
+      if (line ~ /^`[^`].*`$/) {
+        sub(/^`/, "", line)
+        sub(/`$/, "", line)
+      }
+
+      line = trim(line)
+      if (line != "") {
+        print line
+        exit
+      }
+    }
+  '
+}
+
+pi_settings_file="${PI_SETTINGS_FILE:-$HOME/.pi/agent/settings.json}"
+
+settings_value() {
+  local key="$1"
+
+  [ -r "$pi_settings_file" ] || return 0
+  command -v jq >/dev/null 2>&1 || return 0
+
+  jq -r --arg key "$key" '.[$key] // empty' "$pi_settings_file" 2>/dev/null
+}
+
+settings_model="$(settings_value defaultModel)"
+settings_provider="$(settings_value defaultProvider)"
+
+model="${PI_COMMA_MODEL-$settings_model}"
+provider="${PI_COMMA_PROVIDER-$settings_provider}"
+provider_explicit=0
+[ "${PI_COMMA_PROVIDER+x}" ] && provider_explicit=1
+thinking="${PI_COMMA_THINKING:-low}"
+target_shell="${PI_COMMA_SHELL:-${SHELL:-fish}}"
+target_shell="${target_shell##*/}"
+pi_bin="${PI_BIN:-pi}"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -m | --model)
+      shift
+      [ $# -gt 0 ] || fail "--model requires a value"
+      model="$1"
+      ;;
+    --model=*)
+      model="${1#--model=}"
+      ;;
+    --provider)
+      shift
+      [ $# -gt 0 ] || fail "--provider requires a value"
+      provider="$1"
+      provider_explicit=1
+      ;;
+    --provider=*)
+      provider="${1#--provider=}"
+      provider_explicit=1
+      ;;
+    --thinking)
+      shift
+      [ $# -gt 0 ] || fail "--thinking requires a value"
+      thinking="$1"
+      ;;
+    --thinking=*)
+      thinking="${1#--thinking=}"
+      ;;
+    --shell)
+      shift
+      [ $# -gt 0 ] || fail "--shell requires a value"
+      target_shell="$1"
+      ;;
+    --shell=*)
+      target_shell="${1#--shell=}"
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      usage
+      fail "unknown option: $1"
+      ;;
+    *)
+      break
+      ;;
+  esac
+  shift
+done
+
+[ -n "$thinking" ] || fail "--thinking cannot be empty"
+[ -n "$target_shell" ] || fail "--shell cannot be empty"
+
+[ $# -gt 0 ] || {
+  usage
+  exit 2
+}
+
+command -v "$pi_bin" >/dev/null 2>&1 || fail "'$pi_bin' not found in PATH"
+
+description="$*"
+case "$target_shell" in
+  fish)
+    shell_guidance="Use Fish syntax. In this user's Fish environment, ls is exa/eza-style output rather than plain POSIX ls. You may account for that when the user explicitly asks for an ls-style listing. For real file sizes, directory sizes, disk usage, or largest/smallest sorting, prefer size-measuring commands such as du or find plus sort instead of ls -S."
+    ;;
+  zsh)
+    shell_guidance="Use plain zsh/POSIX-compatible syntax. Assume the command may be pasted into a remote server with only default Nix-provided or standard Unix tools available. Do not rely on this user's Fish aliases, exa/eza-backed ls, functions, or local macOS-only shell customizations. For real file sizes, directory sizes, disk usage, or largest/smallest sorting, prefer size-measuring commands such as du or find plus sort instead of ls -S."
+    ;;
+  *)
+    shell_guidance="Use syntax compatible with ${target_shell}. Avoid relying on user aliases or local shell customizations. For real file sizes, directory sizes, disk usage, or largest/smallest sorting, prefer size-measuring commands such as du or find plus sort instead of ls -S."
+    ;;
+esac
+system_prompt="You are a shell command suggestion engine running in a ${target_shell} shell. Given the user's description of what they want to do, output exactly one command: the best single-line command. ${shell_guidance} Do not include numbering, explanation, markdown, or backticks. Output only the raw command on a single line."
+
+err_file="$(mktemp "${TMPDIR:-/tmp}/pi-comma.XXXXXX")" || fail "failed to create temp file"
+trap 'rm -f "$err_file"' EXIT
+
+pi_args=(--print --no-tools --no-context-files --no-session --thinking "$thinking")
+model_is_qualified=0
+[[ "$model" == */* ]] && model_is_qualified=1
+if [ -n "$provider" ] && { [ "$provider_explicit" -eq 1 ] || [ "$model_is_qualified" -eq 0 ]; }; then
+  pi_args+=(--provider "$provider")
+fi
+[ -z "$model" ] || pi_args+=(--model "$model")
+pi_args+=(--system-prompt "$system_prompt")
+
+raw_command="$("$pi_bin" "${pi_args[@]}" "$description" 2>"$err_file")"
+status=$?
+
+if [ "$status" -ne 0 ]; then
+  sed -e 's/^/pi: /' "$err_file" >&2
+  exit "$status"
+fi
+
+command_text="$(printf '%s\n' "$raw_command" | trim_first_line)"
+[ -n "$command_text" ] || fail "pi returned an empty command"
+
+printf '%s\n' "$command_text"

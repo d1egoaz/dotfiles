@@ -95,6 +95,7 @@ in
     let
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
+        ",,"
         "dotfiles-local-state"
         "ediff"
         "ediff3"
