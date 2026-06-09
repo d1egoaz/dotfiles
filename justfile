@@ -53,7 +53,7 @@ update:
         echo "OP_ACCOUNT/OP_VAULT not set. Run 'just switch' first to export them."
         exit 1
       fi
-      github_token=$(op read "op://$OP_VAULT/Homebrew GitHub Token/credential" --account "$OP_ACCOUNT")
+      github_token=$({{ _op_homebrew_token }})
       NIX_CONFIG="access-tokens = github.com=$github_token" nix flake update --flake ./nix --refresh
     else
       nix flake update --flake ./nix --refresh
@@ -83,6 +83,9 @@ local-state-sync:
 # macOS (nix-darwin) Systems
 # ============================================================================
 # Auto-detect host based on user (1:1 relationship)
+
+[private]
+_op_homebrew_token := 'op read "op://$OP_VAULT/Homebrew GitHub Token/credential" --account "$OP_ACCOUNT"'
 
 [private]
 _host := if `whoami` == "diego" { "personal-mbp" } else if `whoami` == "diegoalvarez" { "personal-mini" } else if `whoami` == "diego.alvarez" { "office-mbp" } else { error("Unknown user: run `whoami` and add to justfile") }
@@ -120,7 +123,7 @@ brew:
         exit 1
       fi
       echo "🏢 Work machine detected: setting up Homebrew token from 1Password..."
-      export HOMEBREW_GITHUB_API_TOKEN=$(op read "op://$OP_VAULT/Homebrew GitHub Token/credential" --account "$OP_ACCOUNT")
+      export HOMEBREW_GITHUB_API_TOKEN=$({{ _op_homebrew_token }})
       echo "🏢 Upgrading Compass..."
       brew upgrade 1debit/chime/compass
     fi
