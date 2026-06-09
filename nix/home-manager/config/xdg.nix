@@ -92,6 +92,31 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/agents/skills/work.local";
   }
   // (
+    # Claude Code discovers skills exactly one level below ~/.claude/skills and
+    # does not recurse through a directory symlink (unlike the ~/.agents group
+    # symlink above), so each skill needs its own entry. The list is explicit
+    # because config/ sits outside the flake root and pure eval cannot readDir it.
+    let
+      skillsDir = "${config.home.homeDirectory}/dotfiles/config/agents/skills/multi-agent-team";
+      claudeSkills = [
+        "codex-config-maintenance"
+        "command-discipline"
+        "git-history-orientation"
+        "git-worktree-flow"
+        "multi-agent-routing"
+        "repo-research"
+        "scratch-log"
+        "signed-pr-publish"
+      ];
+    in
+    lib.listToAttrs (
+      map (name: {
+        name = ".claude/skills/${name}";
+        value.source = config.lib.file.mkOutOfStoreSymlink "${skillsDir}/${name}";
+      }) claudeSkills
+    )
+  )
+  // (
     let
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
