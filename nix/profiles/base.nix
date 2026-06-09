@@ -14,9 +14,9 @@ let
   };
 
   # ---------------- System packages ----------------
-  systemPackages = with pkgs; [
-    home-manager # Home Manager itself needs to be system-wide
-  ];
+  # Empty scaffold: home-manager installs itself user-level via
+  # programs.home-manager.enable; nothing currently needs to be system-wide.
+  systemPackages = [ ];
 
   # ---------------- Home-Manager packages ----------------
   hmPackages = with pkgs; [
