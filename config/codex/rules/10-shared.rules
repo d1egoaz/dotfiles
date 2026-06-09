@@ -23,9 +23,10 @@ prefix_rule(pattern=["gh", "search", "issues"], decision="allow")
 prefix_rule(pattern=["gh", "search", "prs"], decision="allow")
 prefix_rule(pattern=["gh", "workflow", "list"], decision="allow")
 
-prefix_rule(pattern=["git", "-C", "add"], decision="allow")
-prefix_rule(pattern=["git", "-C", "commit"], decision="allow")
-prefix_rule(pattern=["git", "-C", "fetch"], decision="allow")
+# NOTE: prefix rules match argv literally, so ["git", "-C", "add"] only matches
+# the nonsensical `git -C add ...` (the path argument occupies that position).
+# `git -C <path> add` cannot be expressed as a literal prefix; rely on the plain
+# ["git", "add"] style rules above and per-session approvals for -C variants.
 
 prefix_rule(pattern=["jq"], decision="allow")
 prefix_rule(pattern=["rg"], decision="allow")
