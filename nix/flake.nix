@@ -27,11 +27,11 @@
     # Main nixpkgs (using stable darwin branch)
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
 
-    # Unstable nixpkgs for packages that need latest features
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
     # Code formatting and linting
-    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Home Manager for user environment management
     home-manager = {
