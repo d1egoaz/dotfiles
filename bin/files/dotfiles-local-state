@@ -2,7 +2,9 @@
 set -euo pipefail
 
 prog="dotfiles-local-state"
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks (~/.local/bin/dotfiles-local-state -> repo) so repo_root
+# points at the dotfiles checkout regardless of how the script is invoked.
+script_dir="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 repo_root="$(cd "$script_dir/../.." && pwd)"
 dotfiles_root="${DOTFILES:-$repo_root}"
 state_profile="${DOTFILES_LOCAL_STATE_PROFILE:-${PROFILE:-}}"
@@ -204,22 +206,29 @@ guard_unlisted_files() {
   [[ -z "$unexpected" ]] || die "unexpected file is not backed by local state: $root/$unexpected"
 }
 
-resource_is_synced() {
+# Prints one "missing: <path>" or "differs: <path>" line per drifted file.
+# Cleans up its own temp file: callers run this in a command substitution,
+# where track_tmp would only update a subshell copy of tmp_paths.
+drifted_paths() {
   local resource_file="$1"
   local count index path content_file
 
+  content_file="$(mktemp)"
   count="$(file_count "$resource_file")"
   for ((index = 0; index < count; index++)); do
     path="$(expand_path "$(file_path_at "$resource_file" "$index")")"
-    [[ -f "$path" ]] || return 1
-
-    content_file="$(mktemp)"
-    track_tmp "$content_file"
+    if [[ ! -f "$path" ]]; then
+      printf 'missing: %s\n' "$path"
+      continue
+    fi
     write_content_at "$resource_file" "$index" "$content_file"
-    cmp -s "$path" "$content_file" || return 1
+    cmp -s "$path" "$content_file" || printf 'differs: %s\n' "$path"
   done
+  rm -f "$content_file"
+}
 
-  return 0
+resource_is_synced() {
+  [[ -z "$(drifted_paths "$1")" ]]
 }
 
 sync_resource() {
@@ -262,19 +271,21 @@ sync_resource() {
 
 check_resource() {
   local resource="$1"
-  local resource_file
+  local resource_file drift
 
   resource_file="$(mktemp)"
   track_tmp "$resource_file"
   resource_json_file "$resource" "$resource_file"
   guard_unlisted_files "$resource" "$resource_file"
 
-  if resource_is_synced "$resource_file"; then
+  drift="$(drifted_paths "$resource_file")"
+  if [[ -z "$drift" ]]; then
     echo "$prog: $resource matches encrypted state"
     return 0
   fi
 
   echo "$prog: $resource differs from encrypted state; run just local-state-sync to persist local edits" >&2
+  sed "s/^/$prog:   /" <<< "$drift" >&2
   return 1
 }
 
