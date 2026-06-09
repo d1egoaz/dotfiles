@@ -353,10 +353,9 @@ Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/op-env-cach
 
 ## Important Concepts
 
-### Impure Evaluation
+### Pure Evaluation
 
-The `--impure` flag is used in `just switch` because:
-- Profile files may use `builtins.fetchGit` for external resources (fonts repo)
+Everything evaluates purely; do not add `--impure` to switch or build commands. The external fonts repo is fetched with `builtins.fetchGit` pinned to a full `rev`, which Nix treats as a locked fetcher and allows in pure evaluation.
 
 ### Rollbacks
 

@@ -102,7 +102,7 @@ install-darwin:
 
 # Auto-detect current machine and rebuild (main command)
 switch: _local-state-pre-switch
-    nh darwin switch ./nix#darwinConfigurations.{{ _host }} -- --impure
+    nh darwin switch ./nix#darwinConfigurations.{{ _host }}
 
 # Quick dry run for the current host
 dry-run:
