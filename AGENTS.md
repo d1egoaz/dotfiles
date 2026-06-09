@@ -116,7 +116,7 @@ Work machines use ignored `config/codex/profiles/work.local.toml` when it exists
 
 Codex shared hooks live in `config/codex/hooks.json`. Office machines can use ignored local hooks from `config/codex/hooks.work.local.json`. Home Manager links the selected hooks file to `~/.codex/hooks.json` from `nix/home-manager/config/xdg.nix`, falling back to shared hooks if the ignored local file is absent.
 
-Work-only Codex profile/hooks, approval rules, and agent skills live as ignored plaintext and are backed up through encrypted `local_state` entries in `secrets/codex.yaml`. Use `just local-state-sync` to push local ignored-state edits into SOPS. `just switch` only restores missing local-state files on office machines before activation; it does not rewrite encrypted state. Restored `local_state` files are plaintext copies on disk, not runtime-decrypted files.
+Work-only Codex profile/hooks, approval rules, and agent skills live as ignored plaintext and are backed up through encrypted `local_state` entries in `secrets/local-state.yaml`. Use `just local-state-sync` to push local ignored-state edits into SOPS. `just switch` only restores missing local-state files on office machines before activation; it does not rewrite encrypted state. Restored `local_state` files are plaintext copies on disk, not runtime-decrypted files.
 
 Keep Codex hooks in `config/codex/hooks.json`, not inline in `config.toml`. Codex loads both forms if both exist in the same layer and warns, so use one representation per layer. Keep `[features].codex_hooks = true` in `config.toml`.
 
@@ -260,7 +260,7 @@ personal = {
 
 ## Secrets Management
 
-Actual secrets (API keys, tokens) are stored in 1Password. Public dotfiles should not contain concrete `op://` refs for runtime workflow secrets; keep those refs encrypted in `secrets/codex.yaml`.
+Actual secrets (API keys, tokens) are stored in 1Password. Public dotfiles should not contain concrete `op://` refs for runtime workflow secrets; keep those refs encrypted in `secrets/op-env-cache.yaml`.
 
 ### Vault Layout
 
@@ -301,7 +301,7 @@ op whoami
 
 ### Creating 1Password Items (First-Time Setup / Key Rotation)
 
-Use the encrypted `op_env_cache_specs` entries in `secrets/codex.yaml` as the source of truth for workflow secret item and field names. Do not duplicate those concrete `op://` refs in public docs or Nix modules.
+Use the encrypted `op_env_cache_specs` entries in `secrets/op-env-cache.yaml` as the source of truth for workflow secret item and field names. Do not duplicate those concrete `op://` refs in public docs or Nix modules.
 
 For non-hidden shared items, create them directly:
 
@@ -331,14 +331,14 @@ set -l key (op-llm)
 curl -H "Authorization: Bearer (op-llm)" https://api.openai.com/v1/models
 ```
 
-Alfred workflows fetch the configured LLM key through `op-env-cache`, using encrypted refs in `secrets/codex.yaml`.
+Alfred workflows fetch the configured LLM key through `op-env-cache`, using encrypted refs in `secrets/op-env-cache.yaml`.
 
 ### SOPS-Backed Runtime Cache
 
 Short-lived GUI or agent workflows that repeatedly need 1Password-backed environment variables should use `op-env-cache` instead of copying cache logic.
 Do not use it for high-sensitivity or long-lived credentials: cache values are plaintext on disk until the TTL expires or `op-env-cache logout <name>` removes them.
 
-Specs live in `secrets/codex.yaml`:
+Specs live in `secrets/op-env-cache.yaml`:
 
 ```yaml
 op_env_cache_specs:
@@ -349,7 +349,7 @@ op_env_cache_specs:
       ALFRED_LLM_API_KEY: <encrypted op:// ref>
 ```
 
-Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/codex.yaml"` to prewarm a cache, `op-env-cache get <name> <ENV_KEY> --auto-refresh --sops-file "$HOME/dotfiles/secrets/codex.yaml"` inside wrappers, and `op-env-cache logout <name>` to remove the plaintext cache directory.
+Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/op-env-cache.yaml"` to prewarm a cache, `op-env-cache get <name> <ENV_KEY> --auto-refresh --sops-file "$HOME/dotfiles/secrets/op-env-cache.yaml"` inside wrappers, and `op-env-cache logout <name>` to remove the plaintext cache directory.
 
 ## Important Concepts
 

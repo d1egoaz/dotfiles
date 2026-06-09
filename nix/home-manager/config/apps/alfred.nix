@@ -28,7 +28,7 @@
       PROVIDER=${lib.escapeShellArg machineConfig.llm.provider}
       CACHE_NAME=${lib.escapeShellArg "alfred-llm-rewrite-${profile}"}
       SECRET_ENV=ALFRED_LLM_API_KEY
-      SOPS_SPEC_FILE="$HOME/dotfiles/secrets/codex.yaml"
+      SOPS_SPEC_FILE="$HOME/dotfiles/secrets/op-env-cache.yaml"
     '';
   };
 

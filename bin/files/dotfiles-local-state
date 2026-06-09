@@ -7,7 +7,7 @@ repo_root="$(cd "$script_dir/../.." && pwd)"
 dotfiles_root="${DOTFILES:-$repo_root}"
 state_profile="${DOTFILES_LOCAL_STATE_PROFILE:-${PROFILE:-}}"
 
-sops_file="${DOTFILES_LOCAL_STATE_SOPS_FILE:-$repo_root/secrets/codex.yaml}"
+sops_file="${DOTFILES_LOCAL_STATE_SOPS_FILE:-$repo_root/secrets/local-state.yaml}"
 key_file="${SOPS_AGE_KEY_FILE:-$HOME/Library/Application Support/sops/age/keys.txt}"
 tmp_paths=""
 

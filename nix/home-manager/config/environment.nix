@@ -44,6 +44,12 @@
     OP_VAULT = machineConfig.op_vault;
     SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
 
+    # SOPS age key. Home Manager's xdg.enable exports XDG_CONFIG_HOME, which
+    # makes sops look in ~/.config/sops/age/keys.txt instead of the macOS
+    # default under ~/Library/Application Support. Pin the real location so
+    # interactive `sops` works without per-script overrides.
+    SOPS_AGE_KEY_FILE = "$HOME/Library/Application Support/sops/age/keys.txt";
+
     # Homebrew
     HOMEBREW_NO_ANALYTICS = "1";
     HOMEBREW_NO_INSECURE_REDIRECT = "1";
