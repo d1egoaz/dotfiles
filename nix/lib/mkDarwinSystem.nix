@@ -1,9 +1,13 @@
-# Helper function to create macOS systems
-{ inputs }:
+# Helper function to create macOS systems. Receives the shared, pre-imported
+# pkgs from flake-modules/darwin.nix so all hosts evaluate one nixpkgs.
+{
+  inputs,
+  pkgs,
+  system,
+}:
 {
   user,
   profile,
-  system,
 }:
 # Ensure that an allowed profile was provided.
 assert builtins.elem profile [
@@ -12,22 +16,11 @@ assert builtins.elem profile [
 ];
 
 let
-  pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
   inherit (inputs.nixpkgs) lib;
 
-  # Import nixpkgs with overlays applied upfront
-  pkgs = import inputs.nixpkgs {
-    inherit system;
-    config.allowUnfree = true;
-    overlays = [
-      # Workaround: use inetutils from unstable (has Clang 17 fix)
-      (_final: _prev: {
-        inherit (pkgs-unstable) inetutils;
-      })
-    ];
-  };
-
-  # Load base & profile configurations with overlaid pkgs
+  # Load base & profile configurations. profileCfg is the single source for
+  # both system packages (consumed here) and Home Manager packages (consumed
+  # by home-manager/packages.nix via extraSpecialArgs).
   base = import ../profiles/base.nix { inherit pkgs; };
   profileCfg = import ../profiles/${profile}.nix { inherit pkgs base; };
 
@@ -69,6 +62,7 @@ inputs.darwin.lib.darwinSystem {
             inputs
             user
             profile
+            profileCfg
             machineConfig
             ;
         };

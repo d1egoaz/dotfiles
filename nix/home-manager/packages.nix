@@ -1,27 +1,13 @@
-{
-  pkgs,
-  profile,
-  ...
-}:
-
-# Ensure profile is valid (compile-time check).
-assert builtins.elem profile [
-  "personal"
-  "office"
-];
+{ profileCfg, ... }:
 
 # ---------------------------------------------------------------------------
 # Package Sets
 # ---------------------------------------------------------------------------
-# The `profile` argument (passed through `specialArgs` in mkDarwinSystem) is
-# used to decide which of the profile-specific sets is merged with the common
-# packages.
+# profileCfg (base + selected profile, merged in lib/mkDarwinSystem.nix and
+# passed through extraSpecialArgs) is the single source of truth for package
+# sets; do not re-import the profile files here.
 # ---------------------------------------------------------------------------
 
-let
-  base = import ../profiles/base.nix { inherit pkgs; };
-  cfg = import ../profiles/${profile}.nix { inherit pkgs base; };
-in
 {
-  home.packages = cfg.hmPackages;
+  home.packages = profileCfg.hmPackages;
 }
