@@ -38,7 +38,7 @@ The system auto-detects which machine configuration to use based on `whoami`:
 - `diegoalvarez` -> `personal-mini` (profile: personal)
 
 This mapping is defined in:
-- `justfile` line 68: `_host` variable
+- `justfile`: the `_host` variable
 - `nix/flake-modules/darwin.nix`: Host configurations with user mappings
 
 ### Profile System
@@ -47,7 +47,7 @@ The configuration uses a three-tier profile system:
 
 1. **Base Profile** (`nix/profiles/base.nix`)
    - Packages and Homebrew selections common to ALL machines
-   - Exports: `hmPackages`, `systemPackages`, `brewTaps`, `brewCasks`, `brews`
+   - Exports: `hmPackages`, `systemPackages` (Homebrew is managed via Brewfiles, not Nix)
 
 2. **Specific Profiles** (`nix/profiles/{office,personal}.nix`)
    - Machine-specific packages and settings
@@ -195,7 +195,7 @@ Successful `Stop` hook dispatch prints `hook: Stop` and `hook: Stop Completed`.
    };
    ```
 
-2. Update `justfile` line 68 to add username mapping
+2. Add the username mapping to the `_host` variable in `justfile`
 
 3. Optional: Create `Brewfile.new-machine` for machine-specific apps
 

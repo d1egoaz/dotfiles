@@ -31,7 +31,7 @@ just install-darwin
 just switch
 #+end_src
 
-*Note:* Uses nixpkgs 25.11-darwin (stable) for reliability — avoiding constant updates for basic commands. Select packages pull from unstable when needed.
+*Note:* Uses nixpkgs 25.11-darwin (stable) for reliability — avoiding constant updates for basic commands.
 
 * My Machines
 
