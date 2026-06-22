@@ -107,6 +107,7 @@ in
         "repo-research"
         "scratch-log"
         "signed-pr-publish"
+        "tfctl"
       ];
     in
     lib.listToAttrs (

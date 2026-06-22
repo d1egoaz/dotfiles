@@ -23,6 +23,17 @@ prefix_rule(pattern=["gh", "search", "issues"], decision="allow")
 prefix_rule(pattern=["gh", "search", "prs"], decision="allow")
 prefix_rule(pattern=["gh", "workflow", "list"], decision="allow")
 
+prefix_rule(pattern=["tfctl", "--help"], decision="allow")
+prefix_rule(pattern=["tfctl", "--version"], decision="allow")
+prefix_rule(pattern=["tfctl", "auth", "status"], decision="allow")
+prefix_rule(pattern=["tfctl", "profile", "display"], decision="allow")
+prefix_rule(pattern=["tfctl", "profile", "get"], decision="allow")
+prefix_rule(pattern=["tfctl", "profile", "profiles", "list"], decision="allow")
+prefix_rule(pattern=["tfctl", "api", "schema", "search"], decision="allow")
+prefix_rule(pattern=["tfctl", "api", "schema", "get"], decision="allow")
+prefix_rule(pattern=["tfctl", "get"], decision="allow")
+prefix_rule(pattern=["tfctl", "run", "status"], decision="allow")
+
 # NOTE: prefix rules match argv literally, so ["git", "-C", "add"] only matches
 # the nonsensical `git -C add ...` (the path argument occupies that position).
 # `git -C <path> add` cannot be expressed as a literal prefix; rely on the plain

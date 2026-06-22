@@ -8,6 +8,10 @@
     "CLAUDE_CODE_NO_FLICKER": "1",
     "CLAUDE_CODE_USE_BEDROCK": "false",
     "DISABLE_TELEMETRY": "1",
+    "TFCTL_HOSTNAME": "tfe.hub.chmfin.com",
+    "TFCTL_ORGANIZATION": "chime",
+    "TFCTL_TELEMETRY": "disabled",
+    "TFCTL_VCS_REPO": "github.com/1debit/chime-tf",
     "USE_BUILTIN_RIPGREP": "0"
   },
   "includeCoAuthoredBy": false,
@@ -56,7 +60,17 @@
       "Bash(terraform validate:*)",
       "Bash(terraform fmt -check:*)",
       "Bash(terraform workspace show:*)",
-      "Bash(terraform graph:*)"
+      "Bash(terraform graph:*)",
+      "Bash(tfctl --help:*)",
+      "Bash(tfctl --version:*)",
+      "Bash(tfctl auth status:*)",
+      "Bash(tfctl profile display:*)",
+      "Bash(tfctl profile get:*)",
+      "Bash(tfctl profile profiles list:*)",
+      "Bash(tfctl api schema search:*)",
+      "Bash(tfctl api schema get:*)",
+      "Bash(tfctl get:*)",
+      "Bash(tfctl run status:*)"
     ],
     "deny": [
       "Bash(curl:*)",

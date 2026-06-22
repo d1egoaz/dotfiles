@@ -1,0 +1,7 @@
+interface:
+  display_name: "tfctl"
+  short_description: "Use HCP Terraform through tfctl"
+  default_prompt: "Use $tfctl to inspect or manage HCP Terraform with the tfctl CLI."
+
+policy:
+  allow_implicit_invocation: true
