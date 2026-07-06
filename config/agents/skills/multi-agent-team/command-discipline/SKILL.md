@@ -16,7 +16,7 @@ Use this skill for command shape, command transparency, approval boundaries, and
 - Prefer CLI over GUI. Use GUI only when the task truly requires it.
 - For multi-repo work, run commands in each repo's working directory. Avoid `git -C` unless the user explicitly requests it.
 - Explain routine read-only commands with at most one short sentence.
-- Use expanded risk explanation only for destructive operations, escalated permissions, broad rewrites, force pushes, live state changes, or when the user asks for it.
+- Use an expanded `Why/What/Expect/Risk` block only for destructive operations, escalated permissions, broad rewrites, force pushes, live state changes, or when the user asks for it.
 
 ## Process Inspection
 

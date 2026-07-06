@@ -29,7 +29,8 @@ Use this skill to publish local work without losing scope control, signing, attr
 Assisted-by: [Model] via [Tool]
 ```
 
-- Never bypass commit signing.
+- Types: `fix`, `feat`, `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`, `revert`. Breaking changes: append `!` after the type or add a `BREAKING CHANGE:` footer.
+- Never bypass commit signing; never use signing-bypass flags such as `-c commit.gpgsign=false`.
 - Run `git commit -S` with escalated permissions first when signing may need the 1Password SSH agent.
 - If a signing command fails with socket or agent errors, rerun the same command with escalated permissions immediately.
 - If signing still fails after escalation, stop and ask the user.

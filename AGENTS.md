@@ -128,18 +128,7 @@ Use documented Codex hook events only:
 
 Do not add a `Notification` hook to `hooks.json`; Codex does not document that as a hook event. Use the top-level `notify = [...]` setting in `config.toml` for Codex notification payloads, and keep `bin/files/codex-notify.sh` for filtered `agent-turn-complete` sounds. Do not add Desktop log-watcher or launchd sound hacks unless the user explicitly asks for that workaround.
 
-Validate Codex config changes with:
-
-```fish
-jq . config/codex/hooks.json >/dev/null
-taplo check config/codex/config.toml
-taplo check config/codex/profiles/personal.toml
-test ! -f config/codex/profiles/work.local.toml || taplo check config/codex/profiles/work.local.toml
-sh -c 'tmp=$(mktemp "${TMPDIR:-/tmp}/codex-profile.XXXXXX.toml"); { cat config/codex/config.toml; printf "\n"; cat config/codex/profiles/personal.toml; } > "$tmp"; taplo check "$tmp"; rm -f "$tmp"'
-codex debug prompt-input hooks-json-smoke
-```
-
-If `codex debug prompt-input hooks-json-smoke` fails because the sandbox cannot read `~/.codex/sessions`, rerun the same command with escalated permissions.
+Validate Codex config changes with the `Validation` runbook in `config/agents/skills/multi-agent-team/codex-config-maintenance/SKILL.md` (canonical source: the `jq`/`taplo` checks, the profile-concat check, `codex debug prompt-input hooks-json-smoke`, `dotfiles-local-state check`, and `just check`). If `codex debug prompt-input hooks-json-smoke` fails because the sandbox cannot read `~/.codex/sessions`, rerun it with escalated permissions.
 
 To test sounds directly:
 
