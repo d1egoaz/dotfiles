@@ -1,6 +1,6 @@
 ---
 name: multi-agent-routing
-description: Route Codex subagents and model choices for multi-agent work. Use when the user asks for Multi-Agent Routing, multi agent routing, multi-agent, subagent, delegation, parallel agents, agent team design, model-per-agent configuration, or explicit `$multi-agent-routing` help. Applies to coding, repo review, PR repair, incident investigation, Terraform/IAM review, Slack/Jira follow-up, and other workflows where a lead agent must decide what to keep local, what to delegate, which model/reasoning effort each agent should use, and how to integrate results safely.
+description: Route Codex subagents and model choices for multi-agent work. Use when the user asks for multi-agent routing, subagent, delegation, parallel agents, agent team design, model-per-agent configuration, or `$multi-agent-routing`. Covers deciding what to keep local, what to delegate, which model and reasoning effort each agent uses, and how to integrate results safely across coding, repo review, PR repair, incident, and Terraform/IAM work.
 ---
 
 # Multi-Agent Routing
@@ -12,6 +12,16 @@ Act as the lead/conductor. Own scope, decomposition, model routing, risky decisi
 Treat the phrase `Multi-Agent Routing`, `multi agent routing`, or `$multi-agent-routing` as an explicit request to consider subagents now. Use subagents only when the user explicitly asks for multi-agent, subagent, delegation, or parallel agent work, or when the active runtime instructions otherwise permit delegation. If subagents are unavailable, state that and apply the same routing judgment locally.
 
 When the user names this skill and there is meaningful independent read-only or verification work, default to spawning at least one sidecar agent. Keep live mutations, destructive actions, and final decisions in the lead thread unless the user explicitly authorizes delegation of those writes.
+
+## Model Tiers
+
+Route by tier, not by raw model name, so a Codex lineup change is a one-line edit here. Confirm the current IDs in the Codex model picker. Reasoning effort runs Light < Medium < High < Extra High.
+
+| Tier | Codex model (verify in the picker) | Use for |
+|------|------------------------------------|---------|
+| `strong` | GPT-5.5 | strategy, cross-repo or ambiguous changes, production/security/IAM/Terraform, root-cause and safety claims |
+| `mid` | GPT-5.4 | scoped implementation, verification, scope audits |
+| `fast` | GPT-5.4-Mini | read-only discovery, evidence extraction, drafting from verified facts |
 
 ## Workflow
 
@@ -28,14 +38,14 @@ When the user names this skill and there is meaningful independent read-only or 
    - Keep tightly coupled, tiny, or unclear tasks local.
    - Do not delegate live mutations or destructive actions unless the user explicitly authorized that risk.
 
-3. Route by role and risk.
-   - Lead/conductor: `gpt-5.5`, `xhigh`. Keeps strategy, scope, critical path, risk calls, and synthesis.
-   - Evidence scout: `gpt-5.4-mini`, `low` or `medium`. Performs read-only discovery, file mapping, log collection, docs lookup, PR metadata reads, and exact evidence extraction.
-   - PR steward or scribe: `gpt-5.4-mini`, `low`. Drafts PR bodies, Jira summaries, Slack wording, and changelog notes from verified facts. Use `gpt-5.4`, `medium` for incident-sensitive wording.
-   - Implementation worker: `gpt-5.4`, `medium` or `high`. Makes scoped code changes in an assigned write set. Use `gpt-5.5`, `high` for cross-repo, production-sensitive, security-sensitive, or ambiguous changes.
-   - Verification agent: `gpt-5.4`, `high`. Runs tests, reviews diffs, checks local behavior, and validates outputs. Use `gpt-5.5`, `high` for production, IAM, Terraform, data-loss, or root-cause claims.
-   - Scope auditor: `gpt-5.4`, `high`. Checks blast radius, unrelated diffs, generated artifact ownership, permissions widening, and repo instruction compliance. Use `gpt-5.5`, `high` for prod/security/infra/cross-team risk.
-   - Terraform/IAM auditor: `gpt-5.5`, `high` or `xhigh`. Reviews plan JSON, IAM action/resource/condition scope, TFE runs, state diffs, and safety claims.
+3. Route by role and risk. Reference the model tiers above; raise reasoning effort as the cost of being wrong rises.
+   - Lead/conductor: `strong`, High or Extra High. Keeps strategy, scope, critical path, risk calls, and synthesis.
+   - Evidence scout: `fast`, Light or Medium. Read-only discovery, file mapping, log collection, docs lookup, PR metadata reads, and exact evidence extraction.
+   - PR steward or scribe: `fast`, Light. Drafts PR bodies, Jira summaries, Slack wording, and changelog notes from verified facts. Use `mid`, Medium for incident-sensitive wording.
+   - Implementation worker: `mid`, Medium or High. Scoped code changes in an assigned write set. Use `strong`, High for cross-repo, production-sensitive, security-sensitive, or ambiguous changes.
+   - Verification agent: `mid`, High. Runs tests, reviews diffs, checks local behavior, and validates outputs. Use `strong`, High for production, IAM, Terraform, data-loss, or root-cause claims.
+   - Scope auditor: `mid`, High. Checks blast radius, unrelated diffs, generated-artifact ownership, permissions widening, and repo-instruction compliance. Use `strong`, High for prod/security/infra/cross-team risk.
+   - Terraform/IAM auditor: `strong`, High or Extra High. Reviews plan JSON, IAM action/resource/condition scope, TFE runs, state diffs, and safety claims.
 
 4. Write precise delegation prompts.
    - State the role, objective, allowed files or read scope, and exact output needed.

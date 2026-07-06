@@ -40,7 +40,7 @@ ps -p PID -o pid,ppid,args=
 - If a command fails because of sandboxing, rerun the same command with escalated permissions and a concise justification.
 - Do not ask for broad persistent approvals. Scope approval prefix rules to the tool family actually needed.
 - Never request a persistent approval rule for destructive commands.
-- For manual code edits, use `apply_patch`. Use formatters or mechanical rewrites only when they are the safer, narrower tool for the job.
+- For manual code edits, use your file-editing tool (`apply_patch` in Codex, Edit/Write in Claude Code). Use formatters or mechanical rewrites only when they are the safer, narrower tool for the job.
 
 ## Bulk Refactors
 

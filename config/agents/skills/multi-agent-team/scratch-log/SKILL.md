@@ -26,9 +26,9 @@ Skip the log for simple questions, one-line fixes, read-only lookups, and tasks 
 
 Use the current git worktree root when available; otherwise use the current directory.
 
-Preferred path: `.codex/scratch-log.md`
+Preferred path: `.codex/scratch-log.md` (use `.claude/scratch-log.md` when running under Claude Code).
 
-Before writing, check whether the log already exists and append to it. If `.codex/` does not exist, create the directory, then use `apply_patch` to create or update the markdown file.
+Before writing, check whether the log already exists and append to it. If the directory does not exist, create it, then use your file-editing tool to create or update the markdown file.
 
 Do not stage, commit, quote in PR bodies, or include the scratch log in patches unless the user explicitly asks. Mention the path in the final answer when the log was created or updated.
 
