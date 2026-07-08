@@ -79,7 +79,15 @@ build_request_body() {
 }
 
 load_key() {
-  KEY=$("$OP_ENV_CACHE_BIN" get "$CACHE_NAME" "$SECRET_ENV" --account "$OP_ACCOUNT" --auto-refresh --sops-file "$SOPS_SPEC_FILE" 2>&1) || fail "$KEY"
+  local err msg
+  err=$(mktemp "${TMPDIR:-/tmp}/alfred-llm-rewrite-op-cache.XXXXXX") || fail "failed to create temp error file"
+  if ! KEY=$("$OP_ENV_CACHE_BIN" get "$CACHE_NAME" "$SECRET_ENV" --account "$OP_ACCOUNT" --auto-refresh --sops-file "$SOPS_SPEC_FILE" 2>"$err"); then
+    msg=$(cat "$err")
+    rm -f "$err"
+    fail "${msg:-failed to load secret from op-env-cache}"
+  fi
+  rm -f "$err"
+  [ -n "$KEY" ] || fail "empty secret from op-env-cache"
 }
 
 main() {

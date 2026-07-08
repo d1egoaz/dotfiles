@@ -6,6 +6,8 @@ set -euo pipefail
 
 prog="op-env-cache"
 default_ttl="${OP_ENV_CACHE_MAX_AGE_SECONDS:-28800}"
+op_read_attempts="${OP_ENV_CACHE_OP_READ_ATTEMPTS:-2}"
+op_read_retry_delay_seconds="${OP_ENV_CACHE_OP_READ_RETRY_DELAY_SECONDS:-1}"
 cmd="${1:-}"
 name=""
 key=""
@@ -179,16 +181,24 @@ write_file() {
 write_op_value() {
   local ref="$1"
   local target="$2"
-  local tmp err
+  local tmp err attempt
+  [[ "$op_read_attempts" == <-> && "$op_read_attempts" -gt 0 ]] || die "OP_ENV_CACHE_OP_READ_ATTEMPTS must be a positive integer"
+  [[ "$op_read_retry_delay_seconds" == <-> ]] || die "OP_ENV_CACHE_OP_READ_RETRY_DELAY_SECONDS must be a non-negative integer"
   local -a op_cmd=(op read)
   [[ -n "$account" ]] && op_cmd+=(--account "$account")
   tmp=$(mktemp "$target.XXXXXX") || die "failed to create temp file for $target"
   err=$(mktemp "${TMPDIR:-/tmp}/op-env-cache-op.XXXXXX") || { rm -f "$tmp"; die "failed to create temp error file"; }
   chmod 600 "$tmp"
-  if ! "${op_cmd[@]}" "$ref" >"$tmp" 2>"$err"; then
+  for (( attempt = 1; attempt <= op_read_attempts; attempt++ )); do
+    : > "$tmp"
+    : > "$err"
+    "${op_cmd[@]}" "$ref" >"$tmp" 2>"$err" && break
+    (( attempt < op_read_attempts )) && sleep "$op_read_retry_delay_seconds"
+  done
+  if (( attempt > op_read_attempts )); then
     cat "$err" >&2
     rm -f "$tmp" "$err"
-    die "failed to read secret from 1Password"
+    die "failed to read secret from 1Password after $op_read_attempts attempts"
   fi
   rm -f "$err"
   mv -f "$tmp" "$target" || { rm -f "$tmp"; die "failed to write $target"; }
