@@ -149,4 +149,8 @@ brew:
       echo "Bundling host Brewfile: Brewfile.{{ _host }}..."
       brew bundle --file ./Brewfile.{{ _host }}
     fi
+    if command -v /opt/homebrew/bin/mas >/dev/null 2>&1; then
+      echo "Upgrading Mac App Store apps..."
+      /opt/homebrew/bin/mas upgrade --verbose
+    fi
     brew cleanup --prune=all
