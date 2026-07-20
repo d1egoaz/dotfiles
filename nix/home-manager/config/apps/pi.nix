@@ -9,7 +9,7 @@ let
   piThinkingLevel = if profile == "office" then "xhigh" else "low";
   managedPiSettings = builtins.toJSON {
     defaultProvider = "openai-codex";
-    defaultModel = "gpt-5.5";
+    defaultModel = "gpt-5.6-sol";
     defaultThinkingLevel = piThinkingLevel;
   };
 in

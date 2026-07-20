@@ -5,7 +5,7 @@ allow_login_shell = false
 # Ask only when Codex needs to leave the sandbox or run a risky command.
 approval_policy = "on-request"
 file_opener = "cursor"
-model = "gpt-5.5"
+model = "gpt-5.6-sol"
 model_context_window = 1050000
 model_reasoning_effort = "high"
 model_verbosity = "medium"
@@ -74,9 +74,6 @@ status_line = [
 ]
 theme = "tokyo-night"
 terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
-
-[tui.model_availability_nux]
-"gpt-5.5" = 4
 
 # Environment inherited by tool commands. Claude-related variables are here so
 # Claude Code launched from Codex shell tools follows the same local policy.

@@ -19,9 +19,9 @@ Route by tier, not by raw model name, so a Codex lineup change is a one-line edi
 
 | Tier | Codex model (verify in the picker) | Use for |
 |------|------------------------------------|---------|
-| `strong` | GPT-5.5 | strategy, cross-repo or ambiguous changes, production/security/IAM/Terraform, root-cause and safety claims |
-| `mid` | GPT-5.4 | scoped implementation, verification, scope audits |
-| `fast` | GPT-5.4-Mini | read-only discovery, evidence extraction, drafting from verified facts |
+| `strong` | GPT-5.6-sol | strategy, cross-repo or ambiguous changes, production/security/IAM/Terraform, root-cause and safety claims |
+| `mid` | GPT-5.6-terra | scoped implementation, verification, scope audits |
+| `fast` | GPT-5.6-luna | read-only discovery, evidence extraction, drafting from verified facts |
 
 ## Workflow
 
