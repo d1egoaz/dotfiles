@@ -26,10 +26,12 @@ Use this skill to publish local work without losing scope control, signing, attr
 
 [body]
 
-Assisted-by: [Model] via [Tool]
+Assisted-by: [Exact model identifier] via [Tool]
 ```
 
 - Types: `fix`, `feat`, `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`, `revert`. Breaking changes: append `!` after the type or add a `BREAKING CHANGE:` footer.
+- Use the most specific model identifier exposed by the current runtime or session metadata, including its version and variant when available. Preserve that identifier exactly instead of shortening or normalizing it. Examples: `GPT-5.6-sol`, `gpt-5.4`.
+- Never use a family-only label such as `GPT-5`. If the runtime does not expose an exact model identifier, stop and ask the user before committing rather than inventing one.
 - Never bypass commit signing; never use signing-bypass flags such as `-c commit.gpgsign=false`.
 - Run `git commit -S` with escalated permissions first when signing may need the 1Password SSH agent.
 - If a signing command fails with socket or agent errors, rerun the same command with escalated permissions immediately.
@@ -39,6 +41,8 @@ Assisted-by: [Model] via [Tool]
 ```fish
 git log -1 --pretty=%B | rg -n "^Assisted-by: .+ via .+$"
 ```
+
+The regex only confirms that the footer exists. Compare the captured model value with the exact identifier exposed by the current runtime or session metadata. Do not report the footer as verified if the value is shortened, family-only, guessed, or mismatched; amend the commit before pushing.
 
 ## Push And PR
 
@@ -62,4 +66,4 @@ Before marking ready, verify attribution in the PR body:
 gh pr view --json body --jq ".body" | rg -n "^Assisted-by: .+ via .+$"
 ```
 
-Do not mark a PR ready if commit or PR attribution is missing.
+Apply the same exact-model comparison to the PR body. Do not mark a PR ready if commit or PR attribution is missing, shortened, family-only, guessed, or mismatched.
