@@ -29,6 +29,7 @@ for sid in $(aerospace list-workspaces --all); do
   "AI") ICON="󱚟" ;;
   "Chrome") ICON="" ;;
   "Emacs") ICON="" ;;
+  "Music") ICON="" ;;
   "Notion") ICON="" ;;
   "Slack") ICON="󰒱" ;;
   "Terminal") ICON="" ;;

@@ -95,6 +95,7 @@ alt-a = "workspace AI"
 alt-c = "workspace Chrome"
 alt-e = "workspace Emacs"
 alt-i = "workspace IDEs"
+alt-m = "workspace Music"
 alt-t = "workspace Terminal"
 
 # Office-specific workspaces
@@ -109,6 +110,7 @@ alt-shift-a = ["move-node-to-workspace AI", "workspace AI"]
 alt-shift-c = ["move-node-to-workspace Chrome", "workspace Chrome"]
 alt-shift-e = ["move-node-to-workspace Emacs", "workspace Emacs"]
 alt-shift-i = ["move-node-to-workspace IDEs", "workspace IDEs"]
+alt-shift-m = ["move-node-to-workspace Music", "workspace Music"]
 alt-shift-t = ["move-node-to-workspace Terminal", "workspace Terminal"]
 
 # Office-specific move bindings
@@ -217,6 +219,11 @@ run = "move-node-to-workspace AI"
 [[on-window-detected]]
 if.app-id = "ai.elementlabs.lmstudio"
 run = "move-node-to-workspace AI"
+
+# Music apps
+[[on-window-detected]]
+if.app-id = "com.spotify.client"
+run = "move-node-to-workspace Music"
 
 # Office apps
 [[on-window-detected]]
