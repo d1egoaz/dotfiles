@@ -122,6 +122,7 @@ in
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
         ",,"
+        "codex-model-usage"
         "dotfiles-local-state"
         "ediff"
         "ediff3"

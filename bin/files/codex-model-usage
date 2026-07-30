@@ -1,0 +1,284 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "optparse"
+require "date"
+require "time"
+
+DAY_SECONDS = 86_400
+DEFAULT_ROOTS = [
+  File.expand_path("~/work"),
+  File.expand_path("~/dotfiles"),
+].freeze
+DEFAULT_SESSION_DIRS = [
+  File.expand_path("~/.codex/sessions"),
+  File.expand_path("~/.codex/archived_sessions"),
+].freeze
+VALUE_EFFORTS = %w[high xhigh max].freeze
+SOL_QUALITY_EFFORTS = %w[high xhigh max ultra].freeze
+VERY_HIGH_EFFORTS = %w[xhigh max ultra].freeze
+
+options = {
+  roots: [],
+  session_dirs: [],
+  json: false,
+  now: Time.now.utc,
+}
+
+OptionParser.new do |parser|
+  parser.banner = "Usage: codex-model-usage [OPTIONS]"
+
+  parser.on("--root PATH", "Count turns under PATH; repeat to include multiple roots") do |path|
+    options[:roots] << File.expand_path(path)
+  end
+
+  parser.on("--session-dir PATH", "Read a session directory; repeat to provide multiple directories") do |path|
+    options[:session_dirs] << File.expand_path(path)
+  end
+
+  parser.on("--json", "Emit machine-readable JSON") do
+    options[:json] = true
+  end
+
+  parser.on("--now TIMESTAMP", "Override the current time with an ISO 8601 timestamp") do |timestamp|
+    options[:now] = Time.iso8601(timestamp).utc
+  rescue ArgumentError
+    raise OptionParser::InvalidArgument, "invalid ISO 8601 timestamp: #{timestamp}"
+  end
+end.parse!
+
+session_dirs = options[:session_dirs].empty? ? DEFAULT_SESSION_DIRS : options[:session_dirs]
+existing_session_dirs = session_dirs.select { |path| Dir.exist?(path) }
+if existing_session_dirs.empty?
+  warn "codex-model-usage: no session directories exist: #{session_dirs.join(", ")}"
+  exit 1
+end
+
+roots = options[:roots].empty? ? DEFAULT_ROOTS : options[:roots]
+roots = roots.map do |path|
+  path == File::SEPARATOR ? path : path.delete_suffix(File::SEPARATOR)
+end.uniq.sort_by { |path| -path.length }
+now = options[:now]
+cutoff = now - (14 * DAY_SECONDS)
+earliest_file_date = (cutoff - DAY_SECONDS).to_date
+parse_errors = 0
+turns_by_id = {}
+
+candidate_files = existing_session_dirs.flat_map do |directory|
+  Dir.glob(File.join(directory, "**", "*.jsonl"))
+end
+
+candidate_files.each do |path|
+  if (match = File.basename(path).match(/rollout-(\d{4}-\d{2}-\d{2})T/))
+    begin
+      next if Date.iso8601(match[1]) < earliest_file_date
+    rescue Date::Error
+      # Fall through and inspect files with malformed date-like names.
+    end
+  end
+
+  File.foreach(path) do |line|
+    next unless line.include?('"type":"turn_context"')
+
+    begin
+      record = JSON.parse(line)
+      next unless record["type"] == "turn_context"
+
+      payload = record.fetch("payload")
+      timestamp = Time.iso8601(record.fetch("timestamp")).utc
+      next if timestamp < cutoff || timestamp > now
+
+      cwd = payload["cwd"].to_s.delete_suffix(File::SEPARATOR)
+      scope_root = roots.find do |candidate|
+        cwd == candidate || cwd.start_with?("#{candidate}#{File::SEPARATOR}")
+      end
+      next unless scope_root
+
+      model = payload["model"].to_s
+      next if model.empty? || model == "codex-auto-review"
+
+      turn_id = payload["turn_id"].to_s
+      next if turn_id.empty?
+
+      turns_by_id[turn_id] ||= {
+        timestamp: timestamp,
+        scope_root: scope_root,
+        model: model,
+        effort: payload["effort"].to_s.empty? ? "unknown" : payload["effort"].to_s,
+      }
+    rescue JSON::ParserError, KeyError, TypeError, ArgumentError
+      parse_errors += 1
+    end
+  end
+end
+
+turns = turns_by_id.values
+
+def percentage(count, total)
+  return nil if total.zero?
+
+  ((count.to_f / total) * 100).round(1)
+end
+
+def summarize(turns)
+  models = turns.each_with_object(Hash.new(0)) do |turn, counts|
+    counts[turn[:model]] += 1
+  end.sort.to_h
+  efforts = turns.each_with_object(Hash.new(0)) do |turn, counts|
+    counts[turn[:effort]] += 1
+  end.sort.to_h
+  model_efforts = turns.each_with_object(Hash.new(0)) do |turn, counts|
+    counts["#{turn[:model]}@#{turn[:effort]}"] += 1
+  end.sort.to_h
+
+  gpt56_turns = turns.select { |turn| turn[:model].start_with?("gpt-5.6-") }
+  gpt56_total = gpt56_turns.length
+  sol_count = models.fetch("gpt-5.6-sol", 0)
+  terra_count = models.fetch("gpt-5.6-terra", 0)
+  luna_count = models.fetch("gpt-5.6-luna", 0)
+
+  {
+    "total_turns" => turns.length,
+    "gpt_5_6_turns" => gpt56_total,
+    "models" => models,
+    "efforts" => efforts,
+    "model_efforts" => model_efforts,
+    "sol_share_pct" => percentage(sol_count, gpt56_total),
+    "luna_share_pct" => percentage(luna_count, gpt56_total),
+    "terra_share_pct" => percentage(terra_count, gpt56_total),
+    "premium_model_share_pct" => percentage(terra_count + sol_count, gpt56_total),
+    "luna_value_turns" => gpt56_turns.count do |turn|
+      turn[:model] == "gpt-5.6-luna" && VALUE_EFFORTS.include?(turn[:effort])
+    end,
+    "luna_utility_turns" => gpt56_turns.count do |turn|
+      turn[:model] == "gpt-5.6-luna" && %w[low medium].include?(turn[:effort])
+    end,
+    "sol_below_high_turns" => gpt56_turns.count do |turn|
+      turn[:model] == "gpt-5.6-sol" && !SOL_QUALITY_EFFORTS.include?(turn[:effort])
+    end,
+    "sol_quality_turns" => gpt56_turns.count do |turn|
+      turn[:model] == "gpt-5.6-sol" && SOL_QUALITY_EFFORTS.include?(turn[:effort])
+    end,
+    "very_high_effort_turns" => turns.count { |turn| VERY_HIGH_EFFORTS.include?(turn[:effort]) },
+  }
+end
+
+def build_windows(turns, now)
+  last_24_hours = summarize(turns.select { |turn| turn[:timestamp] >= now - DAY_SECONDS })
+  current_7_days = summarize(turns.select { |turn| turn[:timestamp] >= now - (7 * DAY_SECONDS) })
+  previous_7_days = summarize(
+    turns.select do |turn|
+      turn[:timestamp] >= now - (14 * DAY_SECONDS) &&
+        turn[:timestamp] < now - (7 * DAY_SECONDS)
+    end,
+  )
+
+  {
+    "last_24_hours" => last_24_hours,
+    "current_7_days" => current_7_days,
+    "previous_7_days" => previous_7_days,
+  }
+end
+
+def build_trend(windows)
+  current_sol_share = windows.fetch("current_7_days").fetch("sol_share_pct")
+  previous_sol_share = windows.fetch("previous_7_days").fetch("sol_share_pct")
+  current_premium_share = windows.fetch("current_7_days").fetch("premium_model_share_pct")
+  previous_premium_share = windows.fetch("previous_7_days").fetch("premium_model_share_pct")
+  sol_delta = if current_sol_share.nil? || previous_sol_share.nil?
+                nil
+              else
+                (current_sol_share - previous_sol_share).round(1)
+              end
+  premium_delta = if current_premium_share.nil? || previous_premium_share.nil?
+                    nil
+                  else
+                    (current_premium_share - previous_premium_share).round(1)
+                  end
+
+  status = if premium_delta.nil?
+             "insufficient_baseline"
+           elsif premium_delta.negative?
+             "cheaper_mix"
+           elsif premium_delta.positive?
+             "costlier_mix"
+           else
+             "flat"
+           end
+
+  {
+    "status" => status,
+    "sol_share_delta_percentage_points" => sol_delta,
+    "premium_model_share_delta_percentage_points" => premium_delta,
+  }
+end
+
+windows = build_windows(turns, now)
+trend = build_trend(windows)
+by_root = roots.each_with_object({}) do |scope_root, result|
+  root_windows = build_windows(
+    turns.select { |turn| turn[:scope_root] == scope_root },
+    now,
+  )
+  result[scope_root] = {
+    "windows" => root_windows,
+    "trend" => build_trend(root_windows),
+  }
+end
+
+report = {
+  "generated_at" => now.iso8601,
+  "scope_roots" => roots,
+  "privacy" => "turn_context metadata only; message records are skipped",
+  "excluded_models" => ["codex-auto-review"],
+  "parse_errors" => parse_errors,
+  "windows" => windows,
+  "trend" => trend,
+  "by_root" => by_root,
+}
+
+if options[:json]
+  puts JSON.pretty_generate(report)
+  exit
+end
+
+def format_percentage(value)
+  value.nil? ? "n/a" : format("%.1f%%", value)
+end
+
+def print_window(label, summary)
+  puts "#{label}: #{summary["total_turns"]} turns (#{summary["gpt_5_6_turns"]} GPT-5.6)"
+  if summary["models"].empty?
+    puts "  Models: none"
+  else
+    model_counts = summary["models"].map { |model, count| "#{model}=#{count}" }.join(", ")
+    puts "  Models: #{model_counts}"
+  end
+  puts "  Luna share: #{format_percentage(summary["luna_share_pct"])}; Terra: #{format_percentage(summary["terra_share_pct"])}; Sol: #{format_percentage(summary["sol_share_pct"])}"
+  puts "  Premium model share (Terra + Sol): #{format_percentage(summary["premium_model_share_pct"])}"
+  effort_counts = summary["efforts"].map { |effort, count| "#{effort}=#{count}" }.join(", ")
+  puts "  Effort: #{effort_counts.empty? ? "none" : effort_counts}"
+end
+
+puts "Codex model turn usage"
+puts "Scopes: #{roots.join(", ")}"
+puts "Privacy: turn_context metadata only; message records are skipped"
+print_window("Last 24 hours", windows.fetch("last_24_hours"))
+print_window("Current 7 days", windows.fetch("current_7_days"))
+print_window("Previous 7 days", windows.fetch("previous_7_days"))
+
+sol_delta = trend.fetch("sol_share_delta_percentage_points")
+premium_delta = trend.fetch("premium_model_share_delta_percentage_points")
+sol_delta_text = sol_delta.nil? ? "n/a" : format("%+.1f pp", sol_delta)
+premium_delta_text = premium_delta.nil? ? "n/a" : format("%+.1f pp", premium_delta)
+puts "Cost mix: #{trend.fetch("status")} (Terra + Sol share delta: #{premium_delta_text}; Sol delta: #{sol_delta_text})"
+current_7_days = windows.fetch("current_7_days")
+puts "Current 7-day routing: Luna value=#{current_7_days.fetch("luna_value_turns")}, Luna utility=#{current_7_days.fetch("luna_utility_turns")}, Sol quality=#{current_7_days.fetch("sol_quality_turns")}, Sol below high=#{current_7_days.fetch("sol_below_high_turns")}, xhigh/max/ultra=#{current_7_days.fetch("very_high_effort_turns")}"
+puts "Current 7 days by root:"
+by_root.each do |scope_root, root_report|
+  summary = root_report.fetch("windows").fetch("current_7_days")
+  model_counts = summary.fetch("models").map { |model, count| "#{model}=#{count}" }.join(", ")
+  puts "  #{scope_root}: #{summary.fetch("total_turns")} turns; #{model_counts.empty? ? "no models" : model_counts}; trend=#{root_report.fetch("trend").fetch("status")}"
+end
+warn "Warning: skipped #{parse_errors} malformed turn_context records" if parse_errors.positive?

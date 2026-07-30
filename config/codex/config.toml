@@ -5,9 +5,9 @@ allow_login_shell = false
 # Ask only when Codex needs to leave the sandbox or run a risky command.
 approval_policy = "on-request"
 file_opener = "cursor"
-model = "gpt-5.6-sol"
+model = "gpt-5.6-luna"
 model_context_window = 1050000
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 model_verbosity = "medium"
 # Notification sounds are handled by this helper; hook sounds live in hooks.json.
 notify = [
