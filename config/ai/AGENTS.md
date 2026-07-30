@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.4.1 | Updated: 2026-07-20 -->
+<!-- Version: 1.5.0 | Updated: 2026-07-30 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -33,6 +33,17 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - Add detail only when it changes the decision, proves the claim, captures risk, or the user asked for depth.
 - For Slack, email, PR comments, and chat-ready text, write like a human in that medium. Do not paste an AI-sized essay where a person would write a sentence.
 - Do not confuse concise output with shallow work. Investigate thoroughly when needed, then report only the useful result.
+
+## Model Routing
+- Optimize expected outcome value: meet the requested quality and time target at the lowest total task cost. Cheapest tokens alone are not the goal.
+- Default new interactive tasks to `GPT-5.6-luna` at xhigh reasoning. Use Luna low for no-op polling and exact utility work, medium for bounded routine work, high for ordinary judgment, and max only when its additional reasoning is worth the extra per-task tokens and latency.
+- `AGENTS.md` cannot replace the active main agent's model. New tasks inherit the configured default; an existing task keeps its model until the user changes it in the task picker or another supported runtime control changes a later turn.
+- Use `GPT-5.6-sol` at high reasoning when coding quality, agentic reliability, time, or cost of failure matters more than raw model spend. Use Sol xhigh for a genuinely hard frontier decision and Sol max only for the hardest quality-first work with a clear evaluation target.
+- Keep `GPT-5.6-terra` as an exception, not the default. Use it only when current measurements show Luna is too slow or insufficient and Sol is unnecessary.
+- A task mentioning production, Terraform, IAM, incidents, or multiple repositories does not automatically require Sol. Let ambiguity and the marginal value of stronger reasoning decide the model; let risk decide the verification and approval rigor.
+- Select the intended model for the whole task. Reading or writing a file does not become a Luna turn automatically. Delegate only an independent, meaningful unit when delegation is authorized; never spawn an agent for one tool call.
+- Fast mode and direct API billing are explicit routes. Do not assume a model change also changes credentials, billing, or service tier. Use Sol high or xhigh with fast mode only when the user says latency or outcome is worth the premium.
+- Re-check current official prices and measured task behavior before changing the default again. See `$multi-agent-routing`.
 
 ## Non-Negotiables
 Hard gates that hold even when the matching skill has not loaded. The linked skill carries the full procedure.
@@ -71,6 +82,6 @@ Load a skill when its trigger matches; type `$name` to invoke it explicitly. Eac
 - `$git-history-orientation`: read-only git-history map of an unfamiliar repo (churn, ownership, cadence).
 - `$signed-pr-publish`: signed commits, `Assisted-by` attribution, draft PRs, PR-body quality, publish and ready.
 - `$scratch-log`: local decision log for large, multi-step, or ambiguous work.
-- `$multi-agent-routing`: subagent decomposition, model and reasoning routing, sidecar scouts, verifiers.
+- `$multi-agent-routing`: single-agent and subagent model selection, cost-aware reasoning, sidecar scouts, and verifiers.
 - `$codex-config-maintenance`: Codex config, hooks, approval rules, skills, AGENTS/CLAUDE wiring, dotfiles AI instructions.
 - `$tfctl`: HCP Terraform / Terraform Cloud via the tfctl CLI.

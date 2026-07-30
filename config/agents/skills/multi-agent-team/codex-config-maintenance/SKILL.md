@@ -50,6 +50,15 @@ Use this skill for Codex configuration and dotfiles-managed AI instructions. Pre
 - For nested work repos, a shared parent `.codex/config.toml` is not a reliable project layer because Codex resolves each nested `.git` as a repo root.
 - Prefer repo-local `.codex/config.toml` when a repo needs project config, or a Home Manager symlink if one source of truth is required.
 
+## Model Defaults And Routing
+
+- `config/codex/config.toml` sets the starting model for new tasks; it does not dynamically choose a model for each stage of an active task.
+- Keep the shared default at `gpt-5.6-luna` with xhigh reasoning for the current value-first policy.
+- Keep the always-loaded decision policy in `config/ai/AGENTS.md` and detailed role routing in `multi-agent-routing/SKILL.md`.
+- Use Sol high or xhigh for explicit quality-first coding, agentic work, or high-consequence ambiguity. Keep Terra as an evidence-backed exception rather than the standing default.
+- A config, instruction, or skill change does not replace the model of an already-running task. Verify both new-task defaults and the manual or delegated escalation path.
+- When changing these defaults, verify the available model IDs in the current Codex model picker and re-check current pricing or subscription-credit guidance from official sources.
+
 ## Validation
 
 ```fish
