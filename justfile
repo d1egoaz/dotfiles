@@ -154,3 +154,6 @@ brew:
       /opt/homebrew/bin/mas upgrade --verbose
     fi
     brew cleanup --prune=all
+
+sync:
+	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew

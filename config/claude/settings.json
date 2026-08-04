@@ -81,7 +81,6 @@
       "Read(./build)"
     ]
   },
-  "model": "opus[1m]",
   "hooks": {
     "Notification": [
       {
