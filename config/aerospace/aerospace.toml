@@ -48,7 +48,7 @@ left = 3
 right = 3
 bottom = 2
 # Different top gaps for different monitors
-top = [{ monitor."LG" = 0 }, { monitor."^built-in retina display$" = 15 }, 30]
+top = [{ monitor."LG" = 0 }, { monitor."^built-in retina display$" = 0 }, 30]
 
 # Main mode bindings
 [mode.main.binding]
