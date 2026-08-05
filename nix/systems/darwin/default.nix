@@ -1,7 +1,6 @@
 {
   pkgs,
   user,
-  profile,
   systemPackages,
   ...
 }:
@@ -12,7 +11,7 @@
     ./services/aerospace.nix
 
     # System configuration
-    (import ./system/defaults.nix { inherit profile; })
+    ./system/defaults.nix
     ./system/programs.nix
     (import ./system/security.nix { inherit pkgs; })
 

@@ -47,7 +47,6 @@ All machines use Apple Silicon (aarch64-darwin) and auto-detect based on usernam
 - *Terminal:* Ghostty, WezTerm
 - *Editor:* Emacs (built from Nix), with custom wrapper
 - *Window Management:* AeroSpace tiling window manager
-- *Status Bar:* SketchyBar with custom plugins
 - *CLI Tools:* ripgrep, fd, bat, jq, yq, eza, and many more
 - *Dev Tools:* Git with SSH signing (via 1Password), GitHub CLI, Docker, kubectl
 - *Secrets:* 1Password CLI for on-demand secret access
@@ -64,8 +63,12 @@ just lint          # Format and check (combines fmt + check)
 just gc            # Clean up old generations
 just brew          # Update and upgrade Homebrew apps
 just dry-run       # Preview changes without applying
+just audit         # Compare this Mac with dotfiles (read-only)
+just audit-export  # Write a sanitized audit JSON to the Desktop
 just --list        # See all available commands
 #+end_src
+
+=just audit= exits with =0= for a complete match, =1= when drift is found, and =2= when any audit coverage is unavailable. =just audit-export= always writes the available sanitized evidence when collection succeeds, including explicit coverage gaps. It excludes secrets, environment variables, network details, browser data, hardware identifiers, file contents, Git diffs, and full macOS defaults exports.
 
 * How It Works
 
@@ -88,7 +91,6 @@ Manages user environment:
 *Direct config editing (hybrid approach):*
 
 Some configs are symlinked directly from the repo for live editing without rebuilds:
-- =config/sketchybar/= → =~/.config/sketchybar=
 - =config/wezterm/= → =~/.config/wezterm=
 - =config/ghostty/= → =~/.config/ghostty=
 - =config/aerospace/= → =~/.config/aerospace=
@@ -147,7 +149,7 @@ Two approaches:
    - Managed by Home Manager, changes require =just switch=
 
 2. *Direct files* — Drop configs in =config/<app>/= and link in =home-manager/config/xdg.nix=
-   - Example: =config/sketchybar/=, =config/wezterm/=, =config/ghostty/=
+   - Example: =config/wezterm/=, =config/ghostty/=, =config/aerospace/=
    - Symlinked directly, changes take effect immediately
    - Use =config.lib.file.mkOutOfStoreSymlink= for live editing
 

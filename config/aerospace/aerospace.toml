@@ -19,17 +19,7 @@ automatically-unhide-macos-hidden-apps = true
 start-at-login = false
 
 # Commands to run after startup
-after-startup-command = [
-  "exec-and-forget command -v sketchybar && sketchybar --config ~/.config/sketchybar/sketchybarrc",
-  "exec-and-forget borders"
-]
-
-# Workspace change notifications
-exec-on-workspace-change = [
-  "/bin/bash",
-  "-c",
-  "command -v sketchybar && sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE || true",
-]
+after-startup-command = ["exec-and-forget borders"]
 
 # Monitor focus behavior
 on-focused-monitor-changed = ["move-mouse monitor-lazy-center"]

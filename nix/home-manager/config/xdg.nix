@@ -123,6 +123,7 @@ in
       scripts = [
         ",,"
         "codex-model-usage"
+        "dotfiles-audit"
         "dotfiles-local-state"
         "ediff"
         "ediff3"
@@ -152,17 +153,6 @@ in
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/aerospace/aerospace.toml";
       "borders/bordersrc".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/borders/bordersrc";
-    }
-    // (
-      if profile != "office" then
-        {
-          "sketchybar".source =
-            config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/sketchybar";
-        }
-      else
-        { }
-    )
-    // {
       "wezterm".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/wezterm";
       "ghostty/config".source =

@@ -22,6 +22,8 @@ just update        # Update flake inputs
 just gc            # Garbage collect old generations
 just brew          # Update Homebrew packages (includes machine-specific)
 just dry-run       # Preview changes without applying
+just audit         # Compare live macOS state with dotfiles (read-only)
+just audit-export  # Export a sanitized audit JSON to the Desktop
 
 # Initial setup (new machine)
 just install-nix
@@ -93,7 +95,7 @@ This repo uses two configuration strategies:
 2. **Direct Symlinks** (immediate changes)
    - Declared in `home-manager/config/xdg.nix` using `mkOutOfStoreSymlink`
    - Symlinks point directly to `~/dotfiles/config/<app>/`
-   - Examples: sketchybar, wezterm, ghostty, aerospace
+   - Examples: wezterm, ghostty, aerospace
    - Edit files directly, no rebuild needed
 
 The `mkOutOfStoreSymlink` function is key: it creates symlinks that point to the repo instead of `/nix/store`, enabling live editing while maintaining declarative management.

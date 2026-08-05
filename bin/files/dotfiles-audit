@@ -1,0 +1,1258 @@
+#!/usr/bin/env python3
+"""Create a sanitized, read-only comparison of this Mac and the dotfiles config."""
+
+from __future__ import annotations
+
+import datetime as dt
+import getpass
+import hashlib
+import json
+import os
+import platform
+import plistlib
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+from typing import Any, Iterable
+
+
+PROGRAM = "dotfiles-audit"
+SCHEMA_VERSION = 1
+HOSTS = {
+    "diego.alvarez": ("office-mbp", "office"),
+    "diego": ("personal-mbp", "personal"),
+    "diegoalvarez": ("personal-mini", "personal"),
+}
+NIX_DEFAULTS = {
+    "dock": "com.apple.dock",
+    "finder": "com.apple.finder",
+    "NSGlobalDomain": "NSGlobalDomain",
+    "trackpad": "__trackpad__",
+    "CustomUserPreferences": "__custom__",
+}
+TRACKPAD_DOMAINS = (
+    "com.apple.AppleMultitouchTrackpad",
+    "com.apple.driver.AppleBluetoothMultitouch.trackpad",
+)
+SAFE_BREW_ENV = {
+    "HOMEBREW_NO_ANALYTICS": "1",
+    "HOMEBREW_NO_AUTO_UPDATE": "1",
+    "HOMEBREW_NO_INSTALL_CLEANUP": "1",
+}
+
+
+def usage() -> None:
+    print(
+        "Usage: dotfiles-audit summary\n"
+        "       dotfiles-audit export [OUTPUT.json]\n"
+        "       dotfiles-audit json",
+        file=sys.stderr,
+    )
+
+
+def command_is_allowed(argv: Iterable[str]) -> bool:
+    """Enforce the collector's read-only command boundary."""
+    args = list(argv)
+    if not args:
+        return False
+
+    command = Path(args[0]).name
+    rest = args[1:]
+    if command == "sw_vers":
+        return rest in (["-productVersion"], ["-buildVersion"])
+    if command == "git":
+        return bool(rest) and rest[0] in {
+            "rev-parse",
+            "symbolic-ref",
+            "diff",
+            "ls-files",
+        }
+    if command == "nix":
+        return (
+            bool(rest)
+            and rest[0] == "eval"
+            and not any(
+                value in rest
+                for value in ("--impure", "--write-lock-file", "--update-input")
+            )
+        )
+    if command == "brew":
+        return rest == ["info", "--json=v2", "--installed"] or rest == ["tap"]
+    if command == "defaults":
+        return "read" in rest and not any(
+            value in rest for value in ("write", "delete", "import")
+        )
+    if command == "plutil":
+        return rest == ["-convert", "json", "-o", "-", "--", "-"]
+    if command == "hidutil":
+        return rest == ["property", "--get", "UserKeyMapping"]
+    if command == "launchctl":
+        return bool(rest) and rest[0] == "print"
+    if command == "sfltool":
+        return rest == ["dumpbtm"]
+    if command == "mas":
+        return rest == ["list"]
+    return False
+
+
+def resolve_command(name: str) -> str | None:
+    override = os.environ.get(f"DOTFILES_AUDIT_{name.upper()}_BIN")
+    if override:
+        return override
+    return shutil.which(name)
+
+
+def run_command(
+    argv: list[str],
+    *,
+    cwd: Path | None = None,
+    timeout: int = 30,
+    input_text: str | None = None,
+    extra_env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    if not command_is_allowed(argv):
+        raise RuntimeError(f"blocked non-read-only command: {argv!r}")
+
+    env = os.environ.copy()
+    if extra_env:
+        env.update(extra_env)
+    return subprocess.run(
+        argv,
+        cwd=cwd,
+        env=env,
+        input=input_text,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=timeout,
+        check=False,
+    )
+
+
+def repo_root_from_script() -> Path:
+    override = os.environ.get("DOTFILES_AUDIT_REPO_ROOT")
+    if override:
+        return Path(override).expanduser().resolve()
+    return Path(__file__).resolve().parents[2]
+
+
+def redact_path(value: str, repo_root: Path, home: Path) -> str:
+    result = value
+    repo = str(repo_root)
+    home_string = str(home)
+    if result == repo or result.startswith(f"{repo}/"):
+        result = "$DOTFILES" + result[len(repo) :]
+    elif result == home_string or result.startswith(f"{home_string}/"):
+        result = "$HOME" + result[len(home_string) :]
+    return result
+
+
+def coverage_entry(component: str, status: str, message: str) -> dict[str, str]:
+    return {"component": component, "status": status, "message": message}
+
+
+def safe_json_loads(value: str) -> Any | None:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError:
+        return None
+
+
+def detect_host() -> tuple[str, str, str]:
+    username = getpass.getuser()
+    override = os.environ.get("DOTFILES_AUDIT_HOST")
+    if override:
+        matches = [
+            (user, profile)
+            for user, (host, profile) in HOSTS.items()
+            if host == override
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"unknown DOTFILES_AUDIT_HOST: {override}")
+        user, profile = matches[0]
+        return override, profile, user
+    if username not in HOSTS:
+        raise ValueError(f"unknown user {username!r}; add it to HOSTS and the justfile")
+    host, profile = HOSTS[username]
+    return host, profile, username
+
+
+def command_value(name: str, args: list[str]) -> str | None:
+    binary = resolve_command(name)
+    if not binary:
+        return None
+    result = run_command([binary, *args], timeout=10)
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip()
+
+
+def collect_host(host: str, profile_name: str) -> tuple[dict[str, Any], dict[str, str]]:
+    product_version = command_value("sw_vers", ["-productVersion"])
+    build_version = command_value("sw_vers", ["-buildVersion"])
+    status = "ok" if product_version and build_version else "partial"
+    message = (
+        "macOS version and architecture collected"
+        if status == "ok"
+        else "sw_vers output was incomplete"
+    )
+    return (
+        {
+            "darwin_host": host,
+            "profile": profile_name,
+            "os_version": product_version,
+            "os_build": build_version,
+            "architecture": platform.machine(),
+        },
+        coverage_entry("host", status, message),
+    )
+
+
+def collect_repository(repo_root: Path) -> tuple[dict[str, Any], dict[str, str]]:
+    git = resolve_command("git")
+    if not git:
+        return (
+            {
+                "head": None,
+                "branch": None,
+                "dirty_paths": [],
+                "flake_lock_sha256": None,
+            },
+            coverage_entry("repository", "unavailable", "git is not installed"),
+        )
+
+    head_result = run_command([git, "rev-parse", "HEAD"], cwd=repo_root)
+    branch_result = run_command(
+        [git, "symbolic-ref", "--quiet", "--short", "HEAD"], cwd=repo_root
+    )
+    dirty: set[str] = set()
+    commands = (
+        [git, "diff", "--name-only"],
+        [git, "diff", "--cached", "--name-only"],
+        [git, "ls-files", "--others", "--exclude-standard"],
+    )
+    dirty_ok = True
+    for command in commands:
+        result = run_command(command, cwd=repo_root)
+        if result.returncode != 0:
+            dirty_ok = False
+            continue
+        dirty.update(line for line in result.stdout.splitlines() if line)
+
+    lock_file = repo_root / "nix" / "flake.lock"
+    lock_hash = (
+        hashlib.sha256(lock_file.read_bytes()).hexdigest()
+        if lock_file.is_file()
+        else None
+    )
+    okay = head_result.returncode == 0 and dirty_ok
+    return (
+        {
+            "head": head_result.stdout.strip() if head_result.returncode == 0 else None,
+            "branch": (
+                branch_result.stdout.strip()
+                if branch_result.returncode == 0
+                else "detached"
+            ),
+            "dirty_paths": sorted(dirty),
+            "flake_lock_sha256": lock_hash,
+        },
+        coverage_entry(
+            "repository",
+            "ok" if okay else "partial",
+            (
+                "Git revision and changed filenames collected"
+                if okay
+                else "some Git metadata could not be read"
+            ),
+        ),
+    )
+
+
+def nix_eval(
+    repo_root: Path, installable: str, *, raw: bool = False, apply: str | None = None
+) -> Any:
+    nix = resolve_command("nix")
+    if not nix:
+        raise FileNotFoundError("nix is not installed")
+    args = [nix, "eval", "--raw" if raw else "--json", installable]
+    if apply:
+        args.extend(["--apply", apply])
+    result = run_command(args, cwd=repo_root, timeout=120)
+    if result.returncode != 0 and any(
+        marker in result.stderr.lower()
+        for marker in ("database is busy", "database is locked")
+    ):
+        time.sleep(0.5)
+        result = run_command(args, cwd=repo_root, timeout=120)
+    if result.returncode != 0:
+        raise RuntimeError(f"nix eval failed with exit {result.returncode}")
+    if raw:
+        return result.stdout.strip()
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError("nix eval returned invalid JSON") from error
+
+
+def evaluate_nix_configuration(
+    repo_root: Path, host: str, username: str
+) -> dict[str, Any]:
+    installable = f"./nix#darwinConfigurations.{host}"
+    apply_expression = f"""darwin: let config = darwin.config; in {{
+      system = builtins.toString config.system.build.toplevel;
+      defaults = {{
+        dock = config.system.defaults.dock;
+        finder = config.system.defaults.finder;
+        NSGlobalDomain = config.system.defaults.NSGlobalDomain;
+        trackpad = config.system.defaults.trackpad;
+        CustomUserPreferences = config.system.defaults.CustomUserPreferences;
+      }};
+      currentHostDefaults = config.home-manager.users.{json.dumps(username)}.targets.darwin.currentHostDefaults;
+      keyboard = config.system.keyboard;
+    }}"""
+    evaluated = nix_eval(repo_root, installable, apply=apply_expression)
+    if not isinstance(evaluated, dict):
+        raise RuntimeError("nix eval returned an unexpected result")
+    return evaluated
+
+
+def collect_nix(
+    evaluated: dict[str, Any] | None,
+) -> tuple[dict[str, Any], dict[str, str]]:
+    active_link = Path("/run/current-system")
+    active = str(active_link.resolve()) if active_link.exists() else None
+    desired = evaluated.get("system") if evaluated else None
+
+    if desired is None:
+        status = "unavailable"
+        message = "the desired nix-darwin system could not be evaluated"
+    elif active is None:
+        status = "partial"
+        message = "/run/current-system is missing"
+    else:
+        status = "ok"
+        message = "active and desired nix-darwin systems compared"
+    return (
+        {
+            "active_system": active,
+            "desired_system": desired,
+            "matches": active == desired if active and desired else None,
+        },
+        coverage_entry("nix_system", status, message),
+    )
+
+
+BREWFILE_PATTERN = re.compile(r'^\s*(tap|brew|cask|mas)\s+["\']([^"\']+)["\']')
+
+
+def parse_brewfiles(paths: Iterable[Path]) -> dict[str, list[str]]:
+    desired: dict[str, set[str]] = {
+        "formulae": set(),
+        "casks": set(),
+        "taps": set(),
+        "app_store": set(),
+    }
+    mapping = {"brew": "formulae", "cask": "casks", "tap": "taps", "mas": "app_store"}
+    for path in paths:
+        if not path.is_file():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            match = BREWFILE_PATTERN.match(line)
+            if not match:
+                continue
+            kind, name = match.groups()
+            if kind == "cask":
+                name = name.rsplit("/", 1)[-1]
+            desired[mapping[kind]].add(name)
+    return {key: sorted(value) for key, value in desired.items()}
+
+
+def formula_present(name: str, full_names: set[str], short_names: set[str]) -> bool:
+    return name in full_names or name.rsplit("/", 1)[-1] in short_names
+
+
+def collect_homebrew(
+    repo_root: Path, host: str
+) -> tuple[dict[str, Any], dict[str, str]]:
+    desired = parse_brewfiles((repo_root / "Brewfile", repo_root / f"Brewfile.{host}"))
+    empty_installed = {
+        "formulae": [],
+        "formulae_on_request": [],
+        "casks": [],
+        "taps": [],
+    }
+    empty_comparison = {
+        "missing_formulae": [],
+        "missing_casks": [],
+        "missing_taps": [],
+        "extra_formulae_on_request": [],
+        "extra_casks": [],
+        "extra_taps": [],
+    }
+    brew = resolve_command("brew")
+    if not brew:
+        return (
+            {
+                "available": False,
+                "desired": desired,
+                "installed": empty_installed,
+                "comparison": empty_comparison,
+                "outdated_from_local_metadata": {"formulae": [], "casks": []},
+            },
+            coverage_entry("homebrew", "unavailable", "Homebrew is not installed"),
+        )
+
+    info_result = run_command(
+        [brew, "info", "--json=v2", "--installed"],
+        timeout=120,
+        extra_env=SAFE_BREW_ENV,
+    )
+    tap_result = run_command([brew, "tap"], timeout=30, extra_env=SAFE_BREW_ENV)
+    info = safe_json_loads(info_result.stdout) if info_result.returncode == 0 else None
+    if not isinstance(info, dict):
+        return (
+            {
+                "available": True,
+                "desired": desired,
+                "installed": empty_installed,
+                "comparison": empty_comparison,
+                "outdated_from_local_metadata": {"formulae": [], "casks": []},
+            },
+            coverage_entry(
+                "homebrew", "partial", "installed Homebrew metadata could not be read"
+            ),
+        )
+
+    formulae = info.get("formulae", [])
+    casks = info.get("casks", [])
+    full_names = {item.get("full_name") or item.get("name") for item in formulae}
+    short_names = {item.get("name") for item in formulae}
+    full_names.discard(None)
+    short_names.discard(None)
+    on_request = {
+        item.get("full_name") or item.get("name")
+        for item in formulae
+        if any(
+            version.get("installed_on_request") is True
+            for version in item.get("installed", [])
+        )
+    }
+    on_request.discard(None)
+    installed_casks = {item.get("token") for item in casks}
+    installed_casks.discard(None)
+    installed_taps = (
+        set(tap_result.stdout.splitlines()) if tap_result.returncode == 0 else set()
+    )
+
+    desired_formulae = set(desired["formulae"])
+    desired_formula_short = {name.rsplit("/", 1)[-1] for name in desired_formulae}
+    desired_casks = set(desired["casks"])
+    desired_taps = set(desired["taps"])
+    missing_formulae = sorted(
+        name
+        for name in desired_formulae
+        if not formula_present(name, full_names, short_names)
+    )
+    extra_formulae = sorted(
+        name
+        for name in on_request
+        if name not in desired_formulae
+        and name.rsplit("/", 1)[-1] not in desired_formula_short
+    )
+    comparison = {
+        "missing_formulae": missing_formulae,
+        "missing_casks": sorted(desired_casks - installed_casks),
+        "missing_taps": sorted(desired_taps - installed_taps),
+        "extra_formulae_on_request": extra_formulae,
+        "extra_casks": sorted(installed_casks - desired_casks),
+        "extra_taps": sorted(installed_taps - desired_taps),
+    }
+    installed = {
+        "formulae": sorted(full_names),
+        "formulae_on_request": sorted(on_request),
+        "casks": sorted(installed_casks),
+        "taps": sorted(installed_taps),
+    }
+    outdated = {
+        "formulae": sorted(
+            item.get("full_name") or item.get("name")
+            for item in formulae
+            if item.get("outdated") is True
+        ),
+        "casks": sorted(
+            item.get("token") for item in casks if item.get("outdated") is True
+        ),
+    }
+    status = "ok" if tap_result.returncode == 0 else "partial"
+    message = (
+        "installed packages and taps compared with the selected Brewfiles"
+        if status == "ok"
+        else "installed packages were read, but taps could not be listed"
+    )
+    return (
+        {
+            "available": True,
+            "desired": desired,
+            "installed": installed,
+            "comparison": comparison,
+            "outdated_from_local_metadata": outdated,
+        },
+        coverage_entry("homebrew", status, message),
+    )
+
+
+def remove_nulls(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: remove_nulls(item) for key, item in value.items() if item is not None
+        }
+    if isinstance(value, list):
+        return [remove_nulls(item) for item in value]
+    return value
+
+
+def parse_system_current_host_defaults(path: Path) -> list[dict[str, Any]]:
+    if not path.is_file():
+        return []
+    pattern = re.compile(
+        r"defaults\s+-currentHost\s+write\s+(\S+)\s+(\S+)\s+-(int|float|bool|string)\s+(\S+)"
+    )
+    parsed: list[dict[str, Any]] = []
+    for match in pattern.finditer(path.read_text(encoding="utf-8")):
+        domain, key, kind, raw_value = match.groups()
+        if kind == "int":
+            value: Any = int(raw_value)
+        elif kind == "float":
+            value = float(raw_value)
+        elif kind == "bool":
+            value = raw_value.lower() in {"1", "true", "yes"}
+        else:
+            value = raw_value.strip("\"'")
+        parsed.append(
+            {
+                "domain": domain,
+                "key": key.strip("\"'"),
+                "desired": value,
+                "scope": "current_host",
+            }
+        )
+    return parsed
+
+
+def desired_defaults(
+    repo_root: Path, evaluated: dict[str, Any]
+) -> tuple[list[dict[str, Any]], Any]:
+    records: list[dict[str, Any]] = []
+    for attribute, domain in NIX_DEFAULTS.items():
+        value = remove_nulls(evaluated["defaults"][attribute])
+        if attribute == "dock":
+            value.pop("expose-group-by-app", None)
+        if domain == "__custom__":
+            for custom_domain, preferences in value.items():
+                for key, desired in preferences.items():
+                    records.append(
+                        {
+                            "domain": custom_domain,
+                            "key": key,
+                            "desired": desired,
+                            "scope": "user",
+                        }
+                    )
+        elif domain == "__trackpad__":
+            for trackpad_domain in TRACKPAD_DOMAINS:
+                for key, desired in value.items():
+                    records.append(
+                        {
+                            "domain": trackpad_domain,
+                            "key": key,
+                            "desired": desired,
+                            "scope": "user",
+                        }
+                    )
+        else:
+            for key, desired in value.items():
+                records.append(
+                    {"domain": domain, "key": key, "desired": desired, "scope": "user"}
+                )
+
+    home_defaults = evaluated["currentHostDefaults"]
+    for domain, preferences in home_defaults.items():
+        for key, desired in preferences.items():
+            records.append(
+                {
+                    "domain": domain,
+                    "key": key,
+                    "desired": desired,
+                    "scope": "current_host",
+                }
+            )
+
+    records.extend(
+        parse_system_current_host_defaults(
+            repo_root / "nix" / "systems" / "darwin" / "default.nix"
+        )
+    )
+    keyboard = remove_nulls(evaluated["keyboard"])
+    records.sort(key=lambda item: (item["scope"], item["domain"], item["key"]))
+    return records, keyboard
+
+
+def convert_plist_fragment(raw: str) -> Any:
+    plutil = resolve_command("plutil") or "/usr/bin/plutil"
+    result = run_command(
+        [plutil, "-convert", "json", "-o", "-", "--", "-"],
+        input_text=raw,
+        timeout=10,
+    )
+    if result.returncode != 0:
+        raise ValueError("plutil could not parse the defaults value")
+    return json.loads(result.stdout)
+
+
+def normalize_default(raw: str, expected: Any) -> Any:
+    value = raw.strip()
+    if isinstance(expected, bool):
+        lowered = value.lower()
+        if lowered in {"1", "true", "yes"}:
+            return True
+        if lowered in {"0", "false", "no"}:
+            return False
+        raise ValueError("invalid boolean")
+    if isinstance(expected, int):
+        return int(value)
+    if isinstance(expected, float):
+        return float(value)
+    if isinstance(expected, str):
+        return re.sub(
+            r"\\u([0-9a-fA-F]{4})",
+            lambda match: chr(int(match.group(1), 16)),
+            value,
+        )
+    if isinstance(expected, (dict, list)):
+        return convert_plist_fragment(raw)
+    raise ValueError(f"unsupported defaults type: {type(expected).__name__}")
+
+
+def values_equal(actual: Any, expected: Any) -> bool:
+    if isinstance(expected, bool):
+        return isinstance(actual, bool) and actual == expected
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        return (
+            isinstance(actual, (int, float))
+            and not isinstance(actual, bool)
+            and actual == expected
+        )
+    return actual == expected
+
+
+def read_default(record: dict[str, Any]) -> dict[str, Any]:
+    defaults = resolve_command("defaults") or "/usr/bin/defaults"
+    args = [defaults]
+    if record["scope"] == "current_host":
+        args.append("-currentHost")
+    args.extend(["read", record["domain"], record["key"]])
+    result = run_command(args, timeout=10)
+    output = {**record, "actual": None, "status": "missing"}
+    if result.returncode != 0:
+        return output
+    try:
+        actual = normalize_default(result.stdout, record["desired"])
+    except (TypeError, ValueError, json.JSONDecodeError):
+        output["status"] = "error"
+        return output
+    output["actual"] = actual
+    output["status"] = "match" if values_equal(actual, record["desired"]) else "drift"
+    return output
+
+
+def normalize_hidutil_output(raw: str) -> list[dict[str, int]] | None:
+    stripped = raw.strip()
+    if stripped in {"", "(null)", "null"}:
+        return []
+    parsed = safe_json_loads(stripped)
+    if isinstance(parsed, dict):
+        mapping = parsed.get("UserKeyMapping")
+        return canonical_keyboard_mapping(mapping)
+    try:
+        converted = convert_plist_fragment(stripped)
+    except (ValueError, json.JSONDecodeError):
+        return None
+    if isinstance(converted, list):
+        return canonical_keyboard_mapping(converted)
+    if isinstance(converted, dict) and isinstance(
+        converted.get("UserKeyMapping"), list
+    ):
+        return canonical_keyboard_mapping(converted["UserKeyMapping"])
+    return None
+
+
+def canonical_keyboard_mapping(value: Any) -> list[dict[str, int]] | None:
+    if not isinstance(value, list):
+        return None
+    keys = ("HIDKeyboardModifierMappingSrc", "HIDKeyboardModifierMappingDst")
+    normalized: list[dict[str, int]] = []
+    for item in value:
+        if not isinstance(item, dict) or any(key not in item for key in keys):
+            return None
+        try:
+            normalized.append({key: int(item[key]) for key in keys})
+        except (TypeError, ValueError):
+            return None
+    return sorted(normalized, key=lambda item: tuple(item[key] for key in keys))
+
+
+def read_keyboard_mapping(expected_config: dict[str, Any]) -> dict[str, Any]:
+    raw_expected = (
+        expected_config.get("userKeyMapping", [])
+        if expected_config.get("enableKeyMapping")
+        else []
+    )
+    expected = canonical_keyboard_mapping(raw_expected)
+    hidutil = resolve_command("hidutil") or "/usr/bin/hidutil"
+    result = run_command([hidutil, "property", "--get", "UserKeyMapping"], timeout=10)
+    actual = (
+        normalize_hidutil_output(result.stdout)
+        if result.returncode == 0 or result.stdout.strip()
+        else None
+    )
+    if actual is None:
+        status = "error"
+    else:
+        status = "match" if actual == expected else "drift"
+    return {"desired": expected, "actual": actual, "status": status}
+
+
+def collect_macos_defaults(
+    repo_root: Path, evaluated: dict[str, Any] | None
+) -> tuple[dict[str, Any], dict[str, str]]:
+    if evaluated is None:
+        return (
+            {
+                "managed_defaults": [],
+                "keyboard_mapping": {
+                    "desired": None,
+                    "actual": None,
+                    "status": "error",
+                },
+            },
+            coverage_entry(
+                "macos_defaults",
+                "unavailable",
+                "managed Nix defaults could not be evaluated",
+            ),
+        )
+    try:
+        records, keyboard_config = desired_defaults(repo_root, evaluated)
+    except (FileNotFoundError, RuntimeError, TypeError, ValueError):
+        return (
+            {
+                "managed_defaults": [],
+                "keyboard_mapping": {
+                    "desired": None,
+                    "actual": None,
+                    "status": "error",
+                },
+            },
+            coverage_entry(
+                "macos_defaults",
+                "unavailable",
+                "managed Nix defaults could not be evaluated",
+            ),
+        )
+
+    audited = [read_default(record) for record in records]
+    keyboard = read_keyboard_mapping(keyboard_config)
+    has_errors = (
+        any(record["status"] == "error" for record in audited)
+        or keyboard["status"] == "error"
+    )
+    return (
+        {"managed_defaults": audited, "keyboard_mapping": keyboard},
+        coverage_entry(
+            "macos_defaults",
+            "partial" if has_errors else "ok",
+            (
+                "some managed values could not be parsed"
+                if has_errors
+                else "managed defaults and keyboard mapping compared"
+            ),
+        ),
+    )
+
+
+def iter_symlinks(root: Path, max_depth: int) -> Iterable[Path]:
+    if root.is_symlink():
+        yield root
+        return
+    if not root.is_dir():
+        return
+    base_depth = len(root.parts)
+    for current, directories, files in os.walk(root, followlinks=False):
+        current_path = Path(current)
+        depth = len(current_path.parts) - base_depth
+        if depth >= max_depth:
+            directories[:] = []
+        for name in [*directories, *files]:
+            path = current_path / name
+            if path.is_symlink():
+                yield path
+
+
+def collect_symlinks(
+    repo_root: Path, home: Path
+) -> tuple[list[dict[str, str]], dict[str, str]]:
+    roots = (
+        (home / "AGENTS.md", 0),
+        (home / ".config", 4),
+        (home / ".local" / "bin", 1),
+        (home / ".claude", 4),
+        (home / ".codex", 4),
+        (home / ".agents", 5),
+        (home / ".pi", 4),
+    )
+    records: dict[str, dict[str, str]] = {}
+    for root, depth in roots:
+        for path in iter_symlinks(root, depth):
+            target = str(path.resolve(strict=False))
+            if not (
+                target == str(repo_root)
+                or target.startswith(f"{repo_root}/")
+                or target.startswith("/nix/store/")
+            ):
+                continue
+            shown_path = redact_path(str(path), repo_root, home)
+            records[shown_path] = {
+                "path": shown_path,
+                "target": redact_path(target, repo_root, home),
+            }
+    return (
+        [records[key] for key in sorted(records)],
+        coverage_entry(
+            "managed_symlinks",
+            "ok",
+            "bounded Home Manager and dotfiles symlinks inventoried",
+        ),
+    )
+
+
+def collect_launch_agents(
+    repo_root: Path, home: Path
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    directory = home / "Library" / "LaunchAgents"
+    if not directory.is_dir():
+        return [], coverage_entry(
+            "launch_agents", "ok", "no user LaunchAgents directory exists"
+        )
+
+    launchctl = resolve_command("launchctl") or "/bin/launchctl"
+    agents: list[dict[str, Any]] = []
+    parse_errors = 0
+    for path in sorted(directory.glob("*.plist")):
+        try:
+            with path.open("rb") as handle:
+                data = plistlib.load(handle)
+        except (OSError, plistlib.InvalidFileException):
+            parse_errors += 1
+            continue
+        label = data.get("Label")
+        if not isinstance(label, str):
+            parse_errors += 1
+            continue
+        result = run_command(
+            [launchctl, "print", f"gui/{os.getuid()}/{label}"], timeout=10
+        )
+        resolved = str(path.resolve(strict=False))
+        agents.append(
+            {
+                "label": label,
+                "file": redact_path(str(path), repo_root, home),
+                "loaded": result.returncode == 0,
+                "managed_by_dotfiles": resolved.startswith(str(repo_root))
+                or resolved.startswith("/nix/store/"),
+            }
+        )
+    status = "partial" if parse_errors else "ok"
+    message = (
+        f"{parse_errors} LaunchAgent plist files could not be parsed"
+        if parse_errors
+        else "user LaunchAgent labels and loaded state inventoried"
+    )
+    return agents, coverage_entry("launch_agents", status, message)
+
+
+IDENTIFIER_PATTERN = re.compile(
+    r"^\s*Identifier:\s*([A-Za-z0-9._-]+)\s*$", re.MULTILINE
+)
+
+
+def collect_background_items() -> tuple[dict[str, Any], dict[str, str]]:
+    sfltool = resolve_command("sfltool") or "/usr/bin/sfltool"
+    try:
+        result = run_command([sfltool, "dumpbtm"], timeout=15)
+    except subprocess.TimeoutExpired:
+        return (
+            {
+                "classification": "inventory_only",
+                "identifiers": [],
+                "status": "timeout",
+            },
+            coverage_entry(
+                "background_items", "unavailable", "background item inventory timed out"
+            ),
+        )
+    if result.returncode != 0:
+        time.sleep(0.5)
+        try:
+            result = run_command([sfltool, "dumpbtm"], timeout=15)
+        except subprocess.TimeoutExpired:
+            return (
+                {
+                    "classification": "inventory_only",
+                    "identifiers": [],
+                    "status": "timeout",
+                },
+                coverage_entry(
+                    "background_items",
+                    "unavailable",
+                    "background item inventory timed out",
+                ),
+            )
+    if result.returncode != 0:
+        return (
+            {
+                "classification": "inventory_only",
+                "identifiers": [],
+                "status": "unavailable",
+            },
+            coverage_entry(
+                "background_items",
+                "unavailable",
+                "background item inventory was denied or unavailable",
+            ),
+        )
+    identifiers = sorted(set(IDENTIFIER_PATTERN.findall(result.stdout)))
+    return (
+        {
+            "classification": "inventory_only",
+            "identifiers": identifiers,
+            "status": "ok",
+        },
+        coverage_entry(
+            "background_items",
+            "ok",
+            "bundle-style identifiers inventoried without commands or URLs",
+        ),
+    )
+
+
+MAS_PATTERN = re.compile(r"^(\d+)\s+(.+?)\s+\(([^()]*)\)\s*$")
+
+
+def collect_app_store() -> tuple[dict[str, Any], dict[str, str]]:
+    mas = resolve_command("mas")
+    if not mas:
+        return (
+            {"apps": [], "status": "unavailable"},
+            coverage_entry("app_store", "unavailable", "mas is not installed"),
+        )
+    try:
+        result = run_command([mas, "list"], timeout=10)
+    except subprocess.TimeoutExpired:
+        return (
+            {"apps": [], "status": "timeout"},
+            coverage_entry(
+                "app_store", "unavailable", "Mac App Store inventory timed out"
+            ),
+        )
+    if result.returncode != 0:
+        return (
+            {"apps": [], "status": "unavailable"},
+            coverage_entry(
+                "app_store", "unavailable", "Mac App Store inventory failed"
+            ),
+        )
+    apps = []
+    for line in result.stdout.splitlines():
+        match = MAS_PATTERN.match(line)
+        if match:
+            app_id, name, version = match.groups()
+            apps.append({"id": app_id, "name": name, "version": version})
+    return (
+        {"apps": apps, "status": "ok"},
+        coverage_entry(
+            "app_store", "ok", "installed Mac App Store names and versions inventoried"
+        ),
+    )
+
+
+def comparison_for(snapshot: dict[str, Any]) -> dict[str, Any]:
+    signals: list[dict[str, str]] = []
+    nix = snapshot["nix"]
+    if nix["matches"] is False:
+        signals.append(
+            {
+                "component": "nix_system",
+                "item": "active generation differs from desired",
+            }
+        )
+
+    for category, names in snapshot["homebrew"]["comparison"].items():
+        for name in names:
+            signals.append({"component": "homebrew", "item": f"{category}:{name}"})
+
+    for record in snapshot["macos"]["managed_defaults"]:
+        if record["status"] in {"drift", "missing"}:
+            signals.append(
+                {
+                    "component": "macos_defaults",
+                    "item": f'{record["scope"]}:{record["domain"]}:{record["key"]}',
+                }
+            )
+    keyboard_status = snapshot["macos"]["keyboard_mapping"]["status"]
+    if keyboard_status == "drift":
+        signals.append({"component": "keyboard_mapping", "item": "UserKeyMapping"})
+
+    coverage_complete = all(item["status"] == "ok" for item in snapshot["coverage"])
+    if signals and coverage_complete:
+        status = "drift"
+    elif signals:
+        status = "drift_with_coverage_gaps"
+    elif coverage_complete:
+        status = "match"
+    else:
+        status = "incomplete"
+    return {
+        "status": status,
+        "drift_count": len(signals),
+        "coverage_complete": coverage_complete,
+        "signals": signals,
+    }
+
+
+def collect_snapshot(repo_root: Path) -> dict[str, Any]:
+    host, profile_name, username = detect_host()
+    home = Path.home().resolve()
+    coverage: list[dict[str, str]] = []
+
+    host_data, item = collect_host(host, profile_name)
+    coverage.append(item)
+    repository, item = collect_repository(repo_root)
+    coverage.append(item)
+    try:
+        nix_configuration = evaluate_nix_configuration(repo_root, host, username)
+    except (FileNotFoundError, RuntimeError, TypeError, ValueError):
+        nix_configuration = None
+    nix, item = collect_nix(nix_configuration)
+    coverage.append(item)
+    homebrew, item = collect_homebrew(repo_root, host)
+    coverage.append(item)
+    macos, item = collect_macos_defaults(repo_root, nix_configuration)
+    coverage.append(item)
+    symlinks, item = collect_symlinks(repo_root, home)
+    coverage.append(item)
+    launch_agents, item = collect_launch_agents(repo_root, home)
+    coverage.append(item)
+    background_items, item = collect_background_items()
+    coverage.append(item)
+    app_store, item = collect_app_store()
+    coverage.append(item)
+
+    snapshot: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "privacy": {
+            "sanitized": True,
+            "included": [
+                "selected profile and OS version",
+                "Git revision and changed filenames",
+                "Nix generation comparison",
+                "Homebrew package names and local outdated metadata",
+                "only macOS defaults managed by this repository",
+                "managed symlink paths and targets",
+                "LaunchAgent labels and background item identifiers",
+            ],
+            "excluded": [
+                "environment variables and secret values",
+                "1Password references",
+                "network addresses and Wi-Fi details",
+                "browser data",
+                "file contents and Git diffs",
+                "hardware serial numbers and UUIDs",
+                "full defaults exports",
+                "arbitrary home-directory inventories",
+            ],
+        },
+        "host": host_data,
+        "repository": repository,
+        "nix": nix,
+        "homebrew": homebrew,
+        "macos": macos,
+        "managed_symlinks": symlinks,
+        "launch_agents": launch_agents,
+        "background_items": background_items,
+        "app_store": app_store,
+        "coverage": coverage,
+    }
+    snapshot["comparison"] = comparison_for(snapshot)
+    return snapshot
+
+
+def joined_or_none(values: list[str], limit: int = 8) -> str:
+    if not values:
+        return "none"
+    shown = values[:limit]
+    suffix = f" (+{len(values) - limit} more)" if len(values) > limit else ""
+    return ", ".join(shown) + suffix
+
+
+def summary_lines(snapshot: dict[str, Any]) -> list[str]:
+    host = snapshot["host"]
+    comparison = snapshot["comparison"]
+    brew_comparison = snapshot["homebrew"]["comparison"]
+    defaults = snapshot["macos"]["managed_defaults"]
+    default_counts = {
+        status: sum(1 for item in defaults if item["status"] == status)
+        for status in ("match", "drift", "missing", "error")
+    }
+    coverage_gaps = [
+        item["component"] for item in snapshot["coverage"] if item["status"] != "ok"
+    ]
+    lines = [
+        f'Mac audit: {host["darwin_host"]} ({host["profile"]}), macOS {host["os_version"] or "unknown"} {host["architecture"]}',
+        f'Comparison: {comparison["status"]} ({comparison["drift_count"]} drift signals)',
+        f'Nix generation: {"match" if snapshot["nix"]["matches"] is True else "different" if snapshot["nix"]["matches"] is False else "unknown"}',
+        (
+            "Homebrew missing: "
+            f'{len(brew_comparison["missing_formulae"])} formulae, '
+            f'{len(brew_comparison["missing_casks"])} casks, '
+            f'{len(brew_comparison["missing_taps"])} taps'
+        ),
+        (
+            "Homebrew extra: "
+            f'{len(brew_comparison["extra_formulae_on_request"])} requested formulae, '
+            f'{len(brew_comparison["extra_casks"])} casks, '
+            f'{len(brew_comparison["extra_taps"])} taps'
+        ),
+        (
+            "Managed defaults: "
+            f'{default_counts["match"]} match, {default_counts["drift"]} drift, '
+            f'{default_counts["missing"]} missing, {default_counts["error"]} errors'
+        ),
+        f'Keyboard mapping: {snapshot["macos"]["keyboard_mapping"]["status"]}',
+        f'Managed symlinks observed: {len(snapshot["managed_symlinks"])}',
+        f'User LaunchAgents: {len(snapshot["launch_agents"])}',
+        f'Background identifiers: {len(snapshot["background_items"]["identifiers"])} (inventory only)',
+        f'Repository changed paths: {len(snapshot["repository"]["dirty_paths"])}',
+        f"Coverage gaps: {joined_or_none(coverage_gaps)}",
+    ]
+    if brew_comparison["missing_formulae"] or brew_comparison["missing_casks"]:
+        missing = [
+            *brew_comparison["missing_formulae"],
+            *brew_comparison["missing_casks"],
+        ]
+        lines.append(f"Missing Homebrew items: {joined_or_none(missing)}")
+    if brew_comparison["extra_formulae_on_request"] or brew_comparison["extra_casks"]:
+        extras = [
+            *brew_comparison["extra_formulae_on_request"],
+            *brew_comparison["extra_casks"],
+        ]
+        lines.append(f"Extra Homebrew items: {joined_or_none(extras)}")
+    default_drift = [
+        f'{item["domain"]}:{item["key"]}'
+        for item in defaults
+        if item["status"] in {"drift", "missing"}
+    ]
+    if default_drift:
+        lines.append(f"Default drift: {joined_or_none(default_drift)}")
+    return lines
+
+
+def summary_exit_code(snapshot: dict[str, Any]) -> int:
+    if not snapshot["comparison"]["coverage_complete"]:
+        return 2
+    return 1 if snapshot["comparison"]["drift_count"] else 0
+
+
+def export_snapshot(
+    snapshot: dict[str, Any], requested: str | None, home: Path
+) -> Path:
+    if requested:
+        destination = Path(requested).expanduser().resolve()
+    else:
+        timestamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+        destination = (
+            home
+            / "Desktop"
+            / f'macos-audit-{snapshot["host"]["darwin_host"]}-{timestamp}.json'
+        )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        raise FileExistsError(f"refusing to overwrite existing file: {destination}")
+
+    payload = json.dumps(snapshot, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    temp_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            delete=False,
+        ) as handle:
+            temp_path = Path(handle.name)
+            handle.write(payload)
+        os.chmod(temp_path, 0o600)
+        temp_path.replace(destination)
+    finally:
+        if temp_path and temp_path.exists():
+            temp_path.unlink()
+    return destination
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) < 2 or argv[1] not in {"summary", "export", "json"}:
+        usage()
+        return 64
+    if argv[1] != "export" and len(argv) != 2:
+        usage()
+        return 64
+    if argv[1] == "export" and len(argv) > 3:
+        usage()
+        return 64
+
+    repo_root = repo_root_from_script()
+    try:
+        snapshot = collect_snapshot(repo_root)
+    except ValueError as error:
+        print(f"{PROGRAM}: {error}", file=sys.stderr)
+        return 64
+
+    if argv[1] == "json":
+        json.dump(snapshot, sys.stdout, indent=2, sort_keys=True, ensure_ascii=False)
+        print()
+        return summary_exit_code(snapshot)
+    if argv[1] == "summary":
+        print("\n".join(summary_lines(snapshot)))
+        return summary_exit_code(snapshot)
+
+    try:
+        destination = export_snapshot(
+            snapshot, argv[2] if len(argv) == 3 else None, Path.home()
+        )
+    except (FileExistsError, OSError) as error:
+        print(f"{PROGRAM}: {error}", file=sys.stderr)
+        return 1
+    print(f"Wrote sanitized audit: {destination}")
+    print(
+        f'Comparison: {snapshot["comparison"]["status"]}; coverage details are included in the JSON.'
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

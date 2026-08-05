@@ -1,4 +1,3 @@
-{ profile }:
 {
   # ============================================================================
   # macOS System Defaults and Preferences
@@ -57,7 +56,7 @@
       AppleEnableSwipeNavigateWithScrolls = false; # Disable two-finger swipe back/forward
       AppleWindowTabbingMode = "manual"; # Do not automatically tab windows
       NSWindowShouldDragOnGesture = true; # Cmd+Ctrl drag to move windows
-      "_HIHideMenuBar" = profile != "office";
+      "_HIHideMenuBar" = false;
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
 

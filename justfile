@@ -69,8 +69,13 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills
+check: fmt check-skills audit-test
     nix flake check ./nix --show-trace
+
+# Test the read-only macOS audit collector without inspecting live machine state
+[private]
+audit-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_dotfiles_audit.py
 
 # Verify the skill set agrees across the skill dirs, the AGENTS.md routing table, and xdg.nix
 check-skills:
@@ -121,6 +126,14 @@ switch: _local-state-pre-switch
 dry-run:
     @echo "🧪 Dry run for {{ _host }} - showing what would change without applying..."
     darwin-rebuild build --flake ./nix#{{ _host }} --dry-run
+
+# Compare this Mac with the selected dotfiles profile without changing either
+audit:
+    ./bin/files/dotfiles-audit summary
+
+# Write a sanitized comparison snapshot to the Desktop for sharing
+audit-export:
+    ./bin/files/dotfiles-audit export
 
 darwin-switch: switch
 
