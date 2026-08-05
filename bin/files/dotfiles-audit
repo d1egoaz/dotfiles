@@ -21,7 +21,7 @@ from typing import Any, Iterable
 
 
 PROGRAM = "dotfiles-audit"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 HOSTS = {
     "diego.alvarez": ("office-mbp", "office"),
     "diego": ("personal-mbp", "personal"),
@@ -43,6 +43,19 @@ SAFE_BREW_ENV = {
     "HOMEBREW_NO_AUTO_UPDATE": "1",
     "HOMEBREW_NO_INSTALL_CLEANUP": "1",
 }
+COMPARISON_COVERAGE_COMPONENTS = frozenset(
+    {"nix_system", "homebrew", "macos_defaults"}
+)
+REQUIRED_HOMEBREW_COMPARISONS = (
+    "missing_formulae",
+    "missing_casks",
+    "missing_taps",
+)
+UNMANAGED_HOMEBREW_COMPARISONS = (
+    "extra_formulae_on_request",
+    "extra_casks",
+    "extra_taps",
+)
 
 
 def usage() -> None:
@@ -992,6 +1005,7 @@ def collect_app_store() -> tuple[dict[str, Any], dict[str, str]]:
 
 def comparison_for(snapshot: dict[str, Any]) -> dict[str, Any]:
     signals: list[dict[str, str]] = []
+    informational_signals: list[dict[str, str]] = []
     nix = snapshot["nix"]
     if nix["matches"] is False:
         signals.append(
@@ -1001,9 +1015,15 @@ def comparison_for(snapshot: dict[str, Any]) -> dict[str, Any]:
             }
         )
 
-    for category, names in snapshot["homebrew"]["comparison"].items():
-        for name in names:
+    brew_comparison = snapshot["homebrew"]["comparison"]
+    for category in REQUIRED_HOMEBREW_COMPARISONS:
+        for name in brew_comparison[category]:
             signals.append({"component": "homebrew", "item": f"{category}:{name}"})
+    for category in UNMANAGED_HOMEBREW_COMPARISONS:
+        for name in brew_comparison[category]:
+            informational_signals.append(
+                {"component": "homebrew", "item": f"{category}:{name}"}
+            )
 
     for record in snapshot["macos"]["managed_defaults"]:
         if record["status"] in {"drift", "missing"}:
@@ -1017,7 +1037,19 @@ def comparison_for(snapshot: dict[str, Any]) -> dict[str, Any]:
     if keyboard_status == "drift":
         signals.append({"component": "keyboard_mapping", "item": "UserKeyMapping"})
 
-    coverage_complete = all(item["status"] == "ok" for item in snapshot["coverage"])
+    comparison_gaps = [
+        item["component"]
+        for item in snapshot["coverage"]
+        if item["component"] in COMPARISON_COVERAGE_COMPONENTS
+        and item["status"] != "ok"
+    ]
+    supplemental_gaps = [
+        item["component"]
+        for item in snapshot["coverage"]
+        if item["component"] not in COMPARISON_COVERAGE_COMPONENTS
+        and item["status"] != "ok"
+    ]
+    coverage_complete = not comparison_gaps
     if signals and coverage_complete:
         status = "drift"
     elif signals:
@@ -1026,11 +1058,34 @@ def comparison_for(snapshot: dict[str, Any]) -> dict[str, Any]:
         status = "match"
     else:
         status = "incomplete"
+    repository_coverage = next(
+        (
+            item["status"]
+            for item in snapshot["coverage"]
+            if item["component"] == "repository"
+        ),
+        "unavailable",
+    )
+    dirty_paths = snapshot["repository"]["dirty_paths"]
+    if repository_coverage != "ok":
+        baseline_status = "unknown"
+    elif dirty_paths:
+        baseline_status = "modified"
+    else:
+        baseline_status = "clean"
     return {
+        "scope": "declared_dotfiles_only",
         "status": status,
         "drift_count": len(signals),
         "coverage_complete": coverage_complete,
+        "coverage_gaps": comparison_gaps,
+        "supplemental_coverage_complete": not supplemental_gaps,
+        "supplemental_coverage_gaps": supplemental_gaps,
+        "baseline_status": baseline_status,
+        "baseline_changed_path_count": len(dirty_paths),
         "signals": signals,
+        "informational_count": len(informational_signals),
+        "informational_signals": informational_signals,
     }
 
 
@@ -1072,6 +1127,7 @@ def collect_snapshot(repo_root: Path) -> dict[str, Any]:
                 "Git revision and changed filenames",
                 "Nix generation comparison",
                 "Homebrew package names and local outdated metadata",
+                "unmanaged Homebrew items as informational inventory",
                 "only macOS defaults managed by this repository",
                 "managed symlink paths and targets",
                 "LaunchAgent labels and background item identifiers",
@@ -1119,12 +1175,13 @@ def summary_lines(snapshot: dict[str, Any]) -> list[str]:
         status: sum(1 for item in defaults if item["status"] == status)
         for status in ("match", "drift", "missing", "error")
     }
-    coverage_gaps = [
-        item["component"] for item in snapshot["coverage"] if item["status"] != "ok"
-    ]
     lines = [
         f'Mac audit: {host["darwin_host"]} ({host["profile"]}), macOS {host["os_version"] or "unknown"} {host["architecture"]}',
-        f'Comparison: {comparison["status"]} ({comparison["drift_count"]} drift signals)',
+        f'Managed configuration: {comparison["status"]} ({comparison["drift_count"]} drift signals)',
+        (
+            f'Dotfiles baseline: {comparison["baseline_status"]} '
+            f'({comparison["baseline_changed_path_count"]} changed paths)'
+        ),
         f'Nix generation: {"match" if snapshot["nix"]["matches"] is True else "different" if snapshot["nix"]["matches"] is False else "unknown"}',
         (
             "Homebrew missing: "
@@ -1133,7 +1190,7 @@ def summary_lines(snapshot: dict[str, Any]) -> list[str]:
             f'{len(brew_comparison["missing_taps"])} taps'
         ),
         (
-            "Homebrew extra: "
+            "Homebrew unmanaged (informational): "
             f'{len(brew_comparison["extra_formulae_on_request"])} requested formulae, '
             f'{len(brew_comparison["extra_casks"])} casks, '
             f'{len(brew_comparison["extra_taps"])} taps'
@@ -1148,20 +1205,26 @@ def summary_lines(snapshot: dict[str, Any]) -> list[str]:
         f'User LaunchAgents: {len(snapshot["launch_agents"])}',
         f'Background identifiers: {len(snapshot["background_items"]["identifiers"])} (inventory only)',
         f'Repository changed paths: {len(snapshot["repository"]["dirty_paths"])}',
-        f"Coverage gaps: {joined_or_none(coverage_gaps)}",
+        f'Comparison coverage gaps: {joined_or_none(comparison["coverage_gaps"])}',
+        (
+            "Supplemental coverage gaps: "
+            f'{joined_or_none(comparison["supplemental_coverage_gaps"])}'
+        ),
     ]
-    if brew_comparison["missing_formulae"] or brew_comparison["missing_casks"]:
+    if any(brew_comparison[key] for key in REQUIRED_HOMEBREW_COMPARISONS):
         missing = [
             *brew_comparison["missing_formulae"],
             *brew_comparison["missing_casks"],
+            *brew_comparison["missing_taps"],
         ]
         lines.append(f"Missing Homebrew items: {joined_or_none(missing)}")
-    if brew_comparison["extra_formulae_on_request"] or brew_comparison["extra_casks"]:
+    if any(brew_comparison[key] for key in UNMANAGED_HOMEBREW_COMPARISONS):
         extras = [
             *brew_comparison["extra_formulae_on_request"],
             *brew_comparison["extra_casks"],
+            *brew_comparison["extra_taps"],
         ]
-        lines.append(f"Extra Homebrew items: {joined_or_none(extras)}")
+        lines.append(f"Unmanaged Homebrew items: {joined_or_none(extras)}")
     default_drift = [
         f'{item["domain"]}:{item["key"]}'
         for item in defaults
@@ -1249,7 +1312,7 @@ def main(argv: list[str]) -> int:
         return 1
     print(f"Wrote sanitized audit: {destination}")
     print(
-        f'Comparison: {snapshot["comparison"]["status"]}; coverage details are included in the JSON.'
+        f'Managed configuration: {snapshot["comparison"]["status"]}; coverage details are included in the JSON.'
     )
     return 0
 

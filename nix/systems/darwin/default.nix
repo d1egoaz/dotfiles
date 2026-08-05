@@ -39,11 +39,8 @@
   environment.systemPackages = systemPackages;
 
   system.activationScripts.postActivation.text = ''
-    # Control Center menu bar items (requires -currentHost for ByHost plist)
-    echo "Configuring Control Center menu bar items..."
-    /usr/bin/sudo --user=${user} --set-home -- /usr/bin/defaults -currentHost write com.apple.controlcenter Weather -int 2
-    /usr/bin/sudo --user=${user} --set-home -- /usr/bin/defaults -currentHost write com.apple.controlcenter Sound -int 16
-    /usr/bin/sudo --user=${user} --set-home -- /usr/bin/defaults -currentHost write com.apple.controlcenter NowPlaying -int 8
+    # Home Manager writes the per-host Control Center defaults. Restart the
+    # process so visibility changes take effect during the same switch.
     /usr/bin/sudo --user=${user} --set-home -- /usr/bin/killall ControlCenter 2>/dev/null || true
   '';
 

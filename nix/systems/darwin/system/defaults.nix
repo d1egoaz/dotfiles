@@ -117,10 +117,25 @@
         "use-search-predicate" = false;
         "launch-at-login" = true;
       };
+      # Keep the native clock stable even when third-party menu bar apps use
+      # enough space that macOS would otherwise hide the date.
+      "com.apple.menuextra.clock" = {
+        ShowAMPM = 1;
+        ShowDate = 1; # Always, rather than "When Space Allows"
+        ShowDayOfWeek = 1;
+      };
       # Control Center menu bar items (standard domain)
       "com.apple.controlcenter" = {
+        "NSStatusItem VisibleCC Battery" = 1;
+        "NSStatusItem VisibleCC BentoBox-0" = 1;
+        "NSStatusItem VisibleCC Clock" = 1;
         "NSStatusItem VisibleCC Sound" = 1; # Show Sound in menu bar
+        "NSStatusItem VisibleCC WiFi" = 1;
         "NSStatusItem VisibleCC AudioVideoModule" = 0; # Hide Now Playing
+        "NSStatusItem Preferred Position Battery" = 173;
+        "NSStatusItem Preferred Position BentoBox-0" = 131;
+        "NSStatusItem Preferred Position Sound" = 249;
+        "NSStatusItem Preferred Position WiFi" = 227;
       };
     };
   };

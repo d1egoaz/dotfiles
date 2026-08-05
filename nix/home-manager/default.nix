@@ -59,5 +59,12 @@
   # macOS Per-Host Defaults (uses defaults -currentHost write)
   # ============================================================================
 
-  targets.darwin.currentHostDefaults."com.apple.controlcenter".BatteryShowPercentage = true;
+  targets.darwin.currentHostDefaults."com.apple.controlcenter" = {
+    BatteryShowPercentage = true;
+    NowPlaying = 8;
+    ScreenMirroring = 8;
+    Sound = 16;
+    Spotlight = 2;
+    Weather = 2;
+  };
 }

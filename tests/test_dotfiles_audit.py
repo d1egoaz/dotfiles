@@ -17,6 +17,40 @@ MODULE = importlib.util.module_from_spec(SPEC)
 LOADER.exec_module(MODULE)
 
 
+def comparison_snapshot(
+    *,
+    coverage=None,
+    dirty_paths=None,
+    missing_casks=None,
+    extra_casks=None,
+):
+    return {
+        "nix": {"matches": True},
+        "repository": {"dirty_paths": dirty_paths or []},
+        "homebrew": {
+            "comparison": {
+                "missing_formulae": [],
+                "missing_casks": missing_casks or [],
+                "missing_taps": [],
+                "extra_formulae_on_request": [],
+                "extra_casks": extra_casks or [],
+                "extra_taps": [],
+            }
+        },
+        "macos": {
+            "managed_defaults": [],
+            "keyboard_mapping": {"status": "match"},
+        },
+        "coverage": coverage
+        or [
+            {"component": "repository", "status": "ok"},
+            {"component": "nix_system", "status": "ok"},
+            {"component": "homebrew", "status": "ok"},
+            {"component": "macos_defaults", "status": "ok"},
+        ],
+    }
+
+
 class CommandPolicyTest(unittest.TestCase):
     def test_allows_only_expected_read_operations(self):
         allowed = (
@@ -132,6 +166,57 @@ class ParsingTest(unittest.TestCase):
 
 
 class ResultTest(unittest.TestCase):
+    def test_unmanaged_homebrew_is_informational(self):
+        result = MODULE.comparison_for(
+            comparison_snapshot(extra_casks=["spotify", "telegram"])
+        )
+        self.assertEqual(result["status"], "match")
+        self.assertEqual(result["drift_count"], 0)
+        self.assertEqual(result["informational_count"], 2)
+
+    def test_missing_homebrew_is_drift(self):
+        result = MODULE.comparison_for(
+            comparison_snapshot(missing_casks=["required-app"])
+        )
+        self.assertEqual(result["status"], "drift")
+        self.assertEqual(result["drift_count"], 1)
+
+    def test_supplemental_inventory_gap_does_not_fail_comparison(self):
+        snapshot = comparison_snapshot(
+            coverage=[
+                {"component": "repository", "status": "ok"},
+                {"component": "nix_system", "status": "ok"},
+                {"component": "homebrew", "status": "ok"},
+                {"component": "macos_defaults", "status": "ok"},
+                {"component": "launch_agents", "status": "partial"},
+            ]
+        )
+        snapshot["comparison"] = MODULE.comparison_for(snapshot)
+        self.assertTrue(snapshot["comparison"]["coverage_complete"])
+        self.assertFalse(snapshot["comparison"]["supplemental_coverage_complete"])
+        self.assertEqual(MODULE.summary_exit_code(snapshot), 0)
+
+    def test_required_comparison_gap_returns_two(self):
+        snapshot = comparison_snapshot(
+            coverage=[
+                {"component": "repository", "status": "ok"},
+                {"component": "nix_system", "status": "ok"},
+                {"component": "homebrew", "status": "ok"},
+                {"component": "macos_defaults", "status": "partial"},
+            ]
+        )
+        snapshot["comparison"] = MODULE.comparison_for(snapshot)
+        self.assertFalse(snapshot["comparison"]["coverage_complete"])
+        self.assertEqual(MODULE.summary_exit_code(snapshot), 2)
+
+    def test_modified_dotfiles_baseline_is_reported_without_system_drift(self):
+        result = MODULE.comparison_for(
+            comparison_snapshot(dirty_paths=["Brewfile.personal-mbp"])
+        )
+        self.assertEqual(result["status"], "match")
+        self.assertEqual(result["baseline_status"], "modified")
+        self.assertEqual(result["baseline_changed_path_count"], 1)
+
     def test_incomplete_coverage_has_precedence_in_exit_code(self):
         snapshot = {"comparison": {"coverage_complete": False, "drift_count": 3}}
         self.assertEqual(MODULE.summary_exit_code(snapshot), 2)
