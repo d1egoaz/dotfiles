@@ -1,9 +1,13 @@
 {
   inputs,
+  lib,
   user,
   ...
 }:
 
+let
+  menuBar = import ../lib/macosMenuBar.nix { inherit lib; };
+in
 {
   # ============================================================================
   # Home Manager Configuration
@@ -60,13 +64,5 @@
   # macOS Per-Host Defaults
   # ============================================================================
 
-  macos.controlCenter = {
-    battery = "always";
-    nowPlaying = "when-active";
-    screenMirroring = "when-active";
-    sound = "always";
-    spotlight = "always";
-    weather = "always";
-    showBatteryPercentage = true;
-  };
+  macos.controlCenter = menuBar.policy.controlCenter;
 }

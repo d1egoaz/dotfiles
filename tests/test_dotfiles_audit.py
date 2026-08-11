@@ -217,6 +217,37 @@ class ParsingTest(unittest.TestCase):
             lines,
         )
 
+    def test_hidden_control_center_item_is_managed_semantically(self):
+        evaluated = {
+            "defaults": {
+                "dock": {},
+                "finder": {},
+                "NSGlobalDomain": {},
+                "trackpad": {},
+                "CustomUserPreferences": {
+                    "com.apple.controlcenter": {
+                        "NSStatusItem VisibleCC Bluetooth": False
+                    }
+                },
+            },
+            "currentHostDefaults": {},
+            "controlCenter": {"bluetooth": "hidden"},
+            "keyboard": {},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            records, _ = MODULE.desired_defaults(Path(directory), evaluated)
+        self.assertIn(
+            {
+                "domain": "com.apple.controlcenter",
+                "key": "NSStatusItem VisibleCC Bluetooth",
+                "desired": False,
+                "scope": "user",
+                "semantic_setting": "bluetooth",
+                "desired_state": "hidden",
+            },
+            records,
+        )
+
     def test_null_current_host_default_is_unmanaged(self):
         evaluated = {
             "defaults": {

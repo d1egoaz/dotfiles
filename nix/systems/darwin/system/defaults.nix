@@ -1,3 +1,8 @@
+{ lib, ... }:
+
+let
+  menuBar = import ../../../lib/macosMenuBar.nix { inherit lib; };
+in
 {
   # ============================================================================
   # macOS System Defaults and Preferences
@@ -56,7 +61,6 @@
       AppleEnableSwipeNavigateWithScrolls = false; # Disable two-finger swipe back/forward
       AppleWindowTabbingMode = "manual"; # Do not automatically tab windows
       NSWindowShouldDragOnGesture = true; # Cmd+Ctrl drag to move windows
-      "_HIHideMenuBar" = false;
       NSStatusItemSpacing = 0;
       NSStatusItemSelectionPadding = 0;
 
@@ -65,7 +69,8 @@
       NSNavPanelExpandedStateForSaveMode2 = true;
       PMPrintingExpandedStateForPrint = true;
       PMPrintingExpandedStateForPrint2 = true;
-    };
+    }
+    // menuBar.systemDefaults.global;
 
     # Input devices
     trackpad = {
@@ -76,6 +81,7 @@
     CustomUserPreferences = {
       NSGlobalDomain = {
         AppleAccentColor = 5; # Purple accent color
+        inherit (menuBar.systemDefaults.globalCustom) AppleMenuBarVisibleInFullscreen;
         SLSMenuBarUseBlurredAppearance = 1; # Show menu bar background
         "com.apple.mouse.scaling" = 1.0; # Mouse tracking speed
         "com.apple.trackpad.scaling" = 1.0; # Trackpad tracking speed
@@ -117,26 +123,9 @@
         "use-search-predicate" = false;
         "launch-at-login" = true;
       };
-      # Keep the native clock stable even when third-party menu bar apps use
-      # enough space that macOS would otherwise hide the date.
-      "com.apple.menuextra.clock" = {
-        ShowAMPM = 1;
-        ShowDate = 1; # Always, rather than "When Space Allows"
-        ShowDayOfWeek = 1;
-      };
-      # Control Center menu bar items (standard domain)
-      "com.apple.controlcenter" = {
-        "NSStatusItem VisibleCC Battery" = 1;
-        "NSStatusItem VisibleCC BentoBox-0" = 1;
-        "NSStatusItem VisibleCC Clock" = 1;
-        "NSStatusItem VisibleCC Sound" = 1; # Show Sound in menu bar
-        "NSStatusItem VisibleCC WiFi" = 1;
-        "NSStatusItem VisibleCC AudioVideoModule" = 0; # Hide Now Playing
-        "NSStatusItem Preferred Position Battery" = 173;
-        "NSStatusItem Preferred Position BentoBox-0" = 131;
-        "NSStatusItem Preferred Position Sound" = 249;
-        "NSStatusItem Preferred Position WiFi" = 227;
-      };
+      # Keep native menu bar behavior consistent across all managed Macs.
+      "com.apple.menuextra.clock" = menuBar.systemDefaults.clock;
+      "com.apple.controlcenter" = menuBar.systemDefaults.controlCenter;
     };
   };
 
