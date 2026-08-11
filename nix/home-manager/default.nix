@@ -21,6 +21,7 @@
 
     # General configuration modules
     ./config/environment.nix
+    ./config/macos-control-center.nix
     ./config/xdg.nix
     ./config/programs.nix
   ];
@@ -56,15 +57,16 @@
   };
 
   # ============================================================================
-  # macOS Per-Host Defaults (uses defaults -currentHost write)
+  # macOS Per-Host Defaults
   # ============================================================================
 
-  targets.darwin.currentHostDefaults."com.apple.controlcenter" = {
-    BatteryShowPercentage = true;
-    NowPlaying = 8;
-    ScreenMirroring = 8;
-    Sound = 16;
-    Spotlight = 2;
-    Weather = 2;
+  macos.controlCenter = {
+    battery = "always";
+    nowPlaying = "when-active";
+    screenMirroring = "when-active";
+    sound = "always";
+    spotlight = "always";
+    weather = "always";
+    showBatteryPercentage = true;
   };
 }

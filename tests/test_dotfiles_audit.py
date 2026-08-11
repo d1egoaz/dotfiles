@@ -125,6 +125,124 @@ class ParsingTest(unittest.TestCase):
             ],
         )
 
+    def test_declared_current_host_battery_is_managed(self):
+        evaluated = {
+            "defaults": {
+                "dock": {},
+                "finder": {},
+                "NSGlobalDomain": {},
+                "trackpad": {},
+                "CustomUserPreferences": {},
+            },
+            "currentHostDefaults": {
+                "com.apple.controlcenter": {
+                    "Battery": 18,
+                    "BatteryShowPercentage": True,
+                }
+            },
+            "controlCenter": {
+                "battery": "always",
+                "showBatteryPercentage": True,
+            },
+            "keyboard": {},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            records, _ = MODULE.desired_defaults(Path(directory), evaluated)
+        self.assertIn(
+            {
+                "domain": "com.apple.controlcenter",
+                "key": "Battery",
+                "desired": 18,
+                "scope": "current_host",
+                "semantic_setting": "battery",
+                "desired_state": "always",
+            },
+            records,
+        )
+
+    def test_control_center_summary_uses_semantic_states(self):
+        snapshot = comparison_snapshot()
+        snapshot["host"] = {
+            "darwin_host": "personal-mbp",
+            "profile": "personal",
+            "os_version": "26.5",
+            "architecture": "arm64",
+        }
+        snapshot["repository"] = {"dirty_paths": []}
+        snapshot["nix"] = {"matches": True}
+        snapshot["homebrew"] = {
+            "comparison": {
+                "missing_formulae": [],
+                "missing_casks": [],
+                "missing_taps": [],
+                "extra_formulae_on_request": [],
+                "extra_casks": [],
+                "extra_taps": [],
+            }
+        }
+        snapshot["macos"] = {
+            "managed_defaults": [
+                {
+                    "domain": "com.apple.controlcenter",
+                    "key": "Sound",
+                    "semantic_setting": "sound",
+                    "desired_state": "always",
+                    "actual_state": "always",
+                    "status": "match",
+                },
+                {
+                    "domain": "com.apple.controlcenter",
+                    "key": "NowPlaying",
+                    "semantic_setting": "nowPlaying",
+                    "desired_state": "when-active",
+                    "status": "missing",
+                },
+            ],
+            "keyboard_mapping": {"status": "match"},
+        }
+        snapshot["managed_symlinks"] = []
+        snapshot["launch_agents"] = []
+        snapshot["background_items"] = {"identifiers": []}
+        snapshot["comparison"] = {
+            "status": "drift",
+            "drift_count": 1,
+            "baseline_status": "clean",
+            "baseline_changed_path_count": 0,
+            "coverage_gaps": [],
+            "supplemental_coverage_gaps": [],
+        }
+        lines = MODULE.summary_lines(snapshot)
+        self.assertIn(
+            "Control Center: sound=always, nowPlaying=missing (expected when-active)",
+            lines,
+        )
+
+    def test_null_current_host_default_is_unmanaged(self):
+        evaluated = {
+            "defaults": {
+                "dock": {},
+                "finder": {},
+                "NSGlobalDomain": {},
+                "trackpad": {},
+                "CustomUserPreferences": {},
+            },
+            "currentHostDefaults": {
+                "com.apple.controlcenter": {"BatteryShowPercentage": None}
+            },
+            "keyboard": {},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            records, _ = MODULE.desired_defaults(Path(directory), evaluated)
+        self.assertNotIn(
+            {
+                "domain": "com.apple.controlcenter",
+                "key": "BatteryShowPercentage",
+                "desired": None,
+                "scope": "current_host",
+            },
+            records,
+        )
+
     def test_normalizes_scalar_defaults_without_type_coercion(self):
         self.assertIs(MODULE.normalize_default("1\n", True), True)
         self.assertEqual(MODULE.normalize_default("2\n", 2), 2)

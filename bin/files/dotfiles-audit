@@ -56,6 +56,15 @@ UNMANAGED_HOMEBREW_COMPARISONS = (
     "extra_casks",
     "extra_taps",
 )
+CONTROL_CENTER_OPTIONS_BY_KEY = {
+    "Battery": "battery",
+    "BatteryShowPercentage": "showBatteryPercentage",
+    "NowPlaying": "nowPlaying",
+    "ScreenMirroring": "screenMirroring",
+    "Sound": "sound",
+    "Spotlight": "spotlight",
+    "Weather": "weather",
+}
 
 
 def usage() -> None:
@@ -326,6 +335,7 @@ def evaluate_nix_configuration(
         CustomUserPreferences = config.system.defaults.CustomUserPreferences;
       }};
       currentHostDefaults = config.home-manager.users.{json.dumps(username)}.targets.darwin.currentHostDefaults;
+      controlCenter = config.home-manager.users.{json.dumps(username)}.macos.controlCenter;
       keyboard = config.system.keyboard;
     }}"""
     evaluated = nix_eval(repo_root, installable, apply=apply_expression)
@@ -593,17 +603,28 @@ def desired_defaults(
                     {"domain": domain, "key": key, "desired": desired, "scope": "user"}
                 )
 
-    home_defaults = evaluated["currentHostDefaults"]
+    home_defaults = remove_nulls(evaluated["currentHostDefaults"])
     for domain, preferences in home_defaults.items():
         for key, desired in preferences.items():
-            records.append(
-                {
-                    "domain": domain,
-                    "key": key,
-                    "desired": desired,
-                    "scope": "current_host",
-                }
-            )
+            record = {
+                "domain": domain,
+                "key": key,
+                "desired": desired,
+                "scope": "current_host",
+            }
+            if domain == "com.apple.controlcenter":
+                option = CONTROL_CENTER_OPTIONS_BY_KEY.get(key)
+                configured = evaluated.get("controlCenter", {}).get(option)
+                if option is not None and configured is not None:
+                    record["semantic_setting"] = option
+                    record["desired_state"] = (
+                        "enabled"
+                        if configured is True
+                        else "disabled"
+                        if configured is False
+                        else configured
+                    )
+            records.append(record)
 
     records.extend(
         parse_system_current_host_defaults(
@@ -680,6 +701,10 @@ def read_default(record: dict[str, Any]) -> dict[str, Any]:
         return output
     output["actual"] = actual
     output["status"] = "match" if values_equal(actual, record["desired"]) else "drift"
+    if "desired_state" in record:
+        output["actual_state"] = (
+            record["desired_state"] if output["status"] == "match" else "unrecognized"
+        )
     return output
 
 
@@ -1175,6 +1200,17 @@ def summary_lines(snapshot: dict[str, Any]) -> list[str]:
         status: sum(1 for item in defaults if item["status"] == status)
         for status in ("match", "drift", "missing", "error")
     }
+    control_center_states = []
+    for item in defaults:
+        setting = item.get("semantic_setting")
+        if setting is None:
+            continue
+        desired_state = item["desired_state"]
+        if item["status"] == "match":
+            state = item["actual_state"]
+        else:
+            state = f'{item["status"]} (expected {desired_state})'
+        control_center_states.append(f"{setting}={state}")
     lines = [
         f'Mac audit: {host["darwin_host"]} ({host["profile"]}), macOS {host["os_version"] or "unknown"} {host["architecture"]}',
         f'Managed configuration: {comparison["status"]} ({comparison["drift_count"]} drift signals)',
@@ -1200,6 +1236,7 @@ def summary_lines(snapshot: dict[str, Any]) -> list[str]:
             f'{default_counts["match"]} match, {default_counts["drift"]} drift, '
             f'{default_counts["missing"]} missing, {default_counts["error"]} errors'
         ),
+        f"Control Center: {joined_or_none(control_center_states)}",
         f'Keyboard mapping: {snapshot["macos"]["keyboard_mapping"]["status"]}',
         f'Managed symlinks observed: {len(snapshot["managed_symlinks"])}',
         f'User LaunchAgents: {len(snapshot["launch_agents"])}',
