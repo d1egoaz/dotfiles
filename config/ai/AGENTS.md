@@ -48,7 +48,7 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 ## Non-Negotiables
 Hard gates that hold even when the matching skill has not loaded. The linked skill carries the full procedure.
 - Never bypass commit signing; never use signing-bypass flags such as `-c commit.gpgsign=false`. See `$signed-pr-publish`.
-- AI commits and PRs must carry the footer `Assisted-by: [Exact model identifier] via [Tool]`. Before asking, run `codex-current-model`: it resolves `CODEX_THREAD_ID` to the latest metadata-only `turn_context` for this task. Use its exact output, including version and variant; family-only labels such as `GPT-5` are prohibited. If it cannot read the session, rerun with escalated permissions; stop and ask only if it still cannot resolve an exact identifier. See `$signed-pr-publish`.
+- AI commits and PRs must carry the footer `Assisted-by: [Exact model identifier] via [Tool]`. Before asking, run `$HOME/dotfiles/bin/files/codex-current-model`: it resolves `CODEX_THREAD_ID` to the latest metadata-only `turn_context` for this task. Use its exact output, including version and variant; family-only labels such as `GPT-5` are prohibited. If it cannot read the session, rerun with escalated permissions; stop and ask only if it still cannot resolve an exact identifier. See `$signed-pr-publish`.
 - Open new PRs in draft mode. See `$signed-pr-publish`.
 - Keep the primary checkout on `main`; do feature work in worktrees. See `$git-worktree-flow`.
 - For multi-repo work, run git commands in each repo's own working directory; avoid `git -C` unless explicitly requested. See `$command-discipline`.
