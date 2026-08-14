@@ -30,8 +30,8 @@ Assisted-by: [Exact model identifier] via [Tool]
 ```
 
 - Types: `fix`, `feat`, `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`, `revert`. Breaking changes: append `!` after the type or add a `BREAKING CHANGE:` footer.
-- Use the most specific model identifier exposed by the current runtime or session metadata, including its version and variant when available. Preserve that identifier exactly instead of shortening or normalizing it. Examples: `GPT-5.6-sol`, `gpt-5.4`.
-- Never use a family-only label such as `GPT-5`. If the runtime does not expose an exact model identifier, stop and ask the user before committing rather than inventing one.
+- Before attribution, run `codex-current-model`; it resolves `CODEX_THREAD_ID` to the latest metadata-only `turn_context` for the active task. Use its exact model output, including version and variant, without shortening or normalizing it. Examples: `gpt-5.6-sol`, `gpt-5.4`.
+- Never use a family-only label such as `GPT-5`. If `codex-current-model` cannot read session metadata, rerun it with escalated permissions; stop and ask the user only if it still cannot resolve an exact identifier.
 - Never bypass commit signing; never use signing-bypass flags such as `-c commit.gpgsign=false`.
 - Run `git commit -S` with escalated permissions first when signing may need the 1Password SSH agent.
 - If a signing command fails with socket or agent errors, rerun the same command with escalated permissions immediately.

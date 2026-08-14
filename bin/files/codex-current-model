@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "optparse"
+require "time"
+
+DEFAULT_SESSION_DIRS = [
+  File.expand_path("~/.codex/sessions"),
+  File.expand_path("~/.codex/archived_sessions"),
+].freeze
+THREAD_ID_PATTERN = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
+
+options = {
+  thread_id: ENV["CODEX_THREAD_ID"],
+  session_dirs: [],
+  json: false,
+}
+
+OptionParser.new do |parser|
+  parser.banner = "Usage: codex-current-model [OPTIONS]"
+
+  parser.on("--thread-id THREAD_ID", "Resolve a specific Codex thread ID") do |thread_id|
+    options[:thread_id] = thread_id
+  end
+
+  parser.on("--session-dir PATH", "Read a session directory; repeat to provide multiple directories") do |path|
+    options[:session_dirs] << File.expand_path(path)
+  end
+
+  parser.on("--json", "Emit the model, effort, and source timestamp as JSON") do
+    options[:json] = true
+  end
+end.parse!
+
+thread_id = options[:thread_id].to_s
+unless THREAD_ID_PATTERN.match?(thread_id)
+  warn "codex-current-model: CODEX_THREAD_ID is missing or invalid"
+  exit 1
+end
+
+session_dirs = options[:session_dirs].empty? ? DEFAULT_SESSION_DIRS : options[:session_dirs]
+session_files = session_dirs.select { |path| Dir.exist?(path) }.flat_map do |directory|
+  Dir.glob(File.join(directory, "**", "*#{thread_id}*.jsonl"))
+end.sort
+
+if session_files.empty?
+  warn "codex-current-model: no session files found for thread #{thread_id}"
+  exit 1
+end
+
+turns = session_files.flat_map do |path|
+  session_matches = File.foreach(path).any? do |line|
+    next false unless /"type"\s*:\s*"session_meta"/.match?(line)
+
+    record = JSON.parse(line)
+    record["type"] == "session_meta" && record.dig("payload", "id") == thread_id
+  rescue JSON::ParserError
+    false
+  end
+  next [] unless session_matches
+
+  File.foreach(path).map do |line|
+    next unless /"type"\s*:\s*"turn_context"/.match?(line)
+
+    record = JSON.parse(line)
+    payload = record.fetch("payload")
+    model = payload.fetch("model").to_s
+    next if model.empty?
+
+    {
+      model: model,
+      effort: payload.fetch("effort", "unknown").to_s,
+      timestamp: Time.iso8601(record.fetch("timestamp")).utc.iso8601,
+    }
+  rescue JSON::ParserError, KeyError, ArgumentError
+    nil
+  end.compact
+end
+
+if turns.empty?
+  warn "codex-current-model: no model metadata found for thread #{thread_id}"
+  exit 1
+end
+
+current_turn = turns.max_by { |turn| turn.fetch(:timestamp) }
+if options[:json]
+  puts JSON.generate(thread_id: thread_id, **current_turn)
+else
+  puts current_turn.fetch(:model)
+end

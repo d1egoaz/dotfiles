@@ -15,7 +15,7 @@
       d = "cd ~/dotfiles";
       gs = "git status -s";
       gd = "git diff";
-      gpu = "git pull";
+      gpu = "git pull --ff-only";
 
       # utilities
       fkill = "ps -fea | fzf | cut -d' ' -f1 | xargs kill -9";

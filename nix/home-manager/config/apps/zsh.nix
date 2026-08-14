@@ -39,7 +39,7 @@
         # Git shortcuts
         gs = "git status -s";
         gd = "git diff";
-        gpu = "git pull";
+        gpu = "git pull --ff-only";
         d = "cd ~/dotfiles";
         cdtmp = "cd $(mktemp --directory)";
 

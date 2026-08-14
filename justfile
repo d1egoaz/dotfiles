@@ -44,8 +44,11 @@ gc:
     nix-store --gc
     echo "✅ Garbage collection completed successfully!"
 
-# Update nix flake
-update:
+_routine_flake_inputs := "darwin flake-parts home-manager nixpkgs treefmt-nix"
+
+# Update one or more flake inputs with the GitHub token required on office hosts.
+[private]
+_flake-update inputs:
     #!/usr/bin/env bash
     set -euo pipefail
     if [[ "{{ _host }}" == "office-mbp" ]]; then
@@ -54,10 +57,19 @@ update:
         exit 1
       fi
       github_token=$({{ _op_homebrew_token }})
-      NIX_CONFIG="access-tokens = github.com=$github_token" nix flake update --flake ./nix --refresh
+      NIX_CONFIG="access-tokens = github.com=$github_token" nix flake update --flake ./nix --refresh {{ inputs }}
     else
-      nix flake update --flake ./nix --refresh
+      nix flake update --flake ./nix --refresh {{ inputs }}
     fi
+
+# Update routine inputs. Tokyo Night stays pinned until it is explicitly validated.
+update:
+    just _flake-update "{{ _routine_flake_inputs }}"
+
+# Update Tokyo Night separately and require all flake checks to pass before use.
+update-tokyonight:
+    just _flake-update tokyonight
+    just check
 
 # Clear Nix tarball cache (fixes "Truncated tar archive" errors during flake update)
 fix-nix-cache:
@@ -69,13 +81,18 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills audit-test
+check: fmt check-skills audit-test codex-current-model-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
 [private]
 audit-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_dotfiles_audit.py
+
+# Test exact current-thread Codex model detection without reading real sessions.
+[private]
+codex-current-model-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_current_model.py
 
 # Verify the skill set agrees across the skill dirs, the AGENTS.md routing table, and xdg.nix
 check-skills:
