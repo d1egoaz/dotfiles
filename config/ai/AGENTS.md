@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.5.1 | Updated: 2026-08-28 -->
+<!-- Version: 1.6.0 | Updated: 2026-08-28 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -36,13 +36,14 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 
 ## Model Routing
 - Optimize for required quality and time at the lowest total task cost.
-- Default new tasks to `GPT-5.6-luna` at xhigh reasoning. Use Luna low for exact utility work, medium for bounded routine work, and max only when extra reasoning has an explicit benefit.
-- Use `GPT-5.6-sol` at high reasoning when coding reliability, tool reliability, time, or cost of failure justifies it; use Sol xhigh for frontier ambiguity and Sol max only with a clear evaluation target.
-- Use `GPT-5.6-terra` only when current evidence shows Luna is insufficient and Sol is unnecessary.
+- Use the active Nix profile's lead route: `GPT-5.6-sol` at xhigh reasoning for office/work and `GPT-5.6-terra` at xhigh reasoning for personal machines.
+- Use Luna low for exact utility work, medium for bounded routine work, and max only when extra reasoning has an explicit benefit.
+- Use Sol max only for the hardest quality-first work with a clear evaluation target.
+- Outside the personal lead profile, use `GPT-5.6-terra` only when current evidence shows Luna is insufficient and Sol is unnecessary.
 - Risk controls verification and approvals, not model selection by keywords.
 - Instructions cannot retier an active task. Model overrides, fast mode, and API billing are explicit routes.
 - Delegate only independent, meaningful units when authorized; the lead owns integration, verification, and the final answer.
-- Choose each subagent route independently from the lead. Default to Luna medium, use Luna xhigh for substantive bounded work, Terra for broad read-heavy scans, and Sol only when the child independently meets Sol criteria.
+- Choose each subagent route independently from the lead. Default to Luna medium, use Luna xhigh for substantive bounded work, Terra for broad read-heavy scans, and Sol only when the child independently needs frontier quality or reliability.
 - Re-check official model availability and pricing before making current availability, dollar, or default-policy claims.
 
 ## Non-Negotiables
