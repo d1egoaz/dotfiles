@@ -52,10 +52,9 @@ Use this skill for Codex configuration and dotfiles-managed AI instructions. Pre
 
 ## Model Defaults And Routing
 
-- `config/codex/config.toml` sets the starting model for new tasks; it does not dynamically choose a model for each stage of an active task.
-- Keep the shared default at `gpt-5.6-luna` with xhigh reasoning for the current value-first policy.
-- Keep the always-loaded decision policy in `config/ai/AGENTS.md` and detailed role routing in `multi-agent-routing/SKILL.md`.
-- Use Sol high or xhigh for explicit quality-first coding, agentic work, or high-consequence ambiguity. Keep Terra as an evidence-backed exception rather than the standing default.
+- `config/codex/config.toml` sets the starting model for new tasks and the fallback model for subagents; it does not dynamically choose a model for each stage of an active task.
+- Keep the shared lead default at `gpt-5.6-luna` with xhigh reasoning and the subagent fallback at Luna medium for the current value-first policy.
+- Keep the complete routing policy in `config/ai/AGENTS.md`; do not duplicate it in a routing skill or this maintenance guide.
 - A config, instruction, or skill change does not replace the model of an already-running task. Verify both new-task defaults and the manual or delegated escalation path.
 - When changing these defaults, verify the available model IDs in the current Codex model picker and re-check current pricing or subscription-credit guidance from official sources.
 

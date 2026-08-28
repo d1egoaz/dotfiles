@@ -110,7 +110,7 @@ Codex shared config lives in `config/codex/config.toml`. Profile-specific fragme
 - `personal.toml` is tracked and safe to sync.
 - `work.local.toml` is ignored by git and can contain work-only endpoints, project trust, or machine-local state.
 
-The shared starting point is `gpt-5.6-luna` with xhigh reasoning, which is the current value default. Keep the always-loaded policy in `config/ai/AGENTS.md` and the detailed role matrix in `config/agents/skills/multi-agent-team/multi-agent-routing/SKILL.md`. Instructions cannot replace the active main agent's model: new tasks inherit the configured default, while existing tasks keep their model until the user or another supported runtime control changes a later turn. Use Sol high or xhigh for explicit quality-first coding, agentic work, or high-consequence ambiguity. Keep Terra available only when measured latency or task behavior makes it a better middle route.
+The shared starting point is `gpt-5.6-luna` with xhigh reasoning. The complete, always-loaded routing policy lives in `config/ai/AGENTS.md`; do not duplicate it in skills or repository guidance. Instructions cannot replace the active main agent's model: new tasks inherit the configured default, while existing tasks keep their model until the user or another supported runtime control changes a later turn.
 
 Codex 0.134.0 and later no longer supports a top-level `profile = "name"` selector in `config.toml`. Home Manager composes `~/.codex/config.toml` from the shared file plus the Nix-selected profile fragment:
 - `profile == "office"` -> work profile

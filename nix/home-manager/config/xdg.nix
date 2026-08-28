@@ -103,7 +103,6 @@ in
         "command-discipline"
         "git-history-orientation"
         "git-worktree-flow"
-        "multi-agent-routing"
         "repo-research"
         "scratch-log"
         "signed-pr-publish"
