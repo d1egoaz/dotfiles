@@ -7,6 +7,7 @@
     ./alfred.nix
     ./fish.nix
     ./fzf.nix
+    ./gh.nix
     ./git.nix
     ./pi.nix
     ./starship.nix

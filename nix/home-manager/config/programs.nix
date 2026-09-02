@@ -109,21 +109,6 @@
     # Development Tools
     # ========================================================================
 
-    # GitHub CLI configuration
-    gh = {
-      enable = true;
-      gitCredentialHelper.enable = true;
-      settings = {
-        version = "1";
-        editor = "";
-        git_protocol = "https";
-        aliases = {
-          pc = "pr checkout";
-          pv = "pr view";
-        };
-      };
-    };
-
     # SSH configuration with 1Password agent integration
     ssh =
       let

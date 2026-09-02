@@ -27,7 +27,6 @@ let
     cargo # Rust package manager
     clippy
     rustfmt
-    gh # GitHub CLI tool
     git # Version control system
     git-crypt # Git encryption tool
     go # Go programming language
