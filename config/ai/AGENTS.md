@@ -1,5 +1,5 @@
 # AI Assistant Instructions
-<!-- Version: 1.6.0 | Updated: 2026-08-28 -->
+<!-- Version: 1.8.0 | Updated: 2026-09-09 -->
 
 ## Instruction Files
 Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAUDE.local.md`:
@@ -35,15 +35,33 @@ Treat `AGENTS.md` and `AGENTS.local.md` files exactly like `CLAUDE.md` and `CLAU
 - Do not confuse concise output with shallow work. Investigate thoroughly when needed, then report only the useful result.
 
 ## Model Routing
-- Optimize for required quality and time at the lowest total task cost.
+
+- Optimize expected outcome value, not raw token price or token count. Meet the required quality and time target at the lowest total task cost likely to succeed, including retries, tool loops, review, rework, latency, and the cost of a wrong result. Tokens from different models are not interchangeable.
 - Use the active Nix profile's lead route: `GPT-5.6-sol` at xhigh reasoning for office/work and `GPT-5.6-terra` at xhigh reasoning for personal machines.
-- Use Luna low for exact utility work, medium for bounded routine work, and max only when extra reasoning has an explicit benefit.
-- Use Sol max only for the hardest quality-first work with a clear evaluation target.
-- Outside the personal lead profile, use `GPT-5.6-terra` only when current evidence shows Luna is insufficient and Sol is unnecessary.
+- Before delegating, reduce ambiguity and define the outcome, constraints, scope, verification, and stopping condition. Route the remaining work by the judgment it still requires:
+  - Use Luna for clear, repeatable, bounded work with objective verification. Prefer low or medium for utility work and xhigh for substantive implementation. Use max only when more Luna reasoning can plausibly close a known gap; it does not turn Luna into Sol.
+  - Use Terra for everyday work that still needs ongoing judgment or tool use, including broad read-heavy exploration, correctness review, and evidence synthesis.
+  - Use a Sol child only when that child independently needs deeper ambiguity resolution, agentic reliability, polish, or high-consequence judgment. Use max only for an exceptional problem with a clear evaluation target.
+- Apply this routing policy at every delegation boundary:
+  - When a coordinator creates a visible task, explicitly select its model and reasoning effort from the judgment that remains. Do not omit those values or copy the coordinator's route by default; sibling tasks may use different routes.
+  - After a visible task reads its applicable instructions and understands its scope, it must reassess whether meaningful independent work should go to configured native subagents. In an explicitly requested coordination workflow, delegate proactively when the criteria below are met without waiting for another user prompt.
+  - When spawning native subagents, prefer named roles so their hardcoded model, reasoning effort, sandbox, and instructions apply. Use an explicit unnamed route only when no named role fits.
+- Use subagents only for meaningful, bounded work when parallelism, context isolation, specialization, or independent verification materially improves speed or quality. Prefer at least two for parallel exploration; a single `reviewer` or `evidence-auditor` is appropriate when an independent perspective is the point. Keep small, serial, tightly coupled, write-conflicting, destructive, or live-mutation work in the lead.
+- The lead owns planning, delegation, communication, scope, integration, verification, retries, and completion.
+- Subagents do not message or coordinate with peers, discover peer IDs, spawn descendants, change scope, or declare overall task complete. They return complete results only to the lead.
+- Spawn the minimum useful number of agents and ask for concise summaries rather than raw logs or duplicated context. Do not keep retrying a cheaper model when observed failures show that the task needs more capability or a different plan.
+
+| Subagent | Model | Effort | Scope |
+|---|---|---:|---|
+| Unnamed fallback | `GPT-5.6-luna` | xhigh | Clear bounded work without a named role |
+| `explorer` | `GPT-5.6-terra` | medium | Read-only codebase mapping and broad evidence scans |
+| `worker` | `GPT-5.6-luna` | xhigh | Bounded implementation and fixes after scope is clear |
+| `reviewer` | `GPT-5.6-terra` | high | Read-only correctness, security, and test-risk review |
+| `evidence-auditor` | `GPT-5.6-terra` | xhigh | Read-only lifecycle-state reconstruction and claim verification |
+
+- Named routes are hardcoded in `~/.codex/agents`; explicit spawn values remain exceptional overrides.
 - Risk controls verification and approvals, not model selection by keywords.
-- Instructions cannot retier an active task. Model overrides, fast mode, and API billing are explicit routes.
-- Delegate only independent, meaningful units when authorized; the lead owns integration, verification, and the final answer.
-- Choose each subagent route independently from the lead. Default to Luna medium, use Luna xhigh for substantive bounded work, Terra for broad read-heavy scans, and Sol only when the child independently needs frontier quality or reliability.
+- Instructions cannot retier an active task or change billing, provider, or fast mode.
 - Re-check official model availability and pricing before making current availability, dollar, or default-policy claims.
 
 ## Non-Negotiables
@@ -83,5 +101,6 @@ Load a skill when its trigger matches; type `$name` to invoke it explicitly. Eac
 - `$git-history-orientation`: read-only git-history map of an unfamiliar repo (churn, ownership, cadence).
 - `$signed-pr-publish`: signed commits, `Assisted-by` attribution, draft PRs, PR-body quality, publish and ready.
 - `$scratch-log`: local decision log for large, multi-step, or ambiguous work.
+- `$task-coordinator`: coordinate explicitly requested multi-step goals through prefixed visible tasks, native subagents, follow-ups, and a stated stopping condition.
 - `$codex-config-maintenance`: Codex config, hooks, approval rules, skills, AGENTS/CLAUDE wiring, dotfiles AI instructions.
 - `$tfctl`: HCP Terraform / Terraform Cloud via the tfctl CLI.

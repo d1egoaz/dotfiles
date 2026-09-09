@@ -13,6 +13,7 @@ Use this skill for Codex configuration and dotfiles-managed AI instructions. Pre
 
 - Edit `~/dotfiles/config/ai/AGENTS.md` for the home-level `AGENTS.md`, `~/.codex/AGENTS.md`, and `~/.claude/CLAUDE.md` content.
 - Edit `~/dotfiles/config/codex/config.toml` for shared Codex config.
+- Edit `~/dotfiles/config/codex/agents/*.toml` for tracked custom agents linked to `~/.codex/agents`.
 - Edit `~/dotfiles/config/codex/profiles/personal.toml` for tracked personal profile config.
 - Edit ignored `~/dotfiles/config/codex/profiles/work.local.toml` for work-only Codex config.
 - Edit `~/dotfiles/config/codex/hooks.json` for shared Codex hooks.
@@ -53,7 +54,8 @@ Use this skill for Codex configuration and dotfiles-managed AI instructions. Pre
 ## Model Defaults And Routing
 
 - `nix/home-manager/config/xdg.nix` injects the Nix profile's lead model into generated `~/.codex/config.toml`: Sol xhigh for office/work and Terra xhigh for personal machines.
-- `config/codex/config.toml` holds shared settings and the Luna-medium subagent fallback; it does not dynamically choose a model for each stage of an active task.
+- `config/codex/config.toml` holds shared settings and the Luna-xhigh subagent fallback; it does not dynamically choose a model for each stage of an active task.
+- `config/codex/agents/*.toml` hardcodes the model, reasoning effort, sandbox, and role instructions for named subagents.
 - Keep the complete routing policy in `config/ai/AGENTS.md`; do not duplicate it in a routing skill or this maintenance guide.
 - A config, instruction, or skill change does not replace the model of an already-running task. Verify both new-task defaults and the manual or delegated escalation path.
 - When changing these defaults, verify the available model IDs in the current Codex model picker and re-check current pricing or subscription-credit guidance from official sources.
@@ -63,6 +65,7 @@ Use this skill for Codex configuration and dotfiles-managed AI instructions. Pre
 ```fish
 jq . config/codex/hooks.json >/dev/null
 taplo check config/codex/config.toml
+for file in config/codex/agents/*.toml; do taplo check "$file"; done
 taplo check config/codex/profiles/personal.toml
 test ! -f config/codex/profiles/work.local.toml || taplo check config/codex/profiles/work.local.toml
 sh -c 'tmp=$(mktemp "${TMPDIR:-/tmp}/codex-profile.XXXXXX.toml"); { cat config/codex/config.toml; printf "\n"; cat config/codex/profiles/personal.toml; } > "$tmp"; taplo check "$tmp"; rm -f "$tmp"'

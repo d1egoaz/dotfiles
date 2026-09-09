@@ -32,6 +32,8 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/claude/settings.json";
     ".codex/AGENTS.md".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ai/AGENTS.md";
+    ".codex/agents".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/agents";
     ".codex/rules/10-shared.rules".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/rules/10-shared.rules";
     ".codex/themes".source =
@@ -108,6 +110,7 @@ in
         "repo-research"
         "scratch-log"
         "signed-pr-publish"
+        "task-coordinator"
         "tfctl"
       ];
     in

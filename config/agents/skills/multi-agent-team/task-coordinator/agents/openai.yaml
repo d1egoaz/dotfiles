@@ -1,0 +1,7 @@
+interface:
+  display_name: "Task Coordinator"
+  short_description: "Coordinate multi-step goals through native agents"
+  default_prompt: "Use $task-coordinator to coordinate this goal through a prefixed, emoji-marked lead task, model-and-effort-labelled visible execution tasks, proactively routed and labelled native subagents where appropriate, follow-ups, and the requested stopping condition."
+
+policy:
+  allow_implicit_invocation: true

@@ -38,9 +38,9 @@ js_repl = false
 # Agent defaults and limits for multi-agent work. Explicit spawn routes may override these.
 [agents]
 default_subagent_model = "gpt-5.6-luna"
-default_subagent_reasoning_effort = "medium"
+default_subagent_reasoning_effort = "xhigh"
 max_depth = 1
-max_threads = 10
+max_concurrent_threads_per_session = 10
 
 # Keep enough local history for long debugging sessions.
 [history]
@@ -76,8 +76,7 @@ status_line = [
 theme = "tokyo-night"
 terminal_title = ["spinner", "project", "app-name", "status", "thread", "model", "task-progress"]
 
-# Environment inherited by tool commands. Claude-related variables are here so
-# Claude Code launched from Codex shell tools follows the same local policy.
+# Environment inherited by tool commands.
 [shell_environment_policy]
 inherit = "core"
 

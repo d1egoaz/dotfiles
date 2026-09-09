@@ -81,7 +81,7 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills audit-test codex-current-model-test
+check: fmt check-skills audit-test codex-agents-test codex-current-model-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -93,6 +93,11 @@ audit-test:
 [private]
 codex-current-model-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_current_model.py
+
+# Verify hardcoded Codex subagent roles, routing defaults, and Home Manager wiring.
+[private]
+codex-agents-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_agents.py
 
 # Verify the skill set agrees across the skill dirs, the AGENTS.md routing table, and xdg.nix
 check-skills:
