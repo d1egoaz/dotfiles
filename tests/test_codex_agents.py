@@ -179,6 +179,29 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("Before interrupting a running subagent", instructions)
         self.assertIn("next safe message boundary", instructions)
         self.assertIn("send a follow-up or resume it instead of spawning a duplicate", instructions)
+        for runtime_tool in (
+            "list_agents",
+            "send_message",
+            "wait_agent",
+            "followup_task",
+            "interrupt_agent",
+            "wait_threads",
+            "read_thread",
+            "send_message_to_thread",
+        ):
+            self.assertIn(f"`{runtime_tool}`", instructions)
+        for app_server_name in (
+            "thread/read",
+            "turn/steer",
+            "turn/start",
+            "turn/interrupt",
+            "thread/started",
+            "item/started",
+            "item/completed",
+            "turn/completed",
+        ):
+            self.assertIn(f"`{app_server_name}`", instructions)
+        self.assertIn("not lifecycle events or universal public API methods", instructions)
         for nonportable_marker in ("/Users/", "/home/", "http://", "https://", "@"):
             self.assertNotIn(nonportable_marker, instructions)
         self.assertIn("[PROJ-123]", instructions)
