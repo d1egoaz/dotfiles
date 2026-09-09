@@ -129,6 +129,12 @@ class CodexAgentsTest(unittest.TestCase):
             agents_md,
         )
         self.assertIn("The lead owns planning, delegation, communication", agents_md)
+        self.assertIn(
+            "Do not interrupt a running subagent merely because it is unfinished",
+            agents_md,
+        )
+        self.assertIn("send a focused status request or redirect", agents_md)
+        self.assertIn("If an agent is idle and more work is needed", agents_md)
         self.assertIn("Subagents do not message or coordinate with peers", agents_md)
         self.assertIn("discover peer IDs", agents_md)
         self.assertIn("spawn descendants", agents_md)
@@ -170,6 +176,9 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("Selected route: <model>-<effort>", instructions)
         self.assertIn("<key>_<model>_<effort>_<role>_<slice>", instructions)
         self.assertIn("[<key>] <model>-<effort> <role>: <slice>", instructions)
+        self.assertIn("Before interrupting a running subagent", instructions)
+        self.assertIn("next safe message boundary", instructions)
+        self.assertIn("send a follow-up or resume it instead of spawning a duplicate", instructions)
         for nonportable_marker in ("/Users/", "/home/", "http://", "https://", "@"):
             self.assertNotIn(nonportable_marker, instructions)
         self.assertIn("[PROJ-123]", instructions)
