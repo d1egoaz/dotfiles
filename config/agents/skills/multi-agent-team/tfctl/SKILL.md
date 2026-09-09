@@ -1,8 +1,8 @@
 ---
 name: tfctl
 description: |
-  Interact with HCP Terraform / Terraform Cloud using the tfctl CLI. Full API coverage.
-  Use for ANY HCP Terraform or Terraform Cloud question or action — listing workspaces,
+  Interact with HCP Terraform / Terraform Cloud / Terraform Enterprise using the tfctl CLI. Full API coverage.
+  Use for ANY HCP Terraform or Terraform Cloud or Terraform Enterprise question or action: listing workspaces,
   starting/diagnosing runs, reading vars, modifying resources, calling API operations.
 license: MPL-2.0
 ---
@@ -14,16 +14,29 @@ Single binary, full v2 API coverage. Already authenticated.
 ## Hard rules
 
 1. **Never pipe `tfctl` JSON to an external `jq`.** Use the built-in `--jq '<expr>'` flag — it implies `--json` and runs gojq on the response envelope.
-2. **Never issue `-X DELETE`.** All deletes need a human. If asked to delete, print the exact command and ask the user to run it.
-3. **Resolve names with `-p`, not separate lookup calls.** Paths with `{workspace}`/`{team}`/`{project}`/`{varset}` accept `-p workspace=NAME` etc. — tfctl resolves name→ID for you. Don't fetch the ID first.
-4. **Trust the first answer.** `data: []`, `data: null`, `relationships.X.data: null`, or stderr "no current run"/"not found" ARE the answer. Don't re-query in another format. Don't walk relationships "to verify".
-5. **When a named resource is not found, stop completely.** Exit code 2 or absence from a listing IS the full answer. Never:
+2. **Resolve names with `-p`, not separate lookup calls.** Paths with `{workspace}`/`{team}`/`{project}`/`{varset}` accept `-p workspace=NAME` etc. — tfctl resolves name→ID for you. Don't fetch the ID first.
+3. **Trust the first answer.** `data: []`, `data: null`, `relationships.X.data: null`, or stderr "no current run"/"not found" ARE the answer. Don't re-query in another format. Don't walk relationships "to verify".
+4. **When a named resource is not found, stop completely.** Exit code 2 or absence from a listing IS the full answer. Never:
    - Try a different resource ID "to verify the endpoint works"
    - Pivot to another org/workspace that appeared in the available list
    - Explore related resources to find "similar" information
-   - Use Rule 4 to justify switching to a different resource: if you listed orgs and 'platform' isn't there, the first answer is "platform doesn't exist" — stop, don't use whatever org IS listed instead.
+   - Use Rule 3 to justify switching to a different resource: if you listed orgs and 'platform' isn't there, the first answer is "platform doesn't exist" — stop, don't use whatever org IS listed instead.
 
    Examples: `run-POLICY` returns exit 2 → stop, don't query other run IDs. Listing orgs shows no 'platform' → stop, don't use the org that IS listed.
+5. **Require explicit authorization for every delete and production mutation.** The user must authorize the exact target and action in the current conversation before you execute it. A `tfctl harness exec --allow-delete=<class>` grant only provides technical capability; it is not user authorization and never satisfies this rule. Do not run `tfctl harness exec` yourself, set `TFCTL_EXEC_SESSION`, or otherwise self-authorize. If authorization is missing, do not execute the mutation; provide the exact command and ask the user to authorize that exact target and action.
+
+### Deletes and production mutations
+
+Deletes are destructive, and production mutations can affect live infrastructure. Before issuing `-X DELETE`, `run start`, apply, or any other mutating command against a production target, identify the exact target and action and confirm that the user explicitly authorized it. A harness grant may be required for `tfctl` to accept a delete, but it remains only a capability grant and does not authorize the action.
+
+```bash
+tfctl api PATH -X DELETE
+```
+
+- If the user has not authorized the exact target and action, do not run the command. Return the exact command that would be run and request explicit authorization.
+- If the user has authorized the exact target and action but `tfctl` refuses because the session lacks a harness capability grant, relay the refusal and the printed command. Never run the harness command yourself or set `TFCTL_EXEC_SESSION`.
+- Treat a refusal caused by a missing harness grant as a capability gap, not an authentication failure. Do not report it as an expired token or advise re-login unless `tfctl` explicitly reports invalid or expired credentials.
+- For irreversible deletes such as organizations or projects, require explicit authorization even when the technical capability is already available.
 
 ### URL shape: per-workspace subpaths live at `/workspaces/{workspace}/...`
 
