@@ -29,10 +29,36 @@ primary checkout.
 ### Prompt contract
 
 Pass the title explicitly when supported, otherwise rename immediately. Include
-the coordination key, selected route, parent title, outcome, constraints,
-verification, publication boundary, and stopping condition. Require the
-execution task to use the canonical subagent naming schema and to reassess
-native delegation after it understands the scope.
+the coordination key, exact selected model, effort, compact display route,
+parent title, outcome, constraints, verification, publication boundary, and
+stopping condition. Require the execution task to use the canonical subagent
+naming schema and to reassess native delegation after it understands the scope.
+
+One lead owns a coordination key. Before each creation, inspect existing tasks
+for that key. If another active lead owns it, stop and report the collision.
+Do not reuse an identical title for another outcome or attempt. This check is
+best effort because the visible-task API has no atomic key reservation. After
+creation:
+
+- A returned `threadId` identifies a ready visible task.
+- A returned `clientThreadId` means worktree setup is pending, not failed. Do
+  not call `create_thread` again for that outcome merely because the task is not
+  addressable yet. Wait for provisioning, then refresh the task list. If the
+  runtime could not accept a title at creation, retain the intended title and
+  apply it only after a resolved `threadId` is available.
+- Retry only after an explicit create/setup error or a task state that reports
+  setup failure. A timeout, missing `threadId`, or `clientThreadId` alone is not
+  failure. Set `N` to one more than the highest existing retry number for the
+  same key and outcome, treating the original attempt as zero, then add
+  `(retry N)` after the outcome. Shorten only the outcome at a word boundary as
+  needed so the complete retry title remains within 56 characters.
+- If a pending attempt later appears after a replacement exists, rename it with
+  `(superseded)` and preserve it unless cleanup is explicitly authorized.
+- After provisioning, refresh the task list again. If duplicate tasks exist for
+  the same key and outcome, keep the task with the earliest `createdAt` as owner,
+  breaking a tie by lexical `threadId`. Send later duplicates a focused pause,
+  shorten only their outcome as needed, rename them with `(superseded)`, and do
+  not send them more work.
 
 Keep worktrees, commits, and PRs separate across repositories. The lead owns
 sequencing and cross-repository integration. Creating a task does not authorize

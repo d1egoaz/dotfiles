@@ -1,7 +1,7 @@
 interface:
   display_name: "Task Coordinator"
   short_description: "Coordinate visible workstreams and monitoring"
-  default_prompt: "Use $task-coordinator to rename the lead, state the decomposition, create visible tasks for independent write outcomes, and manage native subagents and follow-ups."
+  default_prompt: "Use $task-coordinator to apply robot-first lead naming, concise unique model-labelled task titles, visible tasks for independent write outcomes, and managed subagents and follow-ups."
 
 policy:
   allow_implicit_invocation: true

@@ -148,6 +148,8 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertIn("explicit `$task-coordinator` invocation", coordinator)
         self.assertIn("write-owning repository", coordinator)
         self.assertIn("ordinary continuation of one task does not count", coordinator)
+        self.assertIn("🤖 [<key>] <goal>", coordinator)
+        self.assertIn("raw model ID", coordinator)
 
     def test_progressive_disclosure_references_exist(self):
         expected = {

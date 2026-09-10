@@ -24,7 +24,7 @@ one-time status check.
 3. Before delegating, state the decomposition: which outcomes get visible tasks
    and which bounded slices stay native subagents. If no visible task is
    justified, explain why in one sentence.
-4. Whenever this skill applies, rename the lead `[<key>] 🤖 <goal>` as soon as
+4. Whenever this skill applies, rename the lead `🤖 [<key>] <goal>` as soon as
    the key and goal are known. Do this before delegation for explicit use.
 5. Treat explicit `$task-coordinator` invocation as a request to use this
    workflow. For repository write work, create at least one visible
@@ -50,13 +50,24 @@ worktree/local choices and prompt mechanics.
   When useful, proactively spawn the minimum useful named roles and integrate
   their findings in the owning task.
 - Keep naming tied to the route actually selected:
-  - lead: `[<key>] 🤖 <goal>`
-  - visible execution task: `[<key>] <model>-<effort> <scope>: <outcome>`
-  - native subagent: `<key>_<model>_<effort>_<role>_<slice>`
-  - native prompt label: `[<key>] <model>-<effort> <role>: <slice>`
-- Include `Coordination key: <key>`, `Selected route: <model>-<effort>`, and
-  the parent title in each child prompt. Keep the exact key across retries,
-  forks, and follow-ups.
+  - lead: `🤖 [<key>] <goal>`
+  - visible execution task: `[<key>] <model-label>-<effort> <scope>: <outcome>`
+  - native subagent: `<key>_<model-label>_<effort>_<role>_<slice>`
+  - native prompt label: `[<key>] <model-label>-<effort> <role>: <slice>`
+- Use the display labels `Sol`, `Terra`, or `Luna` in titles and labels. Never
+  put a raw model ID such as `gpt-5.6-luna` in a title. Keep the exact runtime
+  model ID in the child prompt and task-creation fields.
+- Keep visible titles unique and at most 56 characters, with the distinguishing
+  scope and outcome before optional detail. Normalize a plan-supplied title to
+  this schema instead of copying an invalid or overlong form.
+- Build the lead goal from the resolved user goal without a key, model, scope,
+  or trailing punctuation. If the title exceeds 56 characters, keep the longest
+  goal prefix that fits at a word boundary; hard-cut only when no boundary fits.
+  Do not paraphrase or add an ellipsis. Preserve the robot emoji and key.
+- Include `Coordination key: <key>`, `Selected model: <exact-model-id>`,
+  `Selected effort: <effort>`, `Display route: <model-label>-<effort>`, and the
+  parent title in each child prompt. Keep the exact key across retries, forks,
+  and follow-ups.
 
 Every execution prompt must state the outcome, constraints, verification,
 publication boundary, stopping condition, and a delegation contract requiring
