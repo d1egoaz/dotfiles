@@ -7,7 +7,9 @@ description: Create or repair scoped Git worktrees. Use for feature branches, ne
 
 ## Overview
 
-Use this skill to keep the primary checkout on `main` and put feature work in sibling worktrees.
+Use this skill to keep the primary checkout on `main` and put feature work under
+`~/.codex/worktrees`. Do not create worktrees beside the
+primary repository.
 
 ## New Worktree
 
@@ -15,14 +17,19 @@ Use this skill to keep the primary checkout on `main` and put feature work in si
 2. Confirm current branch and dirty state. Do not overwrite unrelated changes.
 3. Fetch `origin/main`.
    - If repo-local or parent instructions require a special network-auth path, follow that more specific guidance.
-4. Create a sibling worktree using `<repo>-worktrees/<feature-name>`.
+4. Create the worktree at
+   `~/.codex/worktrees/<repo>-<feature-name>`.
+   - Use the repository name and a filesystem-safe feature name so paths remain
+     unique and recognizable.
+   - If the destination already exists, inspect it instead of overwriting it or
+     choosing a different location outside the worktree root.
 5. Run subsequent git commands from the worktree's own working directory.
 
 Pattern:
 
 ```bash
 git fetch origin main
-git worktree add ../repo-worktrees/feature-branch -b feature-branch origin/main
+git worktree add ~/.codex/worktrees/repo-feature-branch -b feature-branch origin/main
 ```
 
 ## Multi-Repo Work
