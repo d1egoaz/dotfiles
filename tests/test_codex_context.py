@@ -118,10 +118,14 @@ def implicit_invocation(name: str) -> bool:
 
 class CodexContextPolicyTest(unittest.TestCase):
     def test_always_loaded_instruction_budgets(self):
-        self.assertLessEqual(len(SHARED_AGENTS.read_text()), 7000)
+        shared_agents = SHARED_AGENTS.read_text()
+        normalized = " ".join(shared_agents.split())
+        self.assertLessEqual(len(shared_agents), 7000)
         self.assertLessEqual(len(ROOT_AGENTS.read_text()), 6000)
-        self.assertIn("Do not reread instruction content already present", SHARED_AGENTS.read_text())
-        self.assertNotRegex(SHARED_AGENTS.read_text(), r"(?m)^- `\$[a-z-]+`:")
+        self.assertIn("Do not reread instruction content already present", shared_agents)
+        self.assertNotRegex(shared_agents, r"(?m)^- `\$[a-z-]+`:")
+        self.assertIn("When a follow-up changes diagnosis or read-only work into implementation", normalized)
+        self.assertIn("move feature edits into the required worktree", normalized)
         self.assertIn("docs/dotfiles-reference.md", ROOT_AGENTS.read_text())
 
     def test_skill_entrypoint_and_description_budgets(self):
@@ -138,9 +142,12 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertTrue(implicit_invocation("task-coordinator"))
 
         coordinator = re.sub(r"\s+", " ", (SKILL_ROOT / "task-coordinator/SKILL.md").read_text())
-        self.assertIn("at least two independent outcomes", coordinator)
+        self.assertIn("at least two independently shippable outcomes", coordinator)
         self.assertIn("one tightly coupled implementation outcome", coordinator)
         self.assertIn("one-time status check", coordinator)
+        self.assertIn("explicit `$task-coordinator` invocation", coordinator)
+        self.assertIn("write-owning repository", coordinator)
+        self.assertIn("ordinary continuation of one task does not count", coordinator)
 
     def test_progressive_disclosure_references_exist(self):
         expected = {

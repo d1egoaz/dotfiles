@@ -1,10 +1,16 @@
 ## Visible task creation
 
-Create a visible task only for a durable independent outcome, separate
-repository or worktree, or work the user wants to inspect in the sidebar. Do
-not create one for a status question or an ordinary single-task request. If
-native visible-task controls are unavailable, keep ownership in the lead and
-use native subagents instead of unmanaged shell sessions.
+Create a visible task for a durable independent outcome, a write-owning
+repository or worktree, or work the user wants to inspect in the sidebar. An
+explicit `$task-coordinator` invocation requests this workflow; for repository
+write work, create at least one visible implementation task unless the user
+asks to keep implementation in the lead. Do not create a child for a one-time
+status question. If visible-task controls are unavailable, report that and use
+native subagents instead of unmanaged shell sessions.
+
+A repository used only as read-only reference material is not a separate
+visible outcome. Delegate that mapping to a native `explorer` inside the owning
+implementation task.
 
 ### Coordination surface
 

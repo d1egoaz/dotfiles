@@ -1,7 +1,7 @@
 interface:
   display_name: "Task Coordinator"
-  short_description: "Coordinate independent workstreams and monitoring"
-  default_prompt: "Use $task-coordinator for multiple independent outcomes, repositories, visible tasks, or ongoing monitoring."
+  short_description: "Coordinate visible workstreams and monitoring"
+  default_prompt: "Use $task-coordinator to rename the lead, state the decomposition, create visible tasks for independent write outcomes, and manage native subagents and follow-ups."
 
 policy:
   allow_implicit_invocation: true

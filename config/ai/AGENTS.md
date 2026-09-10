@@ -58,6 +58,9 @@ Optimize expected outcome value, including retries, tool loops, review, latency,
 - AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Resolve the exact current model with `$HOME/dotfiles/bin/files/codex-current-model`; retry with escalated read access if needed and stop if it remains unknown.
 - Open new PRs in draft mode.
 - Keep primary checkouts on `main`; use `$git-worktree-flow` for feature work.
+- When a follow-up changes diagnosis or read-only work into implementation,
+  reassess coordination and checkout isolation before new writes. Preserve
+  existing work and move feature edits into the required worktree.
 - For multi-repository work, run Git commands in each repository's working directory. Avoid `git -C` unless explicitly requested.
 - Confirm before destructive changes and resolve exact targets first.
 
