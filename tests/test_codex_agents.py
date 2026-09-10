@@ -89,7 +89,7 @@ class CodexAgentsTest(unittest.TestCase):
             {"worker"},
         )
 
-    def test_agents_table_and_lead_contract_match_hardcoded_roles(self):
+    def test_lead_contract_matches_hardcoded_roles(self):
         agents_md = AGENTS_MD.read_text()
         expected_rows = (
             "| Unnamed fallback | `GPT-5.6-luna` | xhigh |",
@@ -102,43 +102,29 @@ class CodexAgentsTest(unittest.TestCase):
         for row in expected_rows:
             self.assertIn(row, agents_md)
         self.assertIn(
-            "Optimize expected outcome value, not raw token price or token count",
+            "Optimize expected outcome value",
             agents_md,
         )
         self.assertIn("Tokens from different models are not interchangeable", agents_md)
         self.assertIn(
-            "Route the remaining work by the judgment it still requires",
+            "Tokens from different models are not interchangeable",
             agents_md,
         )
-        self.assertIn("Spawn the minimum useful number of agents", agents_md)
+        self.assertIn("Explicitly select the model and effort for every visible task", agents_md)
+        self.assertIn("Prefer configured named roles for native subagents", agents_md)
         self.assertIn(
             "parallelism, context isolation, specialization, or independent verification",
             agents_md,
         )
-        self.assertIn(
-            "a single `reviewer` or `evidence-auditor` is appropriate",
-            agents_md,
-        )
-        self.assertIn("Apply this routing policy at every delegation boundary", agents_md)
-        self.assertIn(
-            "explicitly select its model and reasoning effort",
-            agents_md,
-        )
-        self.assertIn(
-            "delegate proactively when the criteria below are met",
-            agents_md,
-        )
-        self.assertIn("The lead owns planning, delegation, communication", agents_md)
-        self.assertIn(
-            "Do not interrupt a running subagent merely because it is unfinished",
-            agents_md,
-        )
+        self.assertIn("A single reviewer or evidence auditor is valid", agents_md)
+        self.assertIn("The lead owns planning, scope, delegation, communication", agents_md)
+        self.assertIn("Before interrupting a running subagent", agents_md)
         self.assertIn("send a focused status request or redirect", agents_md)
-        self.assertIn("If an agent is idle and more work is needed", agents_md)
-        self.assertIn("Subagents do not message or coordinate with peers", agents_md)
+        self.assertIn("Resume an idle agent instead of duplicating it", agents_md)
+        self.assertIn("They do not coordinate with peers", agents_md)
         self.assertIn("discover peer IDs", agents_md)
         self.assertIn("spawn descendants", agents_md)
-        self.assertIn("return complete results only to the lead", agents_md)
+        self.assertIn("Do not duplicate the runtime skill catalog", agents_md)
 
     def test_tracked_agents_are_portable(self):
         allowed_keys = {

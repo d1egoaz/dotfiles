@@ -1,393 +1,66 @@
-# AGENTS.md
+# Dotfiles Agent Instructions
 
-This file provides guidance to Code agents  when working with code in this repository.
-
-## Repository Overview
-
-This is a macOS dotfiles repository using nix-darwin + Home Manager + Homebrew for system configuration across multiple machines. The setup prioritizes stability (nixpkgs-25.11-darwin) while maintaining a pragmatic hybrid approach where some configs are managed by Nix and others are direct symlinks for immediate editing.
+This repository manages macOS configuration with nix-darwin, Home Manager, and Homebrew across office and personal machines.
 
 ## Core Commands
 
-All commands use the `just` command runner. Working directory should be the repo root.
-
-```bash
-# Primary workflow
-just switch        # Apply configuration (auto-detects machine by username)
-just check         # Validate Nix configuration
-just fmt           # Format Nix files
-just lint          # Format + check
-
-# Updates and maintenance
-just update        # Update flake inputs
-just gc            # Garbage collect old generations
-just brew          # Update Homebrew packages (includes machine-specific)
-just dry-run       # Preview changes without applying
-just audit         # Compare live macOS state with dotfiles (read-only)
-just audit-export  # Export a sanitized audit JSON to the Desktop
-
-# Initial setup (new machine)
-just install-nix
-just install-darwin
-```
-
-## Architecture
-
-### Username-Based Auto-Detection
-
-The system auto-detects which machine configuration to use based on `whoami`:
-- `diego.alvarez` -> `office-mbp` (profile: office)
-- `diego` -> `personal-mbp` (profile: personal)
-- `diegoalvarez` -> `personal-mini` (profile: personal)
-
-This mapping is defined in:
-- `justfile`: the `_host` variable
-- `nix/flake-modules/darwin.nix`: Host configurations with user mappings
-
-### Profile System
-
-The configuration uses a three-tier profile system:
-
-1. **Base Profile** (`nix/profiles/base.nix`)
-   - Packages and Homebrew selections common to ALL machines
-   - Exports: `hmPackages`, `systemPackages` (Homebrew is managed via Brewfiles, not Nix)
-
-2. **Specific Profiles** (`nix/profiles/{office,personal}.nix`)
-   - Machine-specific packages and settings
-   - Imports base profile and adds/overrides
-   - Profile is passed as `specialArgs` to all Home Manager modules
-
-3. **Machine Configuration** (`nix/profiles/machines.nix`)
-   - Per-profile settings: 1Password account/vault, SSH keys, work org, paths
-   - Passed to modules via `machineConfig` specialArg
-   - Edit directly when rotating keys or changing work settings
-
-4. **Per-Host Customization**
-   - Host-specific Brewfiles: `Brewfile.{office-mbp,personal-mbp,personal-mini}`
-   - Conditional logic using the `profile` variable in modules
-
-### Module Flow
-
-```
-flake.nix
-  |
-flake-modules/darwin.nix (defines hosts)
-  |
-lib/mkDarwinSystem.nix (system builder)
-  |
-+-- systems/darwin/default.nix (system-level config)
-+-- home-manager/default.nix (user-level config)
-     |
-     +-- config/programs.nix (Nix-managed programs)
-     +-- config/xdg.nix (file symlinks)
-     +-- config/apps/* (app-specific modules)
-     +-- packages.nix (pulls from profiles)
-```
-
-### Hybrid Configuration Approach
-
-This repo uses two configuration strategies:
-
-1. **Nix-Managed** (requires `just switch`)
-   - Declared in `home-manager/config/programs.nix` or app modules
-   - Examples: git, zsh, fish, bat configs
-   - Content lives in `/nix/store`
-
-2. **Direct Symlinks** (immediate changes)
-   - Declared in `home-manager/config/xdg.nix` using `mkOutOfStoreSymlink`
-   - Symlinks point directly to `~/dotfiles/config/<app>/`
-   - Examples: wezterm, ghostty, aerospace
-   - Edit files directly, no rebuild needed
-
-The `mkOutOfStoreSymlink` function is key: it creates symlinks that point to the repo instead of `/nix/store`, enabling live editing while maintaining declarative management.
-
-### Custom Scripts
-
-Scripts in `bin/files/` are symlinked to `~/.local/bin/` via `home.file` entries in `xdg.nix`. AWS helper functions (awsprofile, aws-sso-automator) are sourced directly by shell configs rather than symlinked.
-
-### Codex Config And Hooks
-
-Codex shared config lives in `config/codex/config.toml`. Profile-specific fragments live in `config/codex/profiles/`:
-- `personal.toml` is tracked and safe to sync.
-- `work.local.toml` is ignored by git and can contain work-only endpoints, project trust, or machine-local state.
-
-The Nix-selected lead route is `gpt-5.6-sol` with xhigh reasoning for office/work and `gpt-5.6-terra` with xhigh reasoning for personal machines. Unnamed subagents fall back to Luna xhigh; tracked custom roles in `config/codex/agents/` hardcode their own model, reasoning effort, sandbox, and lead-mediated communication. The complete, always-loaded routing policy lives in `config/ai/AGENTS.md`; do not duplicate it in skills or repository guidance. Instructions cannot replace the active main agent's model: new tasks inherit the configured default, while existing tasks keep their model until the user or another supported runtime control changes a later turn.
-
-Codex 0.134.0 and later no longer supports a top-level `profile = "name"` selector in `config.toml`. Home Manager composes `~/.codex/config.toml` from the shared file plus the Nix-selected profile fragment:
-- `profile == "office"` -> work profile
-- `profile == "personal"` -> personal profile
-
-Work machines use ignored `config/codex/profiles/work.local.toml` when it exists. If it is missing, `just switch` falls back to shared Codex config and prints a warning. Do not put work-internal MCP URLs or work project trust entries in the shared `config/codex/config.toml`.
-
-Codex shared hooks live in `config/codex/hooks.json`. Office machines can use ignored local hooks from `config/codex/hooks.work.local.json`. Home Manager links the selected hooks file to `~/.codex/hooks.json` from `nix/home-manager/config/xdg.nix`, falling back to shared hooks if the ignored local file is absent.
-
-Work-only Codex profile/hooks, approval rules, and agent skills live as ignored plaintext and are backed up through encrypted `local_state` entries in `secrets/local-state.yaml`. Use `just local-state-sync` to push local ignored-state edits into SOPS. `just switch` only restores missing local-state files on office machines before activation; it does not rewrite encrypted state. Restored `local_state` files are plaintext copies on disk, not runtime-decrypted files.
-
-Keep Codex hooks in `config/codex/hooks.json`, not inline in `config.toml`. Codex loads both forms if both exist in the same layer and warns, so use one representation per layer. Keep `[features].codex_hooks = true` in `config.toml`.
-
-Use documented Codex hook events only:
-- `Stop`: runs when a turn stops. `matcher` is ignored. Commands should exit `0` with no output or emit valid JSON. Redirect sound commands with `>/dev/null 2>&1`.
-- `PermissionRequest`: runs before Codex asks for approval. `matcher` filters the tool name such as `Bash`, `apply_patch`, or an MCP tool.
-- `UserPromptSubmit`: runs before a user prompt is submitted. `matcher` is ignored.
-- `SessionStart`: runs on session start. `matcher` filters `startup`, `resume`, or `clear`.
-
-Do not add a `Notification` hook to `hooks.json`; Codex does not document that as a hook event. Use the top-level `notify = [...]` setting in `config.toml` for Codex notification payloads, and keep `bin/files/codex-notify.sh` for filtered `agent-turn-complete` sounds. Do not add Desktop log-watcher or launchd sound hacks unless the user explicitly asks for that workaround.
-
-Validate Codex config changes with the `Validation` runbook in `config/agents/skills/multi-agent-team/codex-config-maintenance/SKILL.md` (canonical source: the `jq`/`taplo` checks, the profile-concat check, `codex debug prompt-input hooks-json-smoke`, `dotfiles-local-state check`, and `just check`). If `codex debug prompt-input hooks-json-smoke` fails because the sandbox cannot read `~/.codex/sessions`, rerun it with escalated permissions.
-
-To test sounds directly:
-
-```fish
-/bin/sh -c '$HOME/dotfiles/bin/files/codex-notify.sh "$1"' codex-notify '{"type":"agent-turn-complete"}'
-/usr/bin/afplay -v 15 /System/Library/Sounds/Hero.aiff >/dev/null 2>&1
-```
-
-To verify the `Stop` hook dispatches through Codex, run:
-
-```fish
-codex exec --ephemeral -C /Users/diego.alvarez/dotfiles -s read-only "Reply with: ok"
-```
-
-Successful `Stop` hook dispatch prints `hook: Stop` and `hook: Stop Completed`.
-
-## Adding New Functionality
-
-### Adding Packages
-
-**User packages** (most common):
-- Add to `hmPackages` in `nix/profiles/base.nix` (all machines)
-- Or in `nix/profiles/{office,personal}.nix` (specific machines)
-
-**System packages** (rare):
-- Add to `systemPackages` in profile files
-- These are available system-wide
-
-### Adding Configuration Files
-
-**Option 1: Nix Module** (when Home Manager supports it)
-- Add to `home-manager/config/programs.nix` or create new module in `config/apps/`
-- Changes require `just switch`
-- Example: git, shell configs
-
-**Option 2: Direct Symlink** (for live editing)
-1. Create config dir: `config/<app>/`
-2. Add symlink in `home-manager/config/xdg.nix`:
-   ```nix
-   configFile."<app>".source =
-     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/<app>";
-   ```
-3. Edit files directly, changes take effect immediately
-
-### Adding a New Machine
-
-1. Add host configuration in `nix/flake-modules/darwin.nix`:
-   ```nix
-   new-machine = mkDarwinSystem {
-     user = "username";
-     profile = "personal"; # or "office"
-     inherit system;
-   };
-   ```
-
-2. Add the username mapping to the `_host` variable in `justfile`
-
-3. Optional: Create `Brewfile.new-machine` for machine-specific apps
-
-4. Run: `darwin-rebuild switch --flake ./nix#new-machine`
-
-### Working with Profiles
-
-Access the current profile in any Home Manager module:
-```nix
-{ profile, machineConfig, ... }:
-{
-  # Profile is available as specialArg
-  home.packages = if profile == "office" then [ pkgs.tool ] else [];
-
-  # machineConfig contains per-profile settings
-  home.sessionVariables.OP_ACCOUNT = machineConfig.op_account;
-}
-```
-
-Profile is also exported as `$PROFILE` environment variable in shell sessions.
-
-## Machine Configuration
-
-Machine-specific settings live in `nix/profiles/machines.nix`. This file is committed to git (it contains no secrets - just public keys, email addresses, and org names).
-
-### What's in machines.nix
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| `op_account` | 1Password account domain | `my.1password.com` |
-| `op_vault` | 1Password vault name | `Private` |
-| `work_email` | Git email for work repos | `user@company.com` |
-| `go_private` | GOPRIVATE pattern | `github.com/org/*` |
-| `ssh_signing_key` | Public SSH key for signing | `ssh-ed25519 AAAA...` |
-| `work_org` | GitHub org for URL rewrites | `mycompany` |
-| `work_dir` | Base directory for work repos | `~/work` |
-| `emacs_additional_dir` | Private emacs config path | `$HOME/dotfiles-private/company` |
-| `aws_region` | Default AWS region | `us-east-1` |
-| `llm.provider` | LLM provider name | `OpenAI` |
-| `llm.model` | Model identifier | `gpt-5-mini` |
-| `llm.base_url` | API endpoint | `https://api.openai.com/v1` |
-
-### Editing machines.nix
-
-Edit `nix/profiles/machines.nix` directly, then run `just switch`:
-
-```nix
-office = {
-  op_account = "company.1password.com";
-  op_vault = "Employee";
-  work_email = "you@company.com";
-  # ... other fields
-};
-
-personal = {
-  op_account = "my.1password.com";
-  op_vault = "Private";
-  work_email = "";  # Empty for personal
-  # ... other fields
-};
-```
-
-## Secrets Management
-
-Actual secrets (API keys, tokens) are stored in 1Password. Public dotfiles should not contain concrete `op://` refs for runtime workflow secrets; keep those refs encrypted in `secrets/op-env-cache.yaml`.
-
-### Vault Layout
-
-| Profile  | Vault      | Items                                    |
-|----------|------------|------------------------------------------|
-| office   | Employee   | Runtime workflow items, `Homebrew GitHub Token` |
-| personal | Private    | Runtime workflow items                         |
-
-### Shell Aliases
-
-Aliases are profile-aware (account + vault are selected at build time via `--account`):
-
-```bash
-# Office profile expands to:
-op-llm        # resolves the encrypted SOPS-backed Alfred LLM cache spec
-op-openai     # compatibility alias for op-llm
-op-homebrew   # op read --account <op_account> "op://<op_vault>/Homebrew GitHub Token/credential"
-
-# Personal profile expands to:
-op-llm        # resolves the encrypted SOPS-backed Alfred LLM cache spec
-op-openai     # compatibility alias for op-llm
-```
-
-The `--account` flag ensures the correct 1Password account is targeted regardless of which session is currently active.
-
-### Authentication
-
-```fish
-# Fish
-eval (op signin)
-
-# Zsh/Bash
-eval $(op signin)
-
-# Verify
-op whoami
-```
-
-### Creating 1Password Items (First-Time Setup / Key Rotation)
-
-Use the encrypted `op_env_cache_specs` entries in `secrets/op-env-cache.yaml` as the source of truth for workflow secret item and field names. Do not duplicate those concrete `op://` refs in public docs or Nix modules.
-
-For non-hidden shared items, create them directly:
-
-```bash
-# Replace <op_account> and <op_vault> with values from machines.nix
-op item create \
-  --account <op_account> \
-  --vault <op_vault> \
-  --category "API Credential" \
-  --title "Homebrew GitHub Token" \
-  'credential[password]=ghp_YOUR-GITHUB-TOKEN-HERE'
-```
-
-To rotate an existing key:
-
-```bash
-op item edit "Homebrew GitHub Token" --account <op_account> --vault <op_vault> 'credential[password]=ghp_NEW-TOKEN-HERE'
-```
-
-### Usage
-
-```fish
-# Use alias (account is baked in)
-set -l key (op-llm)
-
-# One-liner
-curl -H "Authorization: Bearer (op-llm)" https://api.openai.com/v1/models
-```
-
-Alfred workflows fetch the configured LLM key through `op-env-cache`, using encrypted refs in `secrets/op-env-cache.yaml`.
-
-### SOPS-Backed Runtime Cache
-
-Short-lived GUI or agent workflows that repeatedly need 1Password-backed environment variables should use `op-env-cache` instead of copying cache logic.
-Do not use it for high-sensitivity or long-lived credentials: cache values are plaintext on disk until the TTL expires or `op-env-cache logout <name>` removes them.
-
-Specs live in `secrets/op-env-cache.yaml`:
-
-```yaml
-op_env_cache_specs:
-  alfred-llm-rewrite-office:
-    account: <account-domain>
-    cache_ttl_seconds: 28800
-    env:
-      ALFRED_LLM_API_KEY: <encrypted op:// ref>
-```
-
-Use `op-env-cache refresh <name> --sops-file "$HOME/dotfiles/secrets/op-env-cache.yaml"` to prewarm a cache, `op-env-cache get <name> <ENV_KEY> --auto-refresh --sops-file "$HOME/dotfiles/secrets/op-env-cache.yaml"` inside wrappers, and `op-env-cache logout <name>` to remove the plaintext cache directory.
-
-## Important Concepts
-
-### Pure Evaluation
-
-Everything evaluates purely; do not add `--impure` to switch or build commands. The external fonts repo is fetched with `builtins.fetchGit` pinned to a full `rev`, which Nix treats as a locked fetcher and allows in pure evaluation.
-
-### Rollbacks
-
-```bash
-darwin-rebuild --rollback              # Roll back one generation
-darwin-rebuild --list-generations      # List all generations
-darwin-rebuild --switch-generation N   # Jump to specific generation
-```
-
-### Cachix
-
-The flake uses nix-community cachix for binary caches (configured in `flake.nix` nixConfig).
-
-## Directory Structure Key Locations
-
-```
-nix/
-+-- flake.nix                    # Entry point
-+-- flake-modules/               # Modular flake config
-|   +-- darwin.nix              # Host definitions
-+-- lib/
-|   +-- mkDarwinSystem.nix      # System builder function
-+-- profiles/                    # Profile-based configs
-|   +-- base.nix                # Shared across all machines
-|   +-- office.nix              # Work-specific
-|   +-- personal.nix            # Personal machines
-|   +-- machines.nix            # Per-profile settings (1Password, SSH keys, LLM, etc.)
-+-- home-manager/               # User environment
-|   +-- default.nix             # Entry point
-|   +-- packages.nix            # Pulls from profiles
-|   +-- config/                 # Configuration modules
-|       +-- programs.nix        # Nix-managed programs
-|       +-- xdg.nix            # File symlinks
-|       +-- apps/              # App-specific modules
-|           +-- alfred.nix     # Alfred preferences (office)
-+-- systems/darwin/             # macOS system-level settings
-+-- packages/                   # Custom package definitions
-
-config/                         # Direct config files (symlinked)
-bin/files/                      # Custom scripts (symlinked to ~/.local/bin)
-Brewfile*                       # Homebrew package definitions
-```
+Run commands from the repository root with `just`.
+
+| Command | Purpose |
+|---|---|
+| `just switch` | Activate the current machine configuration |
+| `just check` | Format and validate the full Nix configuration |
+| `just fmt` | Format Nix files |
+| `just dry-run` | Preview the current host configuration |
+| `just audit` | Compare live macOS state with dotfiles, read-only |
+| `just local-state-sync` | Encrypt current office-only local state |
+| `just update` | Update routine flake inputs |
+| `just brew` | Update Homebrew and apply the selected Brewfiles |
+
+`just check` runs the formatter first. Protect unrelated dirty files before using it, and verify afterward that their content did not change.
+
+## Profiles
+
+| Username | Host | Profile | Codex lead |
+|---|---|---|---|
+| `diego.alvarez` | `office-mbp` | office | Sol xhigh |
+| `diego` | `personal-mbp` | personal | Terra xhigh |
+| `diegoalvarez` | `personal-mini` | personal | Terra xhigh |
+
+Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profile settings live in `nix/profiles/`, and host-specific applications live in `Brewfile.<host>`.
+
+## Sources Of Truth
+
+| Area | Source |
+|---|---|
+| Global AI instructions | `config/ai/AGENTS.md` |
+| Shared Codex config | `config/codex/config.toml` |
+| Personal Codex profile | `config/codex/profiles/personal.toml` |
+| Office Codex profile | ignored `config/codex/profiles/work.local.toml` |
+| Native Codex roles | `config/codex/agents/*.toml` |
+| Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
+| Shared skills | `config/agents/skills/multi-agent-team/` |
+| Office-only skills | ignored `config/agents/skills/work.local/` |
+| Shared approval rules | `config/codex/rules/10-shared.rules` |
+| Home Manager links and generated Codex config | `nix/home-manager/config/xdg.nix` |
+| Encrypted local state | `secrets/local-state.yaml` |
+
+Edit source files, not generated targets. Home Manager composes `~/.codex/config.toml` from the shared config, the selected profile fragment, and the profile's lead model. Do not overwrite that generated file directly.
+
+Office-only endpoints, trust entries, hooks, approval rules, and skills must stay out of tracked shared files. `just switch` restores missing local state but does not encrypt edits. Use `just local-state-sync` when ignored office state changes.
+
+## Repository Rules
+
+- Keep the primary checkout on `main`; use a linked worktree for feature work.
+- Preserve unrelated dirty changes and stage exact files only.
+- Do not add `--impure` to Nix commands.
+- Homebrew owns packages declared in Brewfiles. Nix owns packages declared in profiles and modules.
+- Direct symlinks from `config/` update immediately. Nix-managed files require `just switch`.
+- Scripts in `bin/files/` must also be listed in `nix/home-manager/config/xdg.nix` when they should appear under `~/.local/bin`.
+- Use `$codex-config-maintenance` for Codex configuration, skill, hook, rule, and AI-instruction changes.
+- Use the targeted validators from that skill before `just check`.
+- If activation needs sudo or another interactive boundary, report it as incomplete. Never replace generated files to bypass activation.
+
+## On-Demand Reference
+
+Read `docs/dotfiles-reference.md` only when the task needs architecture, configuration layering, hooks, secrets, package ownership, machine bootstrap, rollbacks, or the detailed directory map.

@@ -99,15 +99,13 @@ codex-current-model-test:
 codex-agents-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_agents.py
 
-# Verify the skill set agrees across the skill dirs, the AGENTS.md routing table, and xdg.nix
+# Verify the shared skill directories agree with the explicit Claude links in xdg.nix.
 check-skills:
     #!/usr/bin/env bash
     set -uo pipefail
     dirs="$(cd config/agents/skills/multi-agent-team && for d in */; do printf '%s\n' "${d%/}"; done | sort)"
-    table="$(rg -o '^- `\$([a-z-]+)`:' -r '$1' config/ai/AGENTS.md | sort)"
     nix="$(sed -n '/claudeSkills = \[/,/\];/p' nix/home-manager/config/xdg.nix | rg -o '"([a-z-]+)"' -r '$1' | sort)"
     rc=0
-    if [ "$dirs" != "$table" ]; then echo "DRIFT: config/ai/AGENTS.md skill table != skill dirs"; diff <(printf '%s\n' "$dirs") <(printf '%s\n' "$table") || true; rc=1; fi
     if [ "$dirs" != "$nix" ]; then echo "DRIFT: nix/home-manager/config/xdg.nix claudeSkills != skill dirs"; diff <(printf '%s\n' "$dirs") <(printf '%s\n' "$nix") || true; rc=1; fi
     if [ "$rc" -eq 0 ]; then echo "skills in sync ($(printf '%s ' $dirs))"; fi
     exit "$rc"
