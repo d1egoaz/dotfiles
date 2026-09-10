@@ -126,6 +126,7 @@ in
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
         ",,"
+        "codex-context-audit"
         "codex-current-model"
         "codex-model-usage"
         "dotfiles-audit"

@@ -81,7 +81,7 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills audit-test codex-agents-test codex-current-model-test
+check: fmt check-skills audit-test codex-agents-test codex-context-test codex-current-model-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -98,6 +98,11 @@ codex-current-model-test:
 [private]
 codex-agents-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_agents.py
+
+# Enforce concise Codex instructions, selective skills, and prompt-size auditing.
+[private]
+codex-context-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_context.py
 
 # Verify the shared skill directories agree with the explicit Claude links in xdg.nix.
 check-skills:
@@ -150,6 +155,10 @@ dry-run:
 # Compare this Mac with the selected dotfiles profile without changing either
 audit:
     ./bin/files/dotfiles-audit summary
+
+# Report model-visible skill and AGENTS sizes without printing prompt content.
+codex-context-audit:
+    ./bin/files/codex-context-audit
 
 # Write a sanitized comparison snapshot to the Desktop for sharing
 audit-export:

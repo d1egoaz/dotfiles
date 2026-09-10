@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""Report Codex prompt component sizes without emitting prompt content."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
+
+SKILL_ENTRY = re.compile(r"^- .+ \(file: (?P<path>[^)]+)\)$")
+
+
+def skill_group(reference: str) -> str:
+    """Return a stable pack label from a model-visible skill reference."""
+    parts = reference.split("/")
+    if len(parts) < 2:
+        return reference
+    if parts[1] == "mattpocock-skills" and len(parts) > 2:
+        return "/".join(parts[1:3])
+    return parts[1]
+
+
+def summarize_prompt(messages: Any, cwd: str) -> dict[str, Any]:
+    if not isinstance(messages, list):
+        raise ValueError("prompt input must be a JSON array")
+
+    skill_chars = 0
+    skill_count = 0
+    agents_chars = 0
+    prompt_chars = 0
+    group_chars: dict[str, int] = defaultdict(int)
+    group_counts: dict[str, int] = defaultdict(int)
+
+    for message in messages:
+        if not isinstance(message, dict):
+            raise ValueError("prompt input messages must be JSON objects")
+        contents = message.get("content", [])
+        if not isinstance(contents, list):
+            raise ValueError("prompt message content must be a JSON array")
+        for content in contents:
+            if not isinstance(content, dict):
+                raise ValueError("prompt content entries must be JSON objects")
+            text = content.get("text", "")
+            if not isinstance(text, str):
+                raise ValueError("prompt content text must be a string")
+            prompt_chars += len(text)
+            if text.startswith("<skills_instructions>"):
+                skill_chars += len(text)
+                for line in text.splitlines():
+                    match = SKILL_ENTRY.match(line)
+                    if not match:
+                        continue
+                    group = skill_group(match.group("path"))
+                    skill_count += 1
+                    group_counts[group] += 1
+                    group_chars[group] += len(line) + 1
+            elif text.startswith("# AGENTS.md instructions for "):
+                agents_chars += len(text)
+
+    if skill_chars == 0 or agents_chars == 0:
+        raise ValueError("prompt input did not contain both skill and AGENTS components")
+
+    groups = [
+        {"name": name, "skills": group_counts[name], "chars": chars}
+        for name, chars in sorted(group_chars.items(), key=lambda item: (-item[1], item[0]))
+    ]
+    return {
+        "cwd": cwd,
+        "skills": {"chars": skill_chars, "count": skill_count, "groups": groups},
+        "agents": {"chars": agents_chars},
+        "combined_chars": skill_chars + agents_chars,
+        "prompt_total_chars": prompt_chars,
+    }
+
+
+def load_prompt(input_path: Path | None) -> list[dict[str, Any]]:
+    if input_path is not None:
+        return json.loads(input_path.read_text())
+
+    result = subprocess.run(
+        ["codex", "debug", "prompt-input", "context-audit"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            "codex prompt inspection failed with "
+            f"exit {result.returncode}; grant read-only session access and retry"
+        )
+    prompt = json.loads(result.stdout)
+    if not isinstance(prompt, list):
+        raise ValueError("Codex prompt input must be a JSON array")
+    return prompt
+
+
+def render_text(summary: dict[str, Any]) -> str:
+    skills = summary["skills"]
+    lines = [
+        f"Context: {summary['cwd']}",
+        f"Skills: {skills['chars']} chars ({skills['count']} skills)",
+        f"AGENTS: {summary['agents']['chars']} chars",
+        f"Combined: {summary['combined_chars']} chars",
+        f"Prompt total: {summary['prompt_total_chars']} chars",
+        "Skill groups:",
+    ]
+    for group in skills["groups"]:
+        lines.append(f"  {group['name']}: {group['chars']} chars ({group['skills']} skills)")
+    return "\n".join(lines)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input", type=Path, help="read a saved prompt-input JSON fixture")
+    parser.add_argument("--json", action="store_true", help="emit size metadata as JSON")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    try:
+        summary = summarize_prompt(load_prompt(args.input), str(Path.cwd()))
+    except (OSError, ValueError, RuntimeError, json.JSONDecodeError) as error:
+        print(f"codex-context-audit: {error}", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(summary, indent=2, sort_keys=True))
+    else:
+        print(render_text(summary))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
