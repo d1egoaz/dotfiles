@@ -114,3 +114,36 @@ code = "PragmataPro"
 diffAdded = "#40c977"
 diffRemoved = "#fa423e"
 skill = "#ad7bf9"
+
+# Hide unfinished or deprecated external skills from every profile.
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/deprecated/design-an-interface/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/deprecated/qa/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/deprecated/request-refactor-plan/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/deprecated/ubiquitous-language/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/in-progress/review/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/in-progress/writing-beats/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/in-progress/writing-fragments/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/mattpocock-skills/in-progress/writing-shape/SKILL.md"
+enabled = false

@@ -33,3 +33,189 @@ enabled = false
 
 [plugins."browser@openai-bundled"]
 enabled = true
+
+# Keep office-oriented infrastructure and observability skills out of the
+# personal catalog even when those external skill packs are installed.
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/1password-op/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/aurora-migration/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/aws-account-provisioning/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/aws-trace-path/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/bedrock-model-checker/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/bulk-approve-prs/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/create-skill/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/csc-domain-handoff/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/dsql-cluster-bootstrap/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/dynamodb-capacity-mode-migration/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/dynamodb/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/eks-cluster-bootstrap/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/github-webhook-enablement/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/incident-review-notes/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/jira/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/okta-aws-role-bootstrap/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/pg-connection-killer/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/pup/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/rds-get-master-password/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/s3-bucket-check/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/sdm-db-check/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/service-quotas/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/terraform/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/vector-rollback/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/infra-skills/wiz-eol-update/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/apm-configuration/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/aws-integration/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/container-monitoring/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dashboards/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/database-monitoring/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dd-apm/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dd-debugger/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dd-docs/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dd-logs/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dd-monitors/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/dd-pup/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/events/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/infrastructure/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/logs/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/metrics/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/monitoring-alerting/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/network-performance/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/notebooks/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/synthetics/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/datadog/traces/SKILL.md"
+enabled = false
+
+[[skills.config]]
+path = "~/.agents/skills/investigate/SKILL.md"
+enabled = false
