@@ -1,7 +1,7 @@
 interface:
   display_name: "Command Discipline"
-  short_description: "Run safe, transparent shell workflows"
-  default_prompt: "Use $command-discipline to plan and run shell commands safely."
+  short_description: "Handle explicitly requested command safety"
+  default_prompt: "Use $command-discipline for an explicitly requested command-safety or shell-shape question."
 
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

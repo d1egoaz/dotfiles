@@ -1,73 +1,42 @@
 ---
 name: command-discipline
-description: Run safe, transparent, shell-neutral workflows. Use when the user asks to run commands, shell commands, zsh, bash, copy-paste-ready commands, command transparency, escalation, destructive-command safety, bulk refactors, shell rewrites with `sed`, JSON/YAML validation commands, or asks why commands are wrapped in an explicit shell.
+description: Run safe, transparent shell workflows. Use explicitly for shell commands, copy-paste syntax, command transparency, process inspection, bulk rewrites, validation commands, or escalation boundaries.
 ---
 
 # Command Discipline
 
-## Overview
+Use this skill when the user explicitly asks for command shape, shell
+syntax, transparency, process inspection, bulk rewriting, or command safety.
+Keep routine guidance short and risky operations auditable.
 
-Use this skill for command shape, command transparency, approval boundaries, and safe shell workflows. Keep routine updates concise, but make risky operations auditable before executing them.
+## Command shape
 
-## Command Rules
+- Run shell-neutral commands directly. Use explicit `zsh -lc` or `bash -lc` only
+  for required shell syntax or when the user asks for that form.
+- User-facing commands must be single-line, copy-paste-ready commands. Prefer
+  CLI over GUI and run multi-repo commands from each repository's directory.
+- Explain routine read-only commands in one sentence. Use a
+  `Why/What/Expect/Risk` block for destructive, escalated, broad, forced, or
+  live-state operations.
 
-- Run shell-neutral commands directly. Use an explicit shell such as `zsh -lc` or `bash -lc` only when the command relies on that shell's syntax or must be shown exactly for that shell.
-- Every user-facing command must be copy-paste ready as a single command line. Do not break commands across lines.
-- Prefer CLI over GUI. Use GUI only when the task truly requires it.
-- For multi-repo work, run commands in each repo's working directory. Avoid `git -C` unless the user explicitly requests it.
-- Explain routine read-only commands with at most one short sentence.
-- Use an expanded `Why/What/Expect/Risk` block only for destructive operations, escalated permissions, broad rewrites, force pushes, live state changes, or when the user asks for it.
+## Process inspection
 
-## Process Inspection
-
-Do not run broad process-command scans such as `ps -axo pid,ppid,command | rg ...` in Codex sessions. Codex app processes can include full transcript JSON in their arguments, and a broad match can dump huge unrelated context.
-
-Use command-name inspection first:
+Never run broad process-argument scans in Codex sessions: arguments can contain
+unrelated transcript data. Inspect command names, then a specific PID only:
 
 ```bash
 ps -axo pid,ppid,comm | rg '(^|/)git$|(^|/)ssh$|(^|/)gh$'
-```
-
-Only after identifying a specific PID should you inspect full arguments:
-
-```bash
 ps -p PID -o pid,ppid,args=
 ```
 
-## Safety Gates
+## Safety and bulk changes
 
-- Confirm before destructive changes such as removing files, resetting branches, force pushing, or changing live state.
-- If a command fails because of sandboxing, rerun the same command with escalated permissions and a concise justification.
-- Do not ask for broad persistent approvals. Scope approval prefix rules to the tool family actually needed.
-- Never request a persistent approval rule for destructive commands.
-- For manual code edits, use your file-editing tool (`apply_patch` in Codex, Edit/Write in Claude Code). Use formatters or mechanical rewrites only when they are the safer, narrower tool for the job.
+- Confirm before removing files, resetting branches, force pushing, or changing
+  live state. If sandboxing blocks a command, retry with scoped escalation and
+  concise justification; never request a broad standing rule.
+- Use `apply_patch` for manual edits. For bulk rewrites, verify scope with
+  `rg` or `fd`, make the rewrite reversible, review the diff, then clean up.
+- Use structured validators for JSON and YAML.
 
-## Bulk Refactors
-
-Use this sequence for broad text changes:
-
-1. Verify scope with `rg` or `fd`.
-2. Back up or make the rewrite mechanically reversible when the blast radius is broad.
-3. Apply the replacement.
-4. Review the diff.
-5. Clean up backup files only after review.
-
-Useful shell-neutral examples:
-
-```bash
-rg -n 'find_this' --hidden --glob '!.git/*'
-rg -l 'find_this' | xargs sed -i.bak 's/find_this/replace_that/g'
-git diff -- . ':!*.bak'
-fd -e bak -0 | xargs -0 rm
-```
-
-## Validation Commands
-
-Use structured validators when the format has one:
-
-```bash
-fd -e json -0 | xargs -0 -I{} sh -c 'jq . "{}" >/dev/null'
-fd -e yaml -e yml -0 | xargs -0 -I{} sh -c 'yq "." "{}" >/dev/null'
-```
-
-If a command fails, report: what failed, the exact error, the likely root cause, the smallest fix, and the rerun result.
+If a command fails, report the exact error, likely cause, smallest fix, and
+rerun result.

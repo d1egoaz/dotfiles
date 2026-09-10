@@ -1,6 +1,6 @@
 ---
 name: git-worktree-flow
-description: Create and manage scoped git worktrees for feature work. Use when asked for a new branch, worktree, feature branch, new PR, branch from main, origin/main, multi-repo work, keeping the main checkout clean, or repairing a stale feature checkout.
+description: Create or repair scoped Git worktrees. Use for feature branches, new PR work, branching from main, multi-repo changes, or keeping the primary checkout clean.
 ---
 
 # Git Worktree Flow

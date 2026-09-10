@@ -1,6 +1,6 @@
 ---
 name: signed-pr-publish
-description: Commit signed changes, push branches, and open or update draft PRs. Use when asked to commit, push, publish, create PR, open PR, draft PR, ready for review, amend, fix attribution, signed commit, Assisted-by footer, PR body, `gh pr`, or `gh api`.
+description: Sign commits, push branches, and publish draft PRs. Use for commit, push, PR creation or updates, ready-for-review, attribution, PR bodies, `gh pr`, or `gh api`.
 ---
 
 # Signed PR Publish

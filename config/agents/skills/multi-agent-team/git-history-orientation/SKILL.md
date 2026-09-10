@@ -1,6 +1,6 @@
 ---
 name: git-history-orientation
-description: Orient on an unfamiliar repository using read-only git history signals before reading code. Use when asked to understand a codebase, inspect churn hotspots, identify likely ownership or bus-factor risk, compare active versus historical contributors, summarize repo momentum, or decide which files to read first from git history.
+description: Orient on an unfamiliar repository with read-only Git history. Use for churn, ownership, contributor, momentum, bus-factor, or history-guided file analysis.
 ---
 
 # Git History Orientation

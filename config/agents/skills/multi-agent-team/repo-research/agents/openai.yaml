@@ -1,7 +1,7 @@
 interface:
   display_name: "Repo Research"
-  short_description: "Find repo context before changing code"
-  default_prompt: "Use $repo-research to inspect the repository before planning changes."
+  short_description: "Inspect repos for explicit evidence requests"
+  default_prompt: "Use $repo-research when the user explicitly asks for repository inspection, tracing, or diagnosis."
 
 policy:
   allow_implicit_invocation: true

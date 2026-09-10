@@ -1,53 +1,27 @@
 ---
 name: repo-research
-description: Inspect exact repo artifacts before planning or changing code. Use when asked to inspect, investigate repo behavior, trace a code path, find references, compare files, explain why something changed, find root cause, read a specific file, answer where something is defined, or gather evidence with `rg`, `fd`, `bat`, `jq`, or `yq`.
+description: Inspect repository artifacts only when the user explicitly asks to inspect, trace, diagnose, explain, compare, or gather evidence. Do not trigger for routine implementation reads.
 ---
 
 # Repo Research
 
-## Overview
-
-Use this skill to ground answers in the real repository instead of memory or assumptions. Read enough context to make claims auditable and rerunnable.
+Use this skill for an explicit inspection, tracing, diagnosis, root-cause,
+comparison, explanation, or evidence-gathering request. Do not invoke it for
+routine reads needed to implement a clearly scoped change.
 
 ## Workflow
 
-1. Read instruction files first.
-   - Check parent and repo-local `AGENTS.md` and `AGENTS.local.md`.
-   - Treat `CLAUDE.md` and `CLAUDE.local.md` the same way when present.
-   - Follow the most specific applicable instruction.
+1. Use the instruction chain already supplied by the host. Read only applicable
+   repository instructions not already present, and skip aliases or duplicates.
+2. Inspect the exact artifact named by the user. Do not answer from memory when
+   the file, issue, PR, config, or command output is available.
+3. Search narrowly with `rg`, `rg --files`, or `fd`; use fixed strings and
+   filetype filters when useful.
+4. Read surrounding functions, tests, schemas, call sites, or history needed
+   to support the claim. Separate confirmed evidence from inference.
 
-2. Inspect the exact artifact.
-   - If the user names a file, PR, issue, Slack thread, config, plan, or command output, inspect that artifact directly.
-   - Do not answer from memory when the artifact is available.
-   - When a fact may be stale and is cheap to verify, verify it.
+## Evidence
 
-3. Search with the fastest narrow tool.
-   - Prefer `rg` for text and `rg --files` or `fd` for files.
-   - Use fixed-string search when the input is literal.
-   - Use filetype filters to reduce noise.
-
-4. Read surrounding context.
-   - Open full functions, nearby tests, schema definitions, and call sites.
-   - For regressions, trace history or recent changes before proposing a fix.
-   - Separate confirmed evidence from inference.
-
-## Command Patterns
-
-```fish
-rg -n -C2 --hidden --glob '!.git/*' 'pattern'
-rg -n -F 'exact string'
-rg -n -t go 'pattern'
-rg -l 'FIXME:'
-fd '.env' . -H -E node_modules -d 3
-fd -e go -H -E vendor
-bat -n --paging=never file.go
-jq -r '.version' package.json
-yq '.kind, .metadata.name' deployment.yaml
-```
-
-## Output
-
-- Lead with the concrete answer when known.
-- Include the minimum file path, line, command, or output needed to audit the claim.
-- Say what was not verified when verification was skipped or blocked.
-- Ask only for product intent or unavailable identifiers that cannot be discovered locally.
+Lead with the concrete answer when known. Include only the paths, lines,
+commands, and output needed to audit the result. Say what was not verified.
+Ask only for identifiers or intent that cannot be discovered locally.

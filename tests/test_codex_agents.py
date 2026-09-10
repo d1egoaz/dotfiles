@@ -153,18 +153,23 @@ class CodexAgentsTest(unittest.TestCase):
 
     def test_task_coordinator_routes_and_labels_both_agent_layers(self):
         instructions = TASK_COORDINATOR_SKILL.read_text()
+        normalized = " ".join(instructions.split())
+        controls = (TASK_COORDINATOR_SKILL.parent / "references/codex-controls.md").read_text()
+        creation = (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text()
 
-        self.assertIn("explicitly pass a model and reasoning effort", instructions)
-        self.assertIn("Sol, Terra, and Luna are all valid task routes", instructions)
-        self.assertIn("Include a delegation contract in every execution-task prompt", instructions)
-        self.assertIn("proactively spawn the minimum useful named subagents", instructions)
+        self.assertIn("Explicitly pass a model and reasoning effort", normalized)
+        self.assertIn("Sol, Terra, and Luna are all valid task routes", normalized)
+        self.assertIn("proactively spawn the minimum useful named", normalized)
         self.assertIn("[<key>] <model>-<effort> <scope>: <outcome>", instructions)
         self.assertIn("Selected route: <model>-<effort>", instructions)
         self.assertIn("<key>_<model>_<effort>_<role>_<slice>", instructions)
         self.assertIn("[<key>] <model>-<effort> <role>: <slice>", instructions)
-        self.assertIn("Before interrupting a running subagent", instructions)
-        self.assertIn("next safe message boundary", instructions)
-        self.assertIn("send a follow-up or resume it instead of spawning a duplicate", instructions)
+        self.assertIn("Before interrupting a running subagent", controls)
+        self.assertIn("next safe boundary", controls)
+        self.assertIn("send a follow-up or resume it instead of spawning a", controls)
+        self.assertIn("saved Git project", creation)
+        self.assertIn("isGitRepository = true", creation)
+        self.assertIn("saved non-Git umbrella", creation)
         for runtime_tool in (
             "list_agents",
             "send_message",
@@ -175,7 +180,7 @@ class CodexAgentsTest(unittest.TestCase):
             "read_thread",
             "send_message_to_thread",
         ):
-            self.assertIn(f"`{runtime_tool}`", instructions)
+            self.assertIn(f"`{runtime_tool}`", controls)
         for app_server_name in (
             "thread/read",
             "turn/steer",
@@ -186,13 +191,11 @@ class CodexAgentsTest(unittest.TestCase):
             "item/completed",
             "turn/completed",
         ):
-            self.assertIn(f"`{app_server_name}`", instructions)
-        self.assertIn("not lifecycle events or universal public API methods", instructions)
+            self.assertIn(f"`{app_server_name}`", controls)
+        self.assertIn("not lifecycle events or universal public API methods", controls)
         for nonportable_marker in ("/Users/", "/home/", "http://", "https://", "@"):
-            self.assertNotIn(nonportable_marker, instructions)
-        self.assertIn("[PROJ-123]", instructions)
-        self.assertIn("[RELEASE-AUTO]", instructions)
-        self.assertIn("[WEB-PROFILING]", instructions)
+            for document in (instructions, controls, creation):
+                self.assertNotIn(nonportable_marker, document)
 
 
 if __name__ == "__main__":
