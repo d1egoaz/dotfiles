@@ -10,7 +10,7 @@
 let
   codexProfile = if profile == "office" then "work" else "personal";
   codexProfileFile = if profile == "office" then "work.local.toml" else "personal.toml";
-  codexLeadModel = if profile == "office" then "gpt-5.6-sol" else "gpt-5.6-terra";
+  codexLeadModel = if profile == "office" then "gpt-5.6-sol" else "gpt-5.6-luna";
   codexLeadReasoningEffort = "xhigh";
 in
 {
