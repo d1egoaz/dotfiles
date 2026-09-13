@@ -21,17 +21,20 @@ one-time status check.
 2. For repository work, locate the Git root and use the host-supplied instruction
    chain. Read only missing repository instructions and skip aliases or
    duplicates. Keep each checkout boundary clear.
-3. Before delegating, state the decomposition: which outcomes get visible tasks
+3. Resolve the lead's saved project. Non-repository children inherit its exact
+   project and local environment; use projectless only for a projectless lead.
+   Read the task-creation reference for repository exceptions.
+4. Before delegating, state the decomposition: which outcomes get visible tasks
    and which bounded slices stay native subagents. If no visible task is
    justified, explain why in one sentence.
-4. Whenever this skill applies, rename the lead `🤖 [<key>] <goal>` as soon as
+5. Whenever this skill applies, rename the lead `🤖 [<key>] <goal>` as soon as
    the key and goal are known. Do this before delegation for explicit use.
-5. Treat explicit `$task-coordinator` invocation as a request to use this
+6. Treat explicit `$task-coordinator` invocation as a request to use this
    workflow. For repository write work, create at least one visible
    implementation task unless the user explicitly asks to keep implementation
    in the lead. If visible-task controls are unavailable, report that limitation
    and use native subagents instead.
-6. For implicit coordination, choose one durable visible task per independently
+7. For implicit coordination, choose one durable visible task per independently
    shippable outcome or write-owning repository. Keep reference-only repository
    analysis in a native `explorer`. The lead owns planning, delegation,
    sequencing, follow-ups, integration, verification, and final status.

@@ -150,6 +150,7 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertIn("ordinary continuation of one task does not count", coordinator)
         self.assertIn("🤖 [<key>] <goal>", coordinator)
         self.assertIn("raw model ID", coordinator)
+        self.assertIn("Non-repository children inherit its exact project", coordinator)
 
     def test_progressive_disclosure_references_exist(self):
         expected = {

@@ -168,6 +168,8 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("Whenever this skill applies, rename the lead", normalized)
         self.assertIn("ordinary continuation of one task does not count", normalized)
         self.assertIn("Reassess the decomposition when a material follow-up", normalized)
+        self.assertIn("Non-repository children inherit its exact project", normalized)
+        self.assertIn("use projectless only for a projectless lead", normalized)
         self.assertIn("🤖 [<key>] <goal>", instructions)
         self.assertIn("[<key>] <model-label>-<effort> <scope>: <outcome>", instructions)
         self.assertIn("Selected model: <exact-model-id>", instructions)
@@ -197,6 +199,13 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("complete retry title remains within 56 characters", normalized_creation)
         self.assertIn("earliest `createdAt` as owner", normalized_creation)
         self.assertIn("lexical `threadId`", normalized_creation)
+        self.assertIn("Use its exact `projectId`, not a label or inferred cwd", normalized_creation)
+        self.assertIn("A non-Git project is still the correct organizational container", normalized_creation)
+        self.assertIn("Use `projectless` only when the lead itself is projectless", normalized_creation)
+        self.assertIn("child owns work in a different saved Git repository", normalized_creation)
+        self.assertIn("For any user-selected alternate project, inspect its metadata first", normalized_creation)
+        self.assertIn("parent project label and ID", normalized_creation)
+        self.assertIn("verify its `projectId` matches the selected project", normalized_creation)
         for runtime_tool in (
             "list_agents",
             "send_message",

@@ -14,11 +14,24 @@ implementation task.
 
 ### Coordination surface
 
-For repository work, list saved projects and prefer an exact saved Git project;
-only a project marked `isGitRepository = true` can provide an app-managed
-worktree. If only a saved non-Git umbrella is available, use it as the surface
-and include the exact nested repository path in each prompt. Do not require
-every nested repository to be registered separately.
+Resolve the lead task's project from task metadata before creating children.
+Use its exact `projectId`, not a label or inferred cwd.
+
+- For a non-repository outcome, inherit the lead's saved project with a local
+  environment. This includes external artifacts, investigations, documents,
+  and other work that does not own a Git checkout. A non-Git project is still
+  the correct organizational container.
+- Use `projectless` only when the lead itself is projectless and the user did
+  not select a project.
+- Leave the lead's project only when the child owns work in a different saved
+  Git repository, or the user explicitly selects another project. Only a
+  project marked `isGitRepository = true` can provide an app-managed worktree.
+- For any user-selected alternate project, inspect its metadata first. Use a
+  local environment when it is non-Git and a worktree when it is Git, unless
+  the user explicitly requests that Git project's local checkout.
+- If the lead is a saved non-Git umbrella and a child targets a nested Git
+  repository that is not separately saved, keep the child in the umbrella's
+  local project and include the exact nested repository path in its prompt.
 
 Use an app-managed worktree for a saved Git project unless the user explicitly
 asks for its local checkout. For a non-Git umbrella, use a local task. For
@@ -29,10 +42,15 @@ primary checkout.
 ### Prompt contract
 
 Pass the title explicitly when supported, otherwise rename immediately. Include
-the coordination key, exact selected model, effort, compact display route,
-parent title, outcome, constraints, verification, publication boundary, and
-stopping condition. Require the execution task to use the canonical subagent
-naming schema and to reassess native delegation after it understands the scope.
+the coordination key, parent project label and ID, selected project ID, exact
+selected model, effort, compact display route, parent title, outcome,
+constraints, verification, publication boundary, and stopping condition.
+Require the execution task to use the canonical subagent naming schema and to
+reassess native delegation after it understands the scope.
+
+After a child becomes addressable, verify its `projectId` matches the selected
+project. If it does not, pause it and report the mismatch instead of silently
+continuing outside the intended project or creating another duplicate.
 
 One lead owns a coordination key. Before each creation, inspect existing tasks
 for that key. If another active lead owns it, stop and report the collision.
