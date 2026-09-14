@@ -18,6 +18,7 @@ let
   # Shared keys (referenced in multiple profiles)
   keys = {
     personal = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMokDMEcQ3ZatK2LLEJQOAs6CIxcklr3HT9IrYRu3A24";
+    personal_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTEk1pRN0nd7IAVLqkgQvyNYmCqAVl37AQjz9yExiX8";
     work = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQc3z3srPRhWbHoR9BmixXrfXmTECEw7YL4WklpKBT";
   };
   emails = {
@@ -48,6 +49,10 @@ in
         email = emails.personal;
         key = keys.personal;
       } # dotfiles from personal machine
+      {
+        email = emails.personal;
+        key = keys.personal_signing;
+      } # dotfiles from personal machine (signing key)
       {
         email = emails.personal;
         key = keys.work;
@@ -93,7 +98,11 @@ in
       {
         email = emails.personal;
         key = keys.personal;
-      }
+      } # legacy personal auth key
+      {
+        email = emails.personal;
+        key = keys.personal_signing;
+      } # personal signing key
     ];
 
     # Personal profile doesn't need work-specific config
