@@ -81,6 +81,26 @@ must be registered in GitHub as a signing key.
 Office `~/work` keeps HTTPS remotes and uses the GitHub credential helper. Do
 not expose or broaden its `repo`/`workflow` credential, or rewrite it to SSH.
 
+## Personal Machine Signing Setup
+
+Use this after the signing configuration is available in `~/dotfiles`:
+
+```zsh
+cd ~/dotfiles && just switch
+test -e ~/.ssh/codex-signing-personal-ed25519 && echo "Signing key already exists" || ssh-keygen -t ed25519 -a 100 -f ~/.ssh/codex-signing-personal-ed25519 -C "personal-mac-git-signing"
+ssh-add --apple-use-keychain -t 86400 ~/.ssh/codex-signing-personal-ed25519
+```
+
+The user must enter the non-empty key passphrase. Do not overwrite an existing
+key. Register the resulting public key with GitHub as a signing key only:
+
+```zsh
+gh ssh-key add ~/.ssh/codex-signing-personal-ed25519.pub --type signing --title "Personal Mac Git signing"
+```
+
+That command writes to GitHub and needs explicit authorization. At future
+logins, macOS loads all Keychain-backed SSH keys into its native agent.
+
 ## Adding Packages And Configuration
 
 - Add a package for all users to `hmPackages` in `nix/profiles/base.nix`.
