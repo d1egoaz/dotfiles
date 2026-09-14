@@ -42,7 +42,10 @@
     # 1Password configuration (for scripts that need op access)
     OP_ACCOUNT = machineConfig.op_account;
     OP_VAULT = machineConfig.op_vault;
-    SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+
+    # Do not override the macOS login session's native SSH_AUTH_SOCK. GitHub
+    # SSH operations retain their explicit 1Password IdentityAgent in
+    # programs.nix; commit signing uses the native macOS agent.
 
     # SOPS age key. Home Manager's xdg.enable exports XDG_CONFIG_HOME, which
     # makes sops look in ~/.config/sops/age/keys.txt instead of the macOS

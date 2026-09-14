@@ -55,6 +55,22 @@ Optimize expected outcome value, including retries, tool loops, review, latency,
 
 - Production is read-only unless the user authorizes the exact mutation. A request to inspect, prepare, validate, commit, or publish does not authorize merge, apply, deployment, or live changes.
 - Never bypass commit signing. Use `$signed-pr-publish` for commits and publication.
+- Commits use mandatory standard OpenSSH SSH signing with the active profile's
+  `~/.ssh/codex-signing-<profile>-ed25519.pub` key. The automatic machine
+  signature establishes machine-key provenance only; it does not establish
+  per-commit human review. Keep `Assisted-by: [Exact model identifier] via
+  [Tool]` as the separate AI-attribution footer. If the native agent key is
+  unavailable or expired, use `codex-signing-key unlock --profile "$PROFILE"`;
+  it stores the passphrase in macOS Keychain so the login agent can restore the
+  active profile key through macOS's built-in OpenSSH agent after reboot for
+  newly started apps and terminals. Never disable signing or substitute a
+  different signer. After activation, restart Codex or open a fresh terminal so
+  it receives the macOS login-session agent.
+- Office `~/work` repositories retain their HTTPS remotes for unattended
+  publication through the existing GitHub credential helper. Do not reintroduce
+  an HTTPS-to-SSH rewrite or make `github.com-work` the default path. The
+  pre-existing macOS Keychain credential has broad `repo` and `workflow` scopes;
+  never expose, copy, or broaden it.
 - AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Resolve the exact current model with `$HOME/dotfiles/bin/files/codex-current-model`; retry with escalated read access if needed and stop if it remains unknown.
 - Open new PRs in draft mode.
 - Keep primary checkouts on `main`; use `$git-worktree-flow` for feature work.

@@ -33,9 +33,25 @@ Assisted-by: [Exact model identifier] via [Tool]
 - Before attribution, run `$HOME/dotfiles/bin/files/codex-current-model`; it resolves `CODEX_THREAD_ID` to the latest metadata-only `turn_context` for the active task. Use its exact model output, including version and variant, without shortening or normalizing it. Examples: `gpt-5.6-sol`, `gpt-5.4`.
 - Never use a family-only label such as `GPT-5`. If the resolver cannot read session metadata, rerun it with escalated permissions; stop and ask the user only if it still cannot resolve an exact identifier.
 - Never bypass commit signing; never use signing-bypass flags such as `-c commit.gpgsign=false`.
-- Run `git commit -S` with escalated permissions first when signing may need the 1Password SSH agent.
-- If a signing command fails with socket or agent errors, rerun the same command with escalated permissions immediately.
-- If signing still fails after escalation, stop and ask the user.
+- Run `git commit -S` using the active profile's standard OpenSSH SSH signing
+  configuration. The machine signature establishes machine-key provenance; it
+  does not imply per-commit human review. The `Assisted-by` footer remains the
+  distinct AI-attribution record.
+- If signing fails because the native ssh-agent is unavailable or its
+  time-limited key expired, run `codex-signing-key unlock --profile "$PROFILE"`
+  in the login session, then retry the same signing operation. It stores the
+  key passphrase in macOS Keychain; a login loader restores the active profile
+  key through macOS's built-in OpenSSH agent after reboot for newly started apps
+  and terminals. After activation, restart Codex or open a fresh terminal from
+  that login session so it receives the native agent.
+  Do not switch to 1Password signing, disable signing, or use a different key.
+- If signing still fails after the native agent is unlocked, stop and ask the
+  user.
+- Office repositories under `~/work` retain their HTTPS remotes for unattended
+  publication through the existing GitHub credential helper. Do not rewrite
+  those URLs to SSH or make publication depend on `github.com-work`. The
+  pre-existing macOS Keychain credential has broad `repo` and `workflow` scopes;
+  do not expose, copy, or broaden it.
 - Verify attribution after commit:
 
 ```fish

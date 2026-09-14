@@ -69,6 +69,38 @@ Profile settings in `nix/profiles/machines.nix` select the 1Password account and
 
 Short-lived GUI or agent workflows may use `op-env-cache` for repeatedly accessed environment variables. Its cache is plaintext on disk until expiry or logout, so do not use it for high-sensitivity or long-lived credentials. Use `op-env-cache logout <name>` to remove a cache.
 
+## Git Commit Signing
+
+Git commits use the active profile's standard OpenSSH signing public key:
+`~/.ssh/codex-signing-office-ed25519.pub` for office and
+`~/.ssh/codex-signing-personal-ed25519.pub` for personal. The corresponding
+encrypted private key is local, untracked key material. GitHub push
+authentication is separate from the signing key. macOS already supplies the
+native OpenSSH login-session agent and socket. A one-shot login loader restores
+the active profile key from macOS Keychain after each reboot or login. After
+activation, restart Codex or open a fresh terminal so it stops inheriting the
+previous 1Password socket.
+
+On a machine without the selected profile key, bootstrap it from a macOS login
+session with `codex-signing-key bootstrap --profile "$PROFILE"`. The helper
+refuses to overwrite either expected key path, requires encryption before it
+loads the key, and prints a `gh ssh-key add --type signing` command for a user
+to review and run separately. It never contacts GitHub itself. For an existing
+profile key, including the office signing key, use
+`codex-signing-key unlock --profile "$PROFILE"`; it loads the key for 86,400
+seconds without a per-signature confirmation, stores the passphrase in macOS
+Keychain, adds the public key to local Git verification, and lets eligible
+Codex tasks continue while the screen is locked. Future login sessions restore
+the key from Keychain without another passphrase prompt. The resulting automatic
+machine signature is machine-key provenance, not evidence of per-commit human
+review. Preserve the `Assisted-by` footer as the distinct AI-attribution record.
+
+Office repositories under `~/work` retain their HTTPS remotes. The existing
+GitHub CLI/macOS Keychain credential-helper path handles unattended publication,
+while SSH remains an explicitly selected path and does not affect commit
+signing. The existing HTTPS credential has broad `repo` and `workflow` scopes.
+Do not expose, copy, or broaden that credential.
+
 ## Adding Packages And Configuration
 
 - Add a package for all users to `hmPackages` in `nix/profiles/base.nix`.
