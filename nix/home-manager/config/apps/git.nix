@@ -1,34 +1,14 @@
 {
-  config,
   machineConfig,
   lib,
   ...
 }:
 
 {
-  # SSH allowed signers for git signature verification
-  # Generated from machineConfig.signing_identities - each profile declares what it trusts
-  # Keep the declarative baseline separate. The helper records generated profile
-  # keys in the local file; activation rebuilds the active trust store from both
-  # sources so removed managed identities are revoked on the next switch.
-  home.file.".ssh/allowed_signers.managed".text = lib.concatMapStringsSep "\n" (
+  # Generated from the profile's declared verification identities.
+  home.file.".ssh/allowed_signers".text = lib.concatMapStringsSep "\n" (
     id: "${id.email} ${id.key}"
   ) machineConfig.signing_identities;
-
-  home.activation.gitAllowedSigners = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    MANAGED="$HOME/.ssh/allowed_signers.managed"
-    LOCAL="$HOME/.ssh/allowed_signers.local"
-    ACTIVE="$HOME/.ssh/allowed_signers"
-    TMP="$(mktemp "$HOME/.ssh/.allowed_signers.XXXXXX")"
-
-    cat "$MANAGED" > "$TMP"
-    if [ -f "$LOCAL" ]; then
-      printf '\n' >> "$TMP"
-      cat "$LOCAL" >> "$TMP"
-    fi
-    chmod 600 "$TMP"
-    mv "$TMP" "$ACTIVE"
-  '';
 
   # Delta is now a separate program in Home Manager 25.11
   programs.delta = {
@@ -104,13 +84,8 @@
       gpg = {
         format = "ssh";
         ssh = {
-          # Use the platform OpenSSH signer. It reads the profile key loaded
-          # into the native ssh-agent, rather than invoking 1Password for each
-          # commit.
+          # Use the platform OpenSSH signer, not 1Password.
           program = "/usr/bin/ssh-keygen";
-          # This file starts with the managed historical keys and is extended
-          # only by the explicit local bootstrap helper with the active public
-          # key, so new signatures verify locally as well as on GitHub.
           allowedSignersFile = "~/.ssh/allowed_signers";
         };
       };

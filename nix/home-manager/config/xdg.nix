@@ -129,7 +129,6 @@ in
         "codex-context-audit"
         "codex-current-model"
         "codex-model-usage"
-        "codex-signing-key"
         "dotfiles-audit"
         "dotfiles-local-state"
         "ediff"

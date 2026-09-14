@@ -38,9 +38,7 @@ in
     # Go private modules (for GOPRIVATE env var)
     go_private = "github.com/1debit/*";
 
-    # Git commits use this profile's OpenSSH signing public key. The matching
-    # encrypted private key stays untracked in ~/.ssh and is loaded into the
-    # native ssh-agent by codex-signing-key.
+    # Git commits use this profile's OpenSSH signing public key.
     git_signing_key = "~/.ssh/codex-signing-office-ed25519.pub";
 
     # Git signature verification - all email+key pairs this profile trusts
@@ -87,9 +85,7 @@ in
     # No private Go modules
     go_private = "";
 
-    # Git commits use this profile's OpenSSH signing public key. The matching
-    # encrypted private key stays untracked in ~/.ssh and is loaded into the
-    # native ssh-agent by codex-signing-key.
+    # Git commits use this profile's OpenSSH signing public key.
     git_signing_key = "~/.ssh/codex-signing-personal-ed25519.pub";
 
     # Git signature verification - personal machine only needs personal key
