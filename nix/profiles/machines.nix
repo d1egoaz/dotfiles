@@ -38,8 +38,8 @@ in
     # Go private modules (for GOPRIVATE env var)
     go_private = "github.com/1debit/*";
 
-    # SSH signing key for this profile (used for signing commits)
-    ssh_signing_key = keys.work;
+    # Git commits use this profile's OpenSSH signing public key.
+    git_signing_key = "~/.ssh/codex-signing-office-ed25519.pub";
 
     # Git signature verification - all email+key pairs this profile trusts
     # Office machine works on both work repos AND personal repos (dotfiles)
@@ -85,8 +85,8 @@ in
     # No private Go modules
     go_private = "";
 
-    # SSH signing key for this profile
-    ssh_signing_key = keys.personal;
+    # Git commits use this profile's OpenSSH signing public key.
+    git_signing_key = "~/.ssh/codex-signing-personal-ed25519.pub";
 
     # Git signature verification - personal machine only needs personal key
     signing_identities = [

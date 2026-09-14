@@ -69,6 +69,40 @@ Profile settings in `nix/profiles/machines.nix` select the 1Password account and
 
 Short-lived GUI or agent workflows may use `op-env-cache` for repeatedly accessed environment variables. Its cache is plaintext on disk until expiry or logout, so do not use it for high-sensitivity or long-lived credentials. Use `op-env-cache logout <name>` to remove a cache.
 
+## Git Commit Signing
+
+Office uses `~/.ssh/codex-signing-office-ed25519.pub`; personal uses
+`~/.ssh/codex-signing-personal-ed25519.pub`. Private keys stay local. After
+activation, enroll the active key once with `ssh-add --apple-use-keychain -t
+86400 ~/.ssh/codex-signing-${PROFILE}-ed25519`; macOS restores all
+Keychain-backed SSH keys at login. The key must already exist and its public key
+must be registered in GitHub as a signing key. In the UI, paste the `.pub` file
+contents beginning with `ssh-ed25519`, not its `SHA256:` fingerprint or private
+key.
+
+Office `~/work` keeps HTTPS remotes and uses the GitHub credential helper. Do
+not expose or broaden its `repo`/`workflow` credential, or rewrite it to SSH.
+
+## Personal Machine Signing Setup
+
+Use this after the signing configuration is available in `~/dotfiles`:
+
+```zsh
+cd ~/dotfiles && just switch
+test -e ~/.ssh/codex-signing-personal-ed25519 && echo "Signing key already exists" || ssh-keygen -t ed25519 -a 100 -f ~/.ssh/codex-signing-personal-ed25519 -C "personal-mac-git-signing"
+ssh-add --apple-use-keychain -t 86400 ~/.ssh/codex-signing-personal-ed25519
+```
+
+The user must enter the non-empty key passphrase. Do not overwrite an existing
+key. Register the resulting public key with GitHub as a signing key only:
+
+```zsh
+gh ssh-key add ~/.ssh/codex-signing-personal-ed25519.pub --type signing --title "Personal Mac Git signing"
+```
+
+That command writes to GitHub and needs explicit authorization. At future
+logins, macOS loads all Keychain-backed SSH keys into its native agent.
+
 ## Adding Packages And Configuration
 
 - Add a package for all users to `hmPackages` in `nix/profiles/base.nix`.

@@ -1,11 +1,32 @@
 {
+  config,
   pkgs,
-  lib,
   profile,
   ...
 }:
 
+let
+  signingPrivateKey = "${config.home.homeDirectory}/.ssh/codex-signing-${profile}-ed25519";
+in
 {
+  # macOS already starts com.openssh.ssh-agent with a login-session
+  # SSH_AUTH_SOCK. This one-shot loader restores only the active profile key
+  # from macOS Keychain, rather than replacing the platform agent.
+  launchd.agents.codexSigningKeychainLoader = {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "/usr/bin/ssh-add"
+        "--apple-load-keychain"
+        "-t"
+        "86400"
+        signingPrivateKey
+      ];
+      RunAtLoad = true;
+      ProcessType = "Interactive";
+    };
+  };
+
   # ============================================================================
   # Fonts
   # ============================================================================
@@ -109,7 +130,9 @@
     # Development Tools
     # ========================================================================
 
-    # SSH configuration with 1Password agent integration
+    # Explicit SSH remotes may use the 1Password agent. Office Git remotes are
+    # no longer rewritten from HTTPS to SSH, so unattended Chime publication
+    # uses the existing HTTPS credential-helper path instead.
     ssh =
       let
         op1PasswordAgent = "\"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\"";
@@ -117,23 +140,12 @@
       {
         enable = true;
         enableDefaultConfig = false; # Manually configure defaults in matchBlocks."*"
-        matchBlocks =
-          # Work GitHub - forces work SSH key
-          lib.optionalAttrs (profile == "office") {
-            "github.com-work" = {
-              hostname = "github.com";
-              user = "git";
-              identityFile = "~/.ssh/github-work-auth.pub";
-              identitiesOnly = true;
-              extraOptions.IdentityAgent = op1PasswordAgent;
-            };
-          }
-          // {
-            "*".extraOptions = {
-              IdentityAgent = op1PasswordAgent;
-              AddKeysToAgent = "yes";
-            };
+        matchBlocks = {
+          "*".extraOptions = {
+            IdentityAgent = op1PasswordAgent;
+            AddKeysToAgent = "yes";
           };
+        };
       };
   };
 }

@@ -33,9 +33,15 @@ Assisted-by: [Exact model identifier] via [Tool]
 - Before attribution, run `$HOME/dotfiles/bin/files/codex-current-model`; it resolves `CODEX_THREAD_ID` to the latest metadata-only `turn_context` for the active task. Use its exact model output, including version and variant, without shortening or normalizing it. Examples: `gpt-5.6-sol`, `gpt-5.4`.
 - Never use a family-only label such as `GPT-5`. If the resolver cannot read session metadata, rerun it with escalated permissions; stop and ask the user only if it still cannot resolve an exact identifier.
 - Never bypass commit signing; never use signing-bypass flags such as `-c commit.gpgsign=false`.
-- Run `git commit -S` with escalated permissions first when signing may need the 1Password SSH agent.
-- If a signing command fails with socket or agent errors, rerun the same command with escalated permissions immediately.
-- If signing still fails after escalation, stop and ask the user.
+- Run `git commit -S` with the active profile's OpenSSH key. The machine
+  signature is machine-key provenance, not per-commit human review;
+  `Assisted-by` records AI use.
+- After activation, run `ssh-add --apple-use-keychain -t 86400
+  ~/.ssh/codex-signing-${PROFILE}-ed25519` once. macOS restores all
+  Keychain-backed SSH keys at login; never disable signing or switch to
+  1Password signing.
+- Office `~/work` stays HTTPS through the GitHub credential helper. Do not
+  expose or broaden its `repo`/`workflow` credential, or rewrite it to SSH.
 - Verify attribution after commit:
 
 ```fish

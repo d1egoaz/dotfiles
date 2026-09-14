@@ -55,6 +55,15 @@ Optimize expected outcome value, including retries, tool loops, review, latency,
 
 - Production is read-only unless the user authorizes the exact mutation. A request to inspect, prepare, validate, commit, or publish does not authorize merge, apply, deployment, or live changes.
 - Never bypass commit signing. Use `$signed-pr-publish` for commits and publication.
+- Commits use the active profile's standard OpenSSH key. After activation,
+  run `ssh-add --apple-use-keychain -t 86400
+  ~/.ssh/codex-signing-${PROFILE}-ed25519` once; macOS restores all
+  Keychain-backed SSH keys at login. The machine signature is machine-key
+  provenance, not per-commit human review; retain the exact-model `Assisted-by`
+  footer. Never disable signing or change signer.
+- Office `~/work` stays HTTPS through the GitHub credential helper. Do not
+  expose or broaden its `repo`/`workflow` credential, or restore an
+  HTTPS-to-SSH rewrite.
 - AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Resolve the exact current model with `$HOME/dotfiles/bin/files/codex-current-model`; retry with escalated read access if needed and stop if it remains unknown.
 - Open new PRs in draft mode.
 - Keep primary checkouts on `main`; use `$git-worktree-flow` for feature work.

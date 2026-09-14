@@ -1,22 +1,14 @@
 {
   machineConfig,
   lib,
-  profile,
   ...
 }:
 
 {
-  # SSH allowed signers for git signature verification
-  # Generated from machineConfig.signing_identities - each profile declares what it trusts
+  # Generated from the profile's declared verification identities.
   home.file.".ssh/allowed_signers".text = lib.concatMapStringsSep "\n" (
     id: "${id.email} ${id.key}"
   ) machineConfig.signing_identities;
-
-  # Work SSH public key for 1Password agent matching (office profile only)
-  # This allows SSH config to specify which key to use for work repos
-  home.file.".ssh/github-work-auth.pub" = lib.mkIf (profile == "office") {
-    text = "${machineConfig.ssh_signing_key}\n";
-  };
 
   # Delta is now a separate program in Home Manager 25.11
   programs.delta = {
@@ -84,7 +76,7 @@
     };
 
     signing = {
-      key = machineConfig.ssh_signing_key;
+      key = machineConfig.git_signing_key;
       signByDefault = true;
     };
 
@@ -92,7 +84,8 @@
       gpg = {
         format = "ssh";
         ssh = {
-          program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+          # Use the platform OpenSSH signer, not 1Password.
+          program = "/usr/bin/ssh-keygen";
           allowedSignersFile = "~/.ssh/allowed_signers";
         };
       };
@@ -123,20 +116,7 @@
           user = {
             email = machineConfig.work_email;
             name = "Diego Alvarez";
-            signingKey = machineConfig.ssh_signing_key;
-          };
-          url = {
-            # Work repos: use work SSH key (handles both HTTPS and SSH URLs)
-            "git@github.com-work:${machineConfig.work_org}/" = {
-              insteadOf = "https://github.com/${machineConfig.work_org}/";
-            };
-            "git@github.com-work:" = {
-              insteadOf = "git@github.com:${machineConfig.work_org}/";
-            };
-            # Other repos: HTTPS -> SSH
-            "git@github.com:" = {
-              insteadOf = "https://github.com/";
-            };
+            signingKey = machineConfig.git_signing_key;
           };
         };
       }
