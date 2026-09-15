@@ -43,10 +43,26 @@ primary checkout.
 
 Pass the title explicitly when supported, otherwise rename immediately. Include
 the coordination key, parent project label and ID, selected project ID, exact
-selected model, effort, compact display route, parent title, outcome,
-constraints, verification, publication boundary, and stopping condition.
-Require the execution task to use the canonical subagent naming schema and to
-reassess native delegation after it understands the scope.
+selected model, unabbreviated effort, compact display route, parent title,
+outcome, constraints, verification, publication boundary, and stopping
+condition. Require the execution task to use the canonical subagent naming
+schema and to reassess native delegation after it understands the scope.
+
+Treat 72 characters as a local readability budget, not a Codex platform limit.
+Because the sidebar can clip titles at narrower widths, keep the key, route,
+action, and object at the front. Use the remaining space for context that
+distinguishes sibling tasks. When shortening, remove optional wording first;
+never remove the action or object merely to retain secondary detail.
+
+Map display efforts as follows: `n` for `none`, `min` for `minimal`, `lo` for
+`low`, `med` for `medium`, `hi` for `high`, `xh` for `xhigh`, `max` for `max`,
+and `ult` for `ultra`. Representative titles:
+
+- `[IC-563] Terra-xh Verify controls: close remaining rollout gaps`
+- `[IC-563] Terra-xh Reconcile records: confirm final desired state`
+- `[IC-563] Terra-xh Preflight runtime: clear production blockers`
+- `[IC-563] Sol-xh Coordinate rollout batches and acceptance`
+- `[INF-11223] Luna-xh Stage 0 fixes: restore USE2 parity`
 
 After a child becomes addressable, verify its `projectId` matches the selected
 project. If it does not, pause it and report the mismatch instead of silently
@@ -69,7 +85,7 @@ creation:
   failure. Set `N` to one more than the highest existing retry number for the
   same key and outcome, treating the original attempt as zero, then add
   `(retry N)` after the outcome. Shorten only the outcome at a word boundary as
-  needed so the complete retry title remains within 56 characters.
+  needed so the complete retry title remains within 72 characters.
 - If a pending attempt later appears after a replacement exists, rename it with
   `(superseded)` and preserve it unless cleanup is explicitly authorized.
 - After provisioning, refresh the task list again. If duplicate tasks exist for

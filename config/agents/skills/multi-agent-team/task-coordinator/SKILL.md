@@ -1,13 +1,12 @@
 ---
 name: task-coordinator
-description: Coordinate visible tasks and native subagents. Use when explicitly invoked, for 2+ independent deliverables or write-owning repos, or ongoing external-state follow-up; skip one coupled outcome and one-time status.
+description: Coordinate visible tasks and subagents for independent outcomes, multiple repos, or ongoing follow-up.
 ---
 
 # Task Coordinator
 
-Coordinate a workstream through visible, isolated, independently reviewable
-outcomes. Use this skill when explicitly invoked, when a request has at least
-two independently shippable outcomes or write-owning repositories, or when it
+Use this skill when explicitly invoked, when a request has at least two
+independently shippable outcomes or write-owning repositories, or when it
 asks for ongoing external-state follow-up, PR babysitting, monitoring, or a
 user-stated stopping condition. An ordinary continuation of one task does not
 count. A reference-only repository does not count as a separate outcome. Do
@@ -54,23 +53,26 @@ worktree/local choices and prompt mechanics.
   their findings in the owning task.
 - Keep naming tied to the route actually selected:
   - lead: `🤖 [<key>] <goal>`
-  - visible execution task: `[<key>] <model-label>-<effort> <scope>: <outcome>`
-  - native subagent: `<key>_<model-label>_<effort>_<role>_<slice>`
-  - native prompt label: `[<key>] <model-label>-<effort> <role>: <slice>`
+  - visible execution task: `[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]`
+  - native subagent: `<key>_<model-label>_<effort-code>_<role>_<slice>`
+  - native prompt label: `[<key>] <model-label>-<effort-code> <role>: <slice>`
 - Use the display labels `Sol`, `Terra`, or `Luna` in titles and labels. Never
   put a raw model ID such as `gpt-5.6-luna` in a title. Keep the exact runtime
   model ID in the child prompt and task-creation fields.
-- Keep visible titles unique and at most 56 characters, with the distinguishing
-  scope and outcome before optional detail. Normalize a plan-supplied title to
-  this schema instead of copying an invalid or overlong form.
+- Effort codes: none=`n`, minimal=`min`, low=`lo`, medium=`med`, high=`hi`,
+  xhigh=`xh`, max=`max`, ultra=`ult`; keep full values in prompts.
+- Keep visible titles unique and at most 72 characters. After the route, use a
+  concrete action and object, then distinguishing context. Trim optional words
+  at a boundary; preserve key, route, action, object, and distinction. Never
+  add an ellipsis. Normalize plan-supplied titles to this schema.
 - Build the lead goal from the resolved user goal without a key, model, scope,
-  or trailing punctuation. If the title exceeds 56 characters, keep the longest
+  or trailing punctuation. If the title exceeds 72 characters, keep the longest
   goal prefix that fits at a word boundary; hard-cut only when no boundary fits.
   Do not paraphrase or add an ellipsis. Preserve the robot emoji and key.
 - Include `Coordination key: <key>`, `Selected model: <exact-model-id>`,
-  `Selected effort: <effort>`, `Display route: <model-label>-<effort>`, and the
-  parent title in each child prompt. Keep the exact key across retries, forks,
-  and follow-ups.
+  `Selected effort: <effort>`, `Display route: <model-label>-<effort-code>`,
+  and the parent title in each child prompt. Keep the exact key across retries,
+  forks, and follow-ups.
 
 Every execution prompt must state the outcome, constraints, verification,
 publication boundary, stopping condition, and a delegation contract requiring

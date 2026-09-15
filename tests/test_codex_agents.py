@@ -171,17 +171,59 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("Non-repository children inherit its exact project", normalized)
         self.assertIn("use projectless only for a projectless lead", normalized)
         self.assertIn("🤖 [<key>] <goal>", instructions)
-        self.assertIn("[<key>] <model-label>-<effort> <scope>: <outcome>", instructions)
+        self.assertIn(
+            "[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]",
+            instructions,
+        )
         self.assertIn("Selected model: <exact-model-id>", instructions)
         self.assertIn("Selected effort: <effort>", instructions)
-        self.assertIn("Display route: <model-label>-<effort>", instructions)
-        self.assertIn("<key>_<model-label>_<effort>_<role>_<slice>", instructions)
-        self.assertIn("[<key>] <model-label>-<effort> <role>: <slice>", instructions)
+        self.assertIn("<model-label>-<effort-code>", instructions)
+        self.assertIn("<key>_<model-label>_<effort-code>_<role>_<slice>", instructions)
+        self.assertIn("[<key>] <model-label>-<effort-code> <role>: <slice>", instructions)
         self.assertIn("Never put a raw model ID", normalized)
-        self.assertIn("at most 56 characters", normalized)
-        self.assertIn("Normalize a plan-supplied title", normalized)
+        self.assertIn("at most 72 characters", normalized)
+        self.assertIn("After the route, use a concrete action and object", normalized)
+        self.assertIn("then distinguishing context", normalized)
+        self.assertIn("preserve key, route, action, object", normalized)
+        self.assertIn("Normalize plan-supplied titles", normalized)
         self.assertIn("longest goal prefix that fits at a word boundary", normalized)
         self.assertIn("Do not paraphrase or add an ellipsis", normalized)
+        effort_codes = {
+            "none": "n",
+            "minimal": "min",
+            "low": "lo",
+            "medium": "med",
+            "high": "hi",
+            "xhigh": "xh",
+            "max": "max",
+            "ultra": "ult",
+        }
+        for effort, code in effort_codes.items():
+            self.assertIn(f"`{code}` for `{effort}`", normalized_creation)
+
+        visible_titles = (
+            "[IC-563] Terra-xh Verify controls: close remaining rollout gaps",
+            "[IC-563] Terra-xh Reconcile records: confirm final desired state",
+            "[IC-563] Terra-xh Preflight runtime: clear production blockers",
+            "[IC-563] Sol-xh Coordinate rollout batches and acceptance",
+            "[INF-11223] Luna-xh Stage 0 fixes: restore USE2 parity",
+        )
+        self.assertEqual(len(visible_titles), len(set(visible_titles)))
+        for title in visible_titles:
+            self.assertIn(f"`{title}`", creation)
+            self.assertLessEqual(len(title), 72, title)
+
+        boundary_titles = {
+            "long key": "[SIGNING-PROFILES] Terra-xh Verify signing key restoration",
+            "retry": "[IC-563] Terra-xh Verify controls: close gaps (retry 2)",
+            "superseded": "[IC-563] Terra-xh Verify controls: close gaps (superseded)",
+        }
+        for case, title in boundary_titles.items():
+            self.assertLessEqual(len(title), 72, case)
+            self.assertIn("] ", title, case)
+            self.assertIn("-xh ", title, case)
+        self.assertIn("(retry 2)", boundary_titles["retry"])
+        self.assertIn("(superseded)", boundary_titles["superseded"])
         self.assertIn("Before interrupting a running subagent", controls)
         self.assertIn("next safe boundary", controls)
         self.assertIn("send a follow-up or resume it instead of spawning a", controls)
@@ -196,7 +238,9 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("one more than the highest existing retry number", normalized_creation)
         self.assertIn("retain the intended title", normalized_creation)
         self.assertIn("no atomic key reservation", normalized_creation)
-        self.assertIn("complete retry title remains within 56 characters", normalized_creation)
+        self.assertIn("complete retry title remains within 72 characters", normalized_creation)
+        self.assertIn("local readability budget, not a Codex platform limit", normalized_creation)
+        self.assertIn("never remove the action or object", normalized_creation)
         self.assertIn("earliest `createdAt` as owner", normalized_creation)
         self.assertIn("lexical `threadId`", normalized_creation)
         self.assertIn("Use its exact `projectId`, not a label or inferred cwd", normalized_creation)
