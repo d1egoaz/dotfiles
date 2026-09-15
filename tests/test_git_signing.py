@@ -19,6 +19,12 @@ class GitSigningConfigurationTest(unittest.TestCase):
         self.assertIn('git_signing_key = "~/.ssh/codex-signing-office-ed25519.pub";', machines)
         self.assertIn('git_signing_key = "~/.ssh/codex-signing-personal-ed25519.pub";', machines)
 
+    def test_office_signing_key_is_trusted_for_both_office_identities(self):
+        machines = MACHINES_NIX.read_text(encoding="utf-8")
+
+        self.assertIn('work_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJnBxAfxKcz/D7Pu1MestMop4PJ6uDTi/uY9EiAqPwY4";', machines)
+        self.assertEqual(machines.count("key = keys.work_signing;"), 2)
+
     def test_git_uses_mandatory_openssh_signing(self):
         git_nix = GIT_NIX.read_text(encoding="utf-8")
 

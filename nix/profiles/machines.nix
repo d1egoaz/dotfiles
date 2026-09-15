@@ -20,6 +20,7 @@ let
     personal = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMokDMEcQ3ZatK2LLEJQOAs6CIxcklr3HT9IrYRu3A24";
     personal_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTEk1pRN0nd7IAVLqkgQvyNYmCqAVl37AQjz9yExiX8";
     work = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQc3z3srPRhWbHoR9BmixXrfXmTECEw7YL4WklpKBT";
+    work_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJnBxAfxKcz/D7Pu1MestMop4PJ6uDTi/uY9EiAqPwY4";
   };
   emails = {
     personal = "info@diegoa.ca";
@@ -58,9 +59,17 @@ in
         key = keys.work;
       } # dotfiles from work machine
       {
+        email = emails.personal;
+        key = keys.work_signing;
+      } # dotfiles from office signing key
+      {
         email = emails.work;
         key = keys.work;
       } # work repos
+      {
+        email = emails.work;
+        key = keys.work_signing;
+      } # work repos signed on office
     ];
 
     # Work-specific paths and identifiers
