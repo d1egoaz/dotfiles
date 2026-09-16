@@ -171,7 +171,10 @@ class CodexAgentsTest(unittest.TestCase):
 
         self.assertIn("Explicitly pass a model and reasoning effort", normalized)
         self.assertIn("references/capability-routing.md", instructions)
-        self.assertIn("Print its complete capability card", normalized)
+        self.assertIn(
+            "Print its complete capability card in a fenced Markdown `text` code block",
+            normalized,
+        )
         self.assertIn("Reclassify every materially different follow-up", normalized)
         self.assertIn("Sol, Terra, and Luna are all valid task routes", normalized)
         self.assertIn("proactively spawn the minimum useful named", normalized)
@@ -210,6 +213,11 @@ class CodexAgentsTest(unittest.TestCase):
         ):
             self.assertIn(field, routing)
         self.assertIn("not an additive score", normalized_routing)
+        self.assertIn(
+            "Emit the scorecard as a fenced Markdown `text` code block",
+            normalized_routing,
+        )
+        self.assertIn("never as prose, a Markdown list, or a table", normalized_routing)
         self.assertIn("High consequence alone does not select a premium model", routing)
         self.assertIn("Use a configured native role only when its fixed model and effort match", normalized_routing)
         self.assertIn("override the model and effort on that turn", normalized_routing)

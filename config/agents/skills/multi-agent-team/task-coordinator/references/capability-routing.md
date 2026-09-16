@@ -15,9 +15,11 @@ verified separately.
 
 ## Print the capability card
 
-Print every field below before creating or materially rerouting work. Use the
-listed categorical values, not an additive score. Each dimension can establish
-a minimum route; easy dimensions never offset a critical one.
+Print every completed field below before creating or materially rerouting work.
+Emit the scorecard as a fenced Markdown `text` code block, never as prose, a
+Markdown list, or a table. Use the listed categorical values, not an additive
+score. Each dimension can establish a minimum route; easy dimensions never
+offset a critical one.
 
 ```text
 Routing scorecard

@@ -39,8 +39,9 @@ only when resolving projects or creating visible tasks.
 
 - Before creating or materially rerouting delegated work, read
   [`references/capability-routing.md`](references/capability-routing.md). Print
-  its complete capability card, keep one-step utility work in the lead, and
-  choose the cheapest adequate model and effort without a model-share quota.
+  its complete capability card in a fenced Markdown `text` code block, keep
+  one-step utility work in the lead, and choose the cheapest adequate model and
+  effort without a model-share quota.
 - Explicitly pass a model and reasoning effort for every visible task. Sol,
   Terra, and Luna are all valid task routes; select the route from the judgment
   that remains, not from a default or the lead's route.
