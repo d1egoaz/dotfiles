@@ -134,7 +134,6 @@ in
         "codex-context-audit"
         "codex-current-model"
         "codex-model-usage"
-        "codex-opencode-go-catalog"
         "dotfiles-audit"
         "dotfiles-local-state"
         "ediff"
@@ -155,7 +154,13 @@ in
         value.source = config.lib.file.mkOutOfStoreSymlink "${binDir}/${name}";
       }) scripts
     )
-  );
+  )
+  // lib.optionalAttrs (profile != "office") {
+    # Personal-only: generates the OpenCode Go model catalog. Office does not use
+    # that provider, so neither the tool nor its route lands there.
+    ".local/bin/codex-opencode-go-catalog".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/codex-opencode-go-catalog";
+  };
 
   xdg = {
     enable = true;

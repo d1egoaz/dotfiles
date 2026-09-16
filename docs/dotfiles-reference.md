@@ -48,7 +48,7 @@ The catalog entry also carries the tool plumbing Codex uses for that model, and 
 
 Because a model entry carries no provider, the gateway decides the route from the model id: the OpenCode Go ids are listed in its `DEFAULT_OPENCODE_MODELS` and everything else is passed through to ChatGPT with the caller's own credentials. That keeps one picker for both providers, so no switching or config reload is needed.
 
-Tracked native roles under `config/codex/agents/` define each role's model, provider pin, reasoning effort, sandbox, and lead-mediated communication. Roles are shared across profiles, so a pinned provider is limited to the built-in `openai`; roles that leave it unset inherit the active default. The shared config defines the unnamed Luna-xhigh fallback and concurrency limits. Changing these files does not retier a running task.
+Tracked native roles under `config/codex/agents/` define each role's model, reasoning effort, sandbox, and lead-mediated communication. Roles inherit the active provider, so they work on every profile without pinning anything machine-specific. The shared config defines the unnamed Luna-xhigh fallback and concurrency limits. Changing these files does not retier a running task.
 
 Shared hooks live in `config/codex/hooks.json`; office may select ignored `config/codex/hooks.work.local.json`. Keep hooks out of `config.toml` because Codex loads both representations when both exist.
 
