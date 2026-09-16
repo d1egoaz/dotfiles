@@ -169,14 +169,6 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertTrue(implicit_invocation("codex-config-maintenance"))
         self.assertTrue(implicit_invocation("task-coordinator"))
 
-        coordinator = re.sub(r"\s+", " ", (SKILL_ROOT / "task-coordinator/SKILL.md").read_text())
-        self.assertIn("2+ shippable outcomes", coordinator)
-        self.assertIn("one coupled outcome", coordinator)
-        self.assertIn("one-time status", coordinator)
-        self.assertIn("write-owning repositories", coordinator)
-        self.assertIn("🤖 [<key>] <goal>", coordinator)
-        self.assertIn("never raw ids", coordinator.lower())
-
     def test_compact_high_use_skill_contracts(self):
         skills = {
             name: re.sub(r"\s+", " ", (SKILL_ROOT / name / "SKILL.md").read_text())

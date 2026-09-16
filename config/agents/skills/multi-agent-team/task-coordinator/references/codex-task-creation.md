@@ -1,50 +1,48 @@
-# Task creation
+# Visible task creation
 
-Create one task per outcome or write-owning repository/worktree. Keep reference
-mapping native; without them use native agents.
+Create one task per independent outcome. Split by repository only for separate
+write ownership or delivery lifecycles. Keep reference reads in the owning task.
 
-## Project and environment
+## Project and handoff
 
-Use the exact lead `projectId`.
+Resolve the lead's exact `projectId` from metadata, not its label or cwd.
+Non-repository children inherit that project and local environment. Use
+projectless only for a projectless lead unless the user selects a project.
 
-- Non-repository children inherit the saved project/local environment. Use
-  projectless only for a projectless lead.
-- Leave only for another saved Git/user-selected project; inspect
-  `isGitRepository`.
-- Saved Git uses an app worktree unless local checkout is requested. A non-Git
-  umbrella stays local; nested writes use that repository's worktree flow.
+Select another project for its saved Git repository or at the user's request.
+Inspect `isGitRepository`: saved Git uses an app worktree unless the user requests
+local; non-Git uses local. For unsaved nested repositories, retain the umbrella
+project and pass the exact path and checkout workflow. Follow host restrictions.
+Verify the child's `projectId` after setup; pause and report a mismatch.
 
-Verify `projectId`; pause on mismatch.
+Pass the entrypoint's handoff, key, parent identity, project ID, and exact checkout.
+Set model and effort in runtime fields. Visible tasks may use bounded native
+subagents, but cannot create more visible tasks. Each outcome/write set has one owner.
 
-## Prompt and ownership
+## Naming
 
-Pass the title and entrypoint-required fields.
+Reuse the issue key or choose a short descriptive key. Inspect existing tasks;
+one active lead owns each key. Report ownership conflicts before creation.
 
-## Titles
+- Lead: `🤖 [<key>] <goal>`
+- Visible: `[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]`
+- Native: `<key>_<model-label>_<effort-code>_<role>_<slice>`
 
-The 72-character readability budget is not a platform limit. Put key, route,
-action, and object first. Add context if it fits; trim at word boundaries.
-Never remove action/object or add an ellipsis.
+Display `Sol`, `Terra`, or `Luna`; use exact IDs in runtime fields. Effort codes:
+`n`=none, `min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh,
+`max`=max, `ult`=ultra. Only use supported pairs and host-valid names.
 
-Effort codes: `n`=none, `min`=minimal, `lo`=low, `med`=medium, `hi`=high,
-`xh`=xhigh, `max`=max, `ult`=ultra. Keep full effort in task fields/prompts.
+Aim for 72 characters, preserving action, object, and useful context. Example:
+`[IC-563] Terra-xh Verify controls: close remaining rollout gaps`.
+Pass the title at creation or rename once addressable.
 
-Visible tasks are user-owned. Task-local authority may cover commit/push/draft
-PR. Otherwise prepare, ask once, and wait. The lead waits with
-`wait_threads`; never proxy, quote, or duplicate approval.
+## Setup and retries
 
-## Creation and retries
-
-Check the key; one active lead owns it. Titles are unique.
-
-- `threadId`: ready task.
-- `clientThreadId`: setup pending, not failure. Wait and refresh; do not create
-  another task.
-- Retry only after setup failure. Increment the highest retry number; keep the
-  title within 72 characters.
-- If a pending task later duplicates an owner, keep the earliest `createdAt`
-  task, breaking ties by lexical `threadId`; pause and mark later tasks
-  `(superseded)`.
-
-Keep repository worktrees, commits, and PRs separate. Creation never authorizes
-commit, push, PR, merge, deployment, or production mutation.
+- `threadId`: addressable task; check setup before writes.
+- `clientThreadId`: setup pending. Wait and refresh; a timeout or missing
+  `threadId` alone does not justify another attempt.
+- Retry only after confirmed creation/setup failure. Add `(retry N)` using one
+  more than the highest existing attempt number for that outcome.
+- For duplicate owners, keep the earliest `createdAt`, breaking ties by lexical
+  `threadId`. Pause later tasks and mark `(superseded)`; preserve and reconcile
+  their writes before proceeding.

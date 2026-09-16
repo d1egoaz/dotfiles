@@ -1,6 +1,6 @@
 ---
 name: signed-pr-publish
-description: Sign commits, push branches, and publish draft PRs. Use for commit, push, PR creation or updates, ready-for-review, attribution, PR bodies, `gh pr`, or `gh api`.
+description: Sign commits and publish GitHub changes with exact AI attribution. Use for committing, pushing, creating or updating PRs, or marking ready for review; skip read-only PR status and API queries.
 ---
 
 # Signed PR Publish
