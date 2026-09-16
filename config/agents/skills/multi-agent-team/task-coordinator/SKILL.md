@@ -31,14 +31,14 @@ subagents.
 ## Naming and prompts
 
 - Lead: `🤖 [<key>] <goal>`
-- Visible task: `[<key>] <model-label>-<effort> <scope>: <outcome>`
-- Native subagent: `<key>_<model-label>_<effort>_<role>_<slice>`
-- Native prompt label: `[<key>] <model-label>-<effort> <role>: <slice>`
+- Visible task: `[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]`
+- Native subagent: `<key>_<model-label>_<effort-code>_<role>_<slice>`
+- Native prompt label: `[<key>] <model-label>-<effort-code> <role>: <slice>`
 
 Titles use `Sol`, `Terra`, or `Luna`, never raw IDs. Visible titles are unique,
-at most 56 characters, and put scope/outcome first. Prompts include the card,
-routes, escalation, exact model/effort, key, parent, outcome, constraints,
-verification, publication boundary, stop condition, and delegation rules.
+at most 72 characters, with action/object before context. Prompts keep exact
+model/full effort and routing, outcome, verification, publication,
+stop, and delegation fields. Read the task-creation reference for codes.
 
 Visible tasks are user-owned and own their outcome. They ask the user once for
 needed approval; the lead never proxies it. Native subagents return only to the

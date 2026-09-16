@@ -169,6 +169,7 @@ class CodexAgentsTest(unittest.TestCase):
         normalized_controls = " ".join(controls.split())
         creation = (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text()
         normalized_creation = " ".join(creation.split())
+        metadata = (TASK_COORDINATOR_SKILL.parent / "agents/openai.yaml").read_text()
 
         for contract in (
             "references/capability-routing.md",
@@ -177,10 +178,12 @@ class CodexAgentsTest(unittest.TestCase):
             "cheapest adequate model and effort",
             "fenced Markdown `text` block",
             "🤖 [<key>] <goal>",
-            "[<key>] <model-label>-<effort> <scope>: <outcome>",
-            "<key>_<model-label>_<effort>_<role>_<slice>",
-            "[<key>] <model-label>-<effort> <role>: <slice>",
-            "at most 56 characters",
+            "[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]",
+            "<key>_<model-label>_<effort-code>_<role>_<slice>",
+            "[<key>] <model-label>-<effort-code> <role>: <slice>",
+            "at most 72 characters",
+            "action/object before context",
+            "keep exact model/full effort",
             "Visible tasks are user-owned",
             "Native subagents return only to the parent",
             "lead never proxies it",
@@ -218,9 +221,9 @@ class CodexAgentsTest(unittest.TestCase):
         ):
             self.assertIn(contract, normalized_routing)
         for contract in (
-            "exact `projectId`",
+            "exact lead `projectId`",
             "Use projectless only for a projectless lead",
-            "inspect `isGitRepository` first",
+            "inspect `isGitRepository`",
             "`clientThreadId`: setup pending, not failure",
             "earliest `createdAt`",
             "lexical `threadId`",
@@ -230,6 +233,34 @@ class CodexAgentsTest(unittest.TestCase):
             "Creation never authorizes commit, push, PR",
         ):
             self.assertIn(contract, normalized_creation)
+        for effort, code in {
+            "none": "n",
+            "minimal": "min",
+            "low": "lo",
+            "medium": "med",
+            "high": "hi",
+            "xhigh": "xh",
+            "max": "max",
+            "ultra": "ult",
+        }.items():
+            self.assertIn(f"`{code}`={effort}", normalized_creation)
+        self.assertIn("readability budget is not a platform limit", normalized_creation)
+        self.assertIn("Never remove action/object or add an ellipsis", normalized_creation)
+        self.assertIn("context-rich titles with compact route prefixes", metadata)
+
+        visible_titles = (
+            "[IC-563] Terra-xh Verify controls: close remaining rollout gaps",
+            "[IC-563] Terra-xh Reconcile records: confirm final desired state",
+            "[IC-563] Sol-xh Coordinate rollout batches and acceptance",
+            "[INF-11223] Luna-xh Stage 0 fixes: restore USE2 parity",
+            "[SIGNING-PROFILES] Terra-xh Verify signing key restoration",
+            "[IC-563] Terra-xh Verify controls: close gaps (retry 2)",
+            "[IC-563] Terra-xh Verify controls: close gaps (superseded)",
+        )
+        self.assertEqual(len(visible_titles), len(set(visible_titles)))
+        for title in visible_titles:
+            self.assertLessEqual(len(title), 72, title)
+            self.assertRegex(title, r"^\[[^]]+\] (Sol|Terra|Luna)-(n|min|lo|med|hi|xh|max|ult) ")
         self.assertIn("Visible tasks ask the user directly for approval", normalized_controls)
         self.assertIn("lead waits and never relays approval", normalized_controls)
         for runtime_tool in (

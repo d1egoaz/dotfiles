@@ -1,7 +1,7 @@
 interface:
   display_name: "Task Coordinator"
   short_description: "Coordinate visible workstreams and monitoring"
-  default_prompt: "Use $task-coordinator to keep non-repository children in the lead's saved project, apply concise model-labelled titles, and manage visible tasks, subagents, and follow-ups."
+  default_prompt: "Use $task-coordinator to keep non-repository children in the lead's project, use context-rich titles with compact route prefixes, and manage tasks, subagents, and follow-ups."
 
 policy:
   allow_implicit_invocation: true
