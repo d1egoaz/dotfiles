@@ -203,10 +203,15 @@ class CodexContextPolicyTest(unittest.TestCase):
 
         for contract in (
             "primary checkout on `main`",
-            "Preserve unrelated changes",
+            "`~/.codex/worktrees/<repo>-<feature>`",
+            "never beside it",
+            "preserve unrelated changes",
             "from `origin/main`",
             "not with `git -C`",
-            "Never remove worktrees, delete branches, reset history",
+            "filesystem-safe recognizable name",
+            "Inspect existing targets",
+            "escape the Codex root",
+            "Never remove a worktree, delete a branch, or reset",
         ):
             self.assertIn(contract, skills["git-worktree-flow"])
 
