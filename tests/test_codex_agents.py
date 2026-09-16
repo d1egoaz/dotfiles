@@ -170,40 +170,23 @@ class CodexAgentsTest(unittest.TestCase):
         creation = (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text()
         normalized_creation = " ".join(creation.split())
 
-        self.assertIn("Explicitly pass a model and reasoning effort", normalized)
-        self.assertIn("references/capability-routing.md", instructions)
-        self.assertIn(
-            "Print its complete capability card in a fenced Markdown `text` code block",
-            normalized,
-        )
-        self.assertIn("Reclassify every materially different follow-up", normalized)
-        self.assertIn("Visible tasks are user-owned, may interact directly with the user", normalized)
-        self.assertIn("Native subagents return only to the parent", normalized)
-        self.assertIn("let it ask once in that task and wait", normalized)
-        self.assertIn("Do not proxy, quote, or duplicate the request", normalized)
-        self.assertIn("Sol, Terra, and Luna are all valid task routes", normalized)
-        self.assertIn("proactively spawn the minimum useful named", normalized)
-        self.assertIn("Treat explicit `$task-coordinator` invocation as a request", normalized)
-        self.assertIn("create at least one visible implementation task", normalized)
-        self.assertIn("If no visible task is justified, explain why", normalized)
-        self.assertIn("reference-only repository analysis in a native `explorer`", normalized)
-        self.assertIn("Whenever this skill applies, rename the lead", normalized)
-        self.assertIn("ordinary continuation of one task does not count", normalized)
-        self.assertIn("Reassess the decomposition when a material follow-up", normalized)
-        self.assertIn("Non-repository children inherit its exact project", normalized)
-        self.assertIn("use projectless only for a projectless lead", normalized)
-        self.assertIn("🤖 [<key>] <goal>", instructions)
-        self.assertIn("[<key>] <model-label>-<effort> <scope>: <outcome>", instructions)
-        self.assertIn("Selected model: <exact-model-id>", instructions)
-        self.assertIn("Selected effort: <effort>", instructions)
-        self.assertIn("Display route: <model-label>-<effort>", instructions)
-        self.assertIn("<key>_<model-label>_<effort>_<role>_<slice>", instructions)
-        self.assertIn("[<key>] <model-label>-<effort> <role>: <slice>", instructions)
-        self.assertIn("Never put a raw model ID", normalized)
-        self.assertIn("at most 56 characters", normalized)
-        self.assertIn("Normalize a plan-supplied title", normalized)
-        self.assertIn("longest goal prefix that fits at a word boundary", normalized)
-        self.assertIn("Do not paraphrase or add an ellipsis", normalized)
+        for contract in (
+            "references/capability-routing.md",
+            "references/codex-task-creation.md",
+            "references/codex-controls.md",
+            "cheapest adequate model and effort",
+            "fenced Markdown `text` block",
+            "🤖 [<key>] <goal>",
+            "[<key>] <model-label>-<effort> <scope>: <outcome>",
+            "<key>_<model-label>_<effort>_<role>_<slice>",
+            "[<key>] <model-label>-<effort> <role>: <slice>",
+            "at most 56 characters",
+            "Visible tasks are user-owned",
+            "Native subagents return only to the parent",
+            "lead never proxies it",
+            "Creation never authorizes commit, push, PR",
+        ):
+            self.assertIn(contract, normalized)
         for field in (
             "Work unit and expected output",
             "Scope: local | bounded multi-component | cross-system",
@@ -217,63 +200,38 @@ class CodexAgentsTest(unittest.TestCase):
             "Escalate when",
         ):
             self.assertIn(field, routing)
-        self.assertIn("not an additive score", normalized_routing)
-        self.assertIn(
-            "Emit the scorecard as a fenced Markdown `text` code block",
-            normalized_routing,
-        )
-        self.assertIn("never as prose, a Markdown list, or a table", normalized_routing)
-        self.assertIn("High consequence alone does not select a premium model", routing)
-        self.assertIn("Use a configured native role only when its fixed model and effort match", normalized_routing)
-        self.assertIn("override the model and effort on that turn", normalized_routing)
-        self.assertIn("Never repeat a side-effectful action as a routing retry", normalized_routing)
-        for scenario in (
-            "A one-step status check stays in the lead.",
-            "A bounded read-only inventory selects Luna-medium `utility`.",
-            "Scoped implementation with objective tests selects Luna-xhigh `worker`.",
-            "Broad ownership mapping selects Terra-medium `explorer`.",
-            "Independent correctness review selects Terra-high `reviewer`.",
-            "Conflicting lifecycle and runtime evidence selects Terra-xhigh",
-            "Exceptional unresolved judgment after decomposition crosses the Sol gate.",
-            "A simple follow-up inside a Terra task is reclassified to Luna",
-            "Authentication or tool failure does not cause model escalation.",
-            "A side-effectful action is never automatically retried.",
+        for scenario, expected_route in {
+            "one_step": "Lead: one-step work",
+            "bounded_read": "Luna-medium `utility`",
+            "scoped_write": "Luna-xhigh `worker`",
+            "broad_mapping": "Terra-medium `explorer`",
+            "correctness_review": "Terra-high `reviewer`",
+            "conflicting_evidence": "Terra-xhigh `evidence-auditor`",
+            "exceptional_judgment": "Sol-high/xhigh",
+        }.items():
+            self.assertIn(expected_route, routing, scenario)
+        for contract in (
+            "not an additive score",
+            "High consequence alone does not select a premium model",
+            "Missing access, approval, data, or tools means blocked",
+            "Never repeat a side effect",
         ):
-            self.assertIn(scenario, routing)
-        self.assertIn("Before interrupting a running subagent", controls)
-        self.assertIn("next safe boundary", controls)
-        self.assertIn("send a follow-up or resume it instead of spawning a", controls)
-        self.assertIn("saved Git project", creation)
-        self.assertIn("isGitRepository = true", creation)
-        self.assertIn("saved non-Git umbrella", creation)
-        self.assertIn("returned `clientThreadId` means worktree setup is pending", normalized_creation)
-        self.assertIn("Do not call `create_thread` again", normalized_creation)
-        self.assertIn("add `(retry N)` after the outcome", normalized_creation)
-        self.assertIn("`(superseded)`", normalized_creation)
-        self.assertIn("A timeout, missing `threadId`, or `clientThreadId` alone is not failure", normalized_creation)
-        self.assertIn("one more than the highest existing retry number", normalized_creation)
-        self.assertIn("retain the intended title", normalized_creation)
-        self.assertIn("no atomic key reservation", normalized_creation)
-        self.assertIn("complete retry title remains within 56 characters", normalized_creation)
-        self.assertIn("earliest `createdAt` as owner", normalized_creation)
-        self.assertIn("lexical `threadId`", normalized_creation)
-        self.assertIn("Use its exact `projectId`, not a label or inferred cwd", normalized_creation)
-        self.assertIn("A non-Git project is still the correct organizational container", normalized_creation)
-        self.assertIn("Use `projectless` only when the lead itself is projectless", normalized_creation)
-        self.assertIn("child owns work in a different saved Git repository", normalized_creation)
-        self.assertIn("For any user-selected alternate project, inspect its metadata first", normalized_creation)
-        self.assertIn("parent project label and ID", normalized_creation)
-        self.assertIn("verify its `projectId` matches the selected project", normalized_creation)
-        self.assertIn("A visible task is a normal user-owned task", normalized_creation)
-        self.assertIn("owns its complete scoped outcome", normalized_creation)
-        self.assertIn("When task-local user authorization covers commit, push, or draft PR creation", normalized_creation)
-        self.assertIn("asks once inside its own task", normalized_creation)
-        self.assertIn("Codex surfaces the task as needing attention", normalized_creation)
-        self.assertIn("The lead observes with `wait_threads`", creation)
-        self.assertIn("agent-authored text never substitutes for the user's approval", normalized_creation)
-        self.assertIn("Visible tasks are normal user-owned tasks", controls)
-        self.assertIn("The lead waits for the user's response in that task", normalized_controls)
-        self.assertIn("does not relay agent-authored approval or duplicate the request", normalized_controls)
+            self.assertIn(contract, normalized_routing)
+        for contract in (
+            "exact `projectId`",
+            "Use projectless only for a projectless lead",
+            "inspect `isGitRepository` first",
+            "`clientThreadId`: setup pending, not failure",
+            "earliest `createdAt`",
+            "lexical `threadId`",
+            "`(superseded)`",
+            "ask once, and wait",
+            "never proxy, quote, or duplicate approval",
+            "Creation never authorizes commit, push, PR",
+        ):
+            self.assertIn(contract, normalized_creation)
+        self.assertIn("Visible tasks ask the user directly for approval", normalized_controls)
+        self.assertIn("lead waits and never relays approval", normalized_controls)
         for runtime_tool in (
             "list_agents",
             "send_message",
@@ -296,7 +254,7 @@ class CodexAgentsTest(unittest.TestCase):
             "turn/completed",
         ):
             self.assertIn(f"`{app_server_name}`", controls)
-        self.assertIn("not lifecycle events or universal public API methods", controls)
+        self.assertIn("not universal model tools", controls)
         for nonportable_marker in ("/Users/", "/home/", "http://", "https://", "@"):
             for document in (instructions, controls, creation):
                 self.assertNotIn(nonportable_marker, document)

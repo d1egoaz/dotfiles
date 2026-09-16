@@ -27,8 +27,13 @@ XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 SKILL_BUDGETS = {
     "command-discipline": 1800,
     "scratch-log": 2000,
-    "codex-config-maintenance": 3500,
-    "task-coordinator": 6000,
+    "codex-config-maintenance": 1400,
+    "git-history-orientation": 1600,
+    "git-worktree-flow": 800,
+    "repo-research": 700,
+    "signed-pr-publish": 1800,
+    "task-coordinator": 2500,
+    "tfctl": 3000,
 }
 GLOBAL_DISABLED = {
     "~/.agents/skills/mattpocock-skills/deprecated/design-an-interface/SKILL.md",
@@ -134,6 +139,29 @@ class CodexContextPolicyTest(unittest.TestCase):
         for path in SKILL_ROOT.glob("*/SKILL.md"):
             self.assertLessEqual(len(frontmatter_description(path)), 220, path.parent.name)
 
+        selected = {
+            "task-coordinator",
+            "signed-pr-publish",
+            "codex-config-maintenance",
+            "git-worktree-flow",
+            "repo-research",
+            "git-history-orientation",
+            "tfctl",
+        }
+        self.assertLessEqual(sum(len((SKILL_ROOT / name / "SKILL.md").read_text()) for name in selected), 12000)
+
+        coordinator = SKILL_ROOT / "task-coordinator"
+        coordinator_bundle = len((coordinator / "SKILL.md").read_text()) + sum(
+            len(path.read_text()) for path in (coordinator / "references").glob("*.md")
+        )
+        self.assertLessEqual(coordinator_bundle, 7000)
+
+        tfctl = SKILL_ROOT / "tfctl"
+        common_tfctl = len((tfctl / "SKILL.md").read_text()) + len(
+            (tfctl / "references/api-conventions.md").read_text()
+        )
+        self.assertLessEqual(common_tfctl, 4500)
+
     def test_implicit_invocation_is_selective(self):
         self.assertFalse(implicit_invocation("command-discipline"))
         self.assertFalse(implicit_invocation("scratch-log"))
@@ -142,19 +170,92 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertTrue(implicit_invocation("task-coordinator"))
 
         coordinator = re.sub(r"\s+", " ", (SKILL_ROOT / "task-coordinator/SKILL.md").read_text())
-        self.assertIn("at least two independently shippable outcomes", coordinator)
-        self.assertIn("one tightly coupled implementation outcome", coordinator)
-        self.assertIn("one-time status check", coordinator)
-        self.assertIn("explicit `$task-coordinator` invocation", coordinator)
-        self.assertIn("write-owning repository", coordinator)
-        self.assertIn("ordinary continuation of one task does not count", coordinator)
+        self.assertIn("2+ shippable outcomes", coordinator)
+        self.assertIn("one coupled outcome", coordinator)
+        self.assertIn("one-time status", coordinator)
+        self.assertIn("write-owning repositories", coordinator)
         self.assertIn("🤖 [<key>] <goal>", coordinator)
-        self.assertIn("raw model ID", coordinator)
-        self.assertIn("Non-repository children inherit its exact project", coordinator)
+        self.assertIn("never raw ids", coordinator.lower())
+
+    def test_compact_high_use_skill_contracts(self):
+        skills = {
+            name: re.sub(r"\s+", " ", (SKILL_ROOT / name / "SKILL.md").read_text())
+            for name in (
+                "codex-config-maintenance",
+                "git-history-orientation",
+                "git-worktree-flow",
+                "repo-research",
+                "signed-pr-publish",
+                "tfctl",
+            )
+        }
+
+        for contract in (
+            "config/ai/AGENTS.md",
+            "config/codex/config.toml",
+            "config/codex/agents/*.toml",
+            "Stop`, `PermissionRequest`, `UserPromptSubmit`, and `SessionStart",
+            "Changes affect new work only",
+            "references/config-layering.md",
+            "references/validation.md",
+        ):
+            self.assertIn(contract, skills["codex-config-maintenance"])
+
+        for contract in (
+            "primary checkout on `main`",
+            "Preserve unrelated changes",
+            "from `origin/main`",
+            "not with `git -C`",
+            "Never remove worktrees, delete branches, reset history",
+        ):
+            self.assertIn(contract, skills["git-worktree-flow"])
+
+        for contract in (
+            "skip routine implementation reads",
+            "Inspect the named artifact",
+            "Lead with evidence",
+            "state what was not verified",
+        ):
+            self.assertIn(contract, skills["repo-research"])
+
+        for contract in (
+            "Never fetch or rewrite history",
+            "git rev-parse --is-shallow-repository",
+            "git shortlog -sn --no-merges",
+            "Confidence: <what history cannot prove>",
+        ):
+            self.assertIn(contract, skills["git-history-orientation"])
+
+        for contract in (
+            "$HOME/dotfiles/bin/files/codex-current-model",
+            "git commit -S",
+            "Assisted-by: [Exact model identifier] via [Tool]",
+            "Office repos stay on HTTPS",
+            "Open new PRs as drafts",
+            "Re-fetch and verify draft state",
+            "Do not infer push, PR, ready-for-review, merge, deployment",
+            "references/commands.md",
+        ):
+            self.assertIn(contract, skills["signed-pr-publish"])
+
+        for contract in (
+            "never pipe tfctl JSON to external `jq`",
+            "Resolve names through path placeholders and `-p`",
+            "Trust the first answer",
+            "Stop when the requested named resource is absent",
+            "requires direct current-task approval",
+            "Never run `tfctl harness exec`",
+            "references/api-conventions.md",
+            "references/cookbook.md",
+            "references/mutations.md",
+            "references/troubleshooting.md",
+        ):
+            self.assertIn(contract, skills["tfctl"])
 
     def test_progressive_disclosure_references_exist(self):
         expected = {
             "scratch-log": ("references/template.md",),
+            "signed-pr-publish": ("references/commands.md",),
             "codex-config-maintenance": (
                 "references/config-layering.md",
                 "references/validation.md",
@@ -163,6 +264,12 @@ class CodexContextPolicyTest(unittest.TestCase):
                 "references/capability-routing.md",
                 "references/codex-controls.md",
                 "references/codex-task-creation.md",
+            ),
+            "tfctl": (
+                "references/api-conventions.md",
+                "references/cookbook.md",
+                "references/mutations.md",
+                "references/troubleshooting.md",
             ),
         }
         for name, references in expected.items():

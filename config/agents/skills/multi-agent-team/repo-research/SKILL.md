@@ -5,23 +5,12 @@ description: Inspect repository artifacts only when the user explicitly asks to 
 
 # Repo Research
 
-Use this skill for an explicit inspection, tracing, diagnosis, root-cause,
-comparison, explanation, or evidence-gathering request. Do not invoke it for
-routine reads needed to implement a clearly scoped change.
+Use for explicit inspection, tracing, diagnosis, comparison, or evidence; skip
+routine implementation reads.
 
-## Workflow
+Use supplied instructions; read only missing guidance. Inspect the named
+artifact, search narrowly with `rg`, `rg --files`, or `fd`, and read only the
+code, tests, schemas, callers, or history needed.
 
-1. Use the instruction chain already supplied by the host. Read only applicable
-   repository instructions not already present, and skip aliases or duplicates.
-2. Inspect the exact artifact named by the user. Do not answer from memory when
-   the file, issue, PR, config, or command output is available.
-3. Search narrowly with `rg`, `rg --files`, or `fd`; use fixed strings and
-   filetype filters when useful.
-4. Read surrounding functions, tests, schemas, call sites, or history needed
-   to support the claim. Separate confirmed evidence from inference.
-
-## Evidence
-
-Lead with the concrete answer when known. Include only the paths, lines,
-commands, and output needed to audit the result. Say what was not verified.
-Ask only for identifiers or intent that cannot be discovered locally.
+Lead with evidence, label inference, cite needed paths/commands, state
+what was not verified, and ask only for undiscoverable identifiers or intent.

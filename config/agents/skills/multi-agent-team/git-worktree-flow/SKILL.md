@@ -5,35 +5,14 @@ description: Create or repair scoped Git worktrees. Use for feature branches, ne
 
 # Git Worktree Flow
 
-## Overview
+Keep the primary checkout on `main`; put feature writes in an isolated worktree.
 
-Use this skill to keep the primary checkout on `main` and put feature work in sibling worktrees.
+1. Inspect the primary branch, dirt, worktrees, and target path. Preserve
+   unrelated changes.
+2. Fetch `origin/main` through any repository-required auth path.
+3. Create a unique branch/worktree from `origin/main`.
+4. Run Git there, not with `git -C`.
 
-## New Worktree
-
-1. Start in the primary repo checkout.
-2. Confirm current branch and dirty state. Do not overwrite unrelated changes.
-3. Fetch `origin/main`.
-   - If repo-local or parent instructions require a special network-auth path, follow that more specific guidance.
-4. Create a sibling worktree using `<repo>-worktrees/<feature-name>`.
-5. Run subsequent git commands from the worktree's own working directory.
-
-Pattern:
-
-```bash
-git fetch origin main
-git worktree add ../repo-worktrees/feature-branch -b feature-branch origin/main
-```
-
-## Multi-Repo Work
-
-- Create one worktree per repo.
-- Keep commits and PRs separate per repo.
-- Run git commands in each repo's current working directory.
-- Avoid `git -C` unless the user explicitly requests it.
-
-## Repair And Cleanup
-
-- If an existing branch is stale, inspect status and remote state before changing it.
-- If the user says to clone or repair a branch locally, prefer an isolated worktree so the main checkout remains clean.
-- Do not remove worktrees, delete branches, or reset history unless explicitly requested.
+Use one worktree and publication lifecycle per repo. Inspect local and remote
+state before repair. Never remove worktrees, delete branches, reset history, or
+overwrite a path without explicit authorization.

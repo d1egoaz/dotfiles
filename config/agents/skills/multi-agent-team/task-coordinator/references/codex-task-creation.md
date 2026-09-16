@@ -1,92 +1,46 @@
-## Visible task creation
+# Visible task creation
 
-Create a visible task for a durable independent outcome, a write-owning
-repository or worktree, or work the user wants to inspect in the sidebar. An
-explicit `$task-coordinator` invocation requests this workflow; for repository
-write work, create at least one visible implementation task unless the user
-asks to keep implementation in the lead. Do not create a child for a one-time
-status question. If visible-task controls are unavailable, report that and use
-native subagents instead of unmanaged shell sessions.
+Create one task per durable outcome or write-owning repository/worktree. Keep
+reference mapping in a native `explorer`. Use native agents without visible
+controls.
 
-A repository used only as read-only reference material is not a separate
-visible outcome. Delegate that mapping to a native `explorer` inside the owning
-implementation task.
+## Project and environment
 
-### Coordination surface
+Resolve the lead's exact `projectId` from task metadata.
 
-Resolve the lead task's project from task metadata before creating children.
-Use its exact `projectId`, not a label or inferred cwd.
+- Non-repository children inherit the lead's saved project and local
+  environment. Use projectless only for a projectless lead.
+- Leave it only for a different saved Git repository or user-selected project;
+  inspect `isGitRepository` first.
+- Use an app worktree for a saved Git project unless the user requests its local
+  checkout. A non-Git umbrella stays local; nested-repository write work uses
+  that repository's worktree workflow.
 
-- For a non-repository outcome, inherit the lead's saved project with a local
-  environment. This includes external artifacts, investigations, documents,
-  and other work that does not own a Git checkout. A non-Git project is still
-  the correct organizational container.
-- Use `projectless` only when the lead itself is projectless and the user did
-  not select a project.
-- Leave the lead's project only when the child owns work in a different saved
-  Git repository, or the user explicitly selects another project. Only a
-  project marked `isGitRepository = true` can provide an app-managed worktree.
-- For any user-selected alternate project, inspect its metadata first. Use a
-  local environment when it is non-Git and a worktree when it is Git, unless
-  the user explicitly requests that Git project's local checkout.
-- If the lead is a saved non-Git umbrella and a child targets a nested Git
-  repository that is not separately saved, keep the child in the umbrella's
-  local project and include the exact nested repository path in its prompt.
+Verify `projectId`; pause and report a mismatch.
 
-Use an app-managed worktree for a saved Git project unless the user explicitly
-asks for its local checkout. For a non-Git umbrella, use a local task. For
-write work in a nested repository, require the execution task to use the
-repository's worktree workflow before editing; read-only work may use the
-primary checkout.
+## Prompt and ownership
 
-### Prompt contract
+Pass title, key, project IDs, model/effort, route, parent, card, outcome,
+constraints, verification, publication boundary, stop condition, and native
+naming contract.
 
-Pass the title explicitly when supported, otherwise rename immediately. Include
-the coordination key, parent project label and ID, selected project ID, exact
-selected model, effort, compact display route, parent title, outcome,
-constraints, verification, publication boundary, and stopping condition.
-Require the execution task to use the canonical subagent naming schema and to
-reassess native delegation after it understands the scope.
+Visible tasks are user-owned. Task-local authorization may cover commit, push,
+or draft PR creation. Otherwise prepare, ask once, and wait. Codex surfaces
+attention. The lead waits with `wait_threads`; never proxy, quote, or duplicate
+approval.
 
-A visible task is a normal user-owned task and owns its complete scoped outcome.
-When task-local user authorization covers commit, push, or draft PR creation,
-the task carries that publication through. If direct human approval is still
-needed, it completes all authorized preparation, asks once inside its own task,
-and waits for the user's direct response. Codex surfaces the task as needing
-attention. The lead observes with `wait_threads`; it does not proxy, quote, or
-duplicate the request through `send_message_to_thread`, and agent-authored text
-never substitutes for the user's approval.
+## Creation and retries
 
-After a child becomes addressable, verify its `projectId` matches the selected
-project. If it does not, pause it and report the mismatch instead of silently
-continuing outside the intended project or creating another duplicate.
+Check for the key before creation. One active lead owns it. Titles are unique.
 
-One lead owns a coordination key. Before each creation, inspect existing tasks
-for that key. If another active lead owns it, stop and report the collision.
-Do not reuse an identical title for another outcome or attempt. This check is
-best effort because the visible-task API has no atomic key reservation. After
-creation:
+- `threadId`: ready task.
+- `clientThreadId`: setup pending, not failure. Wait and refresh; do not create
+  another task.
+- Retry only after explicit setup failure. Increment the highest retry number;
+  keep the title within 56 characters.
+- If a pending task later duplicates an owner, keep the earliest `createdAt`
+  task, breaking ties by lexical `threadId`; pause and mark later tasks
+  `(superseded)`.
 
-- A returned `threadId` identifies a ready visible task.
-- A returned `clientThreadId` means worktree setup is pending, not failed. Do
-  not call `create_thread` again for that outcome merely because the task is not
-  addressable yet. Wait for provisioning, then refresh the task list. If the
-  runtime could not accept a title at creation, retain the intended title and
-  apply it only after a resolved `threadId` is available.
-- Retry only after an explicit create/setup error or a task state that reports
-  setup failure. A timeout, missing `threadId`, or `clientThreadId` alone is not
-  failure. Set `N` to one more than the highest existing retry number for the
-  same key and outcome, treating the original attempt as zero, then add
-  `(retry N)` after the outcome. Shorten only the outcome at a word boundary as
-  needed so the complete retry title remains within 56 characters.
-- If a pending attempt later appears after a replacement exists, rename it with
-  `(superseded)` and preserve it unless cleanup is explicitly authorized.
-- After provisioning, refresh the task list again. If duplicate tasks exist for
-  the same key and outcome, keep the task with the earliest `createdAt` as owner,
-  breaking a tie by lexical `threadId`. Send later duplicates a focused pause,
-  shorten only their outcome as needed, rename them with `(superseded)`, and do
-  not send them more work.
-
-Keep worktrees, commits, and PRs separate across repositories. The lead owns
-sequencing and cross-repository integration. Creating a task does not authorize
-commit, push, PR creation, merge, deployment, or production mutation.
+Keep repository worktrees, commits, and PRs separate. Creation never authorizes
+commit, push, PR, merge, deployment, or production mutation.
