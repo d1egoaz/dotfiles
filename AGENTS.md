@@ -24,8 +24,8 @@ Run commands from the repository root with `just`.
 | Username | Host | Profile | Codex lead |
 |---|---|---|---|
 | `diego.alvarez` | `office-mbp` | office | Sol xhigh |
-| `diego` | `personal-mbp` | personal | Terra xhigh |
-| `diegoalvarez` | `personal-mini` | personal | Terra xhigh |
+| `diego` | `personal-mbp` | personal | DeepSeek V4.1 Flash high (OpenCode Go) |
+| `diegoalvarez` | `personal-mini` | personal | DeepSeek V4.1 Flash high (OpenCode Go) |
 
 Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profile settings live in `nix/profiles/`, and host-specific applications live in `Brewfile.<host>`.
 
@@ -37,6 +37,7 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Shared Codex config | `config/codex/config.toml` |
 | Personal Codex profile | `config/codex/profiles/personal.toml` |
 | Office Codex profile | ignored `config/codex/profiles/work.local.toml` |
+| OpenCode Go picker models | `bin/files/codex-opencode-go-catalog` |
 | Native Codex roles | `config/codex/agents/*.toml` |
 | Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
 | Shared skills | `config/agents/skills/multi-agent-team/` |

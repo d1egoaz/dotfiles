@@ -127,7 +127,7 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("Do not duplicate the runtime skill catalog", agents_md)
 
     def test_tracked_agents_are_portable(self):
-        allowed_keys = {
+        required_keys = {
             "name",
             "description",
             "model",
@@ -135,6 +135,7 @@ class CodexAgentsTest(unittest.TestCase):
             "sandbox_mode",
             "developer_instructions",
         }
+        allowed_keys = required_keys | {"model_provider"}
         forbidden_markers = ("http://", "https://", "/Users/", "/home/", "@")
 
         for path in AGENT_DIR.glob("*.toml"):
@@ -142,7 +143,12 @@ class CodexAgentsTest(unittest.TestCase):
             with path.open("rb") as agent_file:
                 agent = tomllib.load(agent_file)
 
-            self.assertEqual(set(agent), allowed_keys, path.name)
+            self.assertLessEqual(set(agent), allowed_keys, path.name)
+            self.assertLessEqual(required_keys, set(agent), path.name)
+            # Roles are shared across profiles, so a pinned provider must be a
+            # built-in one. Profile-local providers would break other machines.
+            if "model_provider" in agent:
+                self.assertEqual(agent["model_provider"], "openai", path.name)
             for marker in forbidden_markers:
                 self.assertNotIn(marker, text, f"{path.name}: {marker}")
 
