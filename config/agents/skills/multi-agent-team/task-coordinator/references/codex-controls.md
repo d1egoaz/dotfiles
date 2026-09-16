@@ -1,17 +1,15 @@
 # Runtime controls
 
-Use only controls exposed by the current host.
+Use exposed controls and inspect their schemas. Model and effort must be runtime
+fields, not just prompt text. If selection is unsupported, keep work in the lead
+or explain the available route. Never silently inherit the lead's model.
 
-- Native: `list_agents`, `send_message`, `wait_agent`, `followup_task`,
-  `interrupt_agent`.
-- Visible: `wait_threads`, `read_thread`, `send_message_to_thread`.
-- App Server: `thread/read`, `turn/steer`, `turn/start`, `turn/interrupt`;
-  notifications: `thread/started`, `item/started`, `item/completed`,
-  `turn/completed`. These are not universal model tools.
+Wait for events with bounded waits; inspect changed results or blockers. Reuse
+idle agents with the host's follow-up/resume control, not a status message.
+Request status or redirect before interrupting, allowing a bounded response;
+interrupt immediately for unsafe work, conflicting writers, or cancellation.
+Do not duplicate tasks to obtain status or deliver context.
 
-Before interrupting a native agent, request completed work, current action,
-blockers, remaining work, and a pause. Interrupt only when continuation is
-undesirable; resume idle agents instead of duplicating them.
-
-Visible tasks ask the user directly for approval. The lead waits and never
-relays approval or duplicates a task for status/context.
+Native subagents report approval blockers to their parent, which uses the host's
+approval flow. They cannot assume a direct user channel. Visible tasks ask the
+user directly. Continue independent authorized work while approval is pending.
