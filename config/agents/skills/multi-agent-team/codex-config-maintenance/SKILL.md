@@ -5,49 +5,27 @@ description: Maintain Codex config, hooks, approvals, skills, and AI instruction
 
 # Codex Config Maintenance
 
-Use this skill for Codex configuration and dotfiles-managed AI instructions.
-Prefer documented Codex mechanisms and repository source of truth over ad hoc
-workarounds.
+Edit dotfiles sources, never generated targets or installed copies.
 
-## Source of truth
+- Shared instructions: `config/ai/AGENTS.md`
+- Shared config: `config/codex/config.toml`
+- Agent routes: `config/codex/agents/*.toml`
+- Personal profile: `config/codex/profiles/personal.toml`
+- Shared hooks/rules: `config/codex/hooks.json`,
+  `config/codex/rules/10-shared.rules`
+- Shared skills: `config/agents/skills/multi-agent-team/`
 
-Paths below are relative to the dotfiles repository root:
+Keep work-only state in ignored local sources and encrypted local state. Never
+print decrypted content.
 
-- `config/ai/AGENTS.md`: shared home-level AI instructions.
-- `config/codex/config.toml`: shared Codex settings.
-- `config/codex/agents/*.toml`: tracked named agents and their routes.
-- `config/codex/profiles/personal.toml`: tracked personal profile; keep ignored
-  `profiles/work.local.toml` for work-only settings.
-- `config/codex/hooks.json`: shared hooks; use an ignored local hooks file for
-  machine-only behavior.
-- `config/codex/rules/10-shared.rules`: shared approvals; keep local approvals
-  outside tracked configuration.
-- `config/agents/skills/multi-agent-team/<skill>/`: grouped user skills.
-  Keep work-only skills in the ignored local skill group.
+Use documented Codex settings and hook events only: `Stop`,
+`PermissionRequest`, `UserPromptSubmit`, and `SessionStart`. Keep hook output
+quiet or valid JSON; notifications use top-level `notify`.
 
-Keep work-internal endpoints, trust entries, and local state out of shared
-files. Preserve ignored local state through the encrypted local-state workflow;
-never print decrypted contents.
+Shared AI instructions own routing; agent TOML owns model, effort, sandbox, and
+role. Changes affect new work only. Preserve signing, approval, and production
+gates.
 
-## Skills and hooks
-
-- Keep `SKILL.md` focused, put trigger words in frontmatter, and add
-  `agents/openai.yaml` for display metadata and invocation policy.
-- Use `.agents/skills` for user and repository skills. Restart Codex if a new
-  or changed skill does not appear.
-- Use only documented hook events: `Stop`, `PermissionRequest`,
-  `UserPromptSubmit`, and `SessionStart`. Keep commands quiet or emit valid
-  JSON. Do not add a `Notification` hook; use top-level `notify` settings.
-
-## Routing and safety
-
-Keep complete model-routing policy in the shared AI instructions. Named agent
-files own their model, reasoning effort, sandbox, and role instructions; a
-configuration change does not replace an already-running task. Do not weaken
-signing, approval, or production-safety gates while simplifying configuration.
-
-For configuration layering details, read
-[`references/config-layering.md`](references/config-layering.md) only when that
-model is relevant. For checks, read
-[`references/validation.md`](references/validation.md) only when validating a
-change.
+Read [`references/config-layering.md`](references/config-layering.md) for config
+composition or local-state questions. Read
+[`references/validation.md`](references/validation.md) before validation.

@@ -2,6 +2,7 @@
 """Regression tests for hardcoded Codex subagent routing."""
 
 import pathlib
+import re
 import tomllib
 import unittest
 
@@ -27,6 +28,11 @@ EXPECTED_AGENTS = {
     "reviewer": {
         "model": "gpt-5.6-terra",
         "model_reasoning_effort": "high",
+        "sandbox_mode": "read-only",
+    },
+    "utility": {
+        "model": "gpt-5.6-luna",
+        "model_reasoning_effort": "medium",
         "sandbox_mode": "read-only",
     },
     "worker": {
@@ -73,7 +79,7 @@ class CodexAgentsTest(unittest.TestCase):
             self.assertIn("parent lead", instructions)
 
     def test_named_roles_have_only_the_expected_write_capability(self):
-        read_only_roles = {"evidence-auditor", "explorer", "reviewer"}
+        read_only_roles = {"evidence-auditor", "explorer", "reviewer", "utility"}
         for name, expected in EXPECTED_AGENTS.items():
             with (AGENT_DIR / f"{name}.toml").open("rb") as agent_file:
                 agent = tomllib.load(agent_file)
@@ -89,42 +95,30 @@ class CodexAgentsTest(unittest.TestCase):
             {"worker"},
         )
 
-    def test_lead_contract_matches_hardcoded_roles(self):
-        agents_md = AGENTS_MD.read_text()
-        expected_rows = (
-            "| Unnamed fallback | `GPT-5.6-luna` | xhigh |",
-            "| `evidence-auditor` | `GPT-5.6-terra` | xhigh |",
-            "| `explorer` | `GPT-5.6-terra` | medium |",
-            "| `worker` | `GPT-5.6-luna` | xhigh |",
-            "| `reviewer` | `GPT-5.6-terra` | high |",
+    def test_documented_routes_match_runtime_configuration(self):
+        rows = re.findall(
+            r"^\| (Unnamed fallback|`[^`]+`) \| `([^`]+)` \| ([a-z]+) \|",
+            AGENTS_MD.read_text(),
+            re.MULTILINE,
         )
+        documented = {name.strip("`"): (model, effort) for name, model, effort in rows}
+        self.assertEqual(len(rows), len(documented), "duplicate documented routes")
+        self.assertEqual(set(documented), {*EXPECTED_AGENTS, "Unnamed fallback"})
 
-        for row in expected_rows:
-            self.assertIn(row, agents_md)
-        self.assertIn(
-            "Optimize expected outcome value",
-            agents_md,
+        with CONFIG_TOML.open("rb") as config_file:
+            defaults = tomllib.load(config_file)["agents"]
+        self.assertEqual(
+            documented["Unnamed fallback"],
+            (defaults["default_subagent_model"], defaults["default_subagent_reasoning_effort"]),
         )
-        self.assertIn("Tokens from different models are not interchangeable", agents_md)
-        self.assertIn(
-            "Tokens from different models are not interchangeable",
-            agents_md,
-        )
-        self.assertIn("Explicitly select the model and effort for every visible task", agents_md)
-        self.assertIn("Prefer configured named roles for native subagents", agents_md)
-        self.assertIn(
-            "parallelism, context isolation, specialization, or independent verification",
-            agents_md,
-        )
-        self.assertIn("A single reviewer or evidence auditor is valid", agents_md)
-        self.assertIn("The lead owns planning, scope, delegation, communication", agents_md)
-        self.assertIn("Before interrupting a running subagent", agents_md)
-        self.assertIn("send a focused status request or redirect", agents_md)
-        self.assertIn("Resume an idle agent instead of duplicating it", agents_md)
-        self.assertIn("They do not coordinate with peers", agents_md)
-        self.assertIn("discover peer IDs", agents_md)
-        self.assertIn("spawn descendants", agents_md)
-        self.assertIn("Do not duplicate the runtime skill catalog", agents_md)
+        for name in EXPECTED_AGENTS:
+            with (AGENT_DIR / f"{name}.toml").open("rb") as agent_file:
+                agent = tomllib.load(agent_file)
+            self.assertEqual(
+                documented[name],
+                (agent["model"], agent["model_reasoning_effort"]),
+                name,
+            )
 
     def test_tracked_agents_are_portable(self):
         required_keys = {
@@ -157,87 +151,21 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn('".codex/agents".source', xdg_nix)
         self.assertIn("/dotfiles/config/codex/agents", xdg_nix)
 
-    def test_task_coordinator_routes_and_labels_both_agent_layers(self):
-        instructions = TASK_COORDINATOR_SKILL.read_text()
-        normalized = " ".join(instructions.split())
-        controls = (TASK_COORDINATOR_SKILL.parent / "references/codex-controls.md").read_text()
-        creation = (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text()
-        normalized_creation = " ".join(creation.split())
-
-        self.assertIn("Explicitly pass a model and reasoning effort", normalized)
-        self.assertIn("Sol, Terra, and Luna are all valid task routes", normalized)
-        self.assertIn("proactively spawn the minimum useful named", normalized)
-        self.assertIn("Treat explicit `$task-coordinator` invocation as a request", normalized)
-        self.assertIn("create at least one visible implementation task", normalized)
-        self.assertIn("If no visible task is justified, explain why", normalized)
-        self.assertIn("reference-only repository analysis in a native `explorer`", normalized)
-        self.assertIn("Whenever this skill applies, rename the lead", normalized)
-        self.assertIn("ordinary continuation of one task does not count", normalized)
-        self.assertIn("Reassess the decomposition when a material follow-up", normalized)
-        self.assertIn("Non-repository children inherit its exact project", normalized)
-        self.assertIn("use projectless only for a projectless lead", normalized)
-        self.assertIn("🤖 [<key>] <goal>", instructions)
-        self.assertIn("[<key>] <model-label>-<effort> <scope>: <outcome>", instructions)
-        self.assertIn("Selected model: <exact-model-id>", instructions)
-        self.assertIn("Selected effort: <effort>", instructions)
-        self.assertIn("Display route: <model-label>-<effort>", instructions)
-        self.assertIn("<key>_<model-label>_<effort>_<role>_<slice>", instructions)
-        self.assertIn("[<key>] <model-label>-<effort> <role>: <slice>", instructions)
-        self.assertIn("Never put a raw model ID", normalized)
-        self.assertIn("at most 56 characters", normalized)
-        self.assertIn("Normalize a plan-supplied title", normalized)
-        self.assertIn("longest goal prefix that fits at a word boundary", normalized)
-        self.assertIn("Do not paraphrase or add an ellipsis", normalized)
-        self.assertIn("Before interrupting a running subagent", controls)
-        self.assertIn("next safe boundary", controls)
-        self.assertIn("send a follow-up or resume it instead of spawning a", controls)
-        self.assertIn("saved Git project", creation)
-        self.assertIn("isGitRepository = true", creation)
-        self.assertIn("saved non-Git umbrella", creation)
-        self.assertIn("returned `clientThreadId` means worktree setup is pending", normalized_creation)
-        self.assertIn("Do not call `create_thread` again", normalized_creation)
-        self.assertIn("add `(retry N)` after the outcome", normalized_creation)
-        self.assertIn("`(superseded)`", normalized_creation)
-        self.assertIn("A timeout, missing `threadId`, or `clientThreadId` alone is not failure", normalized_creation)
-        self.assertIn("one more than the highest existing retry number", normalized_creation)
-        self.assertIn("retain the intended title", normalized_creation)
-        self.assertIn("no atomic key reservation", normalized_creation)
-        self.assertIn("complete retry title remains within 56 characters", normalized_creation)
-        self.assertIn("earliest `createdAt` as owner", normalized_creation)
-        self.assertIn("lexical `threadId`", normalized_creation)
-        self.assertIn("Use its exact `projectId`, not a label or inferred cwd", normalized_creation)
-        self.assertIn("A non-Git project is still the correct organizational container", normalized_creation)
-        self.assertIn("Use `projectless` only when the lead itself is projectless", normalized_creation)
-        self.assertIn("child owns work in a different saved Git repository", normalized_creation)
-        self.assertIn("For any user-selected alternate project, inspect its metadata first", normalized_creation)
-        self.assertIn("parent project label and ID", normalized_creation)
-        self.assertIn("verify its `projectId` matches the selected project", normalized_creation)
-        for runtime_tool in (
-            "list_agents",
-            "send_message",
-            "wait_agent",
-            "followup_task",
-            "interrupt_agent",
-            "wait_threads",
-            "read_thread",
-            "send_message_to_thread",
-        ):
-            self.assertIn(f"`{runtime_tool}`", controls)
-        for app_server_name in (
-            "thread/read",
-            "turn/steer",
-            "turn/start",
-            "turn/interrupt",
-            "thread/started",
-            "item/started",
-            "item/completed",
-            "turn/completed",
-        ):
-            self.assertIn(f"`{app_server_name}`", controls)
-        self.assertIn("not lifecycle events or universal public API methods", controls)
-        for nonportable_marker in ("/Users/", "/home/", "http://", "https://", "@"):
-            for document in (instructions, controls, creation):
-                self.assertNotIn(nonportable_marker, document)
+    def test_coordinator_references_are_linked_and_portable(self):
+        skill_root = TASK_COORDINATOR_SKILL.parent
+        references = set((skill_root / "references").glob("*.md"))
+        documents = {TASK_COORDINATOR_SKILL, *references}
+        linked = set()
+        for path in documents:
+            source = path.read_text()
+            for target in re.findall(r"\]\(([^)]+\.md)\)", source):
+                resolved = (path.parent / target).resolve()
+                self.assertTrue(resolved.is_relative_to(skill_root), target)
+                self.assertTrue(resolved.is_file(), target)
+                linked.add(resolved)
+            for marker in ("/Users/", "/home/", "http://", "https://", "@"):
+                self.assertNotIn(marker, source, path.name)
+        self.assertEqual(linked, references, "unreachable coordinator references")
 
 
 if __name__ == "__main__":

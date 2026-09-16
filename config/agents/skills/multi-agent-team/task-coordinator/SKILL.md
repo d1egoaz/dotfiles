@@ -1,98 +1,50 @@
 ---
 name: task-coordinator
-description: Coordinate visible tasks and native subagents. Use when explicitly invoked, for 2+ independent deliverables or write-owning repos, or ongoing external-state follow-up; skip one coupled outcome and one-time status.
+description: Coordinate independent outcomes and ongoing external-state follow-up with one lead, visible child tasks, and bounded subagents. Use when invoked or those needs arise; keep simple or tightly coupled work in the lead.
 ---
 
 # Task Coordinator
 
-Coordinate a workstream through visible, isolated, independently reviewable
-outcomes. Use this skill when explicitly invoked, when a request has at least
-two independently shippable outcomes or write-owning repositories, or when it
-asks for ongoing external-state follow-up, PR babysitting, monitoring, or a
-user-stated stopping condition. An ordinary continuation of one task does not
-count. A reference-only repository does not count as a separate outcome. Do
-not invoke implicitly for one tightly coupled implementation outcome or a
-one-time status check.
+One lead owns the goal, sequencing, integration, verification, and completion.
+Keep simple or tightly coupled work in the lead. Multiple files, steps, or
+reference repositories alone do not justify child tasks. Explicit invocation
+does not require delegation.
 
-## Establish the target
+## Split and route
 
-1. Resolve the exact goal, coordination key, scope, requested outcome, and
-   stopping condition. Never treat a placeholder identifier as real.
-2. For repository work, locate the Git root and use the host-supplied instruction
-   chain. Read only missing repository instructions and skip aliases or
-   duplicates. Keep each checkout boundary clear.
-3. Resolve the lead's saved project. Non-repository children inherit its exact
-   project and local environment; use projectless only for a projectless lead.
-   Read the task-creation reference for repository exceptions.
-4. Before delegating, state the decomposition: which outcomes get visible tasks
-   and which bounded slices stay native subagents. If no visible task is
-   justified, explain why in one sentence.
-5. Whenever this skill applies, rename the lead `🤖 [<key>] <goal>` as soon as
-   the key and goal are known. Do this before delegation for explicit use.
-6. Treat explicit `$task-coordinator` invocation as a request to use this
-   workflow. For repository write work, create at least one visible
-   implementation task unless the user explicitly asks to keep implementation
-   in the lead. If visible-task controls are unavailable, report that limitation
-   and use native subagents instead.
-7. For implicit coordination, choose one durable visible task per independently
-   shippable outcome or write-owning repository. Keep reference-only repository
-   analysis in a native `explorer`. The lead owns planning, delegation,
-   sequencing, follow-ups, integration, verification, and final status.
+1. Define the goal, verifiable outcomes, dependencies, and stopping condition.
+2. Use visible child tasks for independent outcomes the user can inspect and
+   approve. Use native subagents for bounded slices or independent review.
+   Delegate when the benefit exceeds its cost.
+3. Before delegation or a material reroute, read
+   [capability-routing.md](references/capability-routing.md). Select model and
+   effort explicitly and give a brief user-facing reason.
+4. Give every child the handoff below. Before creating visible tasks, read
+   [codex-task-creation.md](references/codex-task-creation.md).
+5. Use only exposed host controls. If visible tasks are unavailable, say so;
+   keep outcomes visible in lead updates and use native subagents where useful.
+   Read [codex-controls.md](references/codex-controls.md) when operating controls.
 
-Read [`references/codex-task-creation.md`](references/codex-task-creation.md)
-only when resolving saved projects or creating visible tasks. It covers
-worktree/local choices and prompt mechanics.
+## Handoff
 
-## Route and name work
+- Outcome and acceptance criteria.
+- Owned files/resources, constraints, and dependencies. No concurrent writers
+  to the same files or resources.
+- Exact model and effort, relevant skills, and required context.
+- Verification, existing authorization, approval boundary, and stopping condition.
 
-- Explicitly pass a model and reasoning effort for every visible task. Sol,
-  Terra, and Luna are all valid task routes; select the route from the judgment
-  that remains, not from a default or the lead's route.
-- After scoping an execution task, reassess whether native subagents materially
-  improve speed, specialization, context isolation, or independent verification.
-  When useful, proactively spawn the minimum useful named roles and integrate
-  their findings in the owning task.
-- Keep naming tied to the route actually selected:
-  - lead: `🤖 [<key>] <goal>`
-  - visible execution task: `[<key>] <model-label>-<effort> <scope>: <outcome>`
-  - native subagent: `<key>_<model-label>_<effort>_<role>_<slice>`
-  - native prompt label: `[<key>] <model-label>-<effort> <role>: <slice>`
-- Use the display labels `Sol`, `Terra`, or `Luna` in titles and labels. Never
-  put a raw model ID such as `gpt-5.6-luna` in a title. Keep the exact runtime
-  model ID in the child prompt and task-creation fields.
-- Keep visible titles unique and at most 56 characters, with the distinguishing
-  scope and outcome before optional detail. Normalize a plan-supplied title to
-  this schema instead of copying an invalid or overlong form.
-- Build the lead goal from the resolved user goal without a key, model, scope,
-  or trailing punctuation. If the title exceeds 56 characters, keep the longest
-  goal prefix that fits at a word boundary; hard-cut only when no boundary fits.
-  Do not paraphrase or add an ellipsis. Preserve the robot emoji and key.
-- Include `Coordination key: <key>`, `Selected model: <exact-model-id>`,
-  `Selected effort: <effort>`, `Display route: <model-label>-<effort>`, and the
-  parent title in each child prompt. Keep the exact key across retries, forks,
-  and follow-ups.
+Visible tasks own their outcome through verification and report evidence to the
+lead. They ask the user directly for missing approval, then wait on that action
+while other authorized work continues. Existing authorization remains
+valid; task creation adds none. The lead never proxies approval.
 
-Every execution prompt must state the outcome, constraints, verification,
-publication boundary, stopping condition, and a delegation contract requiring
-lead-mediated communication and the naming schema above. A child owns its
-subagent tree, implementation, integration, and verification. Subagents return
-results to their parent; they do not peer-coordinate, discover peer IDs, or
-change scope. Use configured native roles by default. Do not create a separate
-review task solely to review another task unless the user asks for one.
+Native subagents return results or blockers only to their parent. They do not
+peer-coordinate, spawn descendants, or declare overall completion.
 
-## Follow through
+## Finish
 
-- Reassess the decomposition when a material follow-up creates or removes an
-  independent outcome or write-owning repository.
-- Wait with the runtime's bounded task control. Do not repeatedly poll unchanged
-  state. Read a task when its result, blocker, or decision needs inspection.
-- Send follow-ups only when new evidence or a changed user decision affects the
-  next action. For explicit monitoring or babysitting, use the available
-  heartbeat and stay quiet while state is unchanged.
-- Treat the user's stopping condition as authoritative. Creation or
-  coordination never authorizes commit, push, PR publication, merge, apply,
-  deployment, production mutation, or communication outside the agent app.
-
-Read [`references/codex-controls.md`](references/codex-controls.md) only when
-selecting a native, visible-task, or App Server control. It contains exact
-runtime mappings without loading them for ordinary coordination decisions.
+Track each outcome's owner, route, dependencies, state, and evidence.
+On new evidence, resolve blockers, retry or reroute when justified, and integrate
+completed work. Verify acceptance criteria and cross-task behavior before
+reporting completion. Report blockers and unverified outcomes. Respect the
+user's stopping condition.

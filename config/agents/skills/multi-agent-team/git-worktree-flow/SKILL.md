@@ -5,35 +5,14 @@ description: Create or repair scoped Git worktrees. Use for feature branches, ne
 
 # Git Worktree Flow
 
-## Overview
+Keep the primary checkout on `main`. Put feature writes at
+`~/.codex/worktrees/<repo>-<feature>`; never beside it.
 
-Use this skill to keep the primary checkout on `main` and put feature work in sibling worktrees.
+1. Inspect branch, dirt, worktrees, and target; preserve unrelated changes.
+2. Fetch `origin/main` through any repository-required auth path.
+3. Use a filesystem-safe recognizable name. Inspect existing targets; never
+   overwrite them or escape the Codex root.
+4. Create from `origin/main`; run there, not with `git -C`.
 
-## New Worktree
-
-1. Start in the primary repo checkout.
-2. Confirm current branch and dirty state. Do not overwrite unrelated changes.
-3. Fetch `origin/main`.
-   - If repo-local or parent instructions require a special network-auth path, follow that more specific guidance.
-4. Create a sibling worktree using `<repo>-worktrees/<feature-name>`.
-5. Run subsequent git commands from the worktree's own working directory.
-
-Pattern:
-
-```bash
-git fetch origin main
-git worktree add ../repo-worktrees/feature-branch -b feature-branch origin/main
-```
-
-## Multi-Repo Work
-
-- Create one worktree per repo.
-- Keep commits and PRs separate per repo.
-- Run git commands in each repo's current working directory.
-- Avoid `git -C` unless the user explicitly requests it.
-
-## Repair And Cleanup
-
-- If an existing branch is stale, inspect status and remote state before changing it.
-- If the user says to clone or repair a branch locally, prefer an isolated worktree so the main checkout remains clean.
-- Do not remove worktrees, delete branches, or reset history unless explicitly requested.
+Use one worktree/lifecycle per repo. Inspect before repair. Never remove a
+worktree, delete a branch, or reset without authorization.
