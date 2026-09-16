@@ -27,7 +27,11 @@ duplicate.
 - `read_thread`: inspect detailed state and results.
 - `send_message_to_thread`: deliver a visible follow-up.
 
-Do not open a duplicate task merely to obtain status or deliver new context.
+Visible tasks are normal user-owned tasks. If one needs human approval, it asks
+the user directly and Codex surfaces it as needing attention. The lead waits for
+the user's response in that task; it does not relay agent-authored approval or
+duplicate the request. Do not open a duplicate task merely to obtain status or
+deliver new context.
 
 ### Direct App Server integration
 

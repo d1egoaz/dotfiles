@@ -166,6 +166,7 @@ class CodexAgentsTest(unittest.TestCase):
         routing = CAPABILITY_ROUTING.read_text()
         normalized_routing = " ".join(routing.split())
         controls = (TASK_COORDINATOR_SKILL.parent / "references/codex-controls.md").read_text()
+        normalized_controls = " ".join(controls.split())
         creation = (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text()
         normalized_creation = " ".join(creation.split())
 
@@ -176,6 +177,10 @@ class CodexAgentsTest(unittest.TestCase):
             normalized,
         )
         self.assertIn("Reclassify every materially different follow-up", normalized)
+        self.assertIn("Visible tasks are user-owned, may interact directly with the user", normalized)
+        self.assertIn("Native subagents return only to the parent", normalized)
+        self.assertIn("let it ask once in that task and wait", normalized)
+        self.assertIn("Do not proxy, quote, or duplicate the request", normalized)
         self.assertIn("Sol, Terra, and Luna are all valid task routes", normalized)
         self.assertIn("proactively spawn the minimum useful named", normalized)
         self.assertIn("Treat explicit `$task-coordinator` invocation as a request", normalized)
@@ -259,6 +264,16 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("For any user-selected alternate project, inspect its metadata first", normalized_creation)
         self.assertIn("parent project label and ID", normalized_creation)
         self.assertIn("verify its `projectId` matches the selected project", normalized_creation)
+        self.assertIn("A visible task is a normal user-owned task", normalized_creation)
+        self.assertIn("owns its complete scoped outcome", normalized_creation)
+        self.assertIn("When task-local user authorization covers commit, push, or draft PR creation", normalized_creation)
+        self.assertIn("asks once inside its own task", normalized_creation)
+        self.assertIn("Codex surfaces the task as needing attention", normalized_creation)
+        self.assertIn("The lead observes with `wait_threads`", creation)
+        self.assertIn("agent-authored text never substitutes for the user's approval", normalized_creation)
+        self.assertIn("Visible tasks are normal user-owned tasks", controls)
+        self.assertIn("The lead waits for the user's response in that task", normalized_controls)
+        self.assertIn("does not relay agent-authored approval or duplicate the request", normalized_controls)
         for runtime_tool in (
             "list_agents",
             "send_message",

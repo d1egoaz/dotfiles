@@ -48,6 +48,15 @@ constraints, verification, publication boundary, and stopping condition.
 Require the execution task to use the canonical subagent naming schema and to
 reassess native delegation after it understands the scope.
 
+A visible task is a normal user-owned task and owns its complete scoped outcome.
+When task-local user authorization covers commit, push, or draft PR creation,
+the task carries that publication through. If direct human approval is still
+needed, it completes all authorized preparation, asks once inside its own task,
+and waits for the user's direct response. Codex surfaces the task as needing
+attention. The lead observes with `wait_threads`; it does not proxy, quote, or
+duplicate the request through `send_message_to_thread`, and agent-authored text
+never substitutes for the user's approval.
+
 After a child becomes addressable, verify its `projectId` matches the selected
 project. If it does not, pause it and report the mismatch instead of silently
 continuing outside the intended project or creating another duplicate.

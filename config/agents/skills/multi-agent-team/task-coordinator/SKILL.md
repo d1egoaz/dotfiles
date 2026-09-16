@@ -68,10 +68,11 @@ only when resolving projects or creating visible tasks.
 Every execution prompt includes the card, selected route, rejected cheaper
 routes, escalation conditions, outcome, constraints, verification, publication
 boundary, stopping condition, lead-mediated delegation contract, and naming
-schema. Children own their work and return only to the parent; they do not
-peer-coordinate, discover peer IDs, or change scope. Use a named role only when
-its fixed route matches; otherwise use an explicit route with the full role
-contract. Do not create a separate review task unless the user asks.
+schema. Visible tasks are user-owned, may interact directly with the user, and
+own their complete scoped outcome. Native subagents return only to the parent;
+they do not peer-coordinate, discover peer IDs, or change scope. Use a named
+role only when its fixed route matches; otherwise use an explicit route with the
+full role contract. Do not create a separate review task unless the user asks.
 
 ## Follow through
 
@@ -81,6 +82,9 @@ contract. Do not create a separate review task unless the user asks.
   model and effort per turn. Resume a native subagent only when its card still
   matches; otherwise create a distinctly scoped slice at the new route.
 - Wait with bounded task control; do not repeatedly poll unchanged state.
+- If a visible task needs human approval, let it ask once in that task and wait
+  for the user's direct response. Do not proxy, quote, or duplicate the request;
+  Codex surfaces the task as needing attention.
 - Send follow-ups only for new evidence or changed decisions. For monitoring,
   use the heartbeat and stay quiet while state is unchanged.
 - Treat the user's stopping condition as authoritative. Creation or
