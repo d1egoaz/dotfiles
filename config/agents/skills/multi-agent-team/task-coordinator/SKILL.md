@@ -5,64 +5,56 @@ description: Coordinate visible tasks and native subagents. Use when explicitly 
 
 # Task Coordinator
 
-Coordinate a workstream through visible, isolated, independently reviewable
-outcomes. Use this skill when explicitly invoked, when a request has at least
-two independently shippable outcomes or write-owning repositories, or when it
-asks for ongoing external-state follow-up, PR babysitting, monitoring, or a
-user-stated stopping condition. An ordinary continuation of one task does not
-count. A reference-only repository does not count as a separate outcome. Do
-not invoke implicitly for one tightly coupled implementation outcome or a
-one-time status check.
+Use this skill when explicitly invoked, for at least two independently
+shippable outcomes or write-owning repositories, or for ongoing external-state
+follow-up and a user-stated stopping condition. An ordinary continuation of one
+task does not count. A reference-only repository is not a separate outcome.
+Skip one tightly coupled implementation outcome and a one-time status check.
 
 ## Establish the target
 
-1. Resolve the exact goal, coordination key, scope, requested outcome, and
-   stopping condition. Never treat a placeholder identifier as real.
-2. For repository work, locate the Git root and use the host-supplied instruction
-   chain. Read only missing repository instructions and skip aliases or
-   duplicates. Keep each checkout boundary clear.
+1. Resolve the goal, coordination key, scope, outcome, and stopping condition.
+   Never treat a placeholder identifier as real.
+2. For repository work, locate the Git root, use the host instruction chain,
+   read only missing instructions, and keep checkout boundaries clear.
 3. Resolve the lead's saved project. Non-repository children inherit its exact
    project and local environment; use projectless only for a projectless lead.
    Read the task-creation reference for repository exceptions.
-4. Before delegating, state the decomposition: which outcomes get visible tasks
-   and which bounded slices stay native subagents. If no visible task is
-   justified, explain why in one sentence.
+4. State which outcomes get visible tasks and which slices stay native
+   subagents. If no visible task is justified, explain why in one sentence.
 5. Whenever this skill applies, rename the lead `🤖 [<key>] <goal>` as soon as
    the key and goal are known. Do this before delegation for explicit use.
-6. Treat explicit `$task-coordinator` invocation as a request to use this
-   workflow. For repository write work, create at least one visible
-   implementation task unless the user explicitly asks to keep implementation
-   in the lead. If visible-task controls are unavailable, report that limitation
-   and use native subagents instead.
-7. For implicit coordination, choose one durable visible task per independently
-   shippable outcome or write-owning repository. Keep reference-only repository
-   analysis in a native `explorer`. The lead owns planning, delegation,
-   sequencing, follow-ups, integration, verification, and final status.
+6. Treat explicit `$task-coordinator` invocation as a request for this workflow.
+   For repository write work, create at least one visible implementation task
+   unless the user keeps it in the lead. Without visible-task controls, report
+   that limitation and use native subagents.
+7. For implicit coordination, use one visible task per shippable outcome or
+   write-owning repository. Keep reference-only repository analysis in a native
+   `explorer`. The lead owns coordination, integration, and final status.
 
 Read [`references/codex-task-creation.md`](references/codex-task-creation.md)
-only when resolving saved projects or creating visible tasks. It covers
-worktree/local choices and prompt mechanics.
+only when resolving projects or creating visible tasks.
 
 ## Route and name work
 
+- Before creating or materially rerouting delegated work, read
+  [`references/capability-routing.md`](references/capability-routing.md). Print
+  its complete capability card, keep one-step utility work in the lead, and
+  choose the cheapest adequate model and effort without a model-share quota.
 - Explicitly pass a model and reasoning effort for every visible task. Sol,
   Terra, and Luna are all valid task routes; select the route from the judgment
   that remains, not from a default or the lead's route.
-- After scoping an execution task, reassess whether native subagents materially
-  improve speed, specialization, context isolation, or independent verification.
-  When useful, proactively spawn the minimum useful named roles and integrate
-  their findings in the owning task.
+- Reassess whether native subagents materially improve speed, specialization,
+  isolation, or verification; proactively spawn the minimum useful named roles.
 - Keep naming tied to the route actually selected:
   - lead: `🤖 [<key>] <goal>`
   - visible execution task: `[<key>] <model-label>-<effort> <scope>: <outcome>`
   - native subagent: `<key>_<model-label>_<effort>_<role>_<slice>`
   - native prompt label: `[<key>] <model-label>-<effort> <role>: <slice>`
-- Use the display labels `Sol`, `Terra`, or `Luna` in titles and labels. Never
-  put a raw model ID such as `gpt-5.6-luna` in a title. Keep the exact runtime
-  model ID in the child prompt and task-creation fields.
-- Keep visible titles unique and at most 56 characters, with the distinguishing
-  scope and outcome before optional detail. Normalize a plan-supplied title to
-  this schema instead of copying an invalid or overlong form.
+- Use `Sol`, `Terra`, or `Luna` in titles. Never put a raw model ID in a title;
+  keep the exact ID in the child prompt and creation fields.
+- Keep visible titles unique and at most 56 characters. Normalize a
+  plan-supplied title to this schema with the scope and outcome first.
 - Build the lead goal from the resolved user goal without a key, model, scope,
   or trailing punctuation. If the title exceeds 56 characters, keep the longest
   goal prefix that fits at a word boundary; hard-cut only when no boundary fits.
@@ -72,23 +64,24 @@ worktree/local choices and prompt mechanics.
   parent title in each child prompt. Keep the exact key across retries, forks,
   and follow-ups.
 
-Every execution prompt must state the outcome, constraints, verification,
-publication boundary, stopping condition, and a delegation contract requiring
-lead-mediated communication and the naming schema above. A child owns its
-subagent tree, implementation, integration, and verification. Subagents return
-results to their parent; they do not peer-coordinate, discover peer IDs, or
-change scope. Use configured native roles by default. Do not create a separate
-review task solely to review another task unless the user asks for one.
+Every execution prompt includes the card, selected route, rejected cheaper
+routes, escalation conditions, outcome, constraints, verification, publication
+boundary, stopping condition, lead-mediated delegation contract, and naming
+schema. Children own their work and return only to the parent; they do not
+peer-coordinate, discover peer IDs, or change scope. Use a named role only when
+its fixed route matches; otherwise use an explicit route with the full role
+contract. Do not create a separate review task unless the user asks.
 
 ## Follow through
 
 - Reassess the decomposition when a material follow-up creates or removes an
   independent outcome or write-owning repository.
-- Wait with the runtime's bounded task control. Do not repeatedly poll unchanged
-  state. Read a task when its result, blocker, or decision needs inspection.
-- Send follow-ups only when new evidence or a changed user decision affects the
-  next action. For explicit monitoring or babysitting, use the available
-  heartbeat and stay quiet while state is unchanged.
+- Reclassify every materially different follow-up. Override a visible task's
+  model and effort per turn. Resume a native subagent only when its card still
+  matches; otherwise create a distinctly scoped slice at the new route.
+- Wait with bounded task control; do not repeatedly poll unchanged state.
+- Send follow-ups only for new evidence or changed decisions. For monitoring,
+  use the heartbeat and stay quiet while state is unchanged.
 - Treat the user's stopping condition as authoritative. Creation or
   coordination never authorizes commit, push, PR publication, merge, apply,
   deployment, production mutation, or communication outside the agent app.

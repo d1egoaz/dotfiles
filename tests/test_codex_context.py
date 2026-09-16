@@ -160,6 +160,7 @@ class CodexContextPolicyTest(unittest.TestCase):
                 "references/validation.md",
             ),
             "task-coordinator": (
+                "references/capability-routing.md",
                 "references/codex-controls.md",
                 "references/codex-task-creation.md",
             ),

@@ -11,6 +11,7 @@ AGENT_DIR = REPO_ROOT / "config/codex/agents"
 AGENTS_MD = REPO_ROOT / "config/ai/AGENTS.md"
 CONFIG_TOML = REPO_ROOT / "config/codex/config.toml"
 TASK_COORDINATOR_SKILL = REPO_ROOT / "config/agents/skills/multi-agent-team/task-coordinator/SKILL.md"
+CAPABILITY_ROUTING = TASK_COORDINATOR_SKILL.parent / "references/capability-routing.md"
 XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 
 EXPECTED_AGENTS = {
@@ -27,6 +28,11 @@ EXPECTED_AGENTS = {
     "reviewer": {
         "model": "gpt-5.6-terra",
         "model_reasoning_effort": "high",
+        "sandbox_mode": "read-only",
+    },
+    "utility": {
+        "model": "gpt-5.6-luna",
+        "model_reasoning_effort": "medium",
         "sandbox_mode": "read-only",
     },
     "worker": {
@@ -73,7 +79,7 @@ class CodexAgentsTest(unittest.TestCase):
             self.assertIn("parent lead", instructions)
 
     def test_named_roles_have_only_the_expected_write_capability(self):
-        read_only_roles = {"evidence-auditor", "explorer", "reviewer"}
+        read_only_roles = {"evidence-auditor", "explorer", "reviewer", "utility"}
         for name, expected in EXPECTED_AGENTS.items():
             with (AGENT_DIR / f"{name}.toml").open("rb") as agent_file:
                 agent = tomllib.load(agent_file)
@@ -95,6 +101,7 @@ class CodexAgentsTest(unittest.TestCase):
             "| Unnamed fallback | `GPT-5.6-luna` | xhigh |",
             "| `evidence-auditor` | `GPT-5.6-terra` | xhigh |",
             "| `explorer` | `GPT-5.6-terra` | medium |",
+            "| `utility` | `GPT-5.6-luna` | medium |",
             "| `worker` | `GPT-5.6-luna` | xhigh |",
             "| `reviewer` | `GPT-5.6-terra` | high |",
         )
@@ -112,6 +119,8 @@ class CodexAgentsTest(unittest.TestCase):
         )
         self.assertIn("Explicitly select the model and effort for every visible task", agents_md)
         self.assertIn("Prefer configured named roles for native subagents", agents_md)
+        self.assertIn("choose the cheapest adequate model and effort", agents_md)
+        self.assertIn("Reclassify materially different follow-ups", agents_md)
         self.assertIn(
             "parallelism, context isolation, specialization, or independent verification",
             agents_md,
@@ -154,11 +163,16 @@ class CodexAgentsTest(unittest.TestCase):
     def test_task_coordinator_routes_and_labels_both_agent_layers(self):
         instructions = TASK_COORDINATOR_SKILL.read_text()
         normalized = " ".join(instructions.split())
+        routing = CAPABILITY_ROUTING.read_text()
+        normalized_routing = " ".join(routing.split())
         controls = (TASK_COORDINATOR_SKILL.parent / "references/codex-controls.md").read_text()
         creation = (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text()
         normalized_creation = " ".join(creation.split())
 
         self.assertIn("Explicitly pass a model and reasoning effort", normalized)
+        self.assertIn("references/capability-routing.md", instructions)
+        self.assertIn("Print its complete capability card", normalized)
+        self.assertIn("Reclassify every materially different follow-up", normalized)
         self.assertIn("Sol, Terra, and Luna are all valid task routes", normalized)
         self.assertIn("proactively spawn the minimum useful named", normalized)
         self.assertIn("Treat explicit `$task-coordinator` invocation as a request", normalized)
@@ -182,6 +196,37 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertIn("Normalize a plan-supplied title", normalized)
         self.assertIn("longest goal prefix that fits at a word boundary", normalized)
         self.assertIn("Do not paraphrase or add an ellipsis", normalized)
+        for field in (
+            "Work unit and expected output",
+            "Scope: local | bounded multi-component | cross-system",
+            "Ambiguity: low | medium | high",
+            "Judgment: procedural | synthesis | adversarial | exceptional",
+            "Verification: objective | partial | subjective/unknown",
+            "Adaptivity: bounded | iterative | open-ended",
+            "Consequence if wrong: low | material | high",
+            "Cheapest capable route",
+            "Why cheaper routes are insufficient",
+            "Escalate when",
+        ):
+            self.assertIn(field, routing)
+        self.assertIn("not an additive score", normalized_routing)
+        self.assertIn("High consequence alone does not select a premium model", routing)
+        self.assertIn("Use a configured native role only when its fixed model and effort match", normalized_routing)
+        self.assertIn("override the model and effort on that turn", normalized_routing)
+        self.assertIn("Never repeat a side-effectful action as a routing retry", normalized_routing)
+        for scenario in (
+            "A one-step status check stays in the lead.",
+            "A bounded read-only inventory selects Luna-medium `utility`.",
+            "Scoped implementation with objective tests selects Luna-xhigh `worker`.",
+            "Broad ownership mapping selects Terra-medium `explorer`.",
+            "Independent correctness review selects Terra-high `reviewer`.",
+            "Conflicting lifecycle and runtime evidence selects Terra-xhigh",
+            "Exceptional unresolved judgment after decomposition crosses the Sol gate.",
+            "A simple follow-up inside a Terra task is reclassified to Luna",
+            "Authentication or tool failure does not cause model escalation.",
+            "A side-effectful action is never automatically retried.",
+        ):
+            self.assertIn(scenario, routing)
         self.assertIn("Before interrupting a running subagent", controls)
         self.assertIn("next safe boundary", controls)
         self.assertIn("send a follow-up or resume it instead of spawning a", controls)

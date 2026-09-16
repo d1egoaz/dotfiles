@@ -27,12 +27,14 @@ Optimize expected outcome value, including retries, tool loops, review, latency,
 - Luna handles clear bounded work with objective verification. Prefer low or medium for utility work and xhigh for substantive implementation. Use max only for a known reasoning gap.
 - Terra handles work that needs ongoing judgment, broad exploration, correctness review, or evidence synthesis.
 - Use a Sol child only when the child independently needs deep ambiguity resolution, exceptional reliability, polish, or high-consequence judgment.
+- For each meaningful delegated work unit, classify its capability needs and choose the cheapest adequate model and effort. Reclassify materially different follow-ups instead of inheriting the existing route.
 - Explicitly select the model and effort for every visible task. Do not inherit the lead route by accident.
-- Prefer configured named roles for native subagents. Use an unnamed route only when no role fits.
+- Prefer configured named roles for native subagents only when their fixed route matches the capability assessment. Use an explicit unnamed route when no named role matches.
 
 | Subagent | Model | Effort | Scope |
 |---|---|---:|---|
 | Unnamed fallback | `GPT-5.6-luna` | xhigh | Clear bounded work without a named role |
+| `utility` | `GPT-5.6-luna` | medium | Read-only bounded utility work with objective verification |
 | `explorer` | `GPT-5.6-terra` | medium | Read-only mapping and broad evidence scans |
 | `worker` | `GPT-5.6-luna` | xhigh | Bounded implementation after scope is clear |
 | `reviewer` | `GPT-5.6-terra` | high | Read-only correctness, security, and test-risk review |
@@ -47,6 +49,7 @@ Optimize expected outcome value, including retries, tool loops, review, latency,
 - Before interrupting a running subagent, inspect its status, send a focused status request or redirect, and wait for a bounded response. Ask for completed work, current action, blockers, remaining work, and a pause before further writes when needed.
 - Interrupt only for unsafe work, invalidated scope, conflicting writers, repeated failure without progress, user cancellation, or another concrete reason continued execution is undesirable. Resume an idle agent instead of duplicating it.
 - Spawn the minimum useful number of agents and request concise results. Escalate capability or change the plan when repeated cheaper-model retries stop adding value.
+- Keep one-step utility work in the lead. Delegate bounded multi-step work when cost, isolation, specialization, or parallelism materially helps.
 - Named routes are hardcoded in `~/.codex/agents`. Configuration changes affect new work, not the model of an active task.
 - Risk changes verification and approvals, not model selection by keywords.
 - Verify current model availability and pricing from official sources before making current claims.
