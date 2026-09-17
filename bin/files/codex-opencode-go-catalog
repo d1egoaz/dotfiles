@@ -76,26 +76,33 @@ CODEX_CANDIDATES = ("codex", "/opt/homebrew/bin/codex",
                     "/Applications/Codex.app/Contents/Resources/codex")
 
 
-def codex_binary() -> str:
-    """Resolve the Codex binary, since activation PATHs are often minimal."""
+def resolve_codex() -> tuple[str, dict]:
+    """Resolve a Codex binary that can emit the bundled model catalog.
+
+    PATH often resolves a stale CLI here: a Homebrew `codex` shadows the
+    app-bundled one, and that build has no `debug models` subcommand. Probe each
+    candidate instead of trusting the first match, so an old binary cannot break
+    catalog generation.
+    """
     override = os.environ.get("CODEX_BIN")
+    seen: list[str] = []
     for candidate in ((override,) if override else ()) + CODEX_CANDIDATES:
         found = shutil.which(candidate)
-        if found:
-            return found
-    sys.exit("codex-opencode-go-catalog: no codex binary found; set CODEX_BIN")
-
-
-def bundled_catalog() -> dict:
-    result = subprocess.run(
-        [codex_binary(), "debug", "models", "--bundled"],
-        capture_output=True,
-        text=True,
-        check=False,
+        if not found or found in seen:
+            continue
+        seen.append(found)
+        result = subprocess.run(
+            [found, "debug", "models", "--bundled"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0:
+            return found, json.loads(result.stdout)
+    sys.exit(
+        "codex-opencode-go-catalog: no codex binary exposes `debug models`; "
+        "set CODEX_BIN to the Codex app's bundled binary"
     )
-    if result.returncode != 0:
-        sys.exit(f"codex-opencode-go-catalog: codex debug models failed: {result.stderr.strip()}")
-    return json.loads(result.stdout)
 
 
 def template_entry(models: list) -> dict:
@@ -138,7 +145,7 @@ def build_entry(template: dict, slug: str, display_name: str, context_window: in
 
 
 def main() -> int:
-    catalog = bundled_catalog()
+    _binary, catalog = resolve_codex()
     models = catalog["models"]
     template = template_entry(models)
 
