@@ -14,6 +14,9 @@ select an explicit route and include the role's boundaries in the prompt.
 Explain each delegation in one line: outcome, model/effort, and why it fits.
 Example: "Verify rollout evidence: Terra/xhigh for conflicting lifecycle states."
 
+Apply the shared implementation/publication handoff even for a small change;
+reuse its capable Luna owner.
+
 Reassess material follow-ups. Escalate for demonstrated capability gaps, not a
 fixed retry count. Missing access, approval, data, or tools is a blocker, not a
 reason for a stronger model. Read current state before retrying an uncertain

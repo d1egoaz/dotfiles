@@ -1,7 +1,7 @@
 interface:
   display_name: "Task Coordinator"
   short_description: "Route independent outcomes and verify completion"
-  default_prompt: "Use $task-coordinator to split independent outcomes, select the cheapest capable routes, and coordinate child-owned work through approval, verification, and completion. Keep simple or tightly coupled work in the lead."
+  default_prompt: "Use $task-coordinator to split independent outcomes, select the cheapest capable routes, and coordinate child-owned work through approval, verification, and completion. Keep one-step or tightly coupled judgment in the lead; route clear implementation and publication through capability-routing."
 
 policy:
   allow_implicit_invocation: true
