@@ -1,24 +1,81 @@
 # Capability routing
 
-Use the shared AI instructions and agent TOML for configured routes. Assess
-scope, ambiguity, judgment, verification quality, and consequence of failure.
-Choose the cheapest capable model and effort, counting likely retries and review.
-These are capability gates, not an additive score or model quota.
+Select a capability tier first, then resolve it through the active
+Codex runtime in `nix/data/agent-routing.toml`. Resolve the concrete model
+and model label through that runtime; never promote a blocked route to a
+more expensive tier.
 
-Start with Luna for bounded, objectively checkable work; Terra for exploration,
-synthesis, or correctness review; Sol for deep ambiguity remaining after
-splitting the work. Lower effort when reliable; raise it for a specific gap.
-Use a named role only when its model, effort, and permissions fit. Otherwise
-select an explicit route and include the role's boundaries in the prompt.
+## Tiers
 
-Explain each delegation in one line: outcome, model/effort, and why it fits.
-Example: "Verify rollout evidence: Terra/xhigh for conflicting lifecycle states."
+| Tier | Use when |
+|---|---|
+| `economy` | Bounded, objectively checkable work. |
+| `balanced` | Exploration, synthesis, correctness review, or evidence work. |
+| `frontier` | Deep ambiguity or exceptional judgment remaining after decomposition. |
 
-Apply the shared implementation/publication handoff even for a small change;
-reuse its capable Luna owner.
+## Runtime resolution
 
-Reassess material follow-ups. Escalate for demonstrated capability gaps, not a
-fixed retry count. Missing access, approval, data, or tools is a blocker, not a
-reason for a stronger model. Read current state before retrying an uncertain
-side effect. Reuse agents while their route fits; stop an old writer before
-replacing it. Configuration edits do not change an active agent's model.
+Resolve the selected tier/model label through the active Codex runtime;
+keep requested/effective effort separate and exact IDs in runtime fields.
+
+## Native-subagent launchers
+
+Stable `@spawn-subagent-*` names mean native spawning, never
+visible tasks, with no concrete model.
+
+Generic tier launchers (parent outcome/constraints; inherited boundary):
+
+- `@spawn-subagent-economy` -> `economy`, `xhigh`, inherit parent sandbox and approval.
+- `@spawn-subagent-balanced` -> `balanced`, `high`, inherit parent sandbox and approval.
+- `@spawn-subagent-frontier` -> `frontier`, `xhigh`, inherit parent sandbox and approval.
+
+Specialized tier launchers (fixed role contracts):
+
+- `@spawn-subagent-economy-check` -> `utility`, `economy`, `medium`.
+- `@spawn-subagent-economy-implement` -> `worker`, `economy`, `xhigh`.
+- `@spawn-subagent-balanced-explore` -> `explorer`, `balanced`, `medium`.
+- `@spawn-subagent-balanced-review` -> `reviewer`, `balanced`, `high`.
+- `@spawn-subagent-balanced-audit` -> `evidence-auditor`, `balanced`, `xhigh`.
+
+Legacy aliases remain generated: `@evidence-auditor`, `@explorer`, `@reviewer`, `@utility`, `@worker`; new instructions use canonical launchers.
+
+Generic launchers have no role contract and omit sandbox/approval fields so the native subagent inherits the parent boundary.
+
+## Scorecard
+
+For every delegated unit, record:
+
+```text
+Routing scorecard
+- Work unit and expected output:
+- Scope: local | bounded multi-component | cross-system
+- Ambiguity: low | medium | high
+- Judgment: procedural | synthesis | adversarial | exceptional
+- Verification: objective | partial | subjective/unknown
+- Adaptivity: bounded | iterative | open-ended
+- Consequence if wrong: low | material | high
+- Tier:
+- Runtime:
+- Resolved model label:
+- Requested effort:
+- Effective effort:
+- Cheapest capable route:
+- Why cheaper routes are insufficient:
+- Escalate when:
+```
+
+Spawned instances use `<key>_<tier>_<model-label>_<effort-code>_<role>_<slice>`;
+visible task titles use `[<key>] <tier>-<model-label>-<effort-code> <action> <object>`.
+
+## Gates and follow-ups
+
+- A one-step status check stays in the lead.
+- Bounded inventory -> `@spawn-subagent-economy-check`; implementation -> `@spawn-subagent-economy-implement`.
+- Ownership mapping -> `@spawn-subagent-balanced-explore`; review -> `@spawn-subagent-balanced-review`; lifecycle audit -> `@spawn-subagent-balanced-audit`.
+- Exceptional unresolved judgment after decomposition crosses the frontier gate.
+- Reclassify a materially different follow-up instead of inheriting its route.
+- Authentication, access, approval, or tool failure is blocked, not escalation.
+- Never repeat a side-effectful action as a routing retry; reconstruct state and authority first.
+- High consequence alone does not select premium model.
+
+Use named roles only when their fixed route matches the scorecard.

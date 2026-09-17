@@ -16,9 +16,12 @@ project and pass the exact path and checkout workflow. Follow host restrictions.
 Verify the child's `projectId` after setup; pause and report a mismatch.
 
 Pass the entrypoint's handoff, key, parent identity, project ID, and exact checkout.
-Set model and effort in runtime fields. Visible tasks may use bounded native
-subagents, but cannot create more visible tasks. Include the shared native naming
-rule in their handoff. Each outcome/write set has one owner.
+Set the exact registry-resolved model ID and effort in host runtime fields; put
+the selected tier and resolved model label in the title and handoff metadata.
+Visible tasks may use bounded native subagents, but cannot create more visible
+tasks. Use only the canonical `@spawn-subagent-*` launchers for those native
+subagents; never present a launcher as a visible task type. Include the shared
+native naming rule in their handoff. Each outcome/write set has one owner.
 
 ## Naming
 
@@ -26,14 +29,16 @@ Reuse the issue key or choose a short descriptive key. Inspect existing tasks;
 one active lead owns each key. Report ownership conflicts before creation.
 
 - Lead: `🤖 [<key>] <goal>`
-- Visible: `[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]`
+- Visible: `[<key>] <tier>-<model-label>-<effort-code> <action> <object>[: <outcome>]`
 
-Display `Sol`, `Terra`, or `Luna`; use exact IDs in runtime fields. Effort codes:
-`n`=none, `min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh,
-`max`=max, `ult`=ultra. Only use supported pairs and host-valid names.
+Display the selected tier (`economy`, `balanced`, or `frontier`) and the
+runtime-resolved `<model-label>`; exact model IDs remain runtime fields. Effort
+codes: `n`=none,
+`min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh, `max`=max,
+`ult`=ultra. Only use supported pairs and host-valid names.
 
 Aim for 72 characters, preserving action, object, and useful context. Example:
-`[IC-563] Terra-xh Verify controls: close remaining rollout gaps`.
+`[IC-563] balanced-<model-label>-xh Verify controls: close remaining rollout gaps`.
 Pass the title at creation or rename once addressable.
 
 ## Setup and retries

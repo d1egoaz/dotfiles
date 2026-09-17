@@ -1,0 +1,584 @@
+#!/usr/bin/env python3
+"""Render Codex agent routing from the canonical TOML registry."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import pathlib
+import sys
+import tomllib
+from collections.abc import Mapping
+
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+REGISTRY_PATH = ROOT / "nix/data/agent-routing.toml"
+CODEX_OUTPUT_ROOT = ROOT / "config/codex/agents/generated"
+NIX_OUTPUT = ROOT / "nix/data/agent-routing.generated.nix"
+ROUTING_REFERENCE = (
+    ROOT
+    / "config/agents/skills/multi-agent-team/task-coordinator/references/capability-routing.md"
+)
+
+EXPECTED_ROLES = {"utility", "explorer", "reviewer", "evidence-auditor", "worker"}
+EXPECTED_RUNTIMES = {"office_codex", "personal_opencode_go"}
+EXPECTED_PROFILES = {"office", "personal"}
+REQUIRED_TIERS = ("economy", "balanced", "frontier")
+GENERIC_LAUNCHERS = tuple(f"spawn-subagent-{tier}" for tier in REQUIRED_TIERS)
+EXPECTED_CANONICAL_LAUNCHERS = {
+    "spawn-subagent-economy-check": "utility",
+    "spawn-subagent-economy-implement": "worker",
+    "spawn-subagent-balanced-explore": "explorer",
+    "spawn-subagent-balanced-review": "reviewer",
+    "spawn-subagent-balanced-audit": "evidence-auditor",
+}
+
+
+class RoutingError(ValueError):
+    """Raised when the registry cannot produce a safe, complete routing set."""
+
+
+def fail(message: str) -> "NoReturn":
+    raise RoutingError(message)
+
+
+def read_registry() -> dict:
+    try:
+        with REGISTRY_PATH.open("rb") as registry_file:
+            registry = tomllib.load(registry_file)
+    except (OSError, tomllib.TOMLDecodeError) as error:
+        fail(f"cannot read {REGISTRY_PATH}: {error}")
+
+    if registry.get("schema_version") != 1:
+        fail("agent-routing.toml must declare schema_version = 1")
+    if registry.get("tiers") != list(REQUIRED_TIERS):
+        fail(f"tiers must be exactly {list(REQUIRED_TIERS)!r}")
+
+    roles = registry.get("roles")
+    if not isinstance(roles, Mapping) or set(roles) != EXPECTED_ROLES:
+        fail(f"roles must be exactly {sorted(EXPECTED_ROLES)!r}")
+    runtimes = registry.get("runtimes")
+    if not isinstance(runtimes, Mapping) or set(runtimes) != EXPECTED_RUNTIMES:
+        fail(f"runtimes must be exactly {sorted(EXPECTED_RUNTIMES)!r}")
+    profiles = registry.get("profiles")
+    if not isinstance(profiles, Mapping) or set(profiles) != EXPECTED_PROFILES:
+        fail(f"profiles must be exactly {sorted(EXPECTED_PROFILES)!r}")
+
+    for role_name, role in roles.items():
+        if not isinstance(role, Mapping):
+            fail(f"roles.{role_name} must be a table")
+        for key in (
+            "description",
+            "tier",
+            "effort",
+            "sandbox_mode",
+            "canonical_name",
+            "legacy_aliases",
+            "capabilities",
+            "developer_instructions",
+        ):
+            if key not in role:
+                fail(f"roles.{role_name} is missing {key}")
+        if role["tier"] not in REQUIRED_TIERS:
+            fail(f"roles.{role_name}.tier is not a known tier")
+        if role["effort"] not in registry["efforts"]:
+            fail(f"roles.{role_name}.effort is not a known effort")
+        if role["sandbox_mode"] not in {"read-only", "workspace-write"}:
+            fail(f"roles.{role_name}.sandbox_mode is invalid")
+        if role["canonical_name"] not in EXPECTED_CANONICAL_LAUNCHERS:
+            fail(f"roles.{role_name}.canonical_name is invalid")
+        if EXPECTED_CANONICAL_LAUNCHERS[role["canonical_name"]] != role_name:
+            fail(f"roles.{role_name}.canonical_name maps to the wrong role")
+        if role["legacy_aliases"] != [role_name]:
+            fail(f"roles.{role_name}.legacy_aliases must preserve [{role_name!r}]")
+        if not isinstance(role["capabilities"], list) or not role["capabilities"]:
+            fail(f"roles.{role_name}.capabilities must be a non-empty list")
+
+    canonical_names = [role["canonical_name"] for role in roles.values()]
+    if len(set(canonical_names)) != len(canonical_names):
+        fail("roles.canonical_name values must be unique")
+    legacy_aliases = [alias for role in roles.values() for alias in role["legacy_aliases"]]
+    if len(set(legacy_aliases)) != len(legacy_aliases):
+        fail("roles.legacy_aliases values must be unique")
+
+    launchers = registry.get("launchers")
+    if not isinstance(launchers, Mapping):
+        fail("launchers must be a table")
+    generic = launchers.get("generic")
+    if not isinstance(generic, Mapping) or set(generic) != set(REQUIRED_TIERS):
+        fail(f"launchers.generic must contain every routing tier: {list(REQUIRED_TIERS)!r}")
+    for tier in REQUIRED_TIERS:
+        launcher = generic[tier]
+        if not isinstance(launcher, Mapping):
+            fail(f"launchers.generic.{tier} must be a table")
+        for key in ("effort", "sandbox_mode", "approval_policy", "description"):
+            if key not in launcher:
+                fail(f"launchers.generic.{tier} is missing {key}")
+        if launcher["effort"] not in registry["efforts"]:
+            fail(f"launchers.generic.{tier}.effort is not a known effort")
+        if launcher["sandbox_mode"] != "inherit":
+            fail(f"launchers.generic.{tier}.sandbox_mode must be inherit")
+        if launcher["approval_policy"] != "inherit":
+            fail(f"launchers.generic.{tier}.approval_policy must be inherit")
+        if not launcher["description"]:
+            fail(f"launchers.generic.{tier}.description must not be blank")
+
+    for runtime_name, runtime in runtimes.items():
+        if not isinstance(runtime, Mapping):
+            fail(f"runtimes.{runtime_name} must be a table")
+        if runtime.get("provider") != "codex":
+            fail(f"runtimes.{runtime_name}.provider is invalid")
+        if runtime.get("lead_tier") not in REQUIRED_TIERS:
+            fail(f"runtimes.{runtime_name}.lead_tier is invalid")
+        if runtime.get("default_tier") not in REQUIRED_TIERS:
+            fail(f"runtimes.{runtime_name}.default_tier is invalid")
+        runtime_tiers = runtime.get("tiers")
+        if not isinstance(runtime_tiers, Mapping) or set(runtime_tiers) != set(REQUIRED_TIERS):
+            fail(f"runtimes.{runtime_name}.tiers must contain every routing tier")
+        labels = []
+        for tier in REQUIRED_TIERS:
+            route = runtime_tiers[tier]
+            if not isinstance(route, Mapping) or not route.get("model") or not route.get("label"):
+                fail(f"runtimes.{runtime_name}.tiers.{tier} needs model and label")
+            labels.append(route["label"])
+            supported = route.get("supported_efforts")
+            if not isinstance(supported, list):
+                fail(f"runtimes.{runtime_name}.tiers.{tier}.supported_efforts must be a list")
+            if "fallback_effort" in route:
+                fail(f"Codex tier {runtime_name}.{tier} must not define fallback_effort")
+        if runtime_name == "personal_opencode_go" and len(set(labels)) != 1:
+            fail("Personal OpenCode Go must use one model label for all tiers")
+
+    for profile_name, profile in profiles.items():
+        if not isinstance(profile, Mapping):
+            fail(f"profiles.{profile_name} must be a table")
+        for key in (
+            "codex_runtime",
+            "codex_lead_tier",
+            "codex_lead_effort",
+            "codex_default_tier",
+            "codex_default_effort",
+            "pi_runtime",
+            "pi_tier",
+            "pi_effort",
+        ):
+            if key not in profile:
+                fail(f"profiles.{profile_name} is missing {key}")
+        for runtime_key in ("codex_runtime", "pi_runtime"):
+            if profile[runtime_key] not in EXPECTED_RUNTIMES:
+                fail(f"profiles.{profile_name}.{runtime_key} is unknown")
+        if runtimes[profile["codex_runtime"]]["provider"] != "codex":
+            fail(f"profiles.{profile_name}.codex_runtime must use the codex provider")
+        if runtimes[profile["pi_runtime"]]["provider"] != "codex":
+            fail(f"profiles.{profile_name}.pi_runtime must use the codex provider")
+        for tier_key in ("codex_lead_tier", "codex_default_tier", "pi_tier"):
+            if profile[tier_key] not in REQUIRED_TIERS:
+                fail(f"profiles.{profile_name}.{tier_key} is invalid")
+        for effort_key in (
+            "codex_lead_effort",
+            "codex_default_effort",
+            "pi_effort",
+        ):
+            if profile[effort_key] not in registry["efforts"]:
+                fail(f"profiles.{profile_name}.{effort_key} is invalid")
+
+    return registry
+
+
+def runtime_slug(runtime_name: str) -> str:
+    return runtime_name.replace("_", "-")
+
+
+def route(registry: Mapping, runtime_name: str, tier: str) -> Mapping:
+    return registry["runtimes"][runtime_name]["tiers"][tier]
+
+
+def effective_effort(runtime: Mapping, tier: str, requested: str) -> str:
+    selected = runtime["tiers"][tier]
+    if requested not in selected["supported_efforts"]:
+        fail(f"Codex route {tier} does not support requested effort {requested}")
+    return requested
+
+
+def native_launcher_instructions(extra: str) -> str:
+    return (
+        "This configuration is a native-subagent launcher. Use it only through "
+        "the native subagent spawn control, never as a visible child task. "
+        "Return results or blockers only to the parent lead.\n\n"
+        f"{extra}"
+    )
+
+
+def render_codex_agent(
+    registry: Mapping,
+    runtime_name: str,
+    role_name: str,
+    output_name: str | None = None,
+) -> str:
+    role = registry["roles"][role_name]
+    runtime = registry["runtimes"][runtime_name]
+    selected = route(registry, runtime_name, role["tier"])
+    effort = effective_effort(runtime, role["tier"], role["effort"])
+    name = output_name or role["canonical_name"]
+    description = role["description"]
+    if output_name and output_name != role["canonical_name"]:
+        description = (
+            f"Legacy alias for @{role['canonical_name']}; prefer that name. "
+            f"{description}"
+        )
+    return (
+        f'name = {json.dumps(name)}\n'
+        f'description = {json.dumps(description)}\n'
+        f'model = {json.dumps(selected["model"])}\n'
+        f'model_reasoning_effort = {json.dumps(effort)}\n'
+        f'sandbox_mode = {json.dumps(role["sandbox_mode"])}\n'
+        f'developer_instructions = """\n{native_launcher_instructions(role["developer_instructions"].strip())}\n"""\n'
+    )
+
+
+def render_generic_agent(registry: Mapping, runtime_name: str, tier: str) -> str:
+    runtime = registry["runtimes"][runtime_name]
+    launcher = registry["launchers"]["generic"][tier]
+    selected = route(registry, runtime_name, tier)
+    effort = effective_effort(runtime, tier, launcher["effort"])
+    instructions = (
+        "Work only from the parent lead's handoff. The handoff defines the "
+        "outcome, constraints, context, authorization, and verification; do "
+        "not infer a role-specific purpose or expand that scope. Use the "
+        "parent-provided sandbox and approval boundary exactly as inherited; "
+        "never broaden it or request a stronger boundary. Preserve the parent "
+        "lead's stopping condition and return concise evidence, blockers, or "
+        "the requested result. Do not message or coordinate with peer agents, "
+        "discover peer IDs, spawn descendants, or declare overall completion."
+    )
+    return (
+        f'name = {json.dumps(f"spawn-subagent-{tier}")}\n'
+        f'description = {json.dumps(launcher["description"])}\n'
+        f'model = {json.dumps(selected["model"])}\n'
+        f'model_reasoning_effort = {json.dumps(effort)}\n'
+        f'developer_instructions = """\n{native_launcher_instructions(instructions)}\n"""\n'
+    )
+
+
+def nix_key(key: str) -> str:
+    if key.replace("_", "").isalnum() and key and not key[0].isdigit():
+        return key
+    return json.dumps(key)
+
+
+def nix_value(value: object, indent: int = 0) -> list[str]:
+    pad = " " * indent
+    if isinstance(value, bool):
+        return ["true" if value else "false"]
+    if isinstance(value, (int, float)):
+        return [str(value)]
+    if isinstance(value, str):
+        return [json.dumps(value)]
+    if isinstance(value, list):
+        if not value:
+            return ["[ ]"]
+        return ["[ " + " ".join(nix_value(item)[0] for item in value) + " ]"]
+    if isinstance(value, Mapping):
+        lines = ["{"]
+        for key in sorted(value):
+            child = nix_value(value[key], indent + 2)
+            if len(child) == 1:
+                lines.append(f"{pad}  {nix_key(str(key))} = {child[0]};")
+            else:
+                lines.append(f"{pad}  {nix_key(str(key))} = {child[0]}")
+                lines.extend(child[1:-1])
+                lines.append(f"{pad}  {child[-1]};")
+        lines.append(f"{pad}}}")
+        return lines
+    fail(f"cannot render Nix value {value!r}")
+
+
+def render_nix(registry: Mapping) -> str:
+    runtimes: dict = {}
+    for runtime_name in sorted(registry["runtimes"]):
+        runtime = registry["runtimes"][runtime_name]
+        tiers = {}
+        for tier in REQUIRED_TIERS:
+            selected = route(registry, runtime_name, tier)
+            tiers[tier] = {
+                "effective_efforts": selected["supported_efforts"],
+                "label": selected["label"],
+                "model": selected["model"],
+            }
+            if "fallback_effort" in selected:
+                tiers[tier]["fallback_effort"] = selected["fallback_effort"]
+        runtimes[runtime_name] = {
+            "default_tier": runtime["default_tier"],
+            "display_name": runtime["display_name"],
+            "opencode_go": runtime["opencode_go"],
+            "provider": runtime["provider"],
+            "tiers": tiers,
+        }
+
+    profiles: dict = {}
+    for profile_name in sorted(registry["profiles"]):
+        profile = registry["profiles"][profile_name]
+        codex_runtime = profile["codex_runtime"]
+        codex_lead = route(registry, codex_runtime, profile["codex_lead_tier"])
+        codex_default = route(registry, codex_runtime, profile["codex_default_tier"])
+        pi = route(registry, profile["pi_runtime"], profile["pi_tier"])
+        profiles[profile_name] = {
+            "codex": {
+                "agent_directory": profile_name,
+                "default": {
+                    "effort": effective_effort(
+                        registry["runtimes"][codex_runtime],
+                        profile["codex_default_tier"],
+                        profile["codex_default_effort"],
+                    ),
+                    "label": codex_default["label"],
+                    "model": codex_default["model"],
+                    "runtime": runtime_slug(codex_runtime),
+                    "tier": profile["codex_default_tier"],
+                },
+                "lead": {
+                    "effort": effective_effort(
+                        registry["runtimes"][codex_runtime],
+                        profile["codex_lead_tier"],
+                        profile["codex_lead_effort"],
+                    ),
+                    "label": codex_lead["label"],
+                    "model": codex_lead["model"],
+                    "runtime": runtime_slug(codex_runtime),
+                    "tier": profile["codex_lead_tier"],
+                },
+                "opencode_go": registry["runtimes"][codex_runtime]["opencode_go"],
+            },
+            "pi": {
+                "effort": effective_effort(
+                    registry["runtimes"][profile["pi_runtime"]],
+                    profile["pi_tier"],
+                    profile["pi_effort"],
+                ),
+                "label": pi["label"],
+                "model": pi["model"],
+                "provider": "openai-codex",
+                "runtime": runtime_slug(profile["pi_runtime"]),
+                "tier": profile["pi_tier"],
+            },
+        }
+
+    document = {
+        "launchers": {
+            "generic": {
+                tier: {
+                    "approval_policy": registry["launchers"]["generic"][tier][
+                        "approval_policy"
+                    ],
+                    "effort": registry["launchers"]["generic"][tier]["effort"],
+                    "sandbox_mode": registry["launchers"]["generic"][tier][
+                        "sandbox_mode"
+                    ],
+                }
+                for tier in REQUIRED_TIERS
+            }
+        },
+        "profiles": profiles,
+        "runtimes": runtimes,
+        "schema_version": registry["schema_version"],
+    }
+    return "# Generated by bin/files/agent-routing-generate. Do not edit.\n" + "\n".join(
+        nix_value(document)
+    ) + "\n"
+
+
+def render_reference(registry: Mapping) -> str:
+    lines = [
+        "# Capability routing",
+        "",
+        "Select a capability tier first, then resolve it through the active",
+        "Codex runtime in `nix/data/agent-routing.toml`. Resolve the concrete model",
+        "and model label through that runtime; never promote a blocked route to a",
+        "more expensive tier.",
+        "",
+        "## Tiers",
+        "",
+        "| Tier | Use when |",
+        "|---|---|",
+        "| `economy` | Bounded, objectively checkable work. |",
+        "| `balanced` | Exploration, synthesis, correctness review, or evidence work. |",
+        "| `frontier` | Deep ambiguity or exceptional judgment remaining after decomposition. |",
+        "",
+        "## Runtime resolution",
+        "",
+        "Resolve the selected tier/model label through the active Codex runtime;",
+        "keep requested/effective effort separate and exact IDs in runtime fields.",
+        "",
+        "## Native-subagent launchers",
+        "",
+        "Stable `@spawn-subagent-*` names mean native spawning, never",
+        "visible tasks, with no concrete model.",
+        "",
+        "Generic tier launchers (parent outcome/constraints; inherited boundary):",
+        "",
+    ]
+    for tier in REQUIRED_TIERS:
+        launcher = registry["launchers"]["generic"][tier]
+        lines.append(
+            f"- `@spawn-subagent-{tier}` -> `{tier}`, `{launcher['effort']}`, "
+            "inherit parent sandbox and approval."
+        )
+    lines.extend(
+        [
+            "",
+            "Specialized tier launchers (fixed role contracts):",
+            "",
+        ]
+    )
+    for role_name in ("utility", "worker", "explorer", "reviewer", "evidence-auditor"):
+        role = registry["roles"][role_name]
+        lines.append(
+            f"- `@{role['canonical_name']}` -> `{role_name}`, `{role['tier']}`, "
+            f"`{role['effort']}`."
+        )
+    lines.extend(
+        [
+            "",
+            "Legacy aliases remain generated: "
+            + ", ".join(f"`@{name}`" for name in sorted(EXPECTED_ROLES))
+            + "; new instructions use canonical launchers.",
+            "",
+            "Generic launchers have no role contract and omit sandbox/approval "
+            "fields so the native subagent inherits the parent boundary.",
+        ]
+    )
+
+    lines.extend(
+        [
+            "",
+            "## Scorecard",
+            "",
+            "For every delegated unit, record:",
+            "",
+            "```text",
+            "Routing scorecard",
+            "- Work unit and expected output:",
+            "- Scope: local | bounded multi-component | cross-system",
+            "- Ambiguity: low | medium | high",
+            "- Judgment: procedural | synthesis | adversarial | exceptional",
+            "- Verification: objective | partial | subjective/unknown",
+            "- Adaptivity: bounded | iterative | open-ended",
+            "- Consequence if wrong: low | material | high",
+            "- Tier:",
+            "- Runtime:",
+            "- Resolved model label:",
+            "- Requested effort:",
+            "- Effective effort:",
+            "- Cheapest capable route:",
+            "- Why cheaper routes are insufficient:",
+            "- Escalate when:",
+            "```",
+            "",
+            "Spawned instances use `<key>_<tier>_<model-label>_<effort-code>_<role>_<slice>`;",
+            "visible task titles use `[<key>] <tier>-<model-label>-<effort-code> <action> <object>`.",
+            "",
+            "## Gates and follow-ups",
+            "",
+            "- A one-step status check stays in the lead.",
+            "- Bounded inventory -> `@spawn-subagent-economy-check`; implementation -> `@spawn-subagent-economy-implement`.",
+            "- Ownership mapping -> `@spawn-subagent-balanced-explore`; review -> `@spawn-subagent-balanced-review`; lifecycle audit -> `@spawn-subagent-balanced-audit`.",
+            "- Exceptional unresolved judgment after decomposition crosses the frontier gate.",
+            "- Reclassify a materially different follow-up instead of inheriting its route.",
+            "- Authentication, access, approval, or tool failure is blocked, not escalation.",
+            "- Never repeat a side-effectful action as a routing retry; reconstruct state and authority first.",
+            "- High consequence alone does not select premium model.",
+            "",
+            "Use named roles only when their fixed route matches the scorecard.",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def build_outputs(registry: Mapping) -> dict[pathlib.Path, str]:
+    outputs: dict[pathlib.Path, str] = {
+        NIX_OUTPUT: render_nix(registry),
+        ROUTING_REFERENCE: render_reference(registry),
+    }
+    for profile_name in sorted(EXPECTED_PROFILES):
+        runtime_name = registry["profiles"][profile_name]["codex_runtime"]
+        for launcher_name in GENERIC_LAUNCHERS:
+            tier = launcher_name.removeprefix("spawn-subagent-")
+            outputs[
+                CODEX_OUTPUT_ROOT / profile_name / f"{launcher_name}.toml"
+            ] = render_generic_agent(registry, runtime_name, tier)
+        for role_name in sorted(EXPECTED_ROLES):
+            role = registry["roles"][role_name]
+            canonical_name = role["canonical_name"]
+            outputs[
+                CODEX_OUTPUT_ROOT / profile_name / f"{canonical_name}.toml"
+            ] = render_codex_agent(registry, runtime_name, role_name, canonical_name)
+            for alias in role["legacy_aliases"]:
+                outputs[
+                    CODEX_OUTPUT_ROOT / profile_name / f"{alias}.toml"
+                ] = render_codex_agent(registry, runtime_name, role_name, alias)
+    return outputs
+
+
+def generated_files() -> set[pathlib.Path]:
+    paths = {NIX_OUTPUT, ROUTING_REFERENCE}
+    for profile_name in EXPECTED_PROFILES:
+        paths.update((CODEX_OUTPUT_ROOT / profile_name).glob("*.toml"))
+    return paths
+
+
+def check_outputs(outputs: Mapping[pathlib.Path, str]) -> list[str]:
+    errors = []
+    expected_paths = set(outputs)
+    for path, expected in outputs.items():
+        try:
+            actual = path.read_text()
+        except OSError:
+            errors.append(f"missing generated output: {path.relative_to(ROOT)}")
+            continue
+        if actual != expected:
+            errors.append(f"generated output drift: {path.relative_to(ROOT)}")
+    for path in sorted(generated_files() - expected_paths):
+        errors.append(f"unexpected generated output: {path.relative_to(ROOT)}")
+    return errors
+
+
+def write_outputs(outputs: Mapping[pathlib.Path, str]) -> None:
+    # These are dedicated generated directories. Only files in those exact
+    # directories are removed, so hand-edited source and user state remain safe.
+    for directory in [CODEX_OUTPUT_ROOT / profile for profile in EXPECTED_PROFILES]:
+        directory.mkdir(parents=True, exist_ok=True)
+    for path in generated_files() - set(outputs):
+        if path.exists():
+            path.unlink()
+    for path, content in outputs.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="check generated output without writing")
+    args = parser.parse_args()
+    try:
+        outputs = build_outputs(read_registry())
+        errors = check_outputs(outputs)
+        if args.check:
+            if errors:
+                for error in errors:
+                    print(error, file=sys.stderr)
+                return 1
+            print(f"agent routing outputs are current ({len(outputs)} files)")
+            return 0
+        write_outputs(outputs)
+        print(f"generated agent routing outputs ({len(outputs)} files)")
+        return 0
+    except RoutingError as error:
+        print(f"agent-routing: {error}", file=sys.stderr)
+        return 1
+    except OSError as error:
+        print(f"agent-routing: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

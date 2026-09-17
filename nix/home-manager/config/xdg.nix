@@ -8,26 +8,13 @@
 }:
 
 let
-  codex =
-    if profile == "office" then
-      {
-        profile = "work";
-        profileFile = "work.local.toml";
-        leadModel = "gpt-5.6-sol";
-        leadReasoningEffort = "medium";
-        openCodeGo = false;
-      }
-    else
-      {
-        # Personal Codex runs on the OpenCode Go subscription. The desktop app
-        # has no profile selector, so this is the base config both it and the
-        # CLI read.
-        profile = "personal";
-        profileFile = "personal.toml";
-        leadModel = "deepseek-v4.1-flash";
-        leadReasoningEffort = "high";
-        openCodeGo = true;
-      };
+  routing = import ../../data/agent-routing.generated.nix;
+  profileRouting = routing.profiles.${profile};
+  codex = profileRouting.codex // {
+    profile = if profile == "office" then "work" else "personal";
+    profileFile = if profile == "office" then "work.local.toml" else "personal.toml";
+  };
+  codexAgentsDir = "${config.home.homeDirectory}/dotfiles/config/codex/agents/generated/${codex.agent_directory}";
 in
 {
   # ============================================================================
@@ -48,8 +35,7 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/claude/settings.json";
     ".codex/AGENTS.md".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ai/AGENTS.md";
-    ".codex/agents".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/agents";
+    ".codex/agents".source = config.lib.file.mkOutOfStoreSymlink codexAgentsDir;
     ".codex/rules/10-shared.rules".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/rules/10-shared.rules";
     ".codex/themes".source =
@@ -142,6 +128,7 @@ in
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
         ",,"
+        "agent-routing-generate"
         "codex-context-audit"
         "codex-current-model"
         "codex-model-usage"
@@ -226,9 +213,11 @@ in
   # (non-generated) ~/.codex/config.toml is backed up, once, on migration.
   home.activation.codexConfigProfile = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     CODEX_PROFILE="${codex.profile}"
-    CODEX_LEAD_MODEL="${codex.leadModel}"
-    CODEX_LEAD_REASONING_EFFORT="${codex.leadReasoningEffort}"
-    CODEX_OPENCODE_GO="${if codex.openCodeGo then "1" else "0"}"
+    CODEX_LEAD_MODEL="${codex.lead.model}"
+    CODEX_LEAD_REASONING_EFFORT="${codex.lead.effort}"
+    CODEX_DEFAULT_MODEL="${codex.default.model}"
+    CODEX_DEFAULT_REASONING_EFFORT="${codex.default.effort}"
+    CODEX_OPENCODE_GO="${if codex.opencode_go then "1" else "0"}"
     SHARED="$HOME/dotfiles/config/codex/config.toml"
     PROFILE_FILE="$HOME/dotfiles/config/codex/profiles/${codex.profileFile}"
     TARGET="$HOME/.codex/config.toml"
@@ -295,7 +284,17 @@ in
         fi
       fi
       printf '\n'
-      cat "$SHARED"
+      # The shared source owns the [agents] table and its limits. Inject the
+      # registry-selected fallback route into that table without duplicating
+      # provider-specific model IDs in the hand-edited TOML.
+      "$AWK" -v default_model="$CODEX_DEFAULT_MODEL" -v default_effort="$CODEX_DEFAULT_REASONING_EFFORT" '
+        { print }
+        $0 == "[agents]" && !inserted {
+          print "default_subagent_model = \"" default_model "\""
+          print "default_subagent_reasoning_effort = \"" default_effort "\""
+          inserted = 1
+        }
+      ' "$SHARED"
       printf '\n# Active Codex profile: %s\n' "$CODEX_PROFILE"
       if [ -n "$PROFILE_FILE" ]; then
         cat "$PROFILE_FILE"

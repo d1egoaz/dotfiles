@@ -70,6 +70,26 @@ just --list        # See all available commands
 
 =just audit= exits with =0= for a complete match, =1= when drift is found, and =2= when any audit coverage is unavailable. =just audit-export= always writes the available sanitized evidence when collection succeeds, including explicit coverage gaps. It excludes secrets, environment variables, network details, browser data, hardware identifiers, file contents, Git diffs, and full macOS defaults exports.
 
+** Model routing
+
+Model tiers and profile mappings live in =nix/data/agent-routing.toml=, the only
+hand-edited routing source. After changing it, regenerate the Codex roles and
+runtime data, then verify there is no generated drift:
+
+#+begin_src bash
+just agent-routing-generate
+just agent-routing-check
+#+end_src
+
+The stable native-subagent launchers are =@spawn-subagent-economy=,
+=@spawn-subagent-balanced=, and =@spawn-subagent-frontier=. They pin only the
+capability tier; the parent handoff supplies the outcome and constraints. The
+specialized launchers add a fixed role contract, such as
+=@spawn-subagent-balanced-review=. These are native subagent types, not visible
+child tasks. Their public names stay stable when the model mapping changes;
+spawned instance names include the resolved model label for historical
+traceability.
+
 * How It Works
 
 ** Profiles

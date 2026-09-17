@@ -80,8 +80,16 @@ fix-nix-cache:
 fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
+# Render the provider-neutral agent routes from the canonical TOML registry.
+agent-routing-generate:
+    PYTHONDONTWRITEBYTECODE=1 python3 bin/files/agent-routing-generate
+
+# Verify routing outputs without changing the worktree.
+agent-routing-check:
+    PYTHONDONTWRITEBYTECODE=1 python3 bin/files/agent-routing-generate --check
+
 # Check nix flake
-check: fmt check-skills audit-test codex-agents-test codex-context-test codex-current-model-test codex-model-usage-test git-signing-test
+check: fmt agent-routing-check check-skills audit-test codex-agents-test codex-context-test codex-current-model-test codex-model-usage-test git-signing-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state

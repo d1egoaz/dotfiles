@@ -1,6 +1,6 @@
 # Shared cross-laptop defaults, safe to sync between personal and work laptops.
-# Home Manager injects the Nix profile's lead model and composes this with
-# config/codex/profiles/<profile>.toml into ~/.codex/config.toml.
+# Home Manager injects the registry-selected lead and default route fields and
+# composes this with config/codex/profiles/<profile>.toml into ~/.codex/config.toml.
 allow_login_shell = false
 
 # Ask only when Codex needs to leave the sandbox or run a risky command.
@@ -35,10 +35,9 @@ responses_websockets_v2 = false
 voice_transcription = true
 js_repl = false
 
-# Agent defaults and limits for multi-agent work. Explicit spawn routes may override these.
+# Agent limits for multi-agent work. Registry-generated defaults are injected by
+# Home Manager; explicit spawn routes may override them.
 [agents]
-default_subagent_model = "gpt-5.6-luna"
-default_subagent_reasoning_effort = "xhigh"
 max_depth = 1
 max_concurrent_threads_per_session = 10
 

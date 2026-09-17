@@ -54,6 +54,7 @@
           global.excludes = [
             # Ignore generated files
             "flake.lock"
+            "data/agent-routing.generated.nix"
             # Ignore hidden directories
             ".git/"
             ".direnv/"

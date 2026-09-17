@@ -1,0 +1,158 @@
+# Canonical model routing registry.
+#
+# This file is the only hand-edited source for active Codex model IDs, model
+# labels, tier defaults, role routes, and runtime capability differences.
+# Generated outputs are consumed by Codex, Nix, and the routing reference. Run
+# `just agent-routing-generate` after changing this file.
+
+schema_version = 1
+tiers = ["economy", "balanced", "frontier"]
+efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[roles.utility]
+description = "Read-only utility worker for bounded multi-step work with clear output and objective verification."
+tier = "economy"
+effort = "medium"
+sandbox_mode = "read-only"
+canonical_name = "spawn-subagent-economy-check"
+legacy_aliases = ["utility"]
+capabilities = ["read", "search", "web"]
+developer_instructions = """
+Complete only the assigned bounded read-only work. Follow the stated output shape, use objective checks, and return concise evidence plus any unknowns. Do not edit files, mutate external systems, or expand scope. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
+"""
+
+[roles.explorer]
+description = "Read-only codebase explorer for independent mapping, discovery, and broad evidence gathering."
+tier = "balanced"
+effort = "medium"
+sandbox_mode = "read-only"
+canonical_name = "spawn-subagent-balanced-explore"
+legacy_aliases = ["explorer"]
+capabilities = ["read", "search", "synthesis", "web"]
+developer_instructions = """
+Stay in exploration mode. Trace real code paths, gather exact evidence, and return concise findings with file or command references. Do not edit files or propose broad fixes unless the parent asks for options. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
+"""
+
+[roles.reviewer]
+description = "Read-only reviewer focused on correctness, security, behavior regressions, and missing tests."
+tier = "balanced"
+effort = "high"
+sandbox_mode = "read-only"
+canonical_name = "spawn-subagent-balanced-review"
+legacy_aliases = ["reviewer"]
+capabilities = ["read", "search", "adversarial", "web"]
+developer_instructions = """
+Review like an owner. Lead with concrete findings, prioritize correctness, security, behavior regressions, and real risk, cite exact evidence, and avoid style-only comments unless they hide a defect. Do not edit files. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, or declare the overall task complete. Return complete findings only to the parent lead.
+"""
+
+[roles.evidence-auditor]
+description = "Read-only auditor that reconstructs delivery and runtime state from direct evidence without conflating lifecycle stages."
+tier = "balanced"
+effort = "xhigh"
+sandbox_mode = "read-only"
+canonical_name = "spawn-subagent-balanced-audit"
+legacy_aliases = ["evidence-auditor"]
+capabilities = ["read", "search", "evidence", "web"]
+developer_instructions = """
+Audit claims against direct, current evidence. Keep configuration, generated output, plan, approval, merge, apply or deployment, runtime health, and business outcome as separate states. Cite the source and timestamp for each conclusion. Treat missing evidence as unknown, never as success. Resolve contradictions explicitly. Do not mutate systems or files. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, change scope, or declare the overall task complete. Return complete findings only to the parent lead.
+"""
+
+[roles.worker]
+description = "Execution-focused worker for bounded implementation and fixes after scope and ownership are clear."
+tier = "economy"
+effort = "xhigh"
+sandbox_mode = "workspace-write"
+canonical_name = "spawn-subagent-economy-implement"
+legacy_aliases = ["worker"]
+capabilities = ["read", "search", "write", "test", "web"]
+developer_instructions = """
+Own only the assigned write set. Preserve unrelated work, do not revert edits made by others, implement the smallest complete change, and report changed files, validation, and remaining risks. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, accept scope changes from them, or declare the overall task complete. Return complete results only to the parent lead.
+"""
+
+# Stable, tier-only native-subagent launchers. Their model is resolved from
+# the active runtime below. Generic launchers intentionally inherit the
+# parent's sandbox and approval boundary; the generator omits those optional
+# Codex fields rather than inventing a broader policy.
+[launchers.generic.economy]
+effort = "xhigh"
+sandbox_mode = "inherit"
+approval_policy = "inherit"
+description = "Generic native subagent pinned to the economy capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
+
+[launchers.generic.balanced]
+effort = "high"
+sandbox_mode = "inherit"
+approval_policy = "inherit"
+description = "Generic native subagent pinned to the balanced capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
+
+[launchers.generic.frontier]
+effort = "xhigh"
+sandbox_mode = "inherit"
+approval_policy = "inherit"
+description = "Generic native subagent pinned to the frontier capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
+
+[runtimes.office_codex]
+display_name = "Office Codex"
+provider = "codex"
+lead_tier = "frontier"
+default_tier = "economy"
+opencode_go = false
+
+[runtimes.office_codex.tiers.economy]
+model = "gpt-5.6-luna"
+label = "luna"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.office_codex.tiers.balanced]
+model = "gpt-5.6-terra"
+label = "terra"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.office_codex.tiers.frontier]
+model = "gpt-5.6-sol"
+label = "sol"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.personal_opencode_go]
+display_name = "Personal Codex via OpenCode Go"
+provider = "codex"
+lead_tier = "frontier"
+default_tier = "economy"
+opencode_go = true
+
+[runtimes.personal_opencode_go.tiers.economy]
+model = "deepseek-v4.1-flash"
+label = "deepseek"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.personal_opencode_go.tiers.balanced]
+model = "deepseek-v4.1-flash"
+label = "deepseek"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.personal_opencode_go.tiers.frontier]
+model = "deepseek-v4.1-flash"
+label = "deepseek"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[profiles.office]
+codex_runtime = "office_codex"
+codex_lead_tier = "frontier"
+codex_lead_effort = "xhigh"
+codex_default_tier = "economy"
+codex_default_effort = "xhigh"
+pi_runtime = "office_codex"
+pi_tier = "frontier"
+pi_effort = "xhigh"
+
+[profiles.personal]
+codex_runtime = "personal_opencode_go"
+codex_lead_tier = "frontier"
+codex_lead_effort = "high"
+codex_default_tier = "economy"
+codex_default_effort = "xhigh"
+# Pi's OpenAI Codex provider remains the office frontier route on personal
+# machines, matching the existing Pi subscription configuration.
+pi_runtime = "office_codex"
+pi_tier = "frontier"
+pi_effort = "xhigh"
