@@ -17,7 +17,8 @@ Verify the child's `projectId` after setup; pause and report a mismatch.
 
 Pass the entrypoint's handoff, key, parent identity, project ID, and exact checkout.
 Set model and effort in runtime fields. Visible tasks may use bounded native
-subagents, but cannot create more visible tasks. Each outcome/write set has one owner.
+subagents, but cannot create more visible tasks. Include the shared native naming
+rule in their handoff. Each outcome/write set has one owner.
 
 ## Naming
 
@@ -26,7 +27,6 @@ one active lead owns each key. Report ownership conflicts before creation.
 
 - Lead: `🤖 [<key>] <goal>`
 - Visible: `[<key>] <model-label>-<effort-code> <action> <object>[: <outcome>]`
-- Native: `<key>_<model-label>_<effort-code>_<role>_<slice>`
 
 Display `Sol`, `Terra`, or `Luna`; use exact IDs in runtime fields. Effort codes:
 `n`=none, `min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh,

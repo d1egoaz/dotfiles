@@ -5,41 +5,40 @@ description: Sign commits and publish GitHub changes with exact AI attribution. 
 
 # Signed PR Publish
 
-Use for commits or GitHub publication. Preserve unrelated work; perform only
-authorized publication actions.
+Use for commits/publication; preserve unrelated work and authorization.
+Once the expected change, checked diff, and objective checks are clear, assign
+bounded implementation and the authorized publication workflow to Luna xhigh
+`worker`, including small one-file changes. Reuse a capable owner; simple
+changes still follow this route.
 
-Read [`references/commands.md`](references/commands.md) when exact commit or
-GitHub command templates are needed.
+Read [`references/commands.md`](references/commands.md) for templates/handoff.
 
 ## Commit
 
-1. Inspect status and diffs. Stage exact files; “commit staged files” adds
-   nothing else. Identify generated-file ownership.
-2. Run `$HOME/dotfiles/bin/files/codex-current-model`. Retry with scoped read
-   access; stop if unknown. Never shorten or guess the result.
-3. Use a Conventional Commit and this exact footer:
+1. Inspect status/diffs; stage exact files; “commit staged files” adds nothing
+   else; identify generated files.
+2. Run `$HOME/dotfiles/bin/files/codex-current-model`; retry with scoped read
+   access; stop if unknown. Never shorten or guess. The actor uses its own
+   current model for new attribution, retains prior attribution, and never
+   invents switching.
+3. Use a Conventional Commit with this footer:
 
 ```text
 Assisted-by: [Exact model identifier] via [Tool]
 ```
 
 4. Use `git commit -S` with the profile OpenSSH key. Never bypass signing.
-5. Verify signature, scope, and exact footer value before publication; regex
-   presence alone is insufficient.
+5. Verify signature, scope, and exact footer before publication; regex alone is
+   insufficient.
 
-After activation, enroll once with `ssh-add --apple-use-keychain -t 86400
-~/.ssh/codex-signing-${PROFILE}-ed25519`. Office repos stay on HTTPS through the
-existing credential helper; do not replace or broaden it.
+Office repos stay on HTTPS; keep the credential helper unchanged.
 
 ## Publish
 
-- Recheck remote state and exact head before pushing.
-- Push only when authorized. Open new PRs as drafts and use the repository
-  template.
-- Explain problem, change, validation, risk, and generated-artifact handling.
-- Re-fetch and verify draft state, head, files, checks, and exact attribution.
-- Use `gh api ... -X PATCH` for PR body updates; `gh pr edit --body` is
-  deprecated.
+- Recheck remote state/exact head before pushing.
+- Push only when authorized. Open new PRs as drafts; use the template.
+- Explain problem, change, validation, risk, and artifacts.
+- Re-fetch and verify draft state, head, files, checks, and attribution.
 
 Do not infer push, PR, ready-for-review, merge, deployment, or production
 authority from another lifecycle step.

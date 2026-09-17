@@ -10,8 +10,8 @@
 ## Environment And Communication
 
 - Platform: macOS with BSD coreutils. Interactive shell: zsh.
-- Run shell-neutral commands directly. Use an explicit shell only when its syntax is required.
-- Prefer CLI over GUI. Make every user-facing command one copy-paste-ready line.
+- Run shell-neutral commands directly; use an explicit shell only when required.
+- Prefer CLI; make each user-facing command copy-paste-ready.
 - Never use the em dash character.
 - Lead with the concrete answer. Add detail only when it changes a decision, proves a claim, captures risk, or was requested.
 - Write Slack, email, PR comments, and chat replies at human length for that medium.
@@ -20,32 +20,34 @@
 
 ## Model Routing
 
-Use one strong lead: office/work `gpt-5.6-sol` xhigh; personal `gpt-5.6-terra` xhigh. Keep simple or tightly coupled work in the lead, even when it takes several steps.
+Use one strong lead: office/work `gpt-5.6-sol` xhigh; personal `gpt-5.6-terra` xhigh. Keep one-step work and tightly coupled judgment with the lead. Once scope, expected change, and objective checks are clear, route bounded implementation and authorized publication to the Luna xhigh `worker`, including small one-file changes; keep coupled files in one worker.
 
-Choose the cheapest capable model and effort for each delegated outcome, counting retries, review, latency, and the cost of a wrong result. Luna fits clear work with objective checks; Terra fits exploration, synthesis, and correctness review; Sol fits deep ambiguity or exceptional judgment that remains after decomposition. Risk alone does not select a model.
+Choose the cheapest capable model and effort per delegated outcome, counting retries, review, latency, and wrong-result cost. Luna fits clear checked work; Terra fits exploration, synthesis, and correctness review; Sol fits deep ambiguity remaining after decomposition. Risk alone does not select a premium route.
 
-These are configured defaults, not mandatory routes. Use a named role only when its model, effort, and permissions fit. Otherwise select an explicit route and retain the role's boundaries. Never silently inherit the lead model. If the host cannot select the intended route, keep the work in the lead or explain the available alternative.
+These are defaults, not mandatory routes. Use a named role only when its model, effort, and permissions fit; otherwise select an explicit route with the role's boundaries. Never silently inherit the lead model. If the host cannot select the route, keep the work in the lead or explain the alternative.
 
 | Subagent | Model | Effort | Scope |
 |---|---|---:|---|
 | Unnamed fallback | `gpt-5.6-luna` | xhigh | Clear bounded work without a named role |
 | `utility` | `gpt-5.6-luna` | medium | Read-only bounded utility work with objective verification |
 | `explorer` | `gpt-5.6-terra` | medium | Read-only mapping and broad evidence scans |
-| `worker` | `gpt-5.6-luna` | xhigh | Bounded implementation after scope is clear |
+| `worker` | `gpt-5.6-luna` | xhigh | Bounded implementation and Git/index mutation after scope is clear |
 | `reviewer` | `gpt-5.6-terra` | high | Read-only correctness, security, and test-risk review |
 | `evidence-auditor` | `gpt-5.6-terra` | xhigh | Read-only lifecycle and claim verification |
 
 ### Delegation Contract
 
+- Name every native subagent `<key>_<model-label>_<effort-code>_<role>_<slice>`, even outside `$task-coordinator`. Use lowercase model labels and effort codes: `n`=none, `min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh, `max`=max, `ult`=ultra.
+- Set the host's spawn name field (e.g. `task_name`) from the selected runtime model/effort, e.g. `review_terra_hi_reviewer_auth`. A role name or prompt label alone is insufficient. Pass this naming rule to visible children that delegate.
 - The lead owns decomposition, sequencing, user updates, integration, verification, recovery, and overall completion. Use `$task-coordinator` for independent outcomes or ongoing external-state follow-up.
 - Visible child tasks own independently verifiable outcomes. They may use bounded native subagents and ask the user directly when approval is needed. The lead tracks the blocker without proxying approval.
 - Native subagents own bounded slices and return results to their parent. They do not coordinate with peers, discover peer IDs, spawn descendants, change scope, or declare overall completion. If approval is needed, report the blocked action to the parent; do not assume a direct user channel exists.
-- Delegate only when cost, parallelism, context isolation, specialization, or independent verification justifies it. Use the minimum useful number of agents; an independent reviewer alone is valid.
-- Give each child its outcome, owned files or resources, constraints, dependencies, verification, existing authorization, and stopping condition. Keep concurrent write sets disjoint. Load only skills relevant to the assigned work.
-- Explicitly select model and effort. Briefly explain the route, then reassess material follow-ups. Escalate for a demonstrated capability gap; missing access or approval needs resolution, not a stronger model. Configuration edits affect new agents, not active ones.
+- Delegate when cost, parallelism, context isolation, specialization, or independent verification justifies it. Use the minimum useful number; an independent reviewer alone is valid. Reuse a capable Luna owner, otherwise hand off once at implementation or publication boundary.
+- Give each child its outcome, owned files/resources, constraints, dependencies, verification, authorization, and stopping condition. Keep write sets disjoint; load only relevant skills.
+- Explicitly select model and effort, briefly explain the route, and reassess material follow-ups. Escalate for a demonstrated capability gap; missing access or approval needs resolution, not a stronger model. Configuration edits affect new agents, not active ones.
 - Reuse idle agents when their route still fits. Request status or redirect before interrupting; stop immediately for unsafe work or conflicting writes.
-- Check returned evidence and integrate the results before declaring completion. Distinguish verified outcomes from blocked or unverified work; task creation and a child's success claim are not completion.
-- Treat model tiers as local routing policy. Verify availability and pricing from official sources before making current claims.
+- Check returned evidence before completion; distinguish verified, blocked, and unverified outcomes. Task creation and a child's success claim are not completion.
+- Treat tiers as local routing policy; verify availability and pricing before claims.
 
 ## Non-Negotiable Gates
 

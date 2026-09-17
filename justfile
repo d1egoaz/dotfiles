@@ -81,7 +81,7 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills audit-test codex-agents-test codex-context-test codex-current-model-test git-signing-test
+check: fmt check-skills audit-test codex-agents-test codex-context-test codex-current-model-test codex-model-usage-test git-signing-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -93,6 +93,11 @@ audit-test:
 [private]
 codex-current-model-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_current_model.py
+
+# Test routing audit counts and scheduled summaries with synthetic metadata only.
+[private]
+codex-model-usage-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_model_usage.py
 
 # Verify profile-specific Git signing, local verification, and HTTPS publication wiring.
 [private]
