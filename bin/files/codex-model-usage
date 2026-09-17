@@ -3,7 +3,6 @@
 
 require "json"
 require "optparse"
-require "date"
 require "time"
 
 DAY_SECONDS = 86_400
@@ -16,13 +15,18 @@ DEFAULT_SESSION_DIRS = [
   File.expand_path("~/.codex/archived_sessions"),
 ].freeze
 VALUE_EFFORTS = %w[high xhigh max].freeze
+UTILITY_EFFORTS = %w[low medium].freeze
 SOL_QUALITY_EFFORTS = %w[high xhigh max ultra].freeze
 VERY_HIGH_EFFORTS = %w[xhigh max ultra].freeze
+# Codex writes the envelope type before the payload. Match that header only:
+# whitespace is valid, and a nested type in a message must not trigger parsing.
+TURN_CONTEXT_HEADER = /\A\s*\{\s*(?:"timestamp"\s*:\s*"[^"\\]*"\s*,\s*)?"type"\s*:\s*"turn_context"\s*[,}]/
 
 options = {
   roots: [],
   session_dirs: [],
   json: false,
+  summary: false,
   now: Time.now.utc,
 }
 
@@ -39,6 +43,10 @@ OptionParser.new do |parser|
 
   parser.on("--json", "Emit machine-readable JSON") do
     options[:json] = true
+  end
+
+  parser.on("--summary", "Emit the compact scheduled-audit report") do
+    options[:summary] = true
   end
 
   parser.on("--now TIMESTAMP", "Override the current time with an ISO 8601 timestamp") do |timestamp|
@@ -61,52 +69,59 @@ roots = roots.map do |path|
 end.uniq.sort_by { |path| -path.length }
 now = options[:now]
 cutoff = now - (14 * DAY_SECONDS)
-earliest_file_date = (cutoff - DAY_SECONDS).to_date
 parse_errors = 0
+duplicate_turn_contexts = 0
 turns_by_id = {}
 
 candidate_files = existing_session_dirs.flat_map do |directory|
   Dir.glob(File.join(directory, "**", "*.jsonl"))
-end
+end.uniq.sort
 
 candidate_files.each do |path|
-  if (match = File.basename(path).match(/rollout-(\d{4}-\d{2}-\d{2})T/))
-    begin
-      next if Date.iso8601(match[1]) < earliest_file_date
-    rescue Date::Error
-      # Fall through and inspect files with malformed date-like names.
-    end
-  end
-
+  # A session created months ago can be resumed today. Filter record timestamps,
+  # never the creation date in the filename.
   File.foreach(path) do |line|
-    next unless line.include?('"type":"turn_context"')
+    next unless TURN_CONTEXT_HEADER.match?(line)
 
     begin
       record = JSON.parse(line)
       next unless record["type"] == "turn_context"
 
       payload = record.fetch("payload")
+      raise TypeError, "payload must be an object" unless payload.is_a?(Hash)
+
       timestamp = Time.iso8601(record.fetch("timestamp")).utc
       next if timestamp < cutoff || timestamp > now
 
-      cwd = payload["cwd"].to_s.delete_suffix(File::SEPARATOR)
+      cwd = payload.fetch("cwd")
+      raise TypeError, "cwd must be an absolute path" unless cwd.is_a?(String) && cwd.start_with?(File::SEPARATOR)
+
+      cwd = cwd.delete_suffix(File::SEPARATOR) unless cwd == File::SEPARATOR
       scope_root = roots.find do |candidate|
-        cwd == candidate || cwd.start_with?("#{candidate}#{File::SEPARATOR}")
+        candidate == File::SEPARATOR || cwd == candidate || cwd.start_with?("#{candidate}#{File::SEPARATOR}")
       end
       next unless scope_root
 
-      model = payload["model"].to_s
-      next if model.empty? || model == "codex-auto-review"
+      model = payload.fetch("model")
+      raise TypeError, "model must be a nonempty string" unless model.is_a?(String) && !model.empty?
+      next if model == "codex-auto-review"
 
-      turn_id = payload["turn_id"].to_s
-      next if turn_id.empty?
+      turn_id = payload.fetch("turn_id")
+      raise TypeError, "turn_id must be a nonempty string" unless turn_id.is_a?(String) && !turn_id.empty?
 
-      turns_by_id[turn_id] ||= {
+      effort = payload["effort"]
+      raise TypeError, "effort must be a string or null" unless effort.nil? || effort.is_a?(String)
+
+      turn = {
         timestamp: timestamp,
         scope_root: scope_root,
         model: model,
-        effort: payload["effort"].to_s.empty? ? "unknown" : payload["effort"].to_s,
+        effort: effort.nil? || effort.empty? ? "unknown" : effort,
       }
+      existing = turns_by_id[turn_id]
+      duplicate_turn_contexts += 1 if existing
+      # Keep the earliest context for a turn, independent of archive/file order.
+      turns_by_id[turn_id] = turn if existing.nil? || timestamp < existing[:timestamp]
     rescue JSON::ParserError, KeyError, TypeError, ArgumentError
       parse_errors += 1
     end
@@ -141,6 +156,7 @@ def summarize(turns)
   {
     "total_turns" => turns.length,
     "gpt_5_6_turns" => gpt56_total,
+    "other_model_turns" => turns.length - gpt56_total,
     "models" => models,
     "efforts" => efforts,
     "model_efforts" => model_efforts,
@@ -152,10 +168,16 @@ def summarize(turns)
       turn[:model] == "gpt-5.6-luna" && VALUE_EFFORTS.include?(turn[:effort])
     end,
     "luna_utility_turns" => gpt56_turns.count do |turn|
-      turn[:model] == "gpt-5.6-luna" && %w[low medium].include?(turn[:effort])
+      turn[:model] == "gpt-5.6-luna" && UTILITY_EFFORTS.include?(turn[:effort])
+    end,
+    "luna_unclassified_effort_turns" => gpt56_turns.count do |turn|
+      turn[:model] == "gpt-5.6-luna" && !(VALUE_EFFORTS + UTILITY_EFFORTS).include?(turn[:effort])
     end,
     "sol_below_high_turns" => gpt56_turns.count do |turn|
-      turn[:model] == "gpt-5.6-sol" && !SOL_QUALITY_EFFORTS.include?(turn[:effort])
+      turn[:model] == "gpt-5.6-sol" && UTILITY_EFFORTS.include?(turn[:effort])
+    end,
+    "sol_unclassified_effort_turns" => gpt56_turns.count do |turn|
+      turn[:model] == "gpt-5.6-sol" && !(SOL_QUALITY_EFFORTS + UTILITY_EFFORTS).include?(turn[:effort])
     end,
     "sol_quality_turns" => gpt56_turns.count do |turn|
       turn[:model] == "gpt-5.6-sol" && SOL_QUALITY_EFFORTS.include?(turn[:effort])
@@ -211,7 +233,71 @@ def build_trend(windows)
     "status" => status,
     "sol_share_delta_percentage_points" => sol_delta,
     "premium_model_share_delta_percentage_points" => premium_delta,
+    "mixed_routing_signals" => !sol_delta.nil? && !premium_delta.nil? && sol_delta * premium_delta < 0,
   }
+end
+
+def format_percentage(value)
+  value.nil? ? "n/a" : format("%.1f%%", value)
+end
+
+def format_delta(value)
+  value.nil? ? "n/a" : format("%+.1f pp", value)
+end
+
+def format_counts(counts)
+  return "none" if counts.empty?
+
+  counts.map { |name, count| "#{name}=#{count}" }.join(", ")
+end
+
+def summary_lines(report)
+  windows = report.fetch("windows")
+  current = windows.fetch("current_7_days")
+  previous = windows.fetch("previous_7_days")
+  daily = windows.fetch("last_24_hours")
+  trend = report.fetch("trend")
+  shares = %w[luna terra sol premium_model].map do |name|
+    label = name == "premium_model" ? "premium (Terra + Sol)" : name.capitalize
+    "#{label} #{format_percentage(current.fetch("#{name}_share_pct"))} vs #{format_percentage(previous.fetch("#{name}_share_pct"))}"
+  end.join("; ")
+  direction = case trend.fetch("status")
+              when "cheaper_mix" then "toward a cheaper mix by premium share"
+              when "costlier_mix" then "toward a costlier mix by premium share"
+              when "flat" then "flat premium share"
+              else "insufficient GPT-5.6 baseline"
+              end
+  direction += "; mixed signals: Sol moved the opposite way" if trend.fetch("mixed_routing_signals")
+
+  root_reports = report.fetch("by_root")
+  root_lines = root_reports.map do |root, data|
+    summary = data.fetch("windows").fetch("current_7_days")
+    "Root #{root}, current 7d: #{summary.fetch("total_turns")} turns; #{format_counts(summary.fetch("models"))}."
+  end
+  # The usual two-root report has 11 lines; retain the cap for extra roots.
+  root_lines = [root_lines.join(" | ")] if root_lines.length > 2
+  candidate = root_reports.max_by do |_, data|
+    data.fetch("windows").fetch("current_7_days").fetch("sol_below_high_turns")
+  end
+  candidate_count = candidate.last.fetch("windows").fetch("current_7_days").fetch("sol_below_high_turns")
+  review = if candidate_count.positive?
+             "Review candidate: #{candidate.first} has #{candidate_count} Sol low/medium turns; check whether that route was intentional."
+           else
+             "Review: no Sol low/medium turns; metadata alone cannot identify safe downgrades."
+           end
+
+  [
+    "Codex routing audit | #{report.fetch("generated_at")} | parse errors: #{report.fetch("parse_errors")} | missing session dirs: #{report.fetch("missing_session_dirs").length}",
+    "Rolling 7d turns current/previous: #{current.fetch("total_turns")}/#{previous.fetch("total_turns")}; shares use GPT-5.6 #{current.fetch("gpt_5_6_turns")}/#{previous.fetch("gpt_5_6_turns")} (other models #{current.fetch("other_model_turns")}/#{previous.fetch("other_model_turns")}).",
+    "7d shares (current vs previous): #{shares}.",
+    "Routing direction: #{direction}; premium delta #{format_delta(trend.fetch("premium_model_share_delta_percentage_points"))}; Sol delta #{format_delta(trend.fetch("sol_share_delta_percentage_points"))}.",
+    "Last 24h combined (#{daily.fetch("total_turns")} turns): #{format_counts(daily.fetch("model_efforts"))}.",
+    "Luna 7d: value (high/xhigh/max) #{current.fetch("luna_value_turns")}; utility (low/medium) #{current.fetch("luna_utility_turns")}; unclassified effort #{current.fetch("luna_unclassified_effort_turns")}.",
+    "Sol 7d: quality (high/xhigh/max/ultra) #{current.fetch("sol_quality_turns")}; below-high (low/medium) #{current.fetch("sol_below_high_turns")}; unclassified effort #{current.fetch("sol_unclassified_effort_turns")}.",
+    *root_lines,
+    review,
+    "Turn counts are a routing proxy, not billed token or dollar usage. Effort labels and routing direction are not quality verdicts.",
+  ]
 end
 
 windows = build_windows(turns, now)
@@ -228,23 +314,40 @@ by_root = roots.each_with_object({}) do |scope_root, result|
 end
 
 report = {
+  "schema_version" => 2,
   "generated_at" => now.iso8601,
   "scope_roots" => roots,
   "privacy" => "turn_context metadata only; message records are skipped",
   "excluded_models" => ["codex-auto-review"],
   "parse_errors" => parse_errors,
+  "duplicate_turn_contexts" => duplicate_turn_contexts,
+  "missing_session_dirs" => session_dirs - existing_session_dirs,
+  "definitions" => {
+    "share_denominator" => "All gpt-5.6-* turns in the same window; other models are excluded from shares, but included in total turns and model breakdowns.",
+    "premium_models" => %w[gpt-5.6-terra gpt-5.6-sol],
+    "effort_buckets" => "Value, utility, and quality are effort labels only, not measured outcomes. Missing or unrecognized efforts are unclassified, never below-high.",
+    "routing_direction" => "Premium-share direction only; opposing Sol-share movement is a mixed signal. No prices, token volumes, quality, or safe downgrade decisions are inferred.",
+    "turn_counts" => "Unique turn_id values across active and archived sessions, using the earliest in-window context per turn; a routing proxy, not billed token or dollar usage.",
+  },
+  "window_bounds" => {
+    "last_24_hours" => { "start_inclusive" => (now - DAY_SECONDS).iso8601, "end_inclusive" => now.iso8601 },
+    "current_7_days" => { "start_inclusive" => (now - 7 * DAY_SECONDS).iso8601, "end_inclusive" => now.iso8601 },
+    "previous_7_days" => { "start_inclusive" => cutoff.iso8601, "end_exclusive" => (now - 7 * DAY_SECONDS).iso8601 },
+  },
   "windows" => windows,
   "trend" => trend,
   "by_root" => by_root,
 }
+report["summary_lines"] = summary_lines(report)
 
 if options[:json]
   puts JSON.pretty_generate(report)
   exit
 end
 
-def format_percentage(value)
-  value.nil? ? "n/a" : format("%.1f%%", value)
+if options[:summary]
+  puts report.fetch("summary_lines")
+  exit
 end
 
 def print_window(label, summary)
@@ -272,7 +375,8 @@ sol_delta = trend.fetch("sol_share_delta_percentage_points")
 premium_delta = trend.fetch("premium_model_share_delta_percentage_points")
 sol_delta_text = sol_delta.nil? ? "n/a" : format("%+.1f pp", sol_delta)
 premium_delta_text = premium_delta.nil? ? "n/a" : format("%+.1f pp", premium_delta)
-puts "Cost mix: #{trend.fetch("status")} (Terra + Sol share delta: #{premium_delta_text}; Sol delta: #{sol_delta_text})"
+puts "Routing direction by premium share: #{trend.fetch("status")} (Terra + Sol share delta: #{premium_delta_text}; Sol delta: #{sol_delta_text})"
+puts "Mixed routing signals: premium and Sol shares moved in opposite directions" if trend.fetch("mixed_routing_signals")
 current_7_days = windows.fetch("current_7_days")
 puts "Current 7-day routing: Luna value=#{current_7_days.fetch("luna_value_turns")}, Luna utility=#{current_7_days.fetch("luna_utility_turns")}, Sol quality=#{current_7_days.fetch("sol_quality_turns")}, Sol below high=#{current_7_days.fetch("sol_below_high_turns")}, xhigh/max/ultra=#{current_7_days.fetch("very_high_effort_turns")}"
 puts "Current 7 days by root:"
@@ -281,4 +385,5 @@ by_root.each do |scope_root, root_report|
   model_counts = summary.fetch("models").map { |model, count| "#{model}=#{count}" }.join(", ")
   puts "  #{scope_root}: #{summary.fetch("total_turns")} turns; #{model_counts.empty? ? "no models" : model_counts}; trend=#{root_report.fetch("trend").fetch("status")}"
 end
+puts "Turn counts are a routing proxy, not billed token or dollar usage. Effort labels are not quality verdicts."
 warn "Warning: skipped #{parse_errors} malformed turn_context records" if parse_errors.positive?
