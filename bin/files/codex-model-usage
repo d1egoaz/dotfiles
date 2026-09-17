@@ -19,8 +19,9 @@ UTILITY_EFFORTS = %w[low medium].freeze
 SOL_QUALITY_EFFORTS = %w[high xhigh max ultra].freeze
 VERY_HIGH_EFFORTS = %w[xhigh max ultra].freeze
 # Codex writes the envelope type before the payload. Match that header only:
-# whitespace is valid, and a nested type in a message must not trigger parsing.
-TURN_CONTEXT_HEADER = /\A\s*\{\s*(?:"timestamp"\s*:\s*"[^"\\]*"\s*,\s*)?"type"\s*:\s*"turn_context"\s*[,}]/
+# whitespace and the optional ordinal are valid, while a nested type in a
+# message must not trigger parsing.
+TURN_CONTEXT_HEADER = /\A\s*\{\s*(?:"timestamp"\s*:\s*"[^"\\]*"\s*,\s*)?(?:"ordinal"\s*:\s*\d+\s*,\s*)?"type"\s*:\s*"turn_context"\s*[,}]/
 
 options = {
   roots: [],

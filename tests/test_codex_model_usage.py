@@ -172,6 +172,21 @@ class CodexModelUsageTest(unittest.TestCase):
         self.assertEqual(report["windows"]["current_7_days"]["total_turns"], 2)
         self.assertNotIn("MESSAGE_SENTINEL", result.stdout + result.stderr)
 
+    def test_ordinal_between_timestamp_and_type_is_counted(self):
+        record = context("with-ordinal")
+        record = {
+            "timestamp": record["timestamp"],
+            "ordinal": 42,
+            "type": record["type"],
+            "payload": record["payload"],
+        }
+        self.write_records([record], compact=True)
+
+        report = self.report()
+
+        self.assertEqual(report["parse_errors"], 0)
+        self.assertEqual(report["windows"]["current_7_days"]["total_turns"], 1)
+
     def test_unknown_efforts_are_never_counted_as_below_high(self):
         records = [context(str(i), effort=effort) for i, effort in enumerate(
             ["low", "medium", "high", "xhigh", "max", "ultra", None, "", "future"]
