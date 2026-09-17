@@ -11,3 +11,8 @@ event_type="$(printf '%s' "$payload" | jq -r '.type // empty' 2>/dev/null)"
 # It exits immediately when the relay is already trusted or when the caller is
 # relay-hosted, so this is a no-op on ordinary turn ends.
 "/Users/diegoalvarez/code/codex-relay/tools/relay-trusted/relay-trusted-ensure.sh" -t notify >/dev/null 2>&1 &
+
+# Hooks need per-definition trust and this path does not, so it is the one
+# trigger that always fires. When it happens to carry app ancestry it also
+# arms the poller.
+"/Users/diegoalvarez/code/codex-relay/tools/relay-trusted/relay-trust-watch-ensure.sh" >/dev/null 2>&1 &
