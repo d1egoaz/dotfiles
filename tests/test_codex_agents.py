@@ -121,7 +121,7 @@ class CodexAgentsTest(unittest.TestCase):
             )
 
     def test_tracked_agents_are_portable(self):
-        allowed_keys = {
+        required_keys = {
             "name",
             "description",
             "model",
@@ -136,7 +136,8 @@ class CodexAgentsTest(unittest.TestCase):
             with path.open("rb") as agent_file:
                 agent = tomllib.load(agent_file)
 
-            self.assertEqual(set(agent), allowed_keys, path.name)
+            # Roles inherit the active provider, so they must not pin one.
+            self.assertEqual(set(agent), required_keys, path.name)
             for marker in forbidden_markers:
                 self.assertNotIn(marker, text, f"{path.name}: {marker}")
 

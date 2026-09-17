@@ -1,0 +1,193 @@
+#!/usr/bin/env python3
+"""Regenerate the OpenCode Go model catalog from the installed Codex build.
+
+The catalog replaces the model list that the Codex desktop app and CLI show, so
+it must carry an entry for DeepSeek V4.1 Flash. Codex reads the entry's tool
+plumbing from the catalog, and the 5.6-era entries request a GPT-only tool
+surface (code-mode-only tools plus responses-lite) that DeepSeek cannot speak:
+it answers by emitting its native DSML markup as plain text instead of calling
+tools. Cloning a vanilla entry avoids that, so this picks the newest bundled
+entry that does not request the GPT-only surface.
+
+The catalog also decides what the picker offers, so it lists the OpenCode Go
+models that answer the Responses wire alongside the plan's own models, which the
+gateway passes through to ChatGPT. One picker, both providers.
+
+Each entry carries a bounded note telling the model to call plugin tools
+directly. Tool discovery (`tool_search`) is absent on third-party providers, so
+without that note the model follows the plugin skill's "discover tools first"
+step, gets nothing back, and reports the plugin as unavailable.
+
+The output path defaults to ~/.codex/ocg-catalog.json and is never written into
+a repository. The activation runs this on personal machines; run it by hand
+after a Codex upgrade, then restart the app server.
+"""
+
+import json
+import os
+import pathlib
+import shutil
+import subprocess
+import sys
+
+MODEL_ID = "deepseek-v4.1-flash"
+DISPLAY_NAME = "DeepSeek V4.1 Flash"
+DESCRIPTION = "Open coding model served through the OpenCode Go subscription."
+CONTEXT_WINDOW = 1000000
+PLUGIN_NOTE = (
+    "\n\n## Plugin tools on this provider\n"
+    "Tool discovery is unavailable here: `tool_search` returns no results, and "
+    "that is not evidence that a plugin is missing. When a task needs the Chrome "
+    "or Computer Use plugin, call its tools directly through the `node_repl` MCP "
+    "server instead of searching for them first.\n"
+)
+
+# Display-name prefixes. The picker shows one flat list, so each entry names the
+# provider it will be routed to.
+OPENAI_PREFIX = "[OpenAI] "
+OPENCODE_PREFIX = "[OpenCode Go] "
+
+# Models the OpenCode Go subscription serves over the Responses wire, in picker
+# order: the first entry is the default. Context windows come from models.dev.
+#
+# Verified 2026-09-16 against https://opencode.ai/zen/go/v1/responses. Only the
+# DeepSeek family, gpt-5.6-luna, and grok-4.6 answer on that wire. Every other
+# OpenCode Go model fails there: GLM, Kimi K2.x, MiMo, Hy, LongCat, omen-alpha,
+# and union-alpha return 500, while MiniMax, Qwen, Kimi K3, and grok-4.5 are
+# rejected as "not supported for format openai" because they speak the Anthropic
+# wire. Re-probe before adding anything here.
+#
+# Deliberately excluded: the `*-contributor` models, which answer on this wire
+# but are discounted in exchange for training on your prompts. `gpt-5.6-luna` is
+# also left out: the same name exists on both sides, the gateway sends it to
+# ChatGPT, and the native entry already covers it.
+VISIBLE_MODELS = (
+    ("deepseek-v4.1-flash", "DeepSeek V4.1 Flash", 1000000),
+    ("deepseek-v4-pro", "DeepSeek V4 Pro", 1000000),
+    ("grok-4.6", "Grok 4.6", 500000),
+    ("deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision", 1000000),
+)
+# Written outside the repository on purpose: the entries embed the prompt text
+# that ships inside the Codex binary, and the file churns with every Codex
+# version. Keeping it generated means public diffs stay small.
+DEFAULT_OUT = pathlib.Path(os.path.expanduser("~/.codex/ocg-catalog.json"))
+CODEX_CANDIDATES = ("codex", "/opt/homebrew/bin/codex",
+                    "/Applications/ChatGPT.app/Contents/Resources/codex",
+                    "/Applications/Codex.app/Contents/Resources/codex")
+
+
+def resolve_codex() -> tuple[str, dict]:
+    """Resolve a Codex binary that can emit the bundled model catalog.
+
+    PATH often resolves a stale CLI here: a Homebrew `codex` shadows the
+    app-bundled one, and that build has no `debug models` subcommand. Probe each
+    candidate instead of trusting the first match, so an old binary cannot break
+    catalog generation.
+    """
+    override = os.environ.get("CODEX_BIN")
+    seen: list[str] = []
+    for candidate in ((override,) if override else ()) + CODEX_CANDIDATES:
+        found = shutil.which(candidate)
+        if not found or found in seen:
+            continue
+        seen.append(found)
+        result = subprocess.run(
+            [found, "debug", "models", "--bundled"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0:
+            return found, json.loads(result.stdout)
+    sys.exit(
+        "codex-opencode-go-catalog: no codex binary exposes `debug models`; "
+        "set CODEX_BIN to the Codex app's bundled binary"
+    )
+
+
+def template_entry(models: list) -> dict:
+    """Pick a bundled entry without the GPT-only tool surface."""
+    def plain(entry: dict) -> bool:
+        return not entry.get("tool_mode") and not entry.get("use_responses_lite")
+
+    neutral = [m for m in models if plain(m)]
+    if not neutral:
+        sys.exit(
+            "codex-opencode-go-catalog: no bundled entry avoids the GPT-only tool "
+            "surface; inspect `codex debug models --bundled` before regenerating"
+        )
+    # Verified against a real tool call. Newest first; any remaining neutral
+    # entry is an acceptable fallback.
+    for slug in ("gpt-5.5", "gpt-5.4", "gpt-5.4-mini"):
+        match = next((m for m in neutral if m.get("slug") == slug), None)
+        if match is not None:
+            return match
+    listed = [m for m in neutral if m.get("visibility") == "list"]
+    return sorted(listed or neutral, key=lambda m: str(m.get("slug")), reverse=True)[0]
+
+
+def build_entry(template: dict, slug: str, display_name: str, context_window: int, priority: int) -> dict:
+    """Clone a bundled entry and re-point it at an OpenCode Go model."""
+    entry = json.loads(json.dumps(template))
+    entry.update(
+        {
+            "slug": slug,
+            "display_name": f"{OPENCODE_PREFIX}{display_name}",
+            "description": f"{display_name} served through the OpenCode Go subscription.",
+            "context_window": context_window,
+            "max_context_window": context_window,
+            "priority": priority,
+            "visibility": "list",
+            "input_modalities": ["text", "image"],
+        }
+    )
+    return entry
+
+
+def main() -> int:
+    _binary, catalog = resolve_codex()
+    models = catalog["models"]
+    template = template_entry(models)
+
+    visible = [
+        build_entry(template, slug, name, context, index)
+        for index, (slug, name, context) in enumerate(VISIBLE_MODELS, start=1)
+    ]
+
+    for entry in visible:
+        messages = entry.get("model_messages")
+        if isinstance(messages, dict) and messages.get("instructions_template"):
+            messages["instructions_template"] += PLUGIN_NOTE
+        elif entry.get("base_instructions"):
+            entry["base_instructions"] += PLUGIN_NOTE
+        else:
+            sys.exit(
+                "codex-opencode-go-catalog: template entry carries no instructions "
+                "to extend; inspect `codex debug models --bundled` before regenerating"
+            )
+
+    # Native entries keep the bundled visibility, so the plan's own models stay
+    # in the picker and the gateway passes them through to ChatGPT. Any native
+    # model that is also exposed above is dropped to avoid a duplicate slug.
+    exposed = {slug for slug, _, _ in VISIBLE_MODELS}
+    natives = [model for model in models if model.get("slug") not in exposed]
+    for model in natives:
+        model["display_name"] = f"{OPENAI_PREFIX}{model.get('display_name') or model['slug']}"
+    catalog["models"] = visible + natives
+
+    out = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
+    out.parent.mkdir(parents=True, exist_ok=True)
+    tmp = out.with_name(out.name + ".tmp")
+    tmp.write_text(json.dumps(catalog, indent=2) + "\n", encoding="utf-8")
+    # Replace rather than write through: an earlier layout symlinked this path
+    # into a checkout, and following it would write into that repository.
+    os.replace(tmp, out)
+    print(
+        f"codex-opencode-go-catalog: wrote {out} "
+        f"(template: {template.get('slug')}, visible: {len(visible)})"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
