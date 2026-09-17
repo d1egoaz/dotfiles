@@ -35,6 +35,23 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/diegoalvarez/code/codex-relay/tools/relay-trusted/relay-trusted-ensure.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "/Users/diegoalvarez/code/codex-relay/tools/relay-trusted/relay-trust-watch-ensure.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }
