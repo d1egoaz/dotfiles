@@ -230,7 +230,12 @@ enabled = false
 # features follow the active provider. A custom provider cannot combine that
 # flag with env_key or command-backed auth, which is why the key lives in the
 # gateway instead.
-[model_providers.opencode-go]
+#
+# Do not name this provider `opencode-go`. The codex-relay service owns that id
+# on the personal mini: it appends its own `[model_providers.opencode-go]` block
+# with an `env_key` after every rebuild, and fails closed when an id it selects
+# is defined without one.
+[model_providers.opencode-gateway]
 name = "OpenCode Go (local gateway)"
 base_url = "http://127.0.0.1:8799/v1"
 wire_api = "responses"

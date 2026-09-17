@@ -72,7 +72,8 @@ VISIBLE_MODELS = (
 # version. Keeping it generated means public diffs stay small.
 DEFAULT_OUT = pathlib.Path(os.path.expanduser("~/.codex/ocg-catalog.json"))
 CODEX_CANDIDATES = ("codex", "/opt/homebrew/bin/codex",
-                    "/Applications/ChatGPT.app/Contents/Resources/codex")
+                    "/Applications/ChatGPT.app/Contents/Resources/codex",
+                    "/Applications/Codex.app/Contents/Resources/codex")
 
 
 def codex_binary() -> str:

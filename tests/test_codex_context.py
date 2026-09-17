@@ -309,7 +309,8 @@ class CodexContextPolicyTest(unittest.TestCase):
 
     def test_profile_composition_keeps_shared_config_before_fragment(self):
         xdg = XDG_NIX.read_text()
-        self.assertIn('codexProfileFile = if profile == "office" then "work.local.toml" else "personal.toml"', xdg)
+        self.assertIn('profileFile = "work.local.toml";', xdg)
+        self.assertIn('profileFile = "personal.toml";', xdg)
         self.assertLess(xdg.index('cat "$SHARED"'), xdg.index('cat "$PROFILE_FILE"'))
 
 

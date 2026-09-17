@@ -289,7 +289,7 @@ in
       printf 'model = "%s"\n' "$CODEX_LEAD_MODEL"
       printf 'model_reasoning_effort = "%s"\n' "$CODEX_LEAD_REASONING_EFFORT"
       if [ "$CODEX_OPENCODE_GO" = "1" ]; then
-        printf 'model_provider = "opencode-go"\n'
+        printf 'model_provider = "opencode-gateway"\n'
         if [ -f "$CATALOG" ]; then
           printf 'model_catalog_json = "%s"\n' "$CATALOG"
         fi
