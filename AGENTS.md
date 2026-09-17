@@ -21,11 +21,11 @@ Run commands from the repository root with `just`.
 
 ## Profiles
 
-| Username | Host | Profile | Codex lead |
+| Username | Host | Profile | Codex lead route |
 |---|---|---|---|
-| `diego.alvarez` | `office-mbp` | office | Sol xhigh |
-| `diego` | `personal-mbp` | personal | DeepSeek V4.1 Flash high (OpenCode Go) |
-| `diegoalvarez` | `personal-mini` | personal | DeepSeek V4.1 Flash high (OpenCode Go) |
+| `diego.alvarez` | `office-mbp` | office | frontier / xhigh |
+| `diego` | `personal-mbp` | personal | frontier / high (OpenCode Go) |
+| `diegoalvarez` | `personal-mini` | personal | frontier / high (OpenCode Go) |
 
 Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profile settings live in `nix/profiles/`, and host-specific applications live in `Brewfile.<host>`.
 
@@ -38,7 +38,8 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Personal Codex profile | `config/codex/profiles/personal.toml` |
 | Office Codex profile | ignored `config/codex/profiles/work.local.toml` |
 | OpenCode Go picker models | `bin/files/codex-opencode-go-catalog` |
-| Native Codex roles | `config/codex/agents/*.toml` |
+| Agent routing registry | `nix/data/agent-routing.toml` |
+| Generated Codex roles | `config/codex/agents/generated/<profile>/*.toml` |
 | Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
 | Shared skills | `config/agents/skills/multi-agent-team/` |
 | Office-only skills | ignored `config/agents/skills/work.local/` |
@@ -46,7 +47,7 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Home Manager links and generated Codex config | `nix/home-manager/config/xdg.nix` |
 | Encrypted local state | `secrets/local-state.yaml` |
 
-Edit source files, not generated targets. Home Manager composes `~/.codex/config.toml` from the shared config, the selected profile fragment, and the profile's lead model. Do not overwrite that generated file directly.
+Edit source files, not generated targets. Home Manager composes `~/.codex/config.toml` from the shared config, the selected profile fragment, and the registry-selected lead route. Do not overwrite that generated file directly.
 
 Office-only endpoints, trust entries, hooks, approval rules, and skills must stay out of tracked shared files. `just switch` restores missing local state but does not encrypt edits. Use `just local-state-sync` when ignored office state changes.
 

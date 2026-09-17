@@ -6,7 +6,7 @@ files where possible:
 ```fish
 jq . config/codex/hooks.json >/dev/null
 taplo check config/codex/config.toml
-for file in config/codex/agents/*.toml; do taplo check "$file"; done
+for file in config/codex/agents/generated/{office,personal}/*.toml; do taplo check "$file"; done
 taplo check config/codex/profiles/personal.toml
 test ! -f config/codex/profiles/work.local.toml || taplo check config/codex/profiles/work.local.toml
 codex debug prompt-input hooks-json-smoke

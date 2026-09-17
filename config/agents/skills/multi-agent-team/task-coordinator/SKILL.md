@@ -5,45 +5,49 @@ description: Coordinate independent outcomes and ongoing external-state follow-u
 
 # Task Coordinator
 
-One lead owns goal, sequence, integration, verification, and completion.
-Apply [capability-routing.md](references/capability-routing.md) for
-implementation/publication handoff, including small changes. Keep one-step or
-tightly coupled judgment in the lead. Multiple files alone do not justify children.
-Explicit invocation does not require delegation.
+One lead owns goal, sequence, integration, and verification. Apply
+[capability-routing.md](references/capability-routing.md). Keep one-step or
+tightly coupled judgment stays in lead; multiple files do not justify
+children.
+
+Choose `economy`, `balanced`, or `frontier` from capability, then resolve it
+through the active Codex runtime. Record runtime, tier, model label, and
+requested/effective effort.
+
+Use `@spawn-subagent-economy`, `@spawn-subagent-balanced`, or
+`@spawn-subagent-frontier` for a generic native subagent; the parent handoff
+supplies outcome and constraints. Use canonical `@spawn-subagent-*`
+specialized launchers for fixed roles (see `capability-routing.md`).
+These names invoke native spawning, never visible child-task creation. Old role
+names remain compatibility aliases; new instructions use canonical names.
 
 ## Split and route
 
-1. Define the goal, outcomes, dependencies, and stopping condition.
-2. Use visible child tasks for independent outcomes the user can inspect and
-   approve. Use native subagents for bounded slices or independent review.
-   Delegate when the benefit exceeds its cost.
-3. Before delegation or a material reroute, read
-   [capability-routing.md](references/capability-routing.md). Select model and
-   effort explicitly and give a brief user-facing reason.
-4. Give every child the handoff below. Before creating visible tasks, read
-   [codex-task-creation.md](references/codex-task-creation.md).
-5. Use exposed host controls. If unavailable, say so;
-   keep outcomes visible in lead updates and use native subagents where useful.
-   Read [codex-controls.md](references/codex-controls.md) when operating controls.
+1. Define goal, outcomes, dependencies, and stopping condition.
+2. Use visible tasks for independent inspectable outcomes; use canonical
+   `@spawn-subagent-*` launchers for bounded slices or review. Never use a
+   native launcher as a visible task type.
+3. Before delegation/rerouting, read the routing reference, select tier and
+   effort, resolve runtime/model label, and explain both.
+4. Give every child the handoff below. Before visible tasks read
+   [codex-task-creation.md](references/codex-task-creation.md); read
+   [codex-controls.md](references/codex-controls.md) when operating controls.
 
 ## Handoff
 
-- Outcome and acceptance criteria.
-- Owned files/resources, constraints, dependencies. No concurrent writers
-  to the same files/resources.
-- Exact model and effort, relevant skills, and context.
-- Verification, existing authorization, approval boundary, and stopping condition.
+- Outcome, acceptance criteria, owned files/resources, constraints, and
+  dependencies with no concurrent writers.
+- Exact tier/model-label/effort, skills/context, verification, authorization,
+  approval boundary, and stopping condition.
 
-Visible tasks own outcomes through verification and report evidence to the lead.
-They ask the user directly for missing approval, then wait while other
-authorized work continues. Existing authorization remains valid; task creation
-adds none. The lead never proxies approval.
+Visible tasks own outcomes through verification and report evidence to the lead;
+they ask the user directly for missing approval. Creation adds no authorization.
 
-Native subagents return results or blockers only to their parent. They do not
+Native subagents return results or blockers to their parent. They do not
 peer-coordinate, spawn descendants, or declare overall completion.
 
 ## Finish
 
-Track outcome owner, route, dependencies, state, and evidence. On new evidence,
-resolve blockers, retry/reroute, and integrate. Verify acceptance/cross-task
-behavior; report blockers and unverified outcomes. Respect stopping condition.
+Track owner, route, dependencies, state, and evidence. On new evidence resolve
+blockers, retry/reroute, and integrate. Verify acceptance and cross-task
+behavior; report blockers/unverified outcomes and respect the stop condition.

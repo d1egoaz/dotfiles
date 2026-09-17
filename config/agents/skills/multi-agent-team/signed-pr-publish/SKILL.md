@@ -5,11 +5,10 @@ description: Sign commits and publish GitHub changes with exact AI attribution. 
 
 # Signed PR Publish
 
-Use for commits/publication; preserve unrelated work and authorization.
-Once the expected change, checked diff, and objective checks are clear, assign
-bounded implementation and the authorized publication workflow to Luna xhigh
-`worker`, including small one-file changes. Reuse a capable owner; simple
-changes still follow this route.
+Use for authorized commits/publication; preserve unrelated work.
+Assign the economy `worker` at xhigh once scope, checked diff, and objective
+checks are clear. Include `<model-label>` after the selected tier in native and
+visible task names; keep the exact model ID in runtime fields.
 
 Read [`references/commands.md`](references/commands.md) for templates/handoff.
 

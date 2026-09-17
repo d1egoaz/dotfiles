@@ -6,10 +6,12 @@
 }:
 
 let
-  piThinkingLevel = if profile == "office" then "xhigh" else "low";
+  routing = import ../../../data/agent-routing.generated.nix;
+  piRoute = routing.profiles.${profile}.pi;
+  piThinkingLevel = piRoute.effort;
   managedPiSettings = builtins.toJSON {
-    defaultProvider = "openai-codex";
-    defaultModel = "gpt-5.6-sol";
+    defaultProvider = piRoute.provider;
+    defaultModel = piRoute.model;
     defaultThinkingLevel = piThinkingLevel;
   };
 in

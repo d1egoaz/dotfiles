@@ -33,7 +33,11 @@ The profile and machine configuration are passed to Home Manager modules as `spe
 
 ## Codex Configuration And Hooks
 
-Shared Codex configuration lives in `config/codex/config.toml`. Home Manager prepends the selected lead model and appends one profile fragment:
+Shared Codex configuration lives in `config/codex/config.toml`. The canonical
+model routing registry is `nix/data/agent-routing.toml`; the generator renders
+profile-specific roles, runtime defaults, and the capability reference. Home
+Manager prepends the selected lead route and injects the selected fallback route
+before appending one profile fragment:
 
 - Office uses ignored `config/codex/profiles/work.local.toml` when present and otherwise warns before using shared config only.
 - Personal uses tracked `config/codex/profiles/personal.toml` and treats it as required.
@@ -48,7 +52,20 @@ The catalog entry also carries the tool plumbing Codex uses for that model, and 
 
 Because a model entry carries no provider, the gateway decides the route from the model id: the OpenCode Go ids are listed in its `DEFAULT_OPENCODE_MODELS` and everything else is passed through to ChatGPT with the caller's own credentials. That keeps one picker for both providers, so no switching or config reload is needed.
 
-Tracked native roles under `config/codex/agents/` define each role's model, reasoning effort, sandbox, and lead-mediated communication. Roles inherit the active provider, so they work on every profile without pinning anything machine-specific. The shared config defines the unnamed Luna-xhigh fallback and concurrency limits. Changing these files does not retier a running task.
+Generated native roles under `config/codex/agents/generated/<profile>/` define
+each role's resolved model, reasoning effort, sandbox, and lead-mediated
+communication. Change the registry and run `just agent-routing-generate`; do not
+edit generated files. Changing these files does not retier a running task.
+
+The generated `spawn-subagent-economy`, `spawn-subagent-balanced`, and
+`spawn-subagent-frontier` agents are stable generic native-subagent launchers.
+Their tier pins the resolved model and default effort, while the parent handoff
+supplies the outcome, constraints, authorization, and verification. They omit
+sandbox and approval overrides so the native subagent inherits the parent
+boundary. Specialized `spawn-subagent-*` agents add the utility, worker,
+explorer, reviewer, and evidence-auditor contracts. The legacy role names remain
+generated aliases for older chats. Use the launchers only for native subagents,
+not visible tasks; spawned instance names retain the resolved model label.
 
 Shared hooks live in `config/codex/hooks.json`; office may select ignored `config/codex/hooks.work.local.json`. Keep hooks out of `config.toml` because Codex loads both representations when both exist.
 
@@ -143,6 +160,8 @@ nix/
   flake-modules/darwin.nix
   lib/mkDarwinSystem.nix
   profiles/{base,office,personal,machines}.nix
+  data/agent-routing.toml
+  data/agent-routing.generated.nix
   home-manager/
     default.nix
     packages.nix

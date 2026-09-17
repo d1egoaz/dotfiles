@@ -154,7 +154,9 @@ class CodexContextPolicyTest(unittest.TestCase):
         coordinator_bundle = len((coordinator / "SKILL.md").read_text()) + sum(
             len(path.read_text()) for path in (coordinator / "references").glob("*.md")
         )
-        self.assertLessEqual(coordinator_bundle, 7000)
+        # Provider-neutral runtime resolution and scorecard fields live in the
+        # progressive-disclosure references, not always-loaded instructions.
+        self.assertLessEqual(coordinator_bundle, 9500)
 
         tfctl = SKILL_ROOT / "tfctl"
         common_tfctl = len((tfctl / "SKILL.md").read_text()) + len(
@@ -185,7 +187,9 @@ class CodexContextPolicyTest(unittest.TestCase):
         for contract in (
             "config/ai/AGENTS.md",
             "config/codex/config.toml",
-            "config/codex/agents/*.toml",
+            "config/codex/agents/generated/<profile>/*.toml",
+            "nix/data/agent-routing.toml",
+            "agent-routing-generate",
             "Stop`, `PermissionRequest`, `UserPromptSubmit`, and `SessionStart",
             "Changes affect new work only",
             "references/config-layering.md",
@@ -309,9 +313,9 @@ class CodexContextPolicyTest(unittest.TestCase):
 
     def test_profile_composition_keeps_shared_config_before_fragment(self):
         xdg = XDG_NIX.read_text()
-        self.assertIn('profileFile = "work.local.toml";', xdg)
-        self.assertIn('profileFile = "personal.toml";', xdg)
-        self.assertLess(xdg.index('cat "$SHARED"'), xdg.index('cat "$PROFILE_FILE"'))
+        self.assertIn('profileFile = if profile == "office" then "work.local.toml" else "personal.toml";', xdg)
+        self.assertIn('profile = if profile == "office" then "work" else "personal";', xdg)
+        self.assertLess(xdg.index('"$SHARED"'), xdg.index('cat "$PROFILE_FILE"'))
 
 
 class CodexContextAuditTest(unittest.TestCase):

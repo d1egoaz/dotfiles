@@ -1,4 +1,5 @@
 # AI Assistant Instructions
+
 <!-- Version: 1.10.0 | Updated: 2026-09-16 -->
 
 ## Instruction Resolution
@@ -20,31 +21,44 @@
 
 ## Model Routing
 
-Use one strong lead: office/work `gpt-5.6-sol` xhigh; personal `gpt-5.6-terra` xhigh. Keep one-step work and tightly coupled judgment with the lead. Once scope, expected change, and objective checks are clear, route bounded implementation and authorized publication to the Luna xhigh `worker`, including small one-file changes; keep coupled files in one worker.
+Use one strong lead selected by the active Codex runtime in
+`nix/data/agent-routing.toml`. Office Codex uses the frontier lead at xhigh;
+personal Codex uses the frontier lead at high.
+Keep one-step work and tightly coupled judgment with the lead. Once scope,
+expected change and objective checks are clear, route bounded implementation
+and authorized publication through the economy `worker` route.
 
-Choose the cheapest capable model and effort per delegated outcome, counting retries, review, latency, and wrong-result cost. Luna fits clear checked work; Terra fits exploration, synthesis, and correctness review; Sol fits deep ambiguity remaining after decomposition. Risk alone does not select a premium route.
+Choose the cheapest capable capability tier and effort per delegated outcome,
+counting retries, review, latency, and wrong-result cost. `economy` fits clear
+checked work; `balanced` fits exploration, synthesis, and correctness review;
+`frontier` fits deep ambiguity remaining after decomposition. Risk alone does
+not select a premium route.
 
-These are defaults, not mandatory routes. Use a named role only when its model, effort, and permissions fit; otherwise select an explicit route with the role's boundaries. Never silently inherit the lead model. If the host cannot select the route, keep the work in the lead or explain the alternative.
+Resolve the tier through the active Codex runtime before every delegation. Keep
+model label and requested/effective effort separate; put tier and model label
+in task titles and route explanations. Host controls resolve the exact ID.
 
-| Subagent | Model | Effort | Scope |
-|---|---|---:|---|
-| Unnamed fallback | `gpt-5.6-luna` | xhigh | Clear bounded work without a named role |
-| `utility` | `gpt-5.6-luna` | medium | Read-only bounded utility work with objective verification |
-| `explorer` | `gpt-5.6-terra` | medium | Read-only mapping and broad evidence scans |
-| `worker` | `gpt-5.6-luna` | xhigh | Bounded implementation and Git/index mutation after scope is clear |
-| `reviewer` | `gpt-5.6-terra` | high | Read-only correctness, security, and test-risk review |
-| `evidence-auditor` | `gpt-5.6-terra` | xhigh | Read-only lifecycle and claim verification |
+These are defaults, not mandatory routes. Use a named role when its tier,
+model, effort, and capabilities fit; otherwise use its explicit boundaries.
+Never silently inherit the lead model. If the host cannot select a route, keep
+the work in the lead or explain the alternative.
+
+Specialized native launchers are `@spawn-subagent-economy-check`,
+`@spawn-subagent-economy-implement`, `@spawn-subagent-balanced-explore`,
+`@spawn-subagent-balanced-review`, and `@spawn-subagent-balanced-audit`; their
+tier, effort, and sandbox contracts are defined in the routing registry.
 
 ### Delegation Contract
 
-- Name every native subagent `<key>_<model-label>_<effort-code>_<role>_<slice>`, even outside `$task-coordinator`. Use lowercase model labels and effort codes: `n`=none, `min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh, `max`=max, `ult`=ultra.
-- Set the host's spawn name field (e.g. `task_name`) from the selected runtime model/effort, e.g. `review_terra_hi_reviewer_auth`. A role name or prompt label alone is insufficient. Pass this naming rule to visible children that delegate.
+- Use `@spawn-subagent-economy`, `@spawn-subagent-balanced`, or `@spawn-subagent-frontier` for a generic native subagent whose outcome and constraints come entirely from the parent handoff. Use the specialized `@spawn-subagent-*` launchers above when a fixed role contract is appropriate.
+- Invoke these launchers only through native subagent spawning, never visible child-task creation. The old role names (`utility`, `worker`, `explorer`, `reviewer`, `evidence-auditor`) remain compatibility aliases; new coordinator instructions use canonical launchers.
+- Name every spawned instance `<key>_<tier>_<model-label>_<effort-code>_<role>_<slice>`. Set the host spawn name from the selected tier, runtime-resolved model label, and effort; a role name alone is insufficient. Pass this rule to children that delegate.
 - The lead owns decomposition, sequencing, user updates, integration, verification, recovery, and overall completion. Use `$task-coordinator` for independent outcomes or ongoing external-state follow-up.
-- Visible child tasks own independently verifiable outcomes. They may use bounded native subagents and ask the user directly when approval is needed. The lead tracks the blocker without proxying approval.
-- Native subagents own bounded slices and return results to their parent. They do not coordinate with peers, discover peer IDs, spawn descendants, change scope, or declare overall completion. If approval is needed, report the blocked action to the parent; do not assume a direct user channel exists.
-- Delegate when cost, parallelism, context isolation, specialization, or independent verification justifies it. Use the minimum useful number; an independent reviewer alone is valid. Reuse a capable Luna owner, otherwise hand off once at implementation or publication boundary.
-- Give each child its outcome, owned files/resources, constraints, dependencies, verification, authorization, and stopping condition. Keep write sets disjoint; load only relevant skills.
-- Explicitly select model and effort, briefly explain the route, and reassess material follow-ups. Escalate for a demonstrated capability gap; missing access or approval needs resolution, not a stronger model. Configuration edits affect new agents, not active ones.
+- Visible child tasks own independently verifiable outcomes, may use bounded native subagents, and ask the user directly when approval is needed. The lead tracks blockers without proxying approval.
+- Native subagents return results or blockers to their parent. They do not message peers, discover peer IDs, spawn descendants, change scope, or declare overall completion; report approval blockers to the parent.
+- Delegate when cost, parallelism, isolation, specialization, or independent verification justifies it; use the minimum useful number. Reuse an economy owner, otherwise hand off at implementation/publication.
+- Give each child its outcome, owned files/resources, constraints, dependencies, verification, authorization, and stopping condition. Keep write sets disjoint.
+- Select tier and effort, explain route, and reassess follow-ups. Escalate only for a capability gap; missing access or approval needs resolution. Configuration edits affect new agents, not active ones.
 - Reuse idle agents when their route still fits. Request status or redirect before interrupting; stop immediately for unsafe work or conflicting writes.
 - Check returned evidence before completion; distinguish verified, blocked, and unverified outcomes. Task creation and a child's success claim are not completion.
 - Treat tiers as local routing policy; verify availability and pricing before claims.
