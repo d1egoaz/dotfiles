@@ -1,4 +1,4 @@
-_:
+{ profile, ... }:
 
 {
   programs.starship = {
@@ -29,6 +29,13 @@ _:
         disabled = false;
         success_symbol = "[➜](bold green)";
         error_symbol = "[➜](bold red)";
+      };
+
+      hostname = {
+        disabled = profile != "personal";
+        ssh_only = false;
+        format = "[$hostname]($style) ";
+        style = "bold yellow";
       };
 
       aws = {
@@ -146,9 +153,6 @@ _:
       ####################
 
       username = {
-        disabled = true;
-      };
-      hostname = {
         disabled = true;
       };
       localip = {
