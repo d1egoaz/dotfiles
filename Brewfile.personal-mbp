@@ -13,7 +13,7 @@ cask "google-chrome" # Web browser
 cask "grandperspective" # Graphically shows disk usage within a file system
 cask "little-snitch" # Network firewall/monitor
 cask "mouseless@preview"
-cask "nordvpn" # VPN client
+cask "protonvpn" # VPN client
 cask "plex" # Media server app
 cask "plexamp" # Music player focusing on visuals
 cask "signal"
