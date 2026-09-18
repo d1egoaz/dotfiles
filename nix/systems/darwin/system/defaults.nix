@@ -87,11 +87,11 @@ in
         "com.apple.trackpad.scaling" = 1.0; # Trackpad tracking speed
       };
       "com.apple.assistant.support" = {
-        "Assistant Enabled" = false;
+        "Assistant Enabled" = true;
       };
       "com.apple.Siri" = {
-        StatusMenuVisible = false;
-        VoiceTriggerUserEnabled = false;
+        StatusMenuVisible = true;
+        VoiceTriggerUserEnabled = true;
       };
       "com.apple.screencapture" = {
         location = "/private/tmp";
