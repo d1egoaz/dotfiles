@@ -383,9 +383,11 @@ in
 
     if [ -f "$SOURCE" ]; then
       mkdir -p "$MOUSELESS_DIR"
-      # Remove existing file (might be a regular file or broken link)
-      rm -f "$TARGET"
-      ln "$SOURCE" "$TARGET"
+      if ! test "$SOURCE" -ef "$TARGET"; then
+        # Remove an existing file or broken link before recreating the hard link.
+        rm -f "$TARGET"
+        ln "$SOURCE" "$TARGET"
+      fi
     fi
   '';
 
