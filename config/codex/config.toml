@@ -78,6 +78,7 @@ terminal_title = ["spinner", "project", "app-name", "status", "thread", "model",
 # Environment inherited by tool commands.
 [shell_environment_policy]
 inherit = "core"
+include_only = ["SSH_AUTH_SOCK"]
 
 [desktop]
 appearanceTheme = "system"

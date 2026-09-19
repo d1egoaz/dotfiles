@@ -290,6 +290,13 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertEqual(disabled, GLOBAL_DISABLED)
         self.assertNotIn("max_context_tokens", config["skills"])
 
+    def test_shell_environment_policy_keeps_core_and_allowlists_signing_socket(self):
+        with SHARED_CONFIG.open("rb") as config_file:
+            policy = tomllib.load(config_file)["shell_environment_policy"]
+
+        self.assertEqual(policy["inherit"], "core")
+        self.assertEqual(policy["include_only"], ["SSH_AUTH_SOCK"])
+
     def test_personal_profile_disables_office_skill_packs(self):
         with PERSONAL_CONFIG.open("rb") as config_file:
             config = tomllib.load(config_file)
