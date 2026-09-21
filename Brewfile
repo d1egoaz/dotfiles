@@ -1,6 +1,5 @@
 # -*- mode: ruby; -*-
 
-tap "nikitabobko/tap" # Tap for AeroSpace window manager
 tap "d12frosted/emacs-plus" # Tap for Emacs with macOS enhancements
 
 brew "age" # File encryption tool used by SOPS
@@ -10,7 +9,6 @@ brew "pi-coding-agent"
 brew "sops" # Encrypted secrets editor for dotfiles
 cask "1password" # Password manager
 cask "1password-cli"
-cask "aerospace" # Window manager
 cask "alfred" # App launcher and workflows
 cask "claude-code" # Claude Code editor/CLI
 cask "codex" # Coding assistant CLI

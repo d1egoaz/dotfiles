@@ -4,6 +4,7 @@
   machineConfig,
   pkgs,
   profile,
+  host,
   ...
 }:
 
@@ -164,8 +165,6 @@ in
     enable = true;
     # Configuration files - direct symlinks to dotfiles (editable)
     configFile = {
-      "aerospace/aerospace.toml".source =
-        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/aerospace/aerospace.toml";
       "borders/bordersrc".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/borders/bordersrc";
       "wezterm".source =
@@ -178,6 +177,11 @@ in
       # AI assistant configuration
       "agents/AGENTS.md".source =
         config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ai/AGENTS.md";
+    }
+    // lib.optionalAttrs (host != "personal-mini") {
+      # AeroSpace is not installed or managed on personal-mini.
+      "aerospace/aerospace.toml".source =
+        config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/aerospace/aerospace.toml";
     };
 
     # Data files
@@ -391,10 +395,11 @@ in
     fi
   '';
 
-  # Manual launchd service for AeroSpace using external config (disabled on office profile)
+  # Manual launchd service for AeroSpace using external config (disabled on
+  # office and on personal-mini, where the app is intentionally not installed).
   # AeroSpace installed via Homebrew cask: nikitabobko/tap/aerospace
   launchd.agents.aerospace = {
-    enable = profile != "office";
+    enable = profile != "office" && host != "personal-mini";
     config = {
       ProgramArguments = [
         "/Applications/AeroSpace.app/Contents/MacOS/AeroSpace"

@@ -18,16 +18,19 @@ in
     office-mbp = mkDarwinSystem {
       user = "diego.alvarez";
       profile = "office";
+      host = "office-mbp";
     };
 
     personal-mbp = mkDarwinSystem {
       user = "diego";
       profile = "personal";
+      host = "personal-mbp";
     };
 
     personal-mini = mkDarwinSystem {
       user = "diegoalvarez";
       profile = "personal";
+      host = "personal-mini";
     };
   };
 

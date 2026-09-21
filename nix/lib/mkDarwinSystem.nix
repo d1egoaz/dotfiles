@@ -8,6 +8,7 @@
 {
   user,
   profile,
+  host,
 }:
 # Ensure that an allowed profile was provided.
 assert builtins.elem profile [
@@ -62,6 +63,7 @@ inputs.darwin.lib.darwinSystem {
             inputs
             user
             profile
+            host
             profileCfg
             machineConfig
             ;
