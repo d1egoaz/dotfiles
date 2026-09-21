@@ -46,6 +46,29 @@ they ask the user directly for missing approval. Creation adds no authorization.
 Native subagents return results or blockers to their parent. They do not
 peer-coordinate, spawn descendants, or declare overall completion.
 
+## Visible-task status titles
+
+Use the visible task title as a compact coordination overlay. It helps people
+scan the task list, but does not replace the host's lifecycle or runtime state.
+Apply it only to visible child tasks: native subagents have no equivalent
+user-facing title surface, so the lead tracks their state and evidence.
+
+| Prefix | State | Use when |
+| --- | --- | --- |
+| `🆕` | spawned | Created or still completing setup; no meaningful work evidence yet. |
+| `🔄` | in progress | The owner is doing authorized work or safely retrying after recovery. |
+| `⛔` | blocked | No authorized runnable action remains because of access, approval, or an external dependency. |
+| `❌` | error | An unexpected tool, runtime, or task failure has no safe in-scope recovery yet. |
+| `❓` | needs info | A specific user decision, input, or clarification is required; the visible task asks the user directly. |
+| `✅` | done | The task's acceptance criteria have been verified, not merely attempted or reported. |
+
+Create a visible task with the `🆕` prefix. Once it is addressable, the owner
+updates its own title with the host title control at each semantic transition;
+the lead reconciles a title when the evidence says it is stale. Do not rename
+for routine commentary, waits, or repeated observations of the same state.
+Preserve the key, route, and outcome after the prefix. A retry returns to
+`🔄`; it does not erase the previous error evidence from the task record.
+
 ## Finish
 
 Track owner, route, dependencies, state, and evidence. On new evidence resolve

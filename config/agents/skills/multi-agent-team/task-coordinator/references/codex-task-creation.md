@@ -29,7 +29,7 @@ Reuse the issue key or choose a short descriptive key. Inspect existing tasks;
 one active lead owns each key. Report ownership conflicts before creation.
 
 - Lead: `🤖 [<key>] <goal>`
-- Visible: `[<key>] <tier>-<model-label>-<effort-code> <action> <object>[: <outcome>]`
+- Visible: `<state-prefix> [<key>] <tier>-<model-label>-<effort-code> <action> <object>[: <outcome>]`
 
 Display the selected tier (`economy`, `balanced`, or `frontier`) and the
 runtime-resolved `<model-label>`; exact model IDs remain runtime fields. Effort
@@ -37,9 +37,13 @@ codes: `n`=none,
 `min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh, `max`=max,
 `ult`=ultra. Only use supported pairs and host-valid names.
 
-Aim for 72 characters, preserving action, object, and useful context. Example:
-`[IC-563] balanced-<model-label>-xh Verify controls: close remaining rollout gaps`.
-Pass the title at creation or rename once addressable.
+Use the state-prefix vocabulary from the parent `task-coordinator` skill. New
+visible tasks start `🆕`; for example:
+`🆕 [IC-563] balanced-<model-label>-xh Verify remaining rollout gaps`.
+
+Aim for 72 characters, preserving state, action, object, and useful context.
+Pass the `🆕` title at creation, then rename once addressable only when its
+semantic state changes.
 
 ## Setup and retries
 

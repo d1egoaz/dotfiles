@@ -65,7 +65,8 @@ Routing scorecard
 ```
 
 Spawned instances use `<key>_<tier>_<model-label>_<effort-code>_<role>_<slice>`;
-visible task titles use `[<key>] <tier>-<model-label>-<effort-code> <action> <object>`.
+visible task titles use `<state-prefix> [<key>] <tier>-<model-label>-<effort-code> <action> <object>`.
+The `task-coordinator` skill defines the allowed visible-task status prefixes.
 
 ## Gates and follow-ups
 
