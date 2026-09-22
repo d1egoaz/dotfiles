@@ -73,7 +73,9 @@
 				<integer>68</integer>
 				<key>script</key>
 				<string>tell application "Google Chrome"
-    return URL of active tab of front window
+    set prURL to URL of active tab of front window
+    close active tab of front window
+    return prURL
 end tell</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>

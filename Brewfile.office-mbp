@@ -4,13 +4,10 @@ tap "1debit/chime"
 tap "aws/tap"
 tap "datadog-labs/pack"
 tap "hashicorp/tap"
-tap "nikitabobko/tap" # Tap for AeroSpace window manager
+tap "sourcegraph/src-cli"
 
 brew "1debit/chime/compass"
 brew "datadog-labs/pack/pup"
 brew "hashicorp/tap/tfctl"
-brew "1debit/chime/tfe"
-
-brew "aws/tap/eks-node-viewer"
-cask "aerospace" # Window manager
-cask "claude"
+brew "sourcegraph/src-cli/src-cli"
+brew "1debit/chime/agora"
