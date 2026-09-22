@@ -19,3 +19,4 @@ cask "font-sf-pro" # Apple SF Pro font
 cask "ghostty"
 cask "homerow"
 cask "shottr" # Screenshot measurement and annotation tool
+cask "superwhisper"

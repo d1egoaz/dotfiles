@@ -2,7 +2,6 @@
 
 tap "nikitabobko/tap" # Tap for AeroSpace window manager
 
-brew "gemini-cli" # Google Gemini CLI
 brew "tailscale" # WireGuard-based mesh VPN
 brew "opencode"
 
@@ -18,5 +17,4 @@ cask "mouseless@preview"
 cask "protonvpn" # VPN client
 cask "plex" # Media server app
 cask "plexamp" # Music player focusing on visuals
-cask "signal"
 cask "zoom" # Video conferencing
