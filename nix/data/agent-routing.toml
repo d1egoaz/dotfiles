@@ -12,7 +12,7 @@ efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 [roles.utility]
 description = "Read-only utility worker for bounded multi-step work with clear output and objective verification."
 tier = "economy"
-effort = "medium"
+effort = "xhigh"
 sandbox_mode = "read-only"
 canonical_name = "spawn-subagent-economy-check"
 legacy_aliases = ["utility"]
@@ -24,7 +24,7 @@ Complete only the assigned bounded read-only work. Follow the stated output shap
 [roles.explorer]
 description = "Read-only codebase explorer for independent mapping, discovery, and broad evidence gathering."
 tier = "balanced"
-effort = "medium"
+effort = "low"
 sandbox_mode = "read-only"
 canonical_name = "spawn-subagent-balanced-explore"
 legacy_aliases = ["explorer"]
@@ -36,7 +36,7 @@ Stay in exploration mode. Trace real code paths, gather exact evidence, and retu
 [roles.reviewer]
 description = "Read-only reviewer focused on correctness, security, behavior regressions, and missing tests."
 tier = "balanced"
-effort = "high"
+effort = "low"
 sandbox_mode = "read-only"
 canonical_name = "spawn-subagent-balanced-review"
 legacy_aliases = ["reviewer"]
@@ -48,7 +48,7 @@ Review like an owner. Lead with concrete findings, prioritize correctness, secur
 [roles.evidence-auditor]
 description = "Read-only auditor that reconstructs delivery and runtime state from direct evidence without conflating lifecycle stages."
 tier = "balanced"
-effort = "xhigh"
+effort = "low"
 sandbox_mode = "read-only"
 canonical_name = "spawn-subagent-balanced-audit"
 legacy_aliases = ["evidence-auditor"]
@@ -80,13 +80,13 @@ approval_policy = "inherit"
 description = "Generic native subagent pinned to the economy capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
 
 [launchers.generic.balanced]
-effort = "high"
+effort = "low"
 sandbox_mode = "inherit"
 approval_policy = "inherit"
 description = "Generic native subagent pinned to the balanced capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
 
 [launchers.generic.frontier]
-effort = "xhigh"
+effort = "high"
 sandbox_mode = "inherit"
 approval_policy = "inherit"
 description = "Generic native subagent pinned to the frontier capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
@@ -99,19 +99,19 @@ default_tier = "economy"
 opencode_go = false
 
 [runtimes.office_codex.tiers.economy]
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 label = "luna"
-supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.office_codex.tiers.balanced]
-model = "gpt-5.6-terra"
-label = "terra"
-supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+model = "gpt-6-sol"
+label = "sol"
+supported_efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 
 [runtimes.office_codex.tiers.frontier]
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 label = "sol"
-supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+supported_efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 
 [runtimes.personal_opencode_go]
 display_name = "Personal Codex via OpenCode Go"
@@ -138,12 +138,12 @@ supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 [profiles.office]
 codex_runtime = "office_codex"
 codex_lead_tier = "frontier"
-codex_lead_effort = "xhigh"
+codex_lead_effort = "high"
 codex_default_tier = "economy"
 codex_default_effort = "xhigh"
 pi_runtime = "office_codex"
 pi_tier = "frontier"
-pi_effort = "xhigh"
+pi_effort = "high"
 
 [profiles.personal]
 codex_runtime = "personal_opencode_go"
@@ -155,4 +155,4 @@ codex_default_effort = "xhigh"
 # machines, matching the existing Pi subscription configuration.
 pi_runtime = "office_codex"
 pi_tier = "frontier"
-pi_effort = "xhigh"
+pi_effort = "high"

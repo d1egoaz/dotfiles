@@ -4,7 +4,7 @@
     generic = {
       balanced = {
         approval_policy = "inherit";
-        effort = "high";
+        effort = "low";
         sandbox_mode = "inherit";
             };
       economy = {
@@ -14,7 +14,7 @@
             };
       frontier = {
         approval_policy = "inherit";
-        effort = "xhigh";
+        effort = "high";
         sandbox_mode = "inherit";
             };
         };
@@ -26,23 +26,23 @@
         default = {
           effort = "xhigh";
           label = "luna";
-          model = "gpt-5.6-luna";
+          model = "gpt-6-luna";
           runtime = "office-codex";
           tier = "economy";
                 };
         lead = {
-          effort = "xhigh";
+          effort = "high";
           label = "sol";
-          model = "gpt-5.6-sol";
+          model = "gpt-6-sol";
           runtime = "office-codex";
           tier = "frontier";
                 };
         opencode_go = false;
             };
       pi = {
-        effort = "xhigh";
+        effort = "high";
         label = "sol";
-        model = "gpt-5.6-sol";
+        model = "gpt-6-sol";
         provider = "openai-codex";
         runtime = "office-codex";
         tier = "frontier";
@@ -68,9 +68,9 @@
         opencode_go = true;
             };
       pi = {
-        effort = "xhigh";
+        effort = "high";
         label = "sol";
-        model = "gpt-5.6-sol";
+        model = "gpt-6-sol";
         provider = "openai-codex";
         runtime = "office-codex";
         tier = "frontier";
@@ -85,19 +85,19 @@
       provider = "codex";
       tiers = {
         balanced = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
-          label = "terra";
-          model = "gpt-5.6-terra";
+          effective_efforts = [ "low" "medium" "high" "xhigh" "max" "ultra" ];
+          label = "sol";
+          model = "gpt-6-sol";
                 };
         economy = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
+          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
           label = "luna";
-          model = "gpt-5.6-luna";
+          model = "gpt-6-luna";
                 };
         frontier = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
+          effective_efforts = [ "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "sol";
-          model = "gpt-5.6-sol";
+          model = "gpt-6-sol";
                 };
             };
         };

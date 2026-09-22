@@ -1,7 +1,7 @@
 name = "spawn-subagent-balanced-explore"
 description = "Read-only codebase explorer for independent mapping, discovery, and broad evidence gathering."
 model = "deepseek-v4.1-flash"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "low"
 sandbox_mode = "read-only"
 developer_instructions = """
 This configuration is a native-subagent launcher. Use it only through the native subagent spawn control, never as a visible child task. Return results or blockers only to the parent lead.

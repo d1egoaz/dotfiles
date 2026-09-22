@@ -26,11 +26,11 @@ XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 PI_NIX = REPO_ROOT / "nix/home-manager/config/apps/pi.nix"
 
 EXPECTED_ROLES = {
-    "utility": {"tier": "economy", "effort": "medium", "sandbox_mode": "read-only"},
+    "utility": {"tier": "economy", "effort": "xhigh", "sandbox_mode": "read-only"},
     "worker": {"tier": "economy", "effort": "xhigh", "sandbox_mode": "workspace-write"},
-    "explorer": {"tier": "balanced", "effort": "medium", "sandbox_mode": "read-only"},
-    "reviewer": {"tier": "balanced", "effort": "high", "sandbox_mode": "read-only"},
-    "evidence-auditor": {"tier": "balanced", "effort": "xhigh", "sandbox_mode": "read-only"},
+    "explorer": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
+    "reviewer": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
+    "evidence-auditor": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
 }
 EXPECTED_AGENT_KEYS = {
     "name",
@@ -56,8 +56,8 @@ EXPECTED_CANONICAL = {
 }
 EXPECTED_GENERIC = {
     "economy": "xhigh",
-    "balanced": "high",
-    "frontier": "xhigh",
+    "balanced": "low",
+    "frontier": "high",
 }
 
 
@@ -112,7 +112,7 @@ class CodexAgentsTest(unittest.TestCase):
         office = self.registry["runtimes"]["office_codex"]["tiers"]
         self.assertEqual(
             [office[tier]["model"] for tier in self.registry["tiers"]],
-            ["gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"],
+            ["gpt-6-luna", "gpt-6-sol", "gpt-6-sol"],
         )
         personal = self.registry["runtimes"]["personal_opencode_go"]["tiers"]
         self.assertEqual(
@@ -306,7 +306,7 @@ class CodexAgentsTest(unittest.TestCase):
         source = REGISTRY.read_text()
         cases = (
             ('tier = "economy"', 'tier = "unknown"', "not a known tier"),
-            ('effort = "medium"', 'effort = "impossible"', "not a known effort"),
+            ('effort = "xhigh"', 'effort = "impossible"', "not a known effort"),
         )
         for old, new, message in cases:
             with self.subTest(field=old), tempfile.TemporaryDirectory() as temp_dir:
@@ -348,14 +348,14 @@ class CodexAgentsTest(unittest.TestCase):
             with self.subTest(consumer=consumer):
                 registry = copy.deepcopy(self.registry)
                 office = registry["runtimes"]["office_codex"]["tiers"]["frontier"]
-                office["supported_efforts"].remove("xhigh")
+                office["supported_efforts"].remove("high")
                 if consumer == "pi":
-                    registry["profiles"]["office"]["codex_lead_effort"] = "high"
+                    registry["profiles"]["office"]["codex_lead_effort"] = "xhigh"
                 else:
-                    registry["profiles"]["office"]["pi_effort"] = "high"
+                    registry["profiles"]["office"]["pi_effort"] = "xhigh"
                 with self.assertRaisesRegex(
                     self.generator.RoutingError,
-                    "frontier does not support requested effort xhigh",
+                    "frontier does not support requested effort high",
                 ):
                     self.generator.render_nix(registry)
 

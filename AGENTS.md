@@ -23,7 +23,7 @@ Run commands from the repository root with `just`.
 
 | Username | Host | Profile | Codex lead route |
 |---|---|---|---|
-| `diego.alvarez` | `office-mbp` | office | frontier / xhigh |
+| `diego.alvarez` | `office-mbp` | office | frontier / high |
 | `diego` | `personal-mbp` | personal | frontier / high (OpenCode Go) |
 | `diegoalvarez` | `personal-mini` | personal | frontier / high (OpenCode Go) |
 

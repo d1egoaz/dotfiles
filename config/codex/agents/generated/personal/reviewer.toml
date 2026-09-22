@@ -1,7 +1,7 @@
 name = "reviewer"
 description = "Legacy alias for @spawn-subagent-balanced-review; prefer that name. Read-only reviewer focused on correctness, security, behavior regressions, and missing tests."
 model = "deepseek-v4.1-flash"
-model_reasoning_effort = "high"
+model_reasoning_effort = "low"
 sandbox_mode = "read-only"
 developer_instructions = """
 This configuration is a native-subagent launcher. Use it only through the native subagent spawn control, never as a visible child task. Return results or blockers only to the parent lead.

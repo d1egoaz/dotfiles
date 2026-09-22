@@ -16,7 +16,7 @@ notify = [
     "codex-notify",
 ]
 personality = "pragmatic"
-plan_mode_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "high"
 # Keep file writes scoped to trusted workspaces unless a command is escalated.
 sandbox_mode = "workspace-write"
 suppress_unstable_features_warning = true
