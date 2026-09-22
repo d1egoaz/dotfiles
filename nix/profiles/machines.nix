@@ -107,7 +107,7 @@ in
     # API key refs live in secrets/op-env-cache.yaml under op_env_cache_specs.
     llm = {
       provider = "OpenAI";
-      model = "gpt-5.6-luna";
+      model = "gpt-6-luna";
       base_url = "https://api.openai.com/v1";
     };
   };
