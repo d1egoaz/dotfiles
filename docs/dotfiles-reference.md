@@ -94,14 +94,14 @@ Short-lived GUI or agent workflows may use `op-env-cache` for repeatedly accesse
 
 ## Git Commit Signing
 
-Office uses `~/.ssh/codex-signing-office-ed25519.pub`; personal uses
-`~/.ssh/codex-signing-personal-ed25519.pub`. Private keys stay local. After
-activation, enroll the active key once with `ssh-add --apple-use-keychain -t
-86400 ~/.ssh/codex-signing-${PROFILE}-ed25519`; macOS restores all
-Keychain-backed SSH keys at login. The key must already exist and its public key
-must be registered in GitHub as a signing key. In the UI, paste the `.pub` file
-contents beginning with `ssh-ed25519`, not its `SHA256:` fingerprint or private
-key.
+Office uses `~/.ssh/codex-signing-office-ed25519.pub`; `personal-mbp` uses
+`~/.ssh/codex-signing-personal-ed25519.pub`. The `personal-mini` automation host
+uses `~/.ssh/r2claw2-bot.pub` with the R2-Claw2 bot identity. Private keys stay
+local. After activation, enroll a passphrase-protected key once with `ssh-add
+--apple-use-keychain -t 86400 <private-key>`; macOS restores Keychain-backed SSH
+keys at login. The key must already exist and its public key must be registered
+in GitHub as a signing key. In the UI, paste the `.pub` file contents beginning
+with `ssh-ed25519`, not its `SHA256:` fingerprint or private key.
 
 Office `~/work` keeps HTTPS remotes and uses the GitHub credential helper. Do
 not expose or broaden its `repo`/`workflow` credential, or rewrite it to SSH.

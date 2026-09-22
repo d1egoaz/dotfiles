@@ -15,10 +15,14 @@
 #   - Adding work-specific paths or org names
 #   - Changing LLM provider/model for Alfred workflows
 let
+  bot_email = "261106496+R2-Claw2@users.noreply.github.com";
+
   # Shared keys (referenced in multiple profiles)
   keys = {
     personal = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMokDMEcQ3ZatK2LLEJQOAs6CIxcklr3HT9IrYRu3A24";
-    personal_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTEk1pRN0nd7IAVLqkgQvyNYmCqAVl37AQjz9yExiX8";
+    personal_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINoAtC71w/g4F0zEYxF9kvl/jkeJ30v2QZtNRK8E9etk";
+    personal_signing_legacy = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHTEk1pRN0nd7IAVLqkgQvyNYmCqAVl37AQjz9yExiX8";
+    r2claw2_bot = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIBOaHihcw7t7AAUrDs3+yBawLuYcOJOTEi5+/SWZRBe";
     work = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyQc3z3srPRhWbHoR9BmixXrfXmTECEw7YL4WklpKBT";
     work_signing = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJnBxAfxKcz/D7Pu1MestMop4PJ6uDTi/uY9EiAqPwY4";
   };
@@ -26,6 +30,20 @@ let
     personal = "info@diegoa.ca";
     work = "diego.alvarez@chime.com";
   };
+  personal_signing_identities = [
+    {
+      email = emails.personal;
+      key = keys.personal;
+    } # legacy personal auth key
+    {
+      email = emails.personal;
+      key = keys.personal_signing;
+    } # personal signing key
+    {
+      email = emails.personal;
+      key = keys.personal_signing_legacy;
+    } # personal signing key retired 2026-09-21
+  ];
 in
 {
   office = {
@@ -34,7 +52,8 @@ in
     op_vault = "Employee";
 
     # Git identity
-    personal_email = emails.personal;
+    git_name = "Diego Alvarez";
+    git_email = emails.personal;
     work_email = emails.work;
 
     # Go private modules (for GOPRIVATE env var)
@@ -42,6 +61,8 @@ in
 
     # Git commits use this profile's OpenSSH signing public key.
     git_signing_key = "~/.ssh/codex-signing-office-ed25519.pub";
+    git_signing_private_key = ".ssh/codex-signing-office-ed25519";
+    git_signing_use_keychain = true;
 
     # Git signature verification - all email+key pairs this profile trusts
     # Office machine works on both work repos AND personal repos (dotfiles)
@@ -54,6 +75,10 @@ in
         email = emails.personal;
         key = keys.personal_signing;
       } # dotfiles from personal machine (signing key)
+      {
+        email = emails.personal;
+        key = keys.personal_signing_legacy;
+      } # historical dotfiles from personal machine (retired signing key)
       {
         email = emails.personal;
         key = keys.work;
@@ -93,7 +118,8 @@ in
     op_vault = "Private";
 
     # Git identity
-    personal_email = emails.personal;
+    git_name = "Diego Alvarez";
+    git_email = emails.personal;
     work_email = "";
 
     # No private Go modules
@@ -101,18 +127,11 @@ in
 
     # Git commits use this profile's OpenSSH signing public key.
     git_signing_key = "~/.ssh/codex-signing-personal-ed25519.pub";
+    git_signing_private_key = ".ssh/codex-signing-personal-ed25519";
+    git_signing_use_keychain = true;
 
     # Git signature verification - personal machine only needs personal key
-    signing_identities = [
-      {
-        email = emails.personal;
-        key = keys.personal;
-      } # legacy personal auth key
-      {
-        email = emails.personal;
-        key = keys.personal_signing;
-      } # personal signing key
-    ];
+    signing_identities = personal_signing_identities;
 
     # Personal profile doesn't need work-specific config
     work_org = "";
@@ -127,5 +146,21 @@ in
       model = "zai-glm-4.7";
       base_url = "https://api.cerebras.ai/v1";
     };
+  };
+
+  # mac-mini4 is a dedicated automation host. Use the R2-Claw2 bot identity
+  # globally while retaining the personal identities for signature verification.
+  personal-mini = {
+    git_name = "Wild Robot";
+    git_email = bot_email;
+    git_signing_key = "~/.ssh/r2claw2-bot.pub";
+    git_signing_private_key = ".ssh/r2claw2-bot";
+    git_signing_use_keychain = false;
+    signing_identities = personal_signing_identities ++ [
+      {
+        email = bot_email;
+        key = keys.r2claw2_bot;
+      }
+    ];
   };
 }

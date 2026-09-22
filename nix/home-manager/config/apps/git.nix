@@ -30,8 +30,8 @@
 
     settings = {
       user = {
-        name = "Diego Alvarez";
-        email = machineConfig.personal_email;
+        name = machineConfig.git_name;
+        email = machineConfig.git_email;
       };
       init = {
         defaultBranch = "main";

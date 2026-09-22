@@ -1,19 +1,19 @@
 {
   config,
+  machineConfig,
   pkgs,
-  profile,
   ...
 }:
 
 let
-  signingPrivateKey = "${config.home.homeDirectory}/.ssh/codex-signing-${profile}-ed25519";
+  signingPrivateKey = "${config.home.homeDirectory}/${machineConfig.git_signing_private_key}";
 in
 {
   # macOS already starts com.openssh.ssh-agent with a login-session
   # SSH_AUTH_SOCK. This one-shot loader restores only the active profile key
   # from macOS Keychain, rather than replacing the platform agent.
   launchd.agents.codexSigningKeychainLoader = {
-    enable = true;
+    enable = machineConfig.git_signing_use_keychain;
     config = {
       ProgramArguments = [
         "/usr/bin/ssh-add"

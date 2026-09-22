@@ -29,7 +29,7 @@ let
   # This is NOT secrets - just profile-specific config that differs by machine.
   # See machines.nix header for what each field controls.
   machines = import ../profiles/machines.nix;
-  machineConfig = machines.${profile};
+  machineConfig = machines.${profile} // (machines.${host} or { });
 in
 inputs.darwin.lib.darwinSystem {
   inherit system;
