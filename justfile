@@ -215,5 +215,23 @@ brew:
     fi
     brew cleanup --prune=all
 
+# Regenerate the OpenCode Go model catalog after a Codex upgrade so the picker
+# matches the installed build. Activation does this on `just switch`, but a
+# Codex upgrade in between switches leaves the catalog stale.
+codex-catalog:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "{{ _host }}" == "office-mbp" ]]; then
+      echo "codex-catalog: skipped on {{ _host }}"
+      exit 0
+    fi
+    TOOL="$HOME/dotfiles/bin/files/codex-opencode-go-catalog"
+    if [[ -x "$TOOL" ]]; then
+      "$TOOL"
+    else
+      echo "codex-catalog: missing $TOOL" >&2
+      exit 1
+    fi
+
 sync:
-	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew
+	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew && just codex-catalog
