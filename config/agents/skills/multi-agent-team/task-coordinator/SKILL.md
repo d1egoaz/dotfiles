@@ -6,8 +6,8 @@ description: Coordinate independent outcomes and ongoing external-state follow-u
 # Task Coordinator
 
 One lead owns goal, sequence, integration, and verification. Apply
-[capability-routing.md](references/capability-routing.md). Keep one-step or
-tightly coupled judgment stays in lead; multiple files do not justify
+[capability-routing.md](references/capability-routing.md). Keep one-step work
+and tightly coupled judgment in the lead; multiple files do not justify
 children.
 
 Choose `economy`, `balanced`, or `frontier` from capability, then resolve it
@@ -32,6 +32,14 @@ names remain compatibility aliases; new instructions use canonical names.
 4. Give every child the handoff below. Before visible tasks read
    [codex-task-creation.md](references/codex-task-creation.md); read
    [codex-controls.md](references/codex-controls.md) when operating controls.
+
+For each substantive phase, assess the cheapest capable route even when there
+is only one overall outcome. Keep sequencing, interpretation, approvals, and
+integration with the lead, but consider an economy subagent for a bounded batch
+of procedural commands with objective checks. Compare expected savings with
+handoff and review cost; do not spawn for a single trivial command. Reassess
+when diagnosis becomes authorized execution or an unexpected blocker changes
+the work.
 
 ## Handoff
 
