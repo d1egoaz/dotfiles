@@ -74,15 +74,20 @@ VISIBLE_MODELS = (
 # Go block. Slugs use the full vendor/model id so the gateway can route them by
 # exact id without colliding with the plan's own models.
 #
-# Verified 2026-09-23 against that endpoint through the local gateway: all four
+# Verified 2026-09-23 against that endpoint through the local gateway: all five
 # answer on the Responses wire and complete a real function call. Re-probe
 # before adding anything here; OpenRouter supports the Responses API across its
 # catalog, but per-model behavior is not guaranteed.
+#
+# `stealth/space-bunny-alpha` is OpenRouter's free-priced Space Bunny. OpenCode
+# Go also lists a `space-bunny-free`, but requests there return 402 Insufficient
+# account funds, so the OpenRouter route is the working one.
 OPENROUTER_VISIBLE_MODELS = (
     ("openai/gpt-6-luna", "GPT-6 Luna", 1050000),
     ("z-ai/glm-5.3-flash", "GLM 5.3 Flash", 1310720),
     ("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", 1048576),
     ("xiaomi/mimo-v2.6-flash", "MiMo V2.6 Flash", 1048576),
+    ("stealth/space-bunny-alpha", "Space Bunny Alpha", 1000000),
 )
 # Written outside the repository on purpose: the entries embed the prompt text
 # that ships inside the Codex binary, and the file churns with every Codex

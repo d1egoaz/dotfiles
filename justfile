@@ -216,8 +216,10 @@ brew:
     brew cleanup --prune=all
 
 # Regenerate the OpenCode Go model catalog after a Codex upgrade so the picker
-# matches the installed build. Activation does this on `just switch`, but a
-# Codex upgrade in between switches leaves the catalog stale.
+# matches the installed build. Activation does not do this, so run it after a
+# Codex upgrade or whenever the picker looks stale. The app server reads the
+# catalog at startup, so restart the daemon afterward or the picker keeps the
+# previous model list.
 codex-catalog:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -232,6 +234,7 @@ codex-catalog:
       echo "codex-catalog: missing $TOOL" >&2
       exit 1
     fi
+    codex app-server daemon restart
 
 sync:
-	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew && just codex-catalog
+	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew
