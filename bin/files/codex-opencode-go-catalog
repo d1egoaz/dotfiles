@@ -46,6 +46,7 @@ PLUGIN_NOTE = (
 # provider it will be routed to.
 OPENAI_PREFIX = "[OpenAI] "
 OPENCODE_PREFIX = "[OpenCode Go] "
+OPENROUTER_PREFIX = "[OpenRouter] "
 
 # Models the OpenCode Go subscription serves over the Responses wire, in picker
 # order: the first entry is the default. Context windows come from models.dev.
@@ -66,6 +67,22 @@ VISIBLE_MODELS = (
     ("deepseek-v4-pro", "DeepSeek V4 Pro", 1000000),
     ("grok-4.6", "Grok 4.6", 500000),
     ("deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision", 1000000),
+)
+
+# Models served by OpenRouter over its Responses wire
+# (https://openrouter.ai/api/v1/responses), in picker order after the OpenCode
+# Go block. Slugs use the full vendor/model id so the gateway can route them by
+# exact id without colliding with the plan's own models.
+#
+# Verified 2026-09-23 against that endpoint through the local gateway: all four
+# answer on the Responses wire and complete a real function call. Re-probe
+# before adding anything here; OpenRouter supports the Responses API across its
+# catalog, but per-model behavior is not guaranteed.
+OPENROUTER_VISIBLE_MODELS = (
+    ("openai/gpt-6-luna", "GPT-6 Luna", 1050000),
+    ("z-ai/glm-5.3-flash", "GLM 5.3 Flash", 1310720),
+    ("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", 1048576),
+    ("xiaomi/mimo-v2.6-flash", "MiMo V2.6 Flash", 1048576),
 )
 # Written outside the repository on purpose: the entries embed the prompt text
 # that ships inside the Codex binary, and the file churns with every Codex
@@ -126,14 +143,22 @@ def template_entry(models: list) -> dict:
     return sorted(listed or neutral, key=lambda m: str(m.get("slug")), reverse=True)[0]
 
 
-def build_entry(template: dict, slug: str, display_name: str, context_window: int, priority: int) -> dict:
-    """Clone a bundled entry and re-point it at an OpenCode Go model."""
+def build_entry(
+    template: dict,
+    slug: str,
+    display_name: str,
+    context_window: int,
+    priority: int,
+    prefix: str = OPENCODE_PREFIX,
+    source: str = "the OpenCode Go subscription",
+) -> dict:
+    """Clone a bundled entry and re-point it at a third-party model."""
     entry = json.loads(json.dumps(template))
     entry.update(
         {
             "slug": slug,
-            "display_name": f"{OPENCODE_PREFIX}{display_name}",
-            "description": f"{display_name} served through the OpenCode Go subscription.",
+            "display_name": f"{prefix}{display_name}",
+            "description": f"{display_name} served through {source}.",
             "context_window": context_window,
             "max_context_window": context_window,
             "priority": priority,
@@ -153,6 +178,19 @@ def main() -> int:
         build_entry(template, slug, name, context, index)
         for index, (slug, name, context) in enumerate(VISIBLE_MODELS, start=1)
     ]
+    openrouter = [
+        build_entry(
+            template,
+            slug,
+            name,
+            context,
+            len(VISIBLE_MODELS) + index,
+            prefix=OPENROUTER_PREFIX,
+            source="OpenRouter",
+        )
+        for index, (slug, name, context) in enumerate(OPENROUTER_VISIBLE_MODELS, start=1)
+    ]
+    visible += openrouter
 
     for entry in visible:
         messages = entry.get("model_messages")
@@ -170,6 +208,7 @@ def main() -> int:
     # in the picker and the gateway passes them through to ChatGPT. Any native
     # model that is also exposed above is dropped to avoid a duplicate slug.
     exposed = {slug for slug, _, _ in VISIBLE_MODELS}
+    exposed |= {slug for slug, _, _ in OPENROUTER_VISIBLE_MODELS}
     natives = [model for model in models if model.get("slug") not in exposed]
     for model in natives:
         model["display_name"] = f"{OPENAI_PREFIX}{model.get('display_name') or model['slug']}"

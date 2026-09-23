@@ -222,7 +222,8 @@ enabled = false
 
 # OpenCode Go ($10/mo) serves DeepSeek V4.1 Flash over the Responses API through
 # the local gateway in https://github.com/d1egoaz/codex-gateway. The gateway
-# holds the OpenCode key, so no API key is stored in this repository.
+# holds the OpenCode key and an OpenRouter key (for its own picker entries), so
+# no API key is stored in this repository.
 #
 # requires_openai_auth keeps Codex sending its ChatGPT credentials, which keeps
 # the session ChatGPT-authenticated. Without it the Chrome plugin's browser
