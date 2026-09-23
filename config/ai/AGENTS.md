@@ -22,7 +22,7 @@
 ## Model Routing
 
 Use one strong lead selected by the active Codex runtime in
-`nix/data/agent-routing.toml`. Office Codex uses the frontier lead at xhigh;
+`nix/data/agent-routing.toml`. Office Codex uses the frontier lead at high;
 personal Codex uses the frontier lead at high.
 Keep one-step work and tightly coupled judgment with the lead. Once scope,
 expected change and objective checks are clear, route bounded implementation

@@ -26,16 +26,16 @@ visible tasks, with no concrete model.
 Generic tier launchers (parent outcome/constraints; inherited boundary):
 
 - `@spawn-subagent-economy` -> `economy`, `xhigh`, inherit parent sandbox and approval.
-- `@spawn-subagent-balanced` -> `balanced`, `high`, inherit parent sandbox and approval.
-- `@spawn-subagent-frontier` -> `frontier`, `xhigh`, inherit parent sandbox and approval.
+- `@spawn-subagent-balanced` -> `balanced`, `low`, inherit parent sandbox and approval.
+- `@spawn-subagent-frontier` -> `frontier`, `high`, inherit parent sandbox and approval.
 
 Specialized tier launchers (fixed role contracts):
 
-- `@spawn-subagent-economy-check` -> `utility`, `economy`, `medium`.
+- `@spawn-subagent-economy-check` -> `utility`, `economy`, `xhigh`.
 - `@spawn-subagent-economy-implement` -> `worker`, `economy`, `xhigh`.
-- `@spawn-subagent-balanced-explore` -> `explorer`, `balanced`, `medium`.
-- `@spawn-subagent-balanced-review` -> `reviewer`, `balanced`, `high`.
-- `@spawn-subagent-balanced-audit` -> `evidence-auditor`, `balanced`, `xhigh`.
+- `@spawn-subagent-balanced-explore` -> `explorer`, `balanced`, `low`.
+- `@spawn-subagent-balanced-review` -> `reviewer`, `balanced`, `low`.
+- `@spawn-subagent-balanced-audit` -> `evidence-auditor`, `balanced`, `low`.
 
 Legacy aliases remain generated: `@evidence-auditor`, `@explorer`, `@reviewer`, `@utility`, `@worker`; new instructions use canonical launchers.
 
