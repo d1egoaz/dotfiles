@@ -160,6 +160,15 @@ class AgentRoutingTest(unittest.TestCase):
         for name in self.canonical:
             self.assertIn(name, matrix)
 
+    def test_home_tiers_stay_on_home_profiles(self):
+        # Home tier layers apply to home machines only, never to the office profile.
+        home_profiles = {name for name, p in self.registry["profiles"].items() if p.get("home_runtime")}
+        self.assertEqual(home_profiles, {"personal"})
+        with (REPO_ROOT / "nix/data/agent-routing.generated.nix").open() as nix_file:
+            office_block = nix_file.read().split("office = {", 1)[1].split("personal = {", 1)[0]
+        self.assertNotIn("personal_home", office_block)
+        self.assertNotIn("personal-home", office_block)
+
     def test_model_ids_live_only_in_the_registry(self):
         routes = [
             route
@@ -236,6 +245,8 @@ class RegistryValidationTest(unittest.TestCase):
             ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
             ('resolves_to = "claude-sonnet-5"', 'resolves_to = "sonnet-5"', "needs a claude-\\* resolves_to"),
             ('claude_lead_effort = "high"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
+            ('home_runtime = "personal_home"', 'home_runtime = "personal_opencode_go"', "must use the neutral provider"),
+            ("\nverified = false\n", '\nverified = "no"\n', "verified must be a boolean"),
         )
         for old, new, message in cases:
             with self.subTest(message=message):

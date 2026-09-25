@@ -17,6 +17,7 @@ Roles: `spawn-subagent-explore` (read-only, balanced), `spawn-subagent-implement
 | Harness | Lead | `spawn-subagent-explore` | `spawn-subagent-implement` | `spawn-subagent-review` | Unnamed spawn |
 |---|---|---|---|---|---|
 | Codex (Personal Codex via OpenCode Go) | `deepseek-v4.1-flash` / high | `deepseek-v4.1-flash` / low | `deepseek-v4.1-flash` / xhigh | `deepseek-v4.1-flash` / low | `deepseek-v4.1-flash` / xhigh |
+| Home tiers, any harness (not wired yet) | `mimo-v2.6-pro` (unverified) / high | `deepseek-v4-pro` / low | `deepseek-v4.1-flash` / xhigh | `deepseek-v4-pro` / low | `deepseek-v4.1-flash` / xhigh |
 
 ## Claude Code notes
 
@@ -28,3 +29,11 @@ Roles: `spawn-subagent-explore` (read-only, balanced), `spawn-subagent-implement
 - Read-only roles deny `Edit`, `Write`, and `NotebookEdit` but keep `Bash`,
   and `permissionMode` is ignored while the lead runs in auto mode. Read-only
   is enforced by instructions and permission review, not by a sandbox as in Codex.
+
+## Home tier notes
+
+- Home tiers belong to the `personal` profile only; office machines never use them.
+- They are harness-neutral and not generated into any harness yet. The personal
+  Codex row is what home Codex runs today.
+- `(unverified)` marks a model whose ID and route have not been probed on a home
+  machine. OpenCode Go returns 500 for MiMo on the Responses wire that Codex uses.

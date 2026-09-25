@@ -23,8 +23,10 @@ ROUTING_REFERENCE = (
 )
 
 EXPECTED_ROLES = {"explorer", "reviewer", "worker"}
-EXPECTED_RUNTIMES = {"office_codex", "office_claude", "personal_opencode_go"}
-PROVIDERS = {"codex", "claude"}
+EXPECTED_RUNTIMES = {"office_codex", "office_claude", "personal_home", "personal_opencode_go"}
+# `neutral` runtimes define harness-independent tier layers that no harness
+# consumes yet; they appear only in the routing matrix.
+PROVIDERS = {"codex", "claude", "neutral"}
 # Claude Code has no sandbox_mode; read-only roles deny the file-editing tools.
 CLAUDE_READ_ONLY_DISALLOWED = ("Edit", "Write", "NotebookEdit")
 ROLE_ORDER = ("explorer", "worker", "reviewer")
@@ -126,6 +128,8 @@ def read_registry() -> dict:
                 fail(f"runtimes.{runtime_name}.tiers.{tier}.supported_efforts must be a list")
             if "fallback_effort" in route:
                 fail(f"Codex tier {runtime_name}.{tier} must not define fallback_effort")
+            if not isinstance(route.get("verified", True), bool):
+                fail(f"runtimes.{runtime_name}.tiers.{tier}.verified must be a boolean")
             if runtime.get("provider") == "claude" and not str(route.get("resolves_to", "")).startswith("claude-"):
                 fail(f"runtimes.{runtime_name}.tiers.{tier} needs a claude-* resolves_to model ID")
         if runtime_name == "personal_opencode_go" and len(set(labels)) != 1:
@@ -161,6 +165,15 @@ def read_registry() -> dict:
                 fail(f"profiles.{profile_name}.claude_runtime must use the claude provider")
             if profile.get("claude_lead_effort") not in registry["efforts"]:
                 fail(f"profiles.{profile_name}.claude_lead_effort is invalid")
+        home_runtime = profile.get("home_runtime")
+        if home_runtime is not None:
+            if home_runtime not in EXPECTED_RUNTIMES:
+                fail(f"profiles.{profile_name}.home_runtime is unknown")
+            if runtimes[home_runtime]["provider"] != "neutral":
+                fail(f"profiles.{profile_name}.home_runtime must use the neutral provider")
+            for effort_key in ("home_lead_effort", "home_default_effort"):
+                if profile.get(effort_key) not in registry["efforts"]:
+                    fail(f"profiles.{profile_name}.{effort_key} is invalid")
         for tier_key in ("codex_lead_tier", "codex_default_tier", "pi_tier"):
             if profile[tier_key] not in REQUIRED_TIERS:
                 fail(f"profiles.{profile_name}.{tier_key} is invalid")
@@ -427,6 +440,8 @@ def matrix_cell(registry: Mapping, runtime_name: str, tier: str, effort: str) ->
     model = f"`{selected['model']}`"
     if "resolves_to" in selected:
         model += f" (`{selected['resolves_to']}`)"
+    if selected.get("verified") is False:
+        model += " (unverified)"
     return f"{model} / {effective_effort(runtime, tier, effort)}"
 
 
@@ -496,6 +511,21 @@ def render_matrix(registry: Mapping) -> str:
             default = route(registry, claude_runtime, registry["runtimes"][claude_runtime]["default_tier"])
             row.append(f"`{default['model']}` (`{default['resolves_to']}`) / session effort")
             lines.append("| " + " | ".join(row) + " |")
+        home_runtime = profile.get("home_runtime")
+        if home_runtime:
+            home = registry["runtimes"][home_runtime]
+            row = [
+                home["display_name"],
+                matrix_cell(registry, home_runtime, home["lead_tier"], profile["home_lead_effort"]),
+            ]
+            row += [
+                matrix_cell(registry, home_runtime, roles[name]["tier"], roles[name]["effort"])
+                for name in ROLE_ORDER
+            ]
+            row.append(
+                matrix_cell(registry, home_runtime, home["default_tier"], profile["home_default_effort"])
+            )
+            lines.append("| " + " | ".join(row) + " |")
     if any(profile.get("claude_runtime") for profile in registry["profiles"].values()):
         lines.extend(
             [
@@ -510,6 +540,19 @@ def render_matrix(registry: Mapping) -> str:
                 "- Read-only roles deny `Edit`, `Write`, and `NotebookEdit` but keep `Bash`,",
                 "  and `permissionMode` is ignored while the lead runs in auto mode. Read-only",
                 "  is enforced by instructions and permission review, not by a sandbox as in Codex.",
+            ]
+        )
+    if any(profile.get("home_runtime") for profile in registry["profiles"].values()):
+        lines.extend(
+            [
+                "",
+                "## Home tier notes",
+                "",
+                "- Home tiers belong to the `personal` profile only; office machines never use them.",
+                "- They are harness-neutral and not generated into any harness yet. The personal",
+                "  Codex row is what home Codex runs today.",
+                "- `(unverified)` marks a model whose ID and route have not been probed on a home",
+                "  machine. OpenCode Go returns 500 for MiMo on the Responses wire that Codex uses.",
             ]
         )
     return "\n".join(lines) + "\n"
