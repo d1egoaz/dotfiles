@@ -10,18 +10,20 @@ tiers = ["economy", "balanced", "frontier"]
 efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
 [roles.explorer]
-description = "Read-only explorer for mapping code paths, inventories, and evidence gathering."
+description = "Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area."
 tier = "balanced"
 effort = "low"
 sandbox_mode = "read-only"
 canonical_name = "spawn-subagent-explore"
+# Claude Code: start without user and project CLAUDE.md, like the built-in Explore.
+claude_omit_claude_md = true
 capabilities = ["read", "search", "synthesis", "web"]
 developer_instructions = """
 Stay in exploration mode. Trace real code paths, gather exact evidence, and return concise findings with file or command references. Mark anything you couldn't confirm and say where you looked. Do not edit files or propose broad fixes unless the parent asks for options. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
 """
 
 [roles.reviewer]
-description = "Read-only reviewer for merge-blocking correctness, security, and regression problems."
+description = "Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only."
 tier = "balanced"
 effort = "low"
 sandbox_mode = "read-only"
@@ -32,7 +34,7 @@ List only problems you'd block the merge for. For each one, give the file and li
 """
 
 [roles.worker]
-description = "Execution-focused worker for bounded implementation and fixes after scope and ownership are clear."
+description = "Use for a bounded implementation or fix once scope, owned files, and the finish line are clear."
 tier = "economy"
 effort = "xhigh"
 sandbox_mode = "workspace-write"
@@ -68,7 +70,8 @@ supported_efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 display_name = "Office Claude Code"
 provider = "claude"
 lead_tier = "frontier"
-default_tier = "frontier"
+# Unnamed spawns; config/claude/settings.json sets CLAUDE_CODE_SUBAGENT_MODEL to match.
+default_tier = "economy"
 opencode_go = false
 
 # Claude Code agent `model` values are aliases that resolve to the current

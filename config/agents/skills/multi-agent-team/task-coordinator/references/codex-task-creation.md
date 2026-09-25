@@ -33,7 +33,8 @@ Reuse the issue key or a short descriptive key. Effort codes: `n` none,
 | `⛔` | blocked | Access, approval, or an external dependency stops all authorized work. |
 | `❌` | error | An unexpected failure has no safe in-scope recovery yet. |
 | `❓` | needs info | A specific user decision is required; the task asks the user directly. |
-| `✅` | done | Acceptance criteria are verified, not merely attempted or reported. |
+| `👀` | ready for review | Work is verified and a PR or deliverable waits on the user's review. |
+| `✅` | done | Acceptance criteria are verified and nothing waits on the user. |
 
 Create with `🆕`. The owner renames its own title at each state change; the
 lead reconciles a stale title from evidence. Do not rename for routine

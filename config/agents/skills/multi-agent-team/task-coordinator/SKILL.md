@@ -32,7 +32,9 @@ Send one message with:
 
 - Task and context, including what the lead already knows.
 - Done means: a checkable finish line.
-- Stop and ask if: the conditions that need the parent.
+- Stop and ask if: the conditions that need the parent. If something needed
+  is unreachable, say exactly what is missing and stop; never substitute,
+  mock, or guess.
 - Owned files or resources (no concurrent writers) and authorization.
 
 Native subagents return results or blockers only to their parent; they do not

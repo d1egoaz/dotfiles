@@ -65,7 +65,7 @@
     };
   runtimes = {
     office_claude = {
-      default_tier = "frontier";
+      default_tier = "economy";
       display_name = "Office Claude Code";
       opencode_go = false;
       provider = "claude";

@@ -1,5 +1,5 @@
 name = "spawn-subagent-review"
-description = "Read-only reviewer for merge-blocking correctness, security, and regression problems."
+description = "Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only."
 model = "deepseek-v4.1-flash"
 model_reasoning_effort = "low"
 sandbox_mode = "read-only"
