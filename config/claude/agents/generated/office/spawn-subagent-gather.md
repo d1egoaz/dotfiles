@@ -2,7 +2,7 @@
 name: spawn-subagent-gather
 description: "Use for bounded read-only fact collection from named sources. Return source links and dates; leave ranking and synthesis to the lead."
 model: sonnet
-effort: low
+effort: high
 disallowedTools: Edit, Write, NotebookEdit
 ---
 

@@ -15,10 +15,14 @@ to a more expensive tier.
 
 ## Native-subagent roles
 
-- `@spawn-subagent-gather` -> `economy`, `low`, `read-only`: Use for bounded read-only fact collection from named sources. Return source links and dates; leave ranking and synthesis to the lead.
+- `@spawn-subagent-gather` -> `economy`, `high`, `read-only`: Use for bounded read-only fact collection from named sources. Return source links and dates; leave ranking and synthesis to the lead.
 - `@spawn-subagent-explore` -> `balanced`, `low`, `read-only`: Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area.
 - `@spawn-subagent-review` -> `balanced`, `low`, `read-only`: Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only.
 - `@spawn-subagent-implement` -> `economy`, `xhigh`, `workspace-write`: Use for a bounded implementation or fix once scope, owned files, and the finish line are clear.
+
+Role efforts above are defaults; profile overrides:
+
+- `personal`: `spawn-subagent-explore` = `high`, `spawn-subagent-review` = `high`
 
 An unnamed spawn uses the profile default route (`economy`) and inherits
 the parent sandbox; use it for a bounded batch of procedural commands.

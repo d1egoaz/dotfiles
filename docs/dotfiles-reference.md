@@ -60,11 +60,11 @@ edit generated files. Changing these files does not retier a running task.
 Four roles are generated: `spawn-subagent-gather` (read-only),
 `spawn-subagent-explore` (read-only), `spawn-subagent-implement`
 (workspace-write), and `spawn-subagent-review` (read-only). Each role's tier
-and effort live in the registry, so retiering a role never renames it. An
-unnamed spawn uses the profile default route (`default_subagent_model`) and
-inherits the parent sandbox. Deep judgment stays with the frontier lead. Use
-the roles only for native subagents, not visible tasks; spawned instance names
-retain the resolved model label.
+and default effort live in the registry; profiles may override effort without
+renaming the role. An unnamed spawn uses the profile default route
+(`default_subagent_model`) and inherits the parent sandbox. Deep judgment
+stays with the frontier lead. Use the roles only for native subagents, not
+visible tasks; spawned instance names retain the resolved model label.
 
 Role keys are the launcher suffix: `roles.gather` generates
 `spawn-subagent-gather`. The top-level `efforts` list is a routing policy, not

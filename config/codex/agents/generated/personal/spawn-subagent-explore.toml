@@ -1,7 +1,7 @@
 name = "spawn-subagent-explore"
 description = "Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area."
 model = "deepseek-v4-pro"
-model_reasoning_effort = "low"
+model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """
 This configuration is a native-subagent launcher. Use it only through the native subagent spawn control, never as a visible child task. Return results or blockers only to the parent lead.

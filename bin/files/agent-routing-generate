@@ -171,6 +171,12 @@ def read_registry() -> dict:
         ):
             if profile[effort_key] not in registry["efforts"]:
                 fail(f"profiles.{profile_name}.{effort_key} is invalid")
+        role_efforts = profile.get("role_efforts", {})
+        if not isinstance(role_efforts, Mapping):
+            fail(f"profiles.{profile_name}.role_efforts must be a table")
+        for role_name, effort in role_efforts.items():
+            if role_name not in roles or effort not in registry["efforts"]:
+                fail(f"profiles.{profile_name}.role_efforts.{role_name} is invalid")
 
     return registry
 
@@ -193,6 +199,14 @@ def effective_effort(registry: Mapping, requested: str) -> str:
     return requested
 
 
+def role_effort(registry: Mapping, profile_name: str, role_name: str) -> str:
+    profile = registry["profiles"][profile_name]
+    requested = profile.get("role_efforts", {}).get(
+        role_name, registry["roles"][role_name]["effort"]
+    )
+    return effective_effort(registry, requested)
+
+
 def native_launcher_instructions(extra: str) -> str:
     return (
         "This configuration is a native-subagent launcher. Use it only through "
@@ -202,10 +216,10 @@ def native_launcher_instructions(extra: str) -> str:
     )
 
 
-def render_codex_agent(registry: Mapping, runtime_name: str, role_name: str) -> str:
+def render_codex_agent(registry: Mapping, profile_name: str, runtime_name: str, role_name: str) -> str:
     role = registry["roles"][role_name]
     selected = route(registry, runtime_name, role["tier"])
-    effort = effective_effort(registry, role["effort"])
+    effort = role_effort(registry, profile_name, role_name)
     return (
         f'name = {json.dumps(canonical_name(role_name))}\n'
         f'description = {json.dumps(role["description"])}\n'
@@ -216,10 +230,10 @@ def render_codex_agent(registry: Mapping, runtime_name: str, role_name: str) -> 
     )
 
 
-def render_claude_agent(registry: Mapping, runtime_name: str, role_name: str) -> str:
+def render_claude_agent(registry: Mapping, profile_name: str, runtime_name: str, role_name: str) -> str:
     role = registry["roles"][role_name]
     selected = route(registry, runtime_name, role["tier"])
-    effort = effective_effort(registry, role["effort"])
+    effort = role_effort(registry, profile_name, role_name)
     lines = [
         "---",
         f"name: {canonical_name(role_name)}",
@@ -377,6 +391,14 @@ def render_reference(registry: Mapping) -> str:
             f"- `@{canonical_name(role_name)}` -> `{role['tier']}`, `{role['effort']}`, "
             f"`{role['sandbox_mode']}`: {role['description']}"
         )
+    overrides = [
+        f"- `{profile_name}`: "
+        + ", ".join(f"`{canonical_name(name)}` = `{effort}`" for name, effort in profile["role_efforts"].items())
+        for profile_name, profile in registry["profiles"].items()
+        if profile.get("role_efforts")
+    ]
+    if overrides:
+        lines.extend(["", "Role efforts above are defaults; profile overrides:", "", *overrides])
     lines.extend(
         [
             "",
@@ -454,7 +476,7 @@ def render_matrix(registry: Mapping) -> str:
             matrix_cell(registry, codex_runtime, profile["codex_lead_tier"], profile["codex_lead_effort"]),
         ]
         row += [
-            matrix_cell(registry, codex_runtime, roles[name]["tier"], roles[name]["effort"])
+            matrix_cell(registry, codex_runtime, roles[name]["tier"], role_effort(registry, profile_name, name))
             for name in roles
         ]
         row.append(
@@ -478,7 +500,7 @@ def render_matrix(registry: Mapping) -> str:
                 ),
             ]
             row += [
-                matrix_cell(registry, claude_runtime, roles[name]["tier"], roles[name]["effort"])
+                matrix_cell(registry, claude_runtime, roles[name]["tier"], role_effort(registry, profile_name, name))
                 for name in roles
             ]
             default = route(registry, claude_runtime, registry["runtimes"][claude_runtime]["default_tier"])
@@ -492,7 +514,7 @@ def render_matrix(registry: Mapping) -> str:
                 matrix_cell(registry, home_runtime, home["lead_tier"], profile["home_lead_effort"]),
             ]
             row += [
-                matrix_cell(registry, home_runtime, roles[name]["tier"], roles[name]["effort"])
+                matrix_cell(registry, home_runtime, roles[name]["tier"], role_effort(registry, profile_name, name))
                 for name in roles
             ]
             row.append(
@@ -542,14 +564,14 @@ def build_outputs(registry: Mapping) -> dict[pathlib.Path, str]:
             launcher_name = canonical_name(role_name)
             outputs[
                 CODEX_OUTPUT_ROOT / profile_name / f"{launcher_name}.toml"
-            ] = render_codex_agent(registry, runtime_name, role_name)
+            ] = render_codex_agent(registry, profile_name, runtime_name, role_name)
         claude_runtime = claude_runtime_for(registry, profile_name)
         if claude_runtime:
             for role_name in registry["roles"]:
                 launcher_name = canonical_name(role_name)
                 outputs[
                     CLAUDE_OUTPUT_ROOT / profile_name / f"{launcher_name}.md"
-                ] = render_claude_agent(registry, claude_runtime, role_name)
+                ] = render_claude_agent(registry, profile_name, claude_runtime, role_name)
     return outputs
 
 

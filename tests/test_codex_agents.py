@@ -92,11 +92,18 @@ class AgentRoutingTest(unittest.TestCase):
             ROLE_SANDBOX,
         )
 
-    def test_bounded_gatherer_uses_economy_low(self):
+    def test_bounded_gatherer_uses_economy_high(self):
         gatherer = self.roles["gather"]
         self.assertIn("spawn-subagent-gather", self.canonical)
-        self.assertEqual((gatherer["tier"], gatherer["effort"]), ("economy", "low"))
+        self.assertEqual((gatherer["tier"], gatherer["effort"]), ("economy", "high"))
         self.assertEqual(gatherer["sandbox_mode"], "read-only")
+
+    def test_personal_read_roles_use_high_effort(self):
+        personal = self.registry["profiles"]["personal"]
+        self.assertEqual(personal["role_efforts"], {"explore": "high", "review": "high"})
+        for name in ("gather", "explore", "review"):
+            self.assertEqual(personal["role_efforts"].get(name, self.roles[name]["effort"]), "high")
+        self.assertEqual(self.registry["profiles"]["office"].get("role_efforts", {}), {})
 
     def test_effort_policy_excludes_unused_extremes(self):
         self.assertEqual(self.registry["efforts"], ["low", "medium", "high", "xhigh"])
@@ -113,7 +120,8 @@ class AgentRoutingTest(unittest.TestCase):
                 with (directory / f"{self.generator.canonical_name(role_name)}.toml").open("rb") as agent_file:
                     agent = tomllib.load(agent_file)
                 self.assertEqual(agent["model"], self.route(runtime_name, role_name)["model"])
-                self.assertEqual(agent["model_reasoning_effort"], role["effort"])
+                expected_effort = profile.get("role_efforts", {}).get(role_name, role["effort"])
+                self.assertEqual(agent["model_reasoning_effort"], expected_effort)
                 self.assertEqual(agent["sandbox_mode"], ROLE_SANDBOX[role_name])
                 self.assertIn("parent lead", agent["developer_instructions"])
                 if ROLE_SANDBOX[role_name] == "read-only":
@@ -132,7 +140,8 @@ class AgentRoutingTest(unittest.TestCase):
             for role_name, role in self.roles.items():
                 fields, body = claude_frontmatter(directory / f"{self.generator.canonical_name(role_name)}.md")
                 self.assertEqual(fields["model"], self.route(runtime_name, role_name)["model"])
-                self.assertEqual(fields["effort"], role["effort"])
+                expected_effort = profile.get("role_efforts", {}).get(role_name, role["effort"])
+                self.assertEqual(fields["effort"], expected_effort)
                 if ROLE_SANDBOX[role_name] == "read-only":
                     self.assertEqual(fields["disallowedTools"], "Edit, Write, NotebookEdit")
                 else:
@@ -258,6 +267,7 @@ class RegistryValidationTest(unittest.TestCase):
             ("[roles.explore]", '[roles."../bad"]', "invalid launcher name"),
             ("[runtimes.personal_home]", "[runtimes.unexpected]", "runtimes must be exactly"),
             ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
+            ('role_efforts = { explore = "high", review = "high" }', 'role_efforts = { missing = "high" }', "role_efforts.missing is invalid"),
             ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
             ('resolves_to = "claude-sonnet-5"', 'resolves_to = "sonnet-5"', "needs a claude-\\* resolves_to"),
             ('claude_lead_effort = "high"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
