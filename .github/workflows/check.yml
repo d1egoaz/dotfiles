@@ -1,11 +1,57 @@
 name: Check
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
+  # Python tests and generated-file checks; no Nix and no secrets, so these
+  # results stay visible even when the Nix job cannot reach the fonts repo.
+  tests:
+    runs-on: macos-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Agent routing outputs are current
+        run: python3 bin/files/agent-routing-generate --check
+      - name: Python tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
   check:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
+      # nix/profiles/base.nix fetches the private d1egoaz/fonts repo with
+      # builtins.fetchGit, which shells out to git at eval time. Route only that
+      # URL through SSH with a read-only deploy key; everything else is untouched.
+      - name: Configure fonts deploy key
+        env:
+          FONTS_DEPLOY_KEY: ${{ secrets.FONTS_DEPLOY_KEY }}
+        run: |
+          if [ -z "$FONTS_DEPLOY_KEY" ]; then
+            echo "::error::FONTS_DEPLOY_KEY is not available (missing secret, or a fork PR)"
+            exit 1
+          fi
+          install -d -m 700 ~/.ssh
+          (umask 077 && printf '%s\n' "$FONTS_DEPLOY_KEY" > ~/.ssh/fonts_deploy_key)
+          # Pinned from `gh api meta --jq '.ssh_keys'`.
+          echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" >> ~/.ssh/known_hosts
+          cat >> ~/.ssh/config <<'EOF'
+          Host github-fonts
+            HostName github.com
+            HostKeyAlias github.com
+            User git
+            IdentityFile ~/.ssh/fonts_deploy_key
+            IdentitiesOnly yes
+          EOF
+          git config --global url."github-fonts:d1egoaz/fonts.git".insteadOf "https://github.com/d1egoaz/fonts.git"
       - run: cd nix && nix flake check --show-trace
+      - name: Skill links match skill directories
+        if: ${{ !cancelled() }}
+        run: nix shell --inputs-from ./nix nixpkgs#just nixpkgs#ripgrep --command just check-skills
