@@ -93,6 +93,8 @@ def read_registry() -> dict:
             fail(f"roles.{role_name}.canonical_name maps to the wrong role")
         if not isinstance(role["capabilities"], list) or not role["capabilities"]:
             fail(f"roles.{role_name}.capabilities must be a non-empty list")
+        if not isinstance(role.get("claude_omit_claude_md", False), bool):
+            fail(f"roles.{role_name}.claude_omit_claude_md must be a boolean")
 
     canonical_names = [role["canonical_name"] for role in roles.values()]
     if len(set(canonical_names)) != len(canonical_names):
@@ -222,6 +224,8 @@ def render_claude_agent(registry: Mapping, runtime_name: str, role_name: str) ->
     ]
     if role["sandbox_mode"] == "read-only":
         lines.append(f"disallowedTools: {', '.join(CLAUDE_READ_ONLY_DISALLOWED)}")
+    if role.get("claude_omit_claude_md"):
+        lines.append("omitClaudeMd: true")
     lines.extend(["---", "", role["developer_instructions"].strip(), ""])
     return "\n".join(lines)
 
@@ -477,8 +481,24 @@ def render_matrix(registry: Mapping) -> str:
                 matrix_cell(registry, claude_runtime, roles[name]["tier"], roles[name]["effort"])
                 for name in ROLE_ORDER
             ]
-            row.append("inherits lead")
+            default = route(registry, claude_runtime, registry["runtimes"][claude_runtime]["default_tier"])
+            row.append(f"`{default['model']}` / session effort")
             lines.append("| " + " | ".join(row) + " |")
+    if any(profile.get("claude_runtime") for profile in registry["profiles"].values()):
+        lines.extend(
+            [
+                "",
+                "## Claude Code notes",
+                "",
+                "- `config/claude/settings.json` sets the unnamed-spawn model",
+                "  (`CLAUDE_CODE_SUBAGENT_MODEL`), turns off nesting",
+                "  (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, like Codex `max_depth = 1`),",
+                "  and denies the built-in `Explore` so `spawn-subagent-explore` is the only explorer.",
+                "- Read-only roles deny `Edit`, `Write`, and `NotebookEdit` but keep `Bash`,",
+                "  and `permissionMode` is ignored while the lead runs in auto mode. Read-only",
+                "  is enforced by instructions and permission review, not by a sandbox as in Codex.",
+            ]
+        )
     return "\n".join(lines) + "\n"
 
 

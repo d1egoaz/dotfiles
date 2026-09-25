@@ -15,9 +15,9 @@ to a more expensive tier.
 
 ## Native-subagent roles
 
-- `@spawn-subagent-explore` -> `balanced`, `low`, `read-only`: Read-only explorer for mapping code paths, inventories, and evidence gathering.
-- `@spawn-subagent-implement` -> `economy`, `xhigh`, `workspace-write`: Execution-focused worker for bounded implementation and fixes after scope and ownership are clear.
-- `@spawn-subagent-review` -> `balanced`, `low`, `read-only`: Read-only reviewer for merge-blocking correctness, security, and regression problems.
+- `@spawn-subagent-explore` -> `balanced`, `low`, `read-only`: Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area.
+- `@spawn-subagent-implement` -> `economy`, `xhigh`, `workspace-write`: Use for a bounded implementation or fix once scope, owned files, and the finish line are clear.
+- `@spawn-subagent-review` -> `balanced`, `low`, `read-only`: Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only.
 
 An unnamed spawn uses the profile default route (`economy`) and inherits
 the parent sandbox; use it for a bounded batch of procedural commands.

@@ -1,5 +1,5 @@
 name = "spawn-subagent-explore"
-description = "Read-only explorer for mapping code paths, inventories, and evidence gathering."
+description = "Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area."
 model = "gpt-6-sol"
 model_reasoning_effort = "low"
 sandbox_mode = "read-only"

@@ -9,6 +9,7 @@ pinned here.
 import copy
 import importlib.machinery
 import importlib.util
+import json
 import pathlib
 import re
 import subprocess
@@ -23,6 +24,7 @@ REGISTRY = REPO_ROOT / "nix/data/agent-routing.toml"
 ROUTING_GENERATOR = REPO_ROOT / "bin/files/agent-routing-generate"
 CODEX_AGENT_ROOT = REPO_ROOT / "config/codex/agents/generated"
 CLAUDE_AGENT_ROOT = REPO_ROOT / "config/claude/agents/generated"
+CLAUDE_SETTINGS = REPO_ROOT / "config/claude/settings.json"
 MATRIX = REPO_ROOT / "docs/agent-routing-matrix.md"
 SHARED_AGENTS = REPO_ROOT / "config/ai/AGENTS.md"
 ROOT_AGENTS = REPO_ROOT / "AGENTS.md"
@@ -122,7 +124,25 @@ class AgentRoutingTest(unittest.TestCase):
                     self.assertEqual(fields["disallowedTools"], "Edit, Write, NotebookEdit")
                 else:
                     self.assertNotIn("disallowedTools", fields)
+                self.assertEqual(
+                    fields.get("omitClaudeMd") == "true",
+                    role.get("claude_omit_claude_md", False),
+                )
                 self.assertIn("parent lead", body)
+
+    def test_claude_settings_match_registry(self):
+        settings = json.loads(CLAUDE_SETTINGS.read_text())
+        env = settings["env"]
+        for profile in self.registry["profiles"].values():
+            runtime_name = profile.get("claude_runtime")
+            if runtime_name:
+                runtime = self.registry["runtimes"][runtime_name]
+                default = runtime["tiers"][runtime["default_tier"]]["model"]
+                self.assertEqual(env["CLAUDE_CODE_SUBAGENT_MODEL"], default)
+        # Same policy as Codex max_depth = 1: subagents cannot spawn descendants.
+        self.assertEqual(env["CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"], "1")
+        # The built-in Explore would compete with spawn-subagent-explore.
+        self.assertIn("Agent(Explore)", settings["permissions"]["deny"])
 
     def test_matrix_covers_every_profile_and_harness(self):
         matrix = MATRIX.read_text()
@@ -205,6 +225,7 @@ class RegistryValidationTest(unittest.TestCase):
             ("[roles.explorer]", "[roles.unexpected]", "roles must be exactly"),
             ("[runtimes.personal_opencode_go]", "[runtimes.unexpected]", "runtimes must be exactly"),
             ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
+            ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
         )
         for old, new, message in cases:
             with self.subTest(message=message):

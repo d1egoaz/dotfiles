@@ -1,6 +1,6 @@
 ---
 name: spawn-subagent-review
-description: "Read-only reviewer for merge-blocking correctness, security, and regression problems."
+description: "Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only."
 model: opus
 effort: low
 disallowedTools: Edit, Write, NotebookEdit

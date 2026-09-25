@@ -1,6 +1,6 @@
 ---
 name: spawn-subagent-implement
-description: "Execution-focused worker for bounded implementation and fixes after scope and ownership are clear."
+description: "Use for a bounded implementation or fix once scope, owned files, and the finish line are clear."
 model: sonnet
 effort: xhigh
 ---
