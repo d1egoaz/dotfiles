@@ -8,6 +8,8 @@ let
   # ---------------- External Fonts Repo ----------------
   # Use a private repository for proprietary fonts (Pragmata*).
   # Note: builtins.fetchGit runs at eval time and can access private repos.
+  # CI reaches it through the FONTS_DEPLOY_KEY rewrite in
+  # .github/workflows/check.yml; keep that URL in sync.
   fontsRepo = builtins.fetchGit {
     url = "https://github.com/d1egoaz/fonts.git";
     rev = "1b361b6e214713b15352cc24d77b2785706bb220";
