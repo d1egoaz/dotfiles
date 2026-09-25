@@ -74,21 +74,24 @@ lead_tier = "frontier"
 default_tier = "economy"
 opencode_go = false
 
-# Claude Code agent `model` values are aliases that resolve to the current
-# model family on the host; `label` names the family in routing output.
+# Claude Code agent `model` values are aliases; `resolves_to` is the model ID
+# config/claude/settings.json pins each alias to (ANTHROPIC_DEFAULT_<ALIAS>_MODEL).
 [runtimes.office_claude.tiers.economy]
 model = "sonnet"
 label = "sonnet"
+resolves_to = "claude-sonnet-5"
 supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.office_claude.tiers.balanced]
 model = "opus"
 label = "opus"
+resolves_to = "claude-opus-5-5"
 supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.office_claude.tiers.frontier]
 model = "opus"
 label = "opus"
+resolves_to = "claude-opus-5-5"
 supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.personal_opencode_go]
@@ -116,6 +119,8 @@ supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 [profiles.office]
 codex_runtime = "office_codex"
 claude_runtime = "office_claude"
+# Matches effortLevel in config/claude/settings.json.
+claude_lead_effort = "high"
 codex_lead_tier = "frontier"
 codex_lead_effort = "high"
 codex_default_tier = "economy"

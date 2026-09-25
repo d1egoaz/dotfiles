@@ -126,6 +126,8 @@ def read_registry() -> dict:
                 fail(f"runtimes.{runtime_name}.tiers.{tier}.supported_efforts must be a list")
             if "fallback_effort" in route:
                 fail(f"Codex tier {runtime_name}.{tier} must not define fallback_effort")
+            if runtime.get("provider") == "claude" and not str(route.get("resolves_to", "")).startswith("claude-"):
+                fail(f"runtimes.{runtime_name}.tiers.{tier} needs a claude-* resolves_to model ID")
         if runtime_name == "personal_opencode_go" and len(set(labels)) != 1:
             fail("Personal OpenCode Go must use one model label for all tiers")
 
@@ -157,6 +159,8 @@ def read_registry() -> dict:
                 fail(f"profiles.{profile_name}.claude_runtime is unknown")
             if runtimes[claude_runtime]["provider"] != "claude":
                 fail(f"profiles.{profile_name}.claude_runtime must use the claude provider")
+            if profile.get("claude_lead_effort") not in registry["efforts"]:
+                fail(f"profiles.{profile_name}.claude_lead_effort is invalid")
         for tier_key in ("codex_lead_tier", "codex_default_tier", "pi_tier"):
             if profile[tier_key] not in REQUIRED_TIERS:
                 fail(f"profiles.{profile_name}.{tier_key} is invalid")
@@ -420,7 +424,10 @@ def render_reference(registry: Mapping) -> str:
 def matrix_cell(registry: Mapping, runtime_name: str, tier: str, effort: str) -> str:
     runtime = registry["runtimes"][runtime_name]
     selected = route(registry, runtime_name, tier)
-    return f"`{selected['model']}` / {effective_effort(runtime, tier, effort)}"
+    model = f"`{selected['model']}`"
+    if "resolves_to" in selected:
+        model += f" (`{selected['resolves_to']}`)"
+    return f"{model} / {effective_effort(runtime, tier, effort)}"
 
 
 def render_matrix(registry: Mapping) -> str:
@@ -475,14 +482,19 @@ def render_matrix(registry: Mapping) -> str:
         if claude_runtime:
             row = [
                 f"Claude Code ({registry['runtimes'][claude_runtime]['display_name']})",
-                "`config/claude/settings.json`",
+                matrix_cell(
+                    registry,
+                    claude_runtime,
+                    registry["runtimes"][claude_runtime]["lead_tier"],
+                    profile["claude_lead_effort"],
+                ),
             ]
             row += [
                 matrix_cell(registry, claude_runtime, roles[name]["tier"], roles[name]["effort"])
                 for name in ROLE_ORDER
             ]
             default = route(registry, claude_runtime, registry["runtimes"][claude_runtime]["default_tier"])
-            row.append(f"`{default['model']}` / session effort")
+            row.append(f"`{default['model']}` (`{default['resolves_to']}`) / session effort")
             lines.append("| " + " | ".join(row) + " |")
     if any(profile.get("claude_runtime") for profile in registry["profiles"].values()):
         lines.extend(
@@ -490,7 +502,8 @@ def render_matrix(registry: Mapping) -> str:
                 "",
                 "## Claude Code notes",
                 "",
-                "- `config/claude/settings.json` sets the unnamed-spawn model",
+                "- `config/claude/settings.json` sets the lead (`model`, `effortLevel`), pins each",
+                "  alias to its model ID (`ANTHROPIC_DEFAULT_<ALIAS>_MODEL`), sets the unnamed-spawn model",
                 "  (`CLAUDE_CODE_SUBAGENT_MODEL`), turns off nesting",
                 "  (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`, like Codex `max_depth = 1`),",
                 "  and denies the built-in `Explore` so `spawn-subagent-explore` is the only explorer.",

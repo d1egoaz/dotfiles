@@ -139,6 +139,13 @@ class AgentRoutingTest(unittest.TestCase):
                 runtime = self.registry["runtimes"][runtime_name]
                 default = runtime["tiers"][runtime["default_tier"]]["model"]
                 self.assertEqual(env["CLAUDE_CODE_SUBAGENT_MODEL"], default)
+                self.assertEqual(settings["model"], runtime["tiers"][runtime["lead_tier"]]["model"])
+                self.assertEqual(settings["effortLevel"], profile["claude_lead_effort"])
+                for tier in runtime["tiers"].values():
+                    pin = f"ANTHROPIC_DEFAULT_{tier['model'].upper()}_MODEL"
+                    self.assertEqual(env[pin], tier["resolves_to"], pin)
+        # A full-ID override would bypass the alias pins above.
+        self.assertNotIn("ANTHROPIC_MODEL", env)
         # Same policy as Codex max_depth = 1: subagents cannot spawn descendants.
         self.assertEqual(env["CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"], "1")
         # The built-in Explore would compete with spawn-subagent-explore.
@@ -160,6 +167,7 @@ class AgentRoutingTest(unittest.TestCase):
             for route in runtime["tiers"].values()
         ]
         model_ids = {route["model"] for route in routes}
+        model_ids |= {route["resolves_to"] for route in routes if "resolves_to" in route}
         labels = {route["label"] for route in routes}
         instructions = [ROOT_AGENTS, SHARED_AGENTS, *sorted(SKILL_ROOT.rglob("*.md"))]
         for path in [*instructions, CONFIG_TOML, XDG_NIX, PI_NIX]:
@@ -226,6 +234,8 @@ class RegistryValidationTest(unittest.TestCase):
             ("[runtimes.personal_opencode_go]", "[runtimes.unexpected]", "runtimes must be exactly"),
             ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
             ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
+            ('resolves_to = "claude-sonnet-5"', 'resolves_to = "sonnet-5"', "needs a claude-\\* resolves_to"),
+            ('claude_lead_effort = "high"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
         )
         for old, new, message in cases:
             with self.subTest(message=message):
