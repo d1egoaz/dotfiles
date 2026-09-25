@@ -23,9 +23,9 @@ ROUTING_REFERENCE = (
 )
 
 EXPECTED_ROLES = {"explorer", "reviewer", "worker"}
-EXPECTED_RUNTIMES = {"office_codex", "office_claude", "personal_home", "personal_opencode_go"}
-# `neutral` runtimes define harness-independent tier layers that no harness
-# consumes yet; they appear only in the routing matrix.
+EXPECTED_RUNTIMES = {"office_codex", "office_claude", "personal_home"}
+# `neutral` runtimes keep model IDs independent of a particular client.
+# Personal Codex consumes the home runtime through its local gateway.
 PROVIDERS = {"codex", "claude", "neutral"}
 # Claude Code has no sandbox_mode; read-only roles deny the file-editing tools.
 CLAUDE_READ_ONLY_DISALLOWED = ("Edit", "Write", "NotebookEdit")
@@ -117,12 +117,10 @@ def read_registry() -> dict:
         runtime_tiers = runtime.get("tiers")
         if not isinstance(runtime_tiers, Mapping) or set(runtime_tiers) != set(REQUIRED_TIERS):
             fail(f"runtimes.{runtime_name}.tiers must contain every routing tier")
-        labels = []
         for tier in REQUIRED_TIERS:
             route = runtime_tiers[tier]
             if not isinstance(route, Mapping) or not route.get("model") or not route.get("label"):
                 fail(f"runtimes.{runtime_name}.tiers.{tier} needs model and label")
-            labels.append(route["label"])
             supported = route.get("supported_efforts")
             if not isinstance(supported, list):
                 fail(f"runtimes.{runtime_name}.tiers.{tier}.supported_efforts must be a list")
@@ -132,9 +130,8 @@ def read_registry() -> dict:
                 fail(f"runtimes.{runtime_name}.tiers.{tier}.verified must be a boolean")
             if runtime.get("provider") == "claude" and not str(route.get("resolves_to", "")).startswith("claude-"):
                 fail(f"runtimes.{runtime_name}.tiers.{tier} needs a claude-* resolves_to model ID")
-        if runtime_name == "personal_opencode_go" and len(set(labels)) != 1:
-            fail("Personal OpenCode Go must use one model label for all tiers")
-
+        if not isinstance(runtime.get("opencode_go"), bool):
+            fail(f"runtimes.{runtime_name}.opencode_go must be a boolean")
     for profile_name, profile in profiles.items():
         if not isinstance(profile, Mapping):
             fail(f"profiles.{profile_name} must be a table")
@@ -153,7 +150,13 @@ def read_registry() -> dict:
         for runtime_key in ("codex_runtime", "pi_runtime"):
             if profile[runtime_key] not in EXPECTED_RUNTIMES:
                 fail(f"profiles.{profile_name}.{runtime_key} is unknown")
-        if runtimes[profile["codex_runtime"]]["provider"] != "codex":
+        codex_runtime = runtimes[profile["codex_runtime"]]
+        if codex_runtime["provider"] == "neutral":
+            if profile.get("home_runtime") != profile["codex_runtime"]:
+                fail(f"profiles.{profile_name}.codex_runtime must use the profile home_runtime")
+            if not codex_runtime["opencode_go"]:
+                fail(f"profiles.{profile_name}.codex_runtime must use the local gateway")
+        elif codex_runtime["provider"] != "codex":
             fail(f"profiles.{profile_name}.codex_runtime must use the codex provider")
         if runtimes[profile["pi_runtime"]]["provider"] != "codex":
             fail(f"profiles.{profile_name}.pi_runtime must use the codex provider")
@@ -512,7 +515,7 @@ def render_matrix(registry: Mapping) -> str:
             row.append(f"`{default['model']}` (`{default['resolves_to']}`) / session effort")
             lines.append("| " + " | ".join(row) + " |")
         home_runtime = profile.get("home_runtime")
-        if home_runtime:
+        if home_runtime and home_runtime != codex_runtime:
             home = registry["runtimes"][home_runtime]
             row = [
                 home["display_name"],
@@ -549,10 +552,9 @@ def render_matrix(registry: Mapping) -> str:
                 "## Home tier notes",
                 "",
                 "- Home tiers belong to the `personal` profile only; office machines never use them.",
-                "- They are harness-neutral and not generated into any harness yet. The personal",
-                "  Codex row is what home Codex runs today.",
-                "- `(unverified)` marks a model whose ID and route have not been probed on a home",
-                "  machine. OpenCode Go returns 500 for MiMo on the Responses wire that Codex uses.",
+                "- Personal Codex consumes them through the local gateway.",
+                "- Bare model IDs route through OpenCode Go; vendor-prefixed IDs route through",
+                "  OpenRouter.",
             ]
         )
     return "\n".join(lines) + "\n"

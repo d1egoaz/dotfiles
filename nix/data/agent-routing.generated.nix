@@ -41,14 +41,14 @@
           effort = "xhigh";
           label = "deepseek";
           model = "deepseek-v4.1-flash";
-          runtime = "personal-opencode-go";
+          runtime = "personal-home";
           tier = "economy";
                 };
         lead = {
           effort = "high";
-          label = "deepseek";
-          model = "deepseek-v4.1-flash";
-          runtime = "personal-opencode-go";
+          label = "mimo";
+          model = "xiaomi/mimo-v2.6-pro";
+          runtime = "personal-home";
           tier = "frontier";
                 };
         opencode_go = true;
@@ -112,8 +112,8 @@
         };
     personal_home = {
       default_tier = "economy";
-      display_name = "Home tiers, any harness (not wired yet)";
-      opencode_go = false;
+      display_name = "Personal Codex home tiers";
+      opencode_go = true;
       provider = "neutral";
       tiers = {
         balanced = {
@@ -129,30 +129,7 @@
         frontier = {
           effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "mimo";
-          model = "mimo-v2.6-pro";
-                };
-            };
-        };
-    personal_opencode_go = {
-      default_tier = "economy";
-      display_name = "Personal Codex via OpenCode Go";
-      opencode_go = true;
-      provider = "codex";
-      tiers = {
-        balanced = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
-          label = "deepseek";
-          model = "deepseek-v4.1-flash";
-                };
-        economy = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
-          label = "deepseek";
-          model = "deepseek-v4.1-flash";
-                };
-        frontier = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
-          label = "deepseek";
-          model = "deepseek-v4.1-flash";
+          model = "xiaomi/mimo-v2.6-pro";
                 };
             };
         };
