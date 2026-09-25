@@ -4,7 +4,7 @@
     office = {
       claude = {
         agent_directory = "office";
-        agents = [ "spawn-subagent-explore" "spawn-subagent-implement" "spawn-subagent-review" ];
+        agents = [ "spawn-subagent-gather" "spawn-subagent-explore" "spawn-subagent-review" "spawn-subagent-implement" ];
         runtime = "office-claude";
             };
       codex = {
@@ -71,17 +71,14 @@
       provider = "claude";
       tiers = {
         balanced = {
-          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
           label = "opus";
           model = "opus";
                 };
         economy = {
-          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
           label = "sonnet";
           model = "sonnet";
                 };
         frontier = {
-          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
           label = "opus";
           model = "opus";
                 };
@@ -94,17 +91,14 @@
       provider = "codex";
       tiers = {
         balanced = {
-          effective_efforts = [ "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "sol";
           model = "gpt-6-sol";
                 };
         economy = {
-          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
           label = "luna";
           model = "gpt-6-luna";
                 };
         frontier = {
-          effective_efforts = [ "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "sol";
           model = "gpt-6-sol";
                 };
@@ -117,17 +111,14 @@
       provider = "neutral";
       tiers = {
         balanced = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "deepseek-pro";
           model = "deepseek-v4-pro";
                 };
         economy = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "deepseek";
           model = "deepseek-v4.1-flash";
                 };
         frontier = {
-          effective_efforts = [ "none" "low" "medium" "high" "xhigh" "max" "ultra" ];
           label = "mimo";
           model = "xiaomi/mimo-v2.6-pro";
                 };

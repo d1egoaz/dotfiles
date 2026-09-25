@@ -1,45 +1,49 @@
 # Canonical model routing registry.
 #
 # This file is the only hand-edited source for active Codex model IDs, model
-# labels, tier defaults, role routes, and runtime capability differences.
+# labels, tier defaults, role routes, and runtime settings.
 # Generated outputs are consumed by Codex, Nix, and the routing reference. Run
 # `just agent-routing-generate` after changing this file.
 
 schema_version = 1
 tiers = ["economy", "balanced", "frontier"]
-efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+# Efforts this configuration will select, independent of a model's full API range.
+efforts = ["low", "medium", "high", "xhigh"]
 
-[roles.explorer]
+[roles.gather]
+description = "Use for bounded read-only fact collection from named sources. Return source links and dates; leave ranking and synthesis to the lead."
+tier = "economy"
+effort = "high"
+sandbox_mode = "read-only"
+developer_instructions = """
+Read only the assigned sources. Return concise facts with direct source links and publication dates when available. If a source is inaccessible, say what is missing and stop; do not substitute another source or guess. Mark anything you couldn't confirm and say where you looked. Do not rank findings, make cross-source judgments, edit files, message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
+"""
+
+[roles.explore]
 description = "Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area."
 tier = "balanced"
 effort = "low"
 sandbox_mode = "read-only"
-canonical_name = "spawn-subagent-explore"
 # Claude Code: start without user and project CLAUDE.md, like the built-in Explore.
 claude_omit_claude_md = true
-capabilities = ["read", "search", "synthesis", "web"]
 developer_instructions = """
 Stay in exploration mode. Trace real code paths, gather exact evidence, and return concise findings with file or command references. Mark anything you couldn't confirm and say where you looked. Do not edit files or propose broad fixes unless the parent asks for options. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
 """
 
-[roles.reviewer]
+[roles.review]
 description = "Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only."
 tier = "balanced"
 effort = "low"
 sandbox_mode = "read-only"
-canonical_name = "spawn-subagent-review"
-capabilities = ["read", "search", "adversarial", "web"]
 developer_instructions = """
 List only problems you'd block the merge for. For each one, give the file and line, why it's wrong, and how to show it fails. Treat missing evidence as unknown, never as success; mark anything you couldn't confirm and say where you looked. Do not edit files. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, or declare the overall task complete. Return complete findings only to the parent lead.
 """
 
-[roles.worker]
+[roles.implement]
 description = "Use for a bounded implementation or fix once scope, owned files, and the finish line are clear."
 tier = "economy"
 effort = "xhigh"
 sandbox_mode = "workspace-write"
-canonical_name = "spawn-subagent-implement"
-capabilities = ["read", "search", "write", "test", "web"]
 developer_instructions = """
 Own only the assigned write set. Preserve unrelated work, do not revert edits made by others, implement the smallest complete change, verify the stated finish line, and report changed files, validation, and remaining risks. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, accept scope changes from them, or declare the overall task complete. Return complete results only to the parent lead.
 """
@@ -54,17 +58,14 @@ opencode_go = false
 [runtimes.office_codex.tiers.economy]
 model = "gpt-6-luna"
 label = "luna"
-supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.office_codex.tiers.balanced]
 model = "gpt-6-sol"
 label = "sol"
-supported_efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 
 [runtimes.office_codex.tiers.frontier]
 model = "gpt-6-sol"
 label = "sol"
-supported_efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 
 [runtimes.office_claude]
 display_name = "Office Claude Code"
@@ -80,19 +81,16 @@ opencode_go = false
 model = "sonnet"
 label = "sonnet"
 resolves_to = "claude-sonnet-5"
-supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.office_claude.tiers.balanced]
 model = "opus"
 label = "opus"
 resolves_to = "claude-opus-5-5"
-supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [runtimes.office_claude.tiers.frontier]
 model = "opus"
 label = "opus"
 resolves_to = "claude-opus-5-5"
-supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 # Home machines only (personal profile), harness-neutral: the same tier layers
 # apply whether the home harness is Codex, OpenCode, or another client. Personal
@@ -108,17 +106,14 @@ opencode_go = true
 [runtimes.personal_home.tiers.economy]
 model = "deepseek-v4.1-flash"
 label = "deepseek"
-supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
 [runtimes.personal_home.tiers.balanced]
 model = "deepseek-v4-pro"
 label = "deepseek-pro"
-supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
 [runtimes.personal_home.tiers.frontier]
 model = "xiaomi/mimo-v2.6-pro"
 label = "mimo"
-supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
 [profiles.office]
 codex_runtime = "office_codex"
@@ -136,6 +131,7 @@ pi_effort = "high"
 [profiles.personal]
 codex_runtime = "personal_home"
 home_runtime = "personal_home"
+role_efforts = { explore = "high", review = "high" }
 home_lead_effort = "high"
 home_default_effort = "xhigh"
 codex_lead_tier = "frontier"
