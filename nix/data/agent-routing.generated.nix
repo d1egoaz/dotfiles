@@ -2,6 +2,11 @@
 {
   profiles = {
     office = {
+      claude = {
+        agent_directory = "office";
+        agents = [ "spawn-subagent-explore" "spawn-subagent-implement" "spawn-subagent-review" ];
+        runtime = "office-claude";
+            };
       codex = {
         agent_directory = "office";
         default = {
@@ -59,6 +64,29 @@
         };
     };
   runtimes = {
+    office_claude = {
+      default_tier = "frontier";
+      display_name = "Office Claude Code";
+      opencode_go = false;
+      provider = "claude";
+      tiers = {
+        balanced = {
+          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
+          label = "opus";
+          model = "opus";
+                };
+        economy = {
+          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
+          label = "sonnet";
+          model = "sonnet";
+                };
+        frontier = {
+          effective_efforts = [ "low" "medium" "high" "xhigh" "max" ];
+          label = "opus";
+          model = "opus";
+                };
+            };
+        };
     office_codex = {
       default_tier = "economy";
       display_name = "Office Codex";

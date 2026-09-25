@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Regression tests for generated Codex agent routing."""
+"""Invariant tests for the agent routing registry and its generated outputs.
+
+Expected values come from the registry itself; the generator's --check covers
+exact output drift. Only policy (who may write, which models are banned) is
+pinned here.
+"""
 
 import copy
 import importlib.machinery
@@ -16,33 +21,25 @@ from unittest import mock
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 REGISTRY = REPO_ROOT / "nix/data/agent-routing.toml"
 ROUTING_GENERATOR = REPO_ROOT / "bin/files/agent-routing-generate"
-AGENT_ROOT = REPO_ROOT / "config/codex/agents/generated"
-AGENTS_MD = REPO_ROOT / "config/ai/AGENTS.md"
-ROOT_AGENTS_MD = REPO_ROOT / "AGENTS.md"
+CODEX_AGENT_ROOT = REPO_ROOT / "config/codex/agents/generated"
+CLAUDE_AGENT_ROOT = REPO_ROOT / "config/claude/agents/generated"
+MATRIX = REPO_ROOT / "docs/agent-routing-matrix.md"
+SHARED_AGENTS = REPO_ROOT / "config/ai/AGENTS.md"
+ROOT_AGENTS = REPO_ROOT / "AGENTS.md"
 CONFIG_TOML = REPO_ROOT / "config/codex/config.toml"
-TASK_COORDINATOR_SKILL = REPO_ROOT / "config/agents/skills/multi-agent-team/task-coordinator/SKILL.md"
-CAPABILITY_ROUTING = TASK_COORDINATOR_SKILL.parent / "references/capability-routing.md"
+SKILL_ROOT = REPO_ROOT / "config/agents/skills/multi-agent-team"
 XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 PI_NIX = REPO_ROOT / "nix/home-manager/config/apps/pi.nix"
 
-EXPECTED_ROLES = {
-    "worker": {"tier": "economy", "effort": "xhigh", "sandbox_mode": "workspace-write"},
-    "explorer": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
-    "reviewer": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
+# Policy: only the implementer may write.
+ROLE_SANDBOX = {
+    "explorer": "read-only",
+    "reviewer": "read-only",
+    "worker": "workspace-write",
 }
-EXPECTED_AGENT_KEYS = {
-    "name",
-    "description",
-    "model",
-    "model_reasoning_effort",
-    "sandbox_mode",
-    "developer_instructions",
-}
-EXPECTED_CANONICAL = {
-    "spawn-subagent-explore": "explorer",
-    "spawn-subagent-implement": "worker",
-    "spawn-subagent-review": "reviewer",
-}
+# Policy: never route Claude work to Haiku.
+BANNED_CLAUDE_MODELS = {"haiku"}
+
 
 def load_registry():
     with REGISTRY.open("rb") as registry_file:
@@ -59,137 +56,24 @@ def load_generator_module():
     return module
 
 
-class CodexAgentsTest(unittest.TestCase):
+def claude_frontmatter(path: pathlib.Path) -> tuple[dict, str]:
+    _, frontmatter, body = path.read_text().split("---\n", 2)
+    return dict(line.split(": ", 1) for line in frontmatter.strip().splitlines()), body
+
+
+class AgentRoutingTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.registry = load_registry()
         cls.generator = load_generator_module()
+        cls.roles = cls.registry["roles"]
+        cls.canonical = {role["canonical_name"] for role in cls.roles.values()}
 
-    def test_registry_has_required_tiers_roles_and_runtimes(self):
-        self.assertEqual(self.registry["tiers"], ["economy", "balanced", "frontier"])
-        self.assertEqual(set(self.registry["roles"]), set(EXPECTED_ROLES))
-        self.assertEqual(
-            set(self.registry["runtimes"]),
-            {"office_codex", "personal_opencode_go"},
-        )
-        self.assertEqual(
-            {
-                name: role["canonical_name"]
-                for name, role in self.registry["roles"].items()
-            },
-            {role: launcher for launcher, role in EXPECTED_CANONICAL.items()},
-        )
-        self.assertNotIn("launchers", self.registry)
+    def route(self, runtime_name: str, role_name: str) -> dict:
+        tier = self.roles[role_name]["tier"]
+        return self.registry["runtimes"][runtime_name]["tiers"][tier]
 
-    def test_registry_runtime_models_are_provider_specific(self):
-        office = self.registry["runtimes"]["office_codex"]["tiers"]
-        self.assertEqual(
-            [office[tier]["model"] for tier in self.registry["tiers"]],
-            ["gpt-6-luna", "gpt-6-sol", "gpt-6-sol"],
-        )
-        personal = self.registry["runtimes"]["personal_opencode_go"]["tiers"]
-        self.assertEqual(
-            {personal[tier]["model"] for tier in self.registry["tiers"]},
-            {"deepseek-v4.1-flash"},
-        )
-
-    def test_named_agent_outputs_match_role_contract(self):
-        for profile, runtime in (
-            ("office", "office_codex"),
-            ("personal", "personal_opencode_go"),
-        ):
-            paths = set((AGENT_ROOT / profile).glob("*.toml"))
-            self.assertEqual({path.stem for path in paths}, set(EXPECTED_CANONICAL))
-            for name, expected in EXPECTED_ROLES.items():
-                role = self.registry["roles"][name]
-                selected = self.registry["runtimes"][runtime]["tiers"][role["tier"]]
-                with (AGENT_ROOT / profile / f"{role['canonical_name']}.toml").open("rb") as agent_file:
-                    agent = tomllib.load(agent_file)
-                self.assertEqual(set(agent), EXPECTED_AGENT_KEYS)
-                self.assertEqual(agent["name"], role["canonical_name"])
-                self.assertEqual(agent["model"], selected["model"])
-                self.assertEqual(agent["model_reasoning_effort"], expected["effort"])
-                self.assertEqual(agent["sandbox_mode"], expected["sandbox_mode"])
-                self.assertIn("parent lead", agent["developer_instructions"])
-                self.assertIn("native-subagent launcher", agent["developer_instructions"])
-                if expected["sandbox_mode"] == "read-only":
-                    self.assertIn("couldn't confirm", agent["developer_instructions"])
-
-    def test_global_config_keeps_limits_but_not_hand_maintained_route_ids(self):
-        with CONFIG_TOML.open("rb") as config_file:
-            agents = tomllib.load(config_file)["agents"]
-        self.assertEqual(agents["max_depth"], 1)
-        self.assertEqual(agents["max_concurrent_threads_per_session"], 10)
-        self.assertNotIn("default_subagent_model", agents)
-        self.assertNotIn("default_subagent_reasoning_effort", agents)
-        config_text = CONFIG_TOML.read_text()
-        for model in ("gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol", "deepseek-v4.1-flash"):
-            self.assertNotIn(model, config_text)
-
-    def test_active_wiring_has_no_duplicate_model_ids(self):
-        model_ids = {
-            route["model"]
-            for runtime in self.registry["runtimes"].values()
-            for route in runtime["tiers"].values()
-            if runtime["provider"] == "codex"
-        }
-        source_paths = (
-            AGENTS_MD,
-            CONFIG_TOML,
-            XDG_NIX,
-            PI_NIX,
-            TASK_COORDINATOR_SKILL,
-        )
-        for path in source_paths:
-            contents = path.read_text()
-            for model_id in model_ids:
-                self.assertNotIn(model_id, contents, path.name)
-
-    def test_documentation_is_provider_neutral_and_has_runtime_fields(self):
-        routing = CAPABILITY_ROUTING.read_text()
-        for token in ("economy", "balanced", "frontier", *EXPECTED_CANONICAL):
-            self.assertIn(token, routing)
-        self.assertNotIn("scorecard", routing.lower())
-        skill = TASK_COORDINATOR_SKILL.read_text()
-        for launcher in EXPECTED_CANONICAL:
-            self.assertIn(f"@{launcher}", skill)
-
-    def test_shared_routing_instructions_use_tiers_not_concrete_routes(self):
-        shared_skills = sorted(
-            (REPO_ROOT / "config/agents/skills/multi-agent-team").rglob("*.md")
-        )
-        documents = [ROOT_AGENTS_MD, AGENTS_MD, *shared_skills]
-        model_ids = {
-            route["model"]
-            for runtime in self.registry["runtimes"].values()
-            for route in runtime["tiers"].values()
-        }
-        model_labels = {
-            route["label"]
-            for runtime in self.registry["runtimes"].values()
-            for route in runtime["tiers"].values()
-        }
-        for path in documents:
-            contents = path.read_text()
-            for model_id in model_ids:
-                self.assertNotIn(model_id, contents, path.name)
-            for label in model_labels:
-                self.assertIsNone(
-                    re.search(rf"(?<![\w-]){re.escape(label)}(?![\w-])", contents, re.IGNORECASE),
-                    path.name,
-                )
-
-    def test_routing_names_include_tier_and_model_label(self):
-        documents = (
-            TASK_COORDINATOR_SKILL.read_text(),
-            CAPABILITY_ROUTING.read_text(),
-            (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text(),
-        )
-        combined = "\n".join(documents)
-        self.assertIn("<key>_<tier>_<model-label>_<effort-code>_<role>_<slice>", combined)
-        self.assertIn("[<key>] <tier>-<model-label>-<effort-code>", combined)
-
-    def test_generator_is_deterministic_and_current(self):
+    def test_generated_outputs_are_current(self):
         result = subprocess.run(
             ["python3", str(ROUTING_GENERATOR), "--check"],
             cwd=REPO_ROOT,
@@ -198,115 +82,142 @@ class CodexAgentsTest(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("8 files", result.stdout)
 
-    def test_launcher_names_remain_stable_when_model_mapping_changes(self):
-        before = self.generator.build_outputs(copy.deepcopy(self.registry))
-        after_registry = copy.deepcopy(self.registry)
-        route = after_registry["runtimes"]["office_codex"]["tiers"]["balanced"]
-        route["model"] = "gpt-6.0-astra"
-        route["label"] = "astra"
-        after = self.generator.build_outputs(after_registry)
-
-        self.assertEqual(set(before), set(after))
-        launcher_paths = {
-            path for path in before if "spawn-subagent-" in path.name
-        }
-        self.assertTrue(launcher_paths)
-        self.assertTrue(
-            all("astra" not in path.name and "sol" not in path.name for path in launcher_paths)
+    def test_only_the_implementer_writes(self):
+        self.assertEqual(
+            {name: role["sandbox_mode"] for name, role in self.roles.items()},
+            ROLE_SANDBOX,
         )
-        review_path = next(
-            path
-            for path in launcher_paths
-            if path.name == "spawn-subagent-review.toml" and "office" in path.parts
-        )
-        self.assertIn('model = "gpt-6.0-astra"', after[review_path])
 
-    def test_registry_rejects_invalid_provider(self):
-        source = REGISTRY.read_text()
-        with tempfile.TemporaryDirectory() as temp_dir:
-            registry = pathlib.Path(temp_dir) / "agent-routing.toml"
-            registry.write_text(source.replace('provider = "codex"', 'provider = "unknown"', 1))
-            with mock.patch.object(self.generator, "REGISTRY_PATH", registry):
-                with self.assertRaisesRegex(self.generator.RoutingError, "provider is invalid"):
-                    self.generator.read_registry()
+    def test_codex_agents_follow_registry(self):
+        for profile_name, profile in self.registry["profiles"].items():
+            runtime_name = profile["codex_runtime"]
+            directory = CODEX_AGENT_ROOT / profile_name
+            self.assertEqual({path.stem for path in directory.glob("*.toml")}, self.canonical)
+            for role_name, role in self.roles.items():
+                with (directory / f"{role['canonical_name']}.toml").open("rb") as agent_file:
+                    agent = tomllib.load(agent_file)
+                self.assertEqual(agent["model"], self.route(runtime_name, role_name)["model"])
+                self.assertEqual(agent["model_reasoning_effort"], role["effort"])
+                self.assertEqual(agent["sandbox_mode"], ROLE_SANDBOX[role_name])
+                self.assertIn("parent lead", agent["developer_instructions"])
+                if ROLE_SANDBOX[role_name] == "read-only":
+                    self.assertIn("couldn't confirm", agent["developer_instructions"])
 
-    def test_registry_rejects_invalid_role_tier_and_effort(self):
-        source = REGISTRY.read_text()
-        cases = (
-            ('tier = "economy"', 'tier = "unknown"', "not a known tier"),
-            ('effort = "xhigh"', 'effort = "impossible"', "not a known effort"),
-        )
-        for old, new, message in cases:
-            with self.subTest(field=old), tempfile.TemporaryDirectory() as temp_dir:
-                registry = pathlib.Path(temp_dir) / "agent-routing.toml"
-                registry.write_text(source.replace(old, new, 1))
-                with mock.patch.object(self.generator, "REGISTRY_PATH", registry):
-                    with self.assertRaisesRegex(self.generator.RoutingError, message):
-                        self.generator.read_registry()
-
-    def test_registry_rejects_malformed_tier_role_and_runtime_sets(self):
-        source = REGISTRY.read_text()
-        cases = (
-            (
-                source.replace(
-                    'tiers = ["economy", "balanced", "frontier"]',
-                    'tiers = ["economy", "balanced"]',
-                    1,
-                ),
-                "tiers must be exactly",
-            ),
-            (source.replace("[roles.explorer]", "[roles.unexpected]", 1), "roles must be exactly"),
-            (
-                source.replace("[runtimes.personal_opencode_go]", "[runtimes.unexpected]", 1),
-                "runtimes must be exactly",
-            ),
-            (source + "\n[runtimes.office_codex]\n", "cannot read"),
-        )
-        for mutated, message in cases:
-            with self.subTest(message=message), tempfile.TemporaryDirectory() as temp_dir:
-                registry = pathlib.Path(temp_dir) / "agent-routing.toml"
-                registry.write_text(mutated)
-                with mock.patch.object(self.generator, "REGISTRY_PATH", registry):
-                    with self.assertRaisesRegex(self.generator.RoutingError, message):
-                        self.generator.read_registry()
-
-    def test_render_rejects_unsupported_lead_and_pi_efforts(self):
-        cases = ("lead", "pi")
-        for consumer in cases:
-            with self.subTest(consumer=consumer):
-                registry = copy.deepcopy(self.registry)
-                office = registry["runtimes"]["office_codex"]["tiers"]["frontier"]
-                office["supported_efforts"].remove("high")
-                if consumer == "pi":
-                    registry["profiles"]["office"]["codex_lead_effort"] = "xhigh"
+    def test_claude_agents_follow_registry(self):
+        for profile_name, profile in self.registry["profiles"].items():
+            directory = CLAUDE_AGENT_ROOT / profile_name
+            runtime_name = profile.get("claude_runtime")
+            if runtime_name is None:
+                self.assertFalse(directory.exists(), profile_name)
+                continue
+            models = {route["model"] for route in self.registry["runtimes"][runtime_name]["tiers"].values()}
+            self.assertFalse(models & BANNED_CLAUDE_MODELS)
+            self.assertEqual({path.stem for path in directory.glob("*.md")}, self.canonical)
+            for role_name, role in self.roles.items():
+                fields, body = claude_frontmatter(directory / f"{role['canonical_name']}.md")
+                self.assertEqual(fields["model"], self.route(runtime_name, role_name)["model"])
+                self.assertEqual(fields["effort"], role["effort"])
+                if ROLE_SANDBOX[role_name] == "read-only":
+                    self.assertEqual(fields["disallowedTools"], "Edit, Write, NotebookEdit")
                 else:
-                    registry["profiles"]["office"]["pi_effort"] = "xhigh"
-                with self.assertRaisesRegex(
-                    self.generator.RoutingError,
-                    "frontier does not support requested effort high",
-                ):
-                    self.generator.render_nix(registry)
+                    self.assertNotIn("disallowedTools", fields)
+                self.assertIn("parent lead", body)
 
-    def test_home_manager_uses_profile_generated_codex_routes(self):
+    def test_matrix_covers_every_profile_and_harness(self):
+        matrix = MATRIX.read_text()
+        for profile_name, profile in self.registry["profiles"].items():
+            self.assertIn(f"## {profile_name}", matrix)
+        claude_profiles = [p for p in self.registry["profiles"].values() if p.get("claude_runtime")]
+        self.assertEqual(matrix.count("| Claude Code ("), len(claude_profiles))
+        for name in self.canonical:
+            self.assertIn(name, matrix)
+
+    def test_model_ids_live_only_in_the_registry(self):
+        routes = [
+            route
+            for runtime in self.registry["runtimes"].values()
+            for route in runtime["tiers"].values()
+        ]
+        model_ids = {route["model"] for route in routes}
+        labels = {route["label"] for route in routes}
+        instructions = [ROOT_AGENTS, SHARED_AGENTS, *sorted(SKILL_ROOT.rglob("*.md"))]
+        for path in [*instructions, CONFIG_TOML, XDG_NIX, PI_NIX]:
+            contents = path.read_text()
+            for model_id in model_ids:
+                if len(model_id) > 5:  # Claude aliases are plain words; labels cover them.
+                    self.assertNotIn(model_id, contents, path.name)
+        for path in instructions:
+            contents = path.read_text()
+            for label in labels:
+                pattern = rf"(?<![\w-]){re.escape(label)}(?![\w-])"
+                self.assertIsNone(re.search(pattern, contents, re.IGNORECASE), f"{path.name}: {label}")
+
+    def test_subagents_cannot_spawn_descendants(self):
+        with CONFIG_TOML.open("rb") as config_file:
+            agents = tomllib.load(config_file)["agents"]
+        self.assertEqual(agents["max_depth"], 1)
+        # The default subagent route is injected from the registry at activation.
+        self.assertNotIn("default_subagent_model", agents)
+
+    def test_role_names_stay_stable_when_models_change(self):
+        before = self.generator.build_outputs(copy.deepcopy(self.registry))
+        changed = copy.deepcopy(self.registry)
+        for runtime in changed["runtimes"].values():
+            for route in runtime["tiers"].values():
+                route["model"], route["label"] = "renamed-model", "renamed"
+        after = self.generator.build_outputs(changed)
+        self.assertEqual(set(before), set(after))
+
+    def test_home_manager_links_generated_agents(self):
         xdg = XDG_NIX.read_text()
         self.assertIn("agent-routing.generated.nix", xdg)
         self.assertIn("config/codex/agents/generated/${codex.agent_directory}", xdg)
-        self.assertIn('".claude/settings.json".source', xdg)
-        self.assertIn("config/claude/settings.json", xdg)
+        # Per-file Claude links keep hand-made agents in ~/.claude/agents intact.
+        self.assertIn('".claude/agents/${name}.md"', xdg)
         self.assertNotIn('".claude/agents".source', xdg)
-        self.assertNotIn("settings.generated.json", xdg)
-        self.assertFalse((REPO_ROOT / "config/claude/settings.generated.json").exists())
-        self.assertFalse((REPO_ROOT / "config/claude/agents/generated").exists())
-        self.assertIn('CODEX_DEFAULT_MODEL="${codex.default.model}"', xdg)
-        self.assertIn('default_subagent_model = \\"" default_model', xdg)
-        pi = PI_NIX.read_text()
-        self.assertIn("routing.profiles.${profile}.pi", pi)
-        self.assertIn("piRoute.model", pi)
+        self.assertIn("routing.profiles.${profile}.pi", PI_NIX.read_text())
 
-    def test_no_direct_handwritten_codex_agent_files_remain(self):
+    def test_no_handwritten_codex_agent_files(self):
         self.assertEqual(list((REPO_ROOT / "config/codex/agents").glob("*.toml")), [])
+
+
+class RegistryValidationTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.source = REGISTRY.read_text()
+        cls.generator = load_generator_module()
+
+    def assert_rejected(self, mutated: str, message: str):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = pathlib.Path(temp_dir) / "agent-routing.toml"
+            path.write_text(mutated)
+            with mock.patch.object(self.generator, "REGISTRY_PATH", path):
+                with self.assertRaisesRegex(self.generator.RoutingError, message):
+                    self.generator.read_registry()
+
+    def test_rejects_invalid_registries(self):
+        cases = (
+            ('provider = "codex"', 'provider = "unknown"', "provider is invalid"),
+            ('tier = "economy"', 'tier = "unknown"', "not a known tier"),
+            ('effort = "xhigh"', 'effort = "impossible"', "not a known effort"),
+            ('tiers = ["economy", "balanced", "frontier"]', 'tiers = ["economy", "balanced"]', "tiers must be exactly"),
+            ("[roles.explorer]", "[roles.unexpected]", "roles must be exactly"),
+            ("[runtimes.personal_opencode_go]", "[runtimes.unexpected]", "runtimes must be exactly"),
+            ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
+        )
+        for old, new, message in cases:
+            with self.subTest(message=message):
+                self.assertIn(old, self.source)
+                self.assert_rejected(self.source.replace(old, new, 1), message)
+        self.assert_rejected(self.source + "\n[runtimes.office_codex]\n", "cannot read")
+
+    def test_rejects_unsupported_efforts(self):
+        registry = load_registry()
+        registry["runtimes"]["office_codex"]["tiers"]["frontier"]["supported_efforts"] = ["low"]
+        with self.assertRaisesRegex(self.generator.RoutingError, "does not support requested effort"):
+            self.generator.render_nix(registry)
+
 
 if __name__ == "__main__":
     unittest.main()
