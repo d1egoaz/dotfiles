@@ -19,6 +19,21 @@ SKILL_ROOT = REPO_ROOT / "config/agents/skills/multi-agent-team"
 AUDIT_SCRIPT = REPO_ROOT / "bin/files/codex-context-audit"
 JUSTFILE = REPO_ROOT / "justfile"
 XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
+CODEX_RULES = REPO_ROOT / "config/codex/rules/10-shared.rules"
+
+# Common spellings of destructive commands that must ask, even under a broader
+# allow rule. Prefix rules cannot catch every form; see the rules file comment.
+DESTRUCTIVE_PREFIXES = (
+    ("git", "push", "--force"),
+    ("git", "push", "-f"),
+    ("git", "push", "--force-with-lease"),
+    ("git", "reset", "--hard"),
+    ("git", "clean"),
+    ("git", "branch", "-D"),
+    ("git", "worktree", "remove", "--force"),
+    ("rm", "-rf"),
+    ("rm", "-fr"),
+)
 
 # One budget for every always-discoverable SKILL.md; descriptions load every turn.
 SKILLS_TOTAL_BUDGET = 12000
@@ -39,6 +54,7 @@ GATES = {
         "Assisted-by: [Exact model identifier] via [Tool]",
         "Open new PRs as drafts",
         "Do not infer push, PR, ready-for-review, merge, deployment",
+        "run one independent review pass",
     ),
     SKILL_ROOT / "git-worktree-flow/SKILL.md": (
         "--no-track",
@@ -93,6 +109,15 @@ class CodexContextPolicyTest(unittest.TestCase):
             normalized = " ".join(path.read_text().split())
             for gate in gates:
                 self.assertIn(gate, normalized, f"{path.relative_to(REPO_ROOT)}: {gate}")
+
+    def test_destructive_commands_always_prompt(self):
+        rules = {}
+        for pattern, decision in re.findall(
+            r'prefix_rule\(pattern=\[([^\]]*)\], decision="(\w+)"\)', CODEX_RULES.read_text()
+        ):
+            rules.setdefault(tuple(re.findall(r'"([^"]*)"', pattern)), set()).add(decision)
+        for prefix in DESTRUCTIVE_PREFIXES:
+            self.assertEqual(rules.get(prefix), {"prompt"}, " ".join(prefix))
 
     def test_scratch_log_stays_explicit(self):
         # It writes files, so it must never trigger on its own.

@@ -12,6 +12,23 @@ prefix_rule(pattern=["git", "push"], decision="allow")
 prefix_rule(pattern=["git", "rebase"], decision="allow")
 prefix_rule(pattern=["git", "cherry-pick"], decision="allow")
 
+# Destructive commands ask, even where a broader rule above allows the command:
+# the strictest matching decision wins. Rules match whole argv words from the
+# start, with no wildcards, so this catches only the common spellings. Still
+# allowed by `git push` above, and covered only by the destructive-change gate
+# in config/ai/AGENTS.md: `--force-with-lease=<ref>`, a `+<ref>` refspec,
+# combined short flags such as `-fu`, and a force flag after the remote or
+# branch (`git push origin main --force`).
+prefix_rule(pattern=["git", "push", "--force"], decision="prompt")
+prefix_rule(pattern=["git", "push", "-f"], decision="prompt")
+prefix_rule(pattern=["git", "push", "--force-with-lease"], decision="prompt")
+prefix_rule(pattern=["git", "reset", "--hard"], decision="prompt")
+prefix_rule(pattern=["git", "clean"], decision="prompt")
+prefix_rule(pattern=["git", "branch", "-D"], decision="prompt")
+prefix_rule(pattern=["git", "worktree", "remove", "--force"], decision="prompt")
+prefix_rule(pattern=["rm", "-rf"], decision="prompt")
+prefix_rule(pattern=["rm", "-fr"], decision="prompt")
+
 prefix_rule(pattern=["gh", "auth", "status"], decision="allow")
 prefix_rule(pattern=["gh", "issue", "view"], decision="allow")
 prefix_rule(pattern=["gh", "pr", "create"], decision="allow")

@@ -30,7 +30,8 @@ and naming live in [capability-routing.md](references/capability-routing.md).
 
 Send one message with:
 
-- Task and context, including what the lead already knows.
+- Task and context, including what the lead already knows. Pass source
+  artifacts (paths, logs, screenshots) instead of retyping them.
 - Done means: a checkable finish line.
 - Stop and ask if: the conditions that need the parent. If something needed
   is unreachable, say exactly what is missing and stop; never substitute,
