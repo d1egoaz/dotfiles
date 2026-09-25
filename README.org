@@ -81,14 +81,12 @@ just agent-routing-generate
 just agent-routing-check
 #+end_src
 
-The stable native-subagent launchers are =@spawn-subagent-economy=,
-=@spawn-subagent-balanced=, and =@spawn-subagent-frontier=. They pin only the
-capability tier; the parent handoff supplies the outcome and constraints. The
-specialized launchers add a fixed role contract, such as
-=@spawn-subagent-balanced-review=. These are native subagent types, not visible
-child tasks. Their public names stay stable when the model mapping changes;
-spawned instance names include the resolved model label for historical
-traceability.
+The native-subagent roles are =@spawn-subagent-explore= (read-only),
+=@spawn-subagent-implement= (workspace-write), and =@spawn-subagent-review=
+(read-only). The registry sets each role's tier and effort, so names stay
+stable when routing changes; spawned instance names include the resolved model
+label for historical traceability. These are native subagent types, not visible
+child tasks.
 
 * How It Works
 

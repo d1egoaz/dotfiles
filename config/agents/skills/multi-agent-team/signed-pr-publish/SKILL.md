@@ -6,7 +6,7 @@ description: Sign commits and publish GitHub changes with exact AI attribution. 
 # Signed PR Publish
 
 Use for authorized commits/publication; preserve unrelated work.
-Assign the economy `worker` at xhigh once scope, checked diff, and objective
+Assign `@spawn-subagent-implement` once scope, checked diff, and objective
 checks are clear. Include `<model-label>` after the selected tier in native and
 visible task names; keep the exact model ID in runtime fields.
 
@@ -16,8 +16,8 @@ Read [`references/commands.md`](references/commands.md) for templates/handoff.
 
 1. Inspect status/diffs; stage exact files; “commit staged files” adds nothing
    else; identify generated files.
-2. Run `$HOME/dotfiles/bin/files/codex-current-model`; retry with scoped read
-   access; stop if unknown. Never shorten or guess. The actor uses its own
+2. Codex: run `$HOME/dotfiles/bin/files/codex-current-model` (retry with
+   scoped read access); other hosts: use the host-reported ID. Stop if unknown. Never shorten or guess. The actor uses its own
    current model for new attribution, retains prior attribution, and never
    invents switching.
 3. Use a Conventional Commit with this footer:

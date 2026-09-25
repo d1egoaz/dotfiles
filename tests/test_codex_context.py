@@ -125,7 +125,7 @@ class CodexContextPolicyTest(unittest.TestCase):
     def test_always_loaded_instruction_budgets(self):
         shared_agents = SHARED_AGENTS.read_text()
         normalized = " ".join(shared_agents.split())
-        self.assertLessEqual(len(shared_agents), 7000)
+        self.assertLessEqual(len(shared_agents), 5000)
         self.assertLessEqual(len(ROOT_AGENTS.read_text()), 6000)
         self.assertIn("Do not reread instruction content already present", shared_agents)
         self.assertNotRegex(shared_agents, r"(?m)^- `\$[a-z-]+`:")
@@ -154,9 +154,8 @@ class CodexContextPolicyTest(unittest.TestCase):
         coordinator_bundle = len((coordinator / "SKILL.md").read_text()) + sum(
             len(path.read_text()) for path in (coordinator / "references").glob("*.md")
         )
-        # Provider-neutral runtime resolution and scorecard fields live in the
-        # progressive-disclosure references, not always-loaded instructions.
-        self.assertLessEqual(coordinator_bundle, 9500)
+        # Roles, tiers, and naming live in the progressive-disclosure references.
+        self.assertLessEqual(coordinator_bundle, 7500)
 
         tfctl = SKILL_ROOT / "tfctl"
         common_tfctl = len((tfctl / "SKILL.md").read_text()) + len(

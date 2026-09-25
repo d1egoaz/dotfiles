@@ -9,52 +9,26 @@ schema_version = 1
 tiers = ["economy", "balanced", "frontier"]
 efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
-[roles.utility]
-description = "Read-only utility worker for bounded multi-step work with clear output and objective verification."
-tier = "economy"
-effort = "xhigh"
-sandbox_mode = "read-only"
-canonical_name = "spawn-subagent-economy-check"
-legacy_aliases = ["utility"]
-capabilities = ["read", "search", "web"]
-developer_instructions = """
-Complete only the assigned bounded read-only work. Follow the stated output shape, use objective checks, and return concise evidence plus any unknowns. Do not edit files, mutate external systems, or expand scope. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
-"""
-
 [roles.explorer]
-description = "Read-only codebase explorer for independent mapping, discovery, and broad evidence gathering."
+description = "Read-only explorer for mapping code paths, inventories, and evidence gathering."
 tier = "balanced"
 effort = "low"
 sandbox_mode = "read-only"
-canonical_name = "spawn-subagent-balanced-explore"
-legacy_aliases = ["explorer"]
+canonical_name = "spawn-subagent-explore"
 capabilities = ["read", "search", "synthesis", "web"]
 developer_instructions = """
-Stay in exploration mode. Trace real code paths, gather exact evidence, and return concise findings with file or command references. Do not edit files or propose broad fixes unless the parent asks for options. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
+Stay in exploration mode. Trace real code paths, gather exact evidence, and return concise findings with file or command references. Mark anything you couldn't confirm and say where you looked. Do not edit files or propose broad fixes unless the parent asks for options. Do not message or coordinate with peer agents, discover peer IDs, or spawn descendants. Return complete findings only to the parent lead.
 """
 
 [roles.reviewer]
-description = "Read-only reviewer focused on correctness, security, behavior regressions, and missing tests."
+description = "Read-only reviewer for merge-blocking correctness, security, and regression problems."
 tier = "balanced"
 effort = "low"
 sandbox_mode = "read-only"
-canonical_name = "spawn-subagent-balanced-review"
-legacy_aliases = ["reviewer"]
+canonical_name = "spawn-subagent-review"
 capabilities = ["read", "search", "adversarial", "web"]
 developer_instructions = """
-Review like an owner. Lead with concrete findings, prioritize correctness, security, behavior regressions, and real risk, cite exact evidence, and avoid style-only comments unless they hide a defect. Do not edit files. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, or declare the overall task complete. Return complete findings only to the parent lead.
-"""
-
-[roles.evidence-auditor]
-description = "Read-only auditor that reconstructs delivery and runtime state from direct evidence without conflating lifecycle stages."
-tier = "balanced"
-effort = "low"
-sandbox_mode = "read-only"
-canonical_name = "spawn-subagent-balanced-audit"
-legacy_aliases = ["evidence-auditor"]
-capabilities = ["read", "search", "evidence", "web"]
-developer_instructions = """
-Audit claims against direct, current evidence. Keep configuration, generated output, plan, approval, merge, apply or deployment, runtime health, and business outcome as separate states. Cite the source and timestamp for each conclusion. Treat missing evidence as unknown, never as success. Resolve contradictions explicitly. Do not mutate systems or files. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, change scope, or declare the overall task complete. Return complete findings only to the parent lead.
+List only problems you'd block the merge for. For each one, give the file and line, why it's wrong, and how to show it fails. Treat missing evidence as unknown, never as success; mark anything you couldn't confirm and say where you looked. Do not edit files. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, or declare the overall task complete. Return complete findings only to the parent lead.
 """
 
 [roles.worker]
@@ -62,34 +36,11 @@ description = "Execution-focused worker for bounded implementation and fixes aft
 tier = "economy"
 effort = "xhigh"
 sandbox_mode = "workspace-write"
-canonical_name = "spawn-subagent-economy-implement"
-legacy_aliases = ["worker"]
+canonical_name = "spawn-subagent-implement"
 capabilities = ["read", "search", "write", "test", "web"]
 developer_instructions = """
-Own only the assigned write set. Preserve unrelated work, do not revert edits made by others, implement the smallest complete change, and report changed files, validation, and remaining risks. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, accept scope changes from them, or declare the overall task complete. Return complete results only to the parent lead.
+Own only the assigned write set. Preserve unrelated work, do not revert edits made by others, implement the smallest complete change, verify the stated finish line, and report changed files, validation, and remaining risks. Do not message or coordinate with peer agents, discover peer IDs, spawn descendants, accept scope changes from them, or declare the overall task complete. Return complete results only to the parent lead.
 """
-
-# Stable, tier-only native-subagent launchers. Their model is resolved from
-# the active runtime below. Generic launchers intentionally inherit the
-# parent's sandbox and approval boundary; the generator omits those optional
-# Codex fields rather than inventing a broader policy.
-[launchers.generic.economy]
-effort = "xhigh"
-sandbox_mode = "inherit"
-approval_policy = "inherit"
-description = "Generic native subagent pinned to the economy capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
-
-[launchers.generic.balanced]
-effort = "low"
-sandbox_mode = "inherit"
-approval_policy = "inherit"
-description = "Generic native subagent pinned to the balanced capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
-
-[launchers.generic.frontier]
-effort = "high"
-sandbox_mode = "inherit"
-approval_policy = "inherit"
-description = "Generic native subagent pinned to the frontier capability tier; the parent handoff supplies the outcome, constraints, context, authorization, and verification."
 
 [runtimes.office_codex]
 display_name = "Office Codex"
