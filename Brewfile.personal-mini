@@ -1,8 +1,8 @@
 # -*- mode: ruby; -*-
-
 brew "opencode"
 cask "cloudflare-warp"
 cask "codex-app"
 cask "grandperspective" # Graphically shows disk usage within a file system
 cask "little-snitch" # Network firewall/monitor
 cask "1password" # Password manager
+
