@@ -14,6 +14,8 @@ from collections.abc import Mapping
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "nix/data/agent-routing.toml"
 CODEX_OUTPUT_ROOT = ROOT / "config/codex/agents/generated"
+CLAUDE_OUTPUT_ROOT = ROOT / "config/claude/agents/generated"
+MATRIX_OUTPUT = ROOT / "docs/agent-routing-matrix.md"
 NIX_OUTPUT = ROOT / "nix/data/agent-routing.generated.nix"
 ROUTING_REFERENCE = (
     ROOT
@@ -21,7 +23,11 @@ ROUTING_REFERENCE = (
 )
 
 EXPECTED_ROLES = {"explorer", "reviewer", "worker"}
-EXPECTED_RUNTIMES = {"office_codex", "personal_opencode_go"}
+EXPECTED_RUNTIMES = {"office_codex", "office_claude", "personal_opencode_go"}
+PROVIDERS = {"codex", "claude"}
+# Claude Code has no sandbox_mode; read-only roles deny the file-editing tools.
+CLAUDE_READ_ONLY_DISALLOWED = ("Edit", "Write", "NotebookEdit")
+ROLE_ORDER = ("explorer", "worker", "reviewer")
 EXPECTED_PROFILES = {"office", "personal"}
 REQUIRED_TIERS = ("economy", "balanced", "frontier")
 EXPECTED_CANONICAL_LAUNCHERS = {
@@ -98,7 +104,7 @@ def read_registry() -> dict:
     for runtime_name, runtime in runtimes.items():
         if not isinstance(runtime, Mapping):
             fail(f"runtimes.{runtime_name} must be a table")
-        if runtime.get("provider") != "codex":
+        if runtime.get("provider") not in PROVIDERS:
             fail(f"runtimes.{runtime_name}.provider is invalid")
         if runtime.get("lead_tier") not in REQUIRED_TIERS:
             fail(f"runtimes.{runtime_name}.lead_tier is invalid")
@@ -143,6 +149,12 @@ def read_registry() -> dict:
             fail(f"profiles.{profile_name}.codex_runtime must use the codex provider")
         if runtimes[profile["pi_runtime"]]["provider"] != "codex":
             fail(f"profiles.{profile_name}.pi_runtime must use the codex provider")
+        claude_runtime = profile.get("claude_runtime")
+        if claude_runtime is not None:
+            if claude_runtime not in EXPECTED_RUNTIMES:
+                fail(f"profiles.{profile_name}.claude_runtime is unknown")
+            if runtimes[claude_runtime]["provider"] != "claude":
+                fail(f"profiles.{profile_name}.claude_runtime must use the claude provider")
         for tier_key in ("codex_lead_tier", "codex_default_tier", "pi_tier"):
             if profile[tier_key] not in REQUIRED_TIERS:
                 fail(f"profiles.{profile_name}.{tier_key} is invalid")
@@ -194,6 +206,28 @@ def render_codex_agent(registry: Mapping, runtime_name: str, role_name: str) -> 
         f'sandbox_mode = {json.dumps(role["sandbox_mode"])}\n'
         f'developer_instructions = """\n{native_launcher_instructions(role["developer_instructions"].strip())}\n"""\n'
     )
+
+
+def render_claude_agent(registry: Mapping, runtime_name: str, role_name: str) -> str:
+    role = registry["roles"][role_name]
+    runtime = registry["runtimes"][runtime_name]
+    selected = route(registry, runtime_name, role["tier"])
+    effort = effective_effort(runtime, role["tier"], role["effort"])
+    lines = [
+        "---",
+        f"name: {role['canonical_name']}",
+        f"description: {json.dumps(role['description'])}",
+        f"model: {selected['model']}",
+        f"effort: {effort}",
+    ]
+    if role["sandbox_mode"] == "read-only":
+        lines.append(f"disallowedTools: {', '.join(CLAUDE_READ_ONLY_DISALLOWED)}")
+    lines.extend(["---", "", role["developer_instructions"].strip(), ""])
+    return "\n".join(lines)
+
+
+def claude_runtime_for(registry: Mapping, profile_name: str) -> str | None:
+    return registry["profiles"][profile_name].get("claude_runtime")
 
 
 def nix_key(key: str) -> str:
@@ -285,6 +319,20 @@ def render_nix(registry: Mapping) -> str:
                 },
                 "opencode_go": registry["runtimes"][codex_runtime]["opencode_go"],
             },
+            **(
+                {
+                    "claude": {
+                        "agent_directory": profile_name,
+                        "agents": [
+                            registry["roles"][role_name]["canonical_name"]
+                            for role_name in ROLE_ORDER
+                        ],
+                        "runtime": runtime_slug(profile["claude_runtime"]),
+                    }
+                }
+                if profile.get("claude_runtime")
+                else {}
+            ),
             "pi": {
                 "effort": effective_effort(
                     registry["runtimes"][profile["pi_runtime"]],
@@ -365,10 +413,80 @@ def render_reference(registry: Mapping) -> str:
     return "\n".join(lines) + "\n"
 
 
+def matrix_cell(registry: Mapping, runtime_name: str, tier: str, effort: str) -> str:
+    runtime = registry["runtimes"][runtime_name]
+    selected = route(registry, runtime_name, tier)
+    return f"`{selected['model']}` / {effective_effort(runtime, tier, effort)}"
+
+
+def render_matrix(registry: Mapping) -> str:
+    roles = registry["roles"]
+    header = ["Harness", "Lead"]
+    header += [f"`{roles[name]['canonical_name']}`" for name in ROLE_ORDER]
+    header.append("Unnamed spawn")
+    lines = [
+        "# Agent routing matrix",
+        "",
+        "Generated from `nix/data/agent-routing.toml` by `agent-routing-generate`;",
+        "do not edit. Each cell is the harness model value and requested effort.",
+        "",
+        "Roles: "
+        + ", ".join(
+            f"`{roles[name]['canonical_name']}` ({roles[name]['sandbox_mode']}, "
+            f"{roles[name]['tier']})"
+            for name in ROLE_ORDER
+        )
+        + ".",
+    ]
+    for profile_name in sorted(registry["profiles"]):
+        profile = registry["profiles"][profile_name]
+        lines.extend(
+            [
+                "",
+                f"## {profile_name}",
+                "",
+                "| " + " | ".join(header) + " |",
+                "|" + "---|" * len(header),
+            ]
+        )
+        codex_runtime = profile["codex_runtime"]
+        row = [
+            f"Codex ({registry['runtimes'][codex_runtime]['display_name']})",
+            matrix_cell(registry, codex_runtime, profile["codex_lead_tier"], profile["codex_lead_effort"]),
+        ]
+        row += [
+            matrix_cell(registry, codex_runtime, roles[name]["tier"], roles[name]["effort"])
+            for name in ROLE_ORDER
+        ]
+        row.append(
+            matrix_cell(
+                registry,
+                codex_runtime,
+                profile["codex_default_tier"],
+                profile["codex_default_effort"],
+            )
+        )
+        lines.append("| " + " | ".join(row) + " |")
+        claude_runtime = profile.get("claude_runtime")
+        if claude_runtime:
+            row = [
+                f"Claude Code ({registry['runtimes'][claude_runtime]['display_name']})",
+                "`config/claude/settings.json`",
+            ]
+            row += [
+                matrix_cell(registry, claude_runtime, roles[name]["tier"], roles[name]["effort"])
+                for name in ROLE_ORDER
+            ]
+            row.append("inherits lead")
+            lines.append("| " + " | ".join(row) + " |")
+    return "\n".join(lines) + "\n"
+
+
 def build_outputs(registry: Mapping) -> dict[pathlib.Path, str]:
     outputs: dict[pathlib.Path, str] = {
         NIX_OUTPUT: render_nix(registry),
         ROUTING_REFERENCE: render_reference(registry),
+        MATRIX_OUTPUT: render_matrix(registry),
     }
     for profile_name in sorted(EXPECTED_PROFILES):
         runtime_name = registry["profiles"][profile_name]["codex_runtime"]
@@ -377,13 +495,21 @@ def build_outputs(registry: Mapping) -> dict[pathlib.Path, str]:
             outputs[
                 CODEX_OUTPUT_ROOT / profile_name / f"{canonical_name}.toml"
             ] = render_codex_agent(registry, runtime_name, role_name)
+        claude_runtime = claude_runtime_for(registry, profile_name)
+        if claude_runtime:
+            for role_name in sorted(EXPECTED_ROLES):
+                canonical_name = registry["roles"][role_name]["canonical_name"]
+                outputs[
+                    CLAUDE_OUTPUT_ROOT / profile_name / f"{canonical_name}.md"
+                ] = render_claude_agent(registry, claude_runtime, role_name)
     return outputs
 
 
 def generated_files() -> set[pathlib.Path]:
-    paths = {NIX_OUTPUT, ROUTING_REFERENCE}
+    paths = {NIX_OUTPUT, ROUTING_REFERENCE, MATRIX_OUTPUT}
     for profile_name in EXPECTED_PROFILES:
         paths.update((CODEX_OUTPUT_ROOT / profile_name).glob("*.toml"))
+        paths.update((CLAUDE_OUTPUT_ROOT / profile_name).glob("*.md"))
     return paths
 
 

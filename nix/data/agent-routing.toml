@@ -64,6 +64,30 @@ model = "gpt-6-sol"
 label = "sol"
 supported_efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 
+[runtimes.office_claude]
+display_name = "Office Claude Code"
+provider = "claude"
+lead_tier = "frontier"
+default_tier = "frontier"
+opencode_go = false
+
+# Claude Code agent `model` values are aliases that resolve to the current
+# model family on the host; `label` names the family in routing output.
+[runtimes.office_claude.tiers.economy]
+model = "sonnet"
+label = "sonnet"
+supported_efforts = ["low", "medium", "high", "xhigh", "max"]
+
+[runtimes.office_claude.tiers.balanced]
+model = "opus"
+label = "opus"
+supported_efforts = ["low", "medium", "high", "xhigh", "max"]
+
+[runtimes.office_claude.tiers.frontier]
+model = "opus"
+label = "opus"
+supported_efforts = ["low", "medium", "high", "xhigh", "max"]
+
 [runtimes.personal_opencode_go]
 display_name = "Personal Codex via OpenCode Go"
 provider = "codex"
@@ -88,6 +112,7 @@ supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
 [profiles.office]
 codex_runtime = "office_codex"
+claude_runtime = "office_claude"
 codex_lead_tier = "frontier"
 codex_lead_effort = "high"
 codex_default_tier = "economy"

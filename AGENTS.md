@@ -40,6 +40,8 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | OpenCode Go picker models | `bin/files/codex-opencode-go-catalog` |
 | Agent routing registry | `nix/data/agent-routing.toml` |
 | Generated Codex roles | `config/codex/agents/generated/<profile>/*.toml` |
+| Generated Claude agents | `config/claude/agents/generated/<profile>/*.md` |
+| Agent routing matrix (generated) | `docs/agent-routing-matrix.md` |
 | Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
 | Shared skills | `config/agents/skills/multi-agent-team/` |
 | Office-only skills | ignored `config/agents/skills/work.local/` |

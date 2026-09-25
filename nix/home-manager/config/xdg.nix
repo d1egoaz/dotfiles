@@ -122,6 +122,19 @@ in
       }) claudeSkills
     )
   )
+  // lib.optionalAttrs (profileRouting ? claude) (
+    # Generated Claude Code subagents. Per-file links keep any hand-made agents
+    # in ~/.claude/agents untouched; the list comes from the routing registry.
+    let
+      claudeAgentsDir = "${config.home.homeDirectory}/dotfiles/config/claude/agents/generated/${profileRouting.claude.agent_directory}";
+    in
+    lib.listToAttrs (
+      map (name: {
+        name = ".claude/agents/${name}.md";
+        value.source = config.lib.file.mkOutOfStoreSymlink "${claudeAgentsDir}/${name}.md";
+      }) profileRouting.claude.agents
+    )
+  )
   // (
     let
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";

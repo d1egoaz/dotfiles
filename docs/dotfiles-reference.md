@@ -65,6 +65,14 @@ role never renames it. An unnamed spawn uses the profile default route
 with the frontier lead. Use the roles only for native subagents, not visible
 tasks; spawned instance names retain the resolved model label.
 
+Profiles with a `claude_runtime` also get the same three roles as Claude Code
+subagents in `config/claude/agents/generated/<profile>/*.md`, linked file by
+file into `~/.claude/agents/` so hand-made agents stay untouched. Each file sets
+the Claude `model` alias and `effort` from the role's tier and effort; read-only
+roles deny `Edit`, `Write`, and `NotebookEdit`. An unnamed Claude spawn inherits
+the lead model from `config/claude/settings.json`. The generated
+`docs/agent-routing-matrix.md` lists every profile, harness, and role route.
+
 Shared hooks live in `config/codex/hooks.json`; office may select ignored `config/codex/hooks.work.local.json`. Keep hooks out of `config.toml` because Codex loads both representations when both exist.
 
 Supported hook events in this setup are `Stop`, `PermissionRequest`, `UserPromptSubmit`, and `SessionStart`. Hook commands should exit successfully without output or emit valid JSON. Notification payloads use top-level `notify` in `config.toml`, not a `Notification` hook.

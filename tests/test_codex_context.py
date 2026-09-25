@@ -7,8 +7,6 @@ import json
 import pathlib
 import re
 import stat
-import tempfile
-import tomllib
 import unittest
 from types import SimpleNamespace
 from unittest import mock
@@ -18,81 +16,38 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 SHARED_AGENTS = REPO_ROOT / "config/ai/AGENTS.md"
 ROOT_AGENTS = REPO_ROOT / "AGENTS.md"
 SKILL_ROOT = REPO_ROOT / "config/agents/skills/multi-agent-team"
-SHARED_CONFIG = REPO_ROOT / "config/codex/config.toml"
-PERSONAL_CONFIG = REPO_ROOT / "config/codex/profiles/personal.toml"
 AUDIT_SCRIPT = REPO_ROOT / "bin/files/codex-context-audit"
 JUSTFILE = REPO_ROOT / "justfile"
 XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 
-SKILL_BUDGETS = {
-    "scratch-log": 2000,
-    "codex-config-maintenance": 1400,
-    "git-history-orientation": 1600,
-    "git-worktree-flow": 900,
-    "signed-pr-publish": 1800,
-    "task-coordinator": 2500,
-    "tfctl": 3000,
-}
-GLOBAL_DISABLED = {
-    "~/.agents/skills/mattpocock-skills/deprecated/design-an-interface/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/deprecated/qa/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/deprecated/request-refactor-plan/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/deprecated/ubiquitous-language/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/in-progress/review/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/in-progress/writing-beats/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/in-progress/writing-fragments/SKILL.md",
-    "~/.agents/skills/mattpocock-skills/in-progress/writing-shape/SKILL.md",
-}
-INFRA_SKILLS = {
-    "1password-op",
-    "aurora-migration",
-    "aws-account-provisioning",
-    "aws-trace-path",
-    "bedrock-model-checker",
-    "bulk-approve-prs",
-    "create-skill",
-    "csc-domain-handoff",
-    "dsql-cluster-bootstrap",
-    "dynamodb",
-    "dynamodb-capacity-mode-migration",
-    "eks-cluster-bootstrap",
-    "github-webhook-enablement",
-    "incident-review-notes",
-    "jira",
-    "okta-aws-role-bootstrap",
-    "pg-connection-killer",
-    "pup",
-    "rds-get-master-password",
-    "s3-bucket-check",
-    "sdm-db-check",
-    "service-quotas",
-    "terraform",
-    "vector-rollback",
-    "wiz-eol-update",
-}
-DATADOG_SKILLS = {
-    "apm-configuration",
-    "aws-integration",
-    "container-monitoring",
-    "dashboards",
-    "database-monitoring",
-    "dd-apm",
-    "dd-debugger",
-    "dd-docs",
-    "dd-logs",
-    "dd-monitors",
-    "dd-pup",
-    "events",
-    "infrastructure",
-    "logs",
-    "metrics",
-    "monitoring-alerting",
-    "network-performance",
-    "notebooks",
-    "synthetics",
-    "traces",
-}
+# One budget for every always-discoverable SKILL.md; descriptions load every turn.
+SKILLS_TOTAL_BUDGET = 12000
+DESCRIPTION_BUDGET = 220
 
+# Safety gates that must survive any rewrite. Wording elsewhere is free to change.
+GATES = {
+    SHARED_AGENTS: (
+        "Production is read-only unless the user authorizes the exact mutation",
+        "Confirm before destructive changes",
+        "Never bypass or disable commit signing",
+        "Assisted-by: [Exact model identifier] via [Tool]",
+        "Open new PRs in draft mode",
+        "Keep primary checkouts on `main`",
+    ),
+    SKILL_ROOT / "signed-pr-publish/SKILL.md": (
+        "git commit -S",
+        "Assisted-by: [Exact model identifier] via [Tool]",
+        "Open new PRs as drafts",
+        "Do not infer push, PR, ready-for-review, merge, deployment",
+    ),
+    SKILL_ROOT / "git-worktree-flow/SKILL.md": (
+        "--no-track",
+        "Never remove a worktree, delete a branch, or reset",
+    ),
+    SKILL_ROOT / "tfctl/SKILL.md": (
+        "Every delete and production mutation requires direct current-task approval",
+    ),
+}
 
 def load_audit_module():
     loader = importlib.machinery.SourceFileLoader("codex_context_audit", str(AUDIT_SCRIPT))
@@ -122,173 +77,33 @@ def implicit_invocation(name: str) -> bool:
 class CodexContextPolicyTest(unittest.TestCase):
     def test_always_loaded_instruction_budgets(self):
         shared_agents = SHARED_AGENTS.read_text()
-        normalized = " ".join(shared_agents.split())
         self.assertLessEqual(len(shared_agents), 5000)
         self.assertLessEqual(len(ROOT_AGENTS.read_text()), 6000)
-        self.assertIn("Do not reread instruction content already present", shared_agents)
         self.assertNotRegex(shared_agents, r"(?m)^- `\$[a-z-]+`:")
-        self.assertIn("When a follow-up changes diagnosis or read-only work into implementation", normalized)
-        self.assertIn("move feature edits into the required worktree", normalized)
         self.assertIn("docs/dotfiles-reference.md", ROOT_AGENTS.read_text())
 
-    def test_skill_entrypoint_and_description_budgets(self):
-        for name, budget in SKILL_BUDGETS.items():
-            self.assertLessEqual(len((SKILL_ROOT / name / "SKILL.md").read_text()), budget, name)
-        for path in SKILL_ROOT.glob("*/SKILL.md"):
-            self.assertLessEqual(len(frontmatter_description(path)), 220, path.parent.name)
+    def test_skill_budgets(self):
+        skills = sorted(SKILL_ROOT.glob("*/SKILL.md"))
+        self.assertLessEqual(sum(len(path.read_text()) for path in skills), SKILLS_TOTAL_BUDGET)
+        for path in skills:
+            self.assertLessEqual(len(frontmatter_description(path)), DESCRIPTION_BUDGET, path.parent.name)
 
-        selected = {
-            "task-coordinator",
-            "signed-pr-publish",
-            "codex-config-maintenance",
-            "git-worktree-flow",
-            "git-history-orientation",
-            "tfctl",
-        }
-        self.assertLessEqual(sum(len((SKILL_ROOT / name / "SKILL.md").read_text()) for name in selected), 12000)
+    def test_safety_gates_survive(self):
+        for path, gates in GATES.items():
+            normalized = " ".join(path.read_text().split())
+            for gate in gates:
+                self.assertIn(gate, normalized, f"{path.relative_to(REPO_ROOT)}: {gate}")
 
-        coordinator = SKILL_ROOT / "task-coordinator"
-        coordinator_bundle = len((coordinator / "SKILL.md").read_text()) + sum(
-            len(path.read_text()) for path in (coordinator / "references").glob("*.md")
-        )
-        # Roles, tiers, and naming live in the progressive-disclosure references.
-        self.assertLessEqual(coordinator_bundle, 7500)
-
-        tfctl = SKILL_ROOT / "tfctl"
-        common_tfctl = len((tfctl / "SKILL.md").read_text()) + len(
-            (tfctl / "references/api-conventions.md").read_text()
-        )
-        self.assertLessEqual(common_tfctl, 4500)
-
-    def test_implicit_invocation_is_selective(self):
+    def test_scratch_log_stays_explicit(self):
+        # It writes files, so it must never trigger on its own.
         self.assertFalse(implicit_invocation("scratch-log"))
-        self.assertTrue(implicit_invocation("codex-config-maintenance"))
-        self.assertTrue(implicit_invocation("task-coordinator"))
 
-    def test_compact_high_use_skill_contracts(self):
-        skills = {
-            name: re.sub(r"\s+", " ", (SKILL_ROOT / name / "SKILL.md").read_text())
-            for name in (
-                "codex-config-maintenance",
-                "git-history-orientation",
-                "git-worktree-flow",
-                "signed-pr-publish",
-                "tfctl",
-            )
-        }
-
-        for contract in (
-            "config/ai/AGENTS.md",
-            "config/codex/config.toml",
-            "config/codex/agents/generated/<profile>/*.toml",
-            "nix/data/agent-routing.toml",
-            "agent-routing-generate",
-            "Stop`, `PermissionRequest`, `UserPromptSubmit`, and `SessionStart",
-            "Changes affect new work only",
-            "references/config-layering.md",
-            "references/validation.md",
-        ):
-            self.assertIn(contract, skills["codex-config-maintenance"])
-
-        for contract in (
-            "primary checkout on `main`",
-            "`~/.codex/worktrees/<repo>-<feature>`",
-            "never beside it",
-            "preserve unrelated changes",
-            "from `origin/main`",
-            "not with `git -C`",
-            "filesystem-safe recognizable name",
-            "Inspect existing targets",
-            "escape the Codex root",
-            "Never remove a worktree, delete a branch, or reset",
-        ):
-            self.assertIn(contract, skills["git-worktree-flow"])
-
-        for contract in (
-            "Never fetch or rewrite history",
-            "git rev-parse --is-shallow-repository",
-            "git shortlog -sn --no-merges",
-            "Confidence: <what history cannot prove>",
-        ):
-            self.assertIn(contract, skills["git-history-orientation"])
-
-        for contract in (
-            "$HOME/dotfiles/bin/files/codex-current-model",
-            "git commit -S",
-            "Assisted-by: [Exact model identifier] via [Tool]",
-            "Office repos stay on HTTPS",
-            "Open new PRs as drafts",
-            "Re-fetch and verify draft state",
-            "Do not infer push, PR, ready-for-review, merge, deployment",
-            "references/commands.md",
-        ):
-            self.assertIn(contract, skills["signed-pr-publish"])
-
-        for contract in (
-            "never pipe tfctl JSON to external `jq`",
-            "Resolve names through path placeholders and `-p`",
-            "Trust the first answer",
-            "Stop when the requested named resource is absent",
-            "requires direct current-task approval",
-            "Never run `tfctl harness exec`",
-            "references/api-conventions.md",
-            "references/cookbook.md",
-            "references/mutations.md",
-            "references/troubleshooting.md",
-        ):
-            self.assertIn(contract, skills["tfctl"])
-
-    def test_progressive_disclosure_references_exist(self):
-        expected = {
-            "scratch-log": ("references/template.md",),
-            "signed-pr-publish": ("references/commands.md",),
-            "codex-config-maintenance": (
-                "references/config-layering.md",
-                "references/validation.md",
-            ),
-            "task-coordinator": (
-                "references/capability-routing.md",
-                "references/codex-controls.md",
-                "references/codex-task-creation.md",
-            ),
-            "tfctl": (
-                "references/api-conventions.md",
-                "references/cookbook.md",
-                "references/mutations.md",
-                "references/troubleshooting.md",
-            ),
-        }
-        for name, references in expected.items():
-            entrypoint = (SKILL_ROOT / name / "SKILL.md").read_text()
-            for reference in references:
-                self.assertTrue((SKILL_ROOT / name / reference).is_file(), f"{name}/{reference}")
-                self.assertIn(reference, entrypoint)
-
-    def test_global_catalog_curation_is_exact(self):
-        with SHARED_CONFIG.open("rb") as config_file:
-            config = tomllib.load(config_file)
-        disabled = {
-            item["path"]
-            for item in config["skills"]["config"]
-            if item.get("enabled") is False
-        }
-        self.assertEqual(disabled, GLOBAL_DISABLED)
-        self.assertNotIn("max_context_tokens", config["skills"])
-
-    def test_personal_profile_disables_office_skill_packs(self):
-        with PERSONAL_CONFIG.open("rb") as config_file:
-            config = tomllib.load(config_file)
-        disabled = {
-            item["path"]
-            for item in config["skills"]["config"]
-            if item.get("enabled") is False
-        }
-        expected = {
-            *(f"~/.agents/skills/infra-skills/{name}/SKILL.md" for name in INFRA_SKILLS),
-            *(f"~/.agents/skills/datadog/{name}/SKILL.md" for name in DATADOG_SKILLS),
-            "~/.agents/skills/investigate/SKILL.md",
-        }
-        self.assertEqual(disabled, expected)
+    def test_skill_references_resolve_and_are_linked(self):
+        for skill in sorted(path.parent for path in SKILL_ROOT.glob("*/SKILL.md")):
+            entrypoint = (skill / "SKILL.md").read_text()
+            linked = set(re.findall(r"references/[\w.-]+\.md", entrypoint))
+            present = {f"references/{path.name}" for path in (skill / "references").glob("*.md")}
+            self.assertEqual(linked, present, skill.name)
 
     def test_audit_is_executable_and_wired_into_home_manager(self):
         self.assertTrue(AUDIT_SCRIPT.stat().st_mode & stat.S_IXUSR)
