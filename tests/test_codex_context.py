@@ -25,12 +25,10 @@ JUSTFILE = REPO_ROOT / "justfile"
 XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 
 SKILL_BUDGETS = {
-    "command-discipline": 1800,
     "scratch-log": 2000,
     "codex-config-maintenance": 1400,
     "git-history-orientation": 1600,
-    "git-worktree-flow": 800,
-    "repo-research": 700,
+    "git-worktree-flow": 900,
     "signed-pr-publish": 1800,
     "task-coordinator": 2500,
     "tfctl": 3000,
@@ -144,7 +142,6 @@ class CodexContextPolicyTest(unittest.TestCase):
             "signed-pr-publish",
             "codex-config-maintenance",
             "git-worktree-flow",
-            "repo-research",
             "git-history-orientation",
             "tfctl",
         }
@@ -164,9 +161,7 @@ class CodexContextPolicyTest(unittest.TestCase):
         self.assertLessEqual(common_tfctl, 4500)
 
     def test_implicit_invocation_is_selective(self):
-        self.assertFalse(implicit_invocation("command-discipline"))
         self.assertFalse(implicit_invocation("scratch-log"))
-        self.assertTrue(implicit_invocation("repo-research"))
         self.assertTrue(implicit_invocation("codex-config-maintenance"))
         self.assertTrue(implicit_invocation("task-coordinator"))
 
@@ -177,7 +172,6 @@ class CodexContextPolicyTest(unittest.TestCase):
                 "codex-config-maintenance",
                 "git-history-orientation",
                 "git-worktree-flow",
-                "repo-research",
                 "signed-pr-publish",
                 "tfctl",
             )
@@ -209,14 +203,6 @@ class CodexContextPolicyTest(unittest.TestCase):
             "Never remove a worktree, delete a branch, or reset",
         ):
             self.assertIn(contract, skills["git-worktree-flow"])
-
-        for contract in (
-            "skip routine implementation reads",
-            "Inspect the named artifact",
-            "Lead with evidence",
-            "state what was not verified",
-        ):
-            self.assertIn(contract, skills["repo-research"])
 
         for contract in (
             "Never fetch or rewrite history",

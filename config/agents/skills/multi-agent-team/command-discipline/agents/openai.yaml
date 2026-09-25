@@ -1,7 +1,0 @@
-interface:
-  display_name: "Command Discipline"
-  short_description: "Handle explicitly requested command safety"
-  default_prompt: "Use $command-discipline for an explicitly requested command-safety or shell-shape question."
-
-policy:
-  allow_implicit_invocation: false

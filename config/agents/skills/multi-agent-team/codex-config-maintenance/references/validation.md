@@ -3,7 +3,8 @@
 Run checks from the dotfiles repository root, narrowing the set to changed
 files where possible:
 
-```fish
+```bash
+just agent-routing-check
 jq . config/codex/hooks.json >/dev/null
 taplo check config/codex/config.toml
 for file in config/codex/agents/generated/{office,personal}/*.toml; do taplo check "$file"; done

@@ -11,6 +11,7 @@
 
 - macOS with BSD coreutils; interactive shell zsh. Prefer CLI and make each user-facing command copy-paste-ready.
 - Run shell-neutral commands directly; name a shell only when required.
+- Inspect processes by name or a specific PID; never dump all process arguments or environments, which can hold unrelated transcript data or secrets.
 
 ## Communication
 
@@ -38,7 +39,7 @@
 ## Non-Negotiable Gates
 
 - Production is read-only unless the user authorizes the exact mutation. A request to inspect, prepare, validate, commit, or publish does not authorize merge, apply, deployment, or live changes.
-- Confirm before destructive changes (deleting data, force-pushing, changes outside the repository) and resolve exact targets first.
+- Confirm before destructive changes (deleting data, force-pushing, changes outside the repository) and resolve exact targets first. For destructive, escalated, forced, or live-state commands, state Why, What, Expect, and Risk.
 - Never bypass or disable commit signing or change the signer. Use `$signed-pr-publish` for commits and publication.
 - AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Use the exact model the host reports (Codex: `$HOME/dotfiles/bin/files/codex-current-model`); stop if it remains unknown.
 - Open new PRs in draft mode.

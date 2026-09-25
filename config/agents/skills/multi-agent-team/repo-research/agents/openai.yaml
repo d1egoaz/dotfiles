@@ -1,7 +1,0 @@
-interface:
-  display_name: "Repo Research"
-  short_description: "Inspect repos for explicit evidence requests"
-  default_prompt: "Use $repo-research when the user explicitly asks for repository inspection, tracing, or diagnosis."
-
-policy:
-  allow_implicit_invocation: true

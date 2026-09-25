@@ -107,10 +107,8 @@ in
       skillsDir = "${config.home.homeDirectory}/dotfiles/config/agents/skills/multi-agent-team";
       claudeSkills = [
         "codex-config-maintenance"
-        "command-discipline"
         "git-history-orientation"
         "git-worktree-flow"
-        "repo-research"
         "scratch-log"
         "signed-pr-publish"
         "task-coordinator"
