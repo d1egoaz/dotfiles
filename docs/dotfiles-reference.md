@@ -57,15 +57,13 @@ each role's resolved model, reasoning effort, sandbox, and lead-mediated
 communication. Change the registry and run `just agent-routing-generate`; do not
 edit generated files. Changing these files does not retier a running task.
 
-The generated `spawn-subagent-economy`, `spawn-subagent-balanced`, and
-`spawn-subagent-frontier` agents are stable generic native-subagent launchers.
-Their tier pins the resolved model and default effort, while the parent handoff
-supplies the outcome, constraints, authorization, and verification. They omit
-sandbox and approval overrides so the native subagent inherits the parent
-boundary. Specialized `spawn-subagent-*` agents add the utility, worker,
-explorer, reviewer, and evidence-auditor contracts. The legacy role names remain
-generated aliases for older chats. Use the launchers only for native subagents,
-not visible tasks; spawned instance names retain the resolved model label.
+Three roles are generated: `spawn-subagent-explore` (read-only),
+`spawn-subagent-implement` (workspace-write), and `spawn-subagent-review`
+(read-only). Each role's tier and effort live in the registry, so retiering a
+role never renames it. An unnamed spawn uses the profile default route
+(`default_subagent_model`) and inherits the parent sandbox. Deep judgment stays
+with the frontier lead. Use the roles only for native subagents, not visible
+tasks; spawned instance names retain the resolved model label.
 
 Shared hooks live in `config/codex/hooks.json`; office may select ignored `config/codex/hooks.work.local.json`. Keep hooks out of `config.toml` because Codex loads both representations when both exist.
 

@@ -17,24 +17,34 @@ Assisted-by: [Exact model identifier] via [Tool]
 git log -1 --pretty=%B | rg -n '^Assisted-by: .+ via .+$'
 git verify-commit HEAD
 
-# Update a PR body
+# Update a PR body (gh pr edit --body is deprecated)
 gh api repos/OWNER/REPO/pulls/NUMBER -X PATCH -f body='...'
 
 # Verify the PR body footer
 gh pr view NUMBER --json body --jq '.body' | rg -n '^Assisted-by: .+ via .+$'
 ```
 
-After activation, enroll the profile signer once:
+## Signing fails
+
+A passphrase prompt from `git commit -S` means the signing key is not in the
+agent that `SSH_AUTH_SOCK` points to. GitHub SSH uses 1Password through
+`IdentityAgent`; signing uses the native macOS agent. Some hosts start
+sessions with a stale 1Password `SSH_AUTH_SOCK`, so compare both agents:
 
 ```bash
-ssh-add --apple-use-keychain -t 86400 ~/.ssh/codex-signing-${PROFILE}-ed25519
+ssh-add -l
+SSH_AUTH_SOCK="$(launchctl getenv SSH_AUTH_SOCK)" ssh-add -l
 ```
 
-Use `gh api ... -X PATCH` for PR body updates; `gh pr edit --body` is
-deprecated.
+If the key is missing from the native agent, the user enrolls it once
+(interactive passphrase):
 
-## Publication handoff
+```bash
+SSH_AUTH_SOCK="$(launchctl getenv SSH_AUTH_SOCK)" ssh-add --apple-use-keychain -t 86400 ~/.ssh/codex-signing-${PROFILE}-ed25519
+```
 
-Bind checkout/branch, starting HEAD, exact owned/staged diff, allowed actions,
-verification, and attribution evidence. Return blockers on unexpected state or
-missing authority; do not repeat uncertain side effects.
+Then sign through the native agent for that command only:
+
+```bash
+SSH_AUTH_SOCK="$(launchctl getenv SSH_AUTH_SOCK)" git commit -S
+```

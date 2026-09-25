@@ -12,7 +12,8 @@ Keep the primary checkout on `main`. Put feature writes at
 2. Fetch `origin/main` through any repository-required auth path.
 3. Use a filesystem-safe recognizable name. Inspect existing targets; never
    overwrite them or escape the Codex root.
-4. Create from `origin/main`; run there, not with `git -C`.
+4. Create from `origin/main` with `--no-track`, so a bare push cannot target
+   `main`; run there, not with `git -C`. Push with `git push -u origin <branch>`.
 
-Use one worktree/lifecycle per repo. Inspect before repair. Never remove a
+One worktree per repo lifecycle. Inspect before repair. Never remove a
 worktree, delete a branch, or reset without authorization.

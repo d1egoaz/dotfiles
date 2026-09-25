@@ -20,17 +20,14 @@ ROUTING_REFERENCE = (
     / "config/agents/skills/multi-agent-team/task-coordinator/references/capability-routing.md"
 )
 
-EXPECTED_ROLES = {"utility", "explorer", "reviewer", "evidence-auditor", "worker"}
+EXPECTED_ROLES = {"explorer", "reviewer", "worker"}
 EXPECTED_RUNTIMES = {"office_codex", "personal_opencode_go"}
 EXPECTED_PROFILES = {"office", "personal"}
 REQUIRED_TIERS = ("economy", "balanced", "frontier")
-GENERIC_LAUNCHERS = tuple(f"spawn-subagent-{tier}" for tier in REQUIRED_TIERS)
 EXPECTED_CANONICAL_LAUNCHERS = {
-    "spawn-subagent-economy-check": "utility",
-    "spawn-subagent-economy-implement": "worker",
-    "spawn-subagent-balanced-explore": "explorer",
-    "spawn-subagent-balanced-review": "reviewer",
-    "spawn-subagent-balanced-audit": "evidence-auditor",
+    "spawn-subagent-explore": "explorer",
+    "spawn-subagent-implement": "worker",
+    "spawn-subagent-review": "reviewer",
 }
 
 
@@ -73,7 +70,6 @@ def read_registry() -> dict:
             "effort",
             "sandbox_mode",
             "canonical_name",
-            "legacy_aliases",
             "capabilities",
             "developer_instructions",
         ):
@@ -89,39 +85,15 @@ def read_registry() -> dict:
             fail(f"roles.{role_name}.canonical_name is invalid")
         if EXPECTED_CANONICAL_LAUNCHERS[role["canonical_name"]] != role_name:
             fail(f"roles.{role_name}.canonical_name maps to the wrong role")
-        if role["legacy_aliases"] != [role_name]:
-            fail(f"roles.{role_name}.legacy_aliases must preserve [{role_name!r}]")
         if not isinstance(role["capabilities"], list) or not role["capabilities"]:
             fail(f"roles.{role_name}.capabilities must be a non-empty list")
 
     canonical_names = [role["canonical_name"] for role in roles.values()]
     if len(set(canonical_names)) != len(canonical_names):
         fail("roles.canonical_name values must be unique")
-    legacy_aliases = [alias for role in roles.values() for alias in role["legacy_aliases"]]
-    if len(set(legacy_aliases)) != len(legacy_aliases):
-        fail("roles.legacy_aliases values must be unique")
 
-    launchers = registry.get("launchers")
-    if not isinstance(launchers, Mapping):
-        fail("launchers must be a table")
-    generic = launchers.get("generic")
-    if not isinstance(generic, Mapping) or set(generic) != set(REQUIRED_TIERS):
-        fail(f"launchers.generic must contain every routing tier: {list(REQUIRED_TIERS)!r}")
-    for tier in REQUIRED_TIERS:
-        launcher = generic[tier]
-        if not isinstance(launcher, Mapping):
-            fail(f"launchers.generic.{tier} must be a table")
-        for key in ("effort", "sandbox_mode", "approval_policy", "description"):
-            if key not in launcher:
-                fail(f"launchers.generic.{tier} is missing {key}")
-        if launcher["effort"] not in registry["efforts"]:
-            fail(f"launchers.generic.{tier}.effort is not a known effort")
-        if launcher["sandbox_mode"] != "inherit":
-            fail(f"launchers.generic.{tier}.sandbox_mode must be inherit")
-        if launcher["approval_policy"] != "inherit":
-            fail(f"launchers.generic.{tier}.approval_policy must be inherit")
-        if not launcher["description"]:
-            fail(f"launchers.generic.{tier}.description must not be blank")
+    if "launchers" in registry:
+        fail("launchers are not supported; unnamed spawns use the profile default route")
 
     for runtime_name, runtime in runtimes.items():
         if not isinstance(runtime, Mapping):
@@ -209,54 +181,18 @@ def native_launcher_instructions(extra: str) -> str:
     )
 
 
-def render_codex_agent(
-    registry: Mapping,
-    runtime_name: str,
-    role_name: str,
-    output_name: str | None = None,
-) -> str:
+def render_codex_agent(registry: Mapping, runtime_name: str, role_name: str) -> str:
     role = registry["roles"][role_name]
     runtime = registry["runtimes"][runtime_name]
     selected = route(registry, runtime_name, role["tier"])
     effort = effective_effort(runtime, role["tier"], role["effort"])
-    name = output_name or role["canonical_name"]
-    description = role["description"]
-    if output_name and output_name != role["canonical_name"]:
-        description = (
-            f"Legacy alias for @{role['canonical_name']}; prefer that name. "
-            f"{description}"
-        )
     return (
-        f'name = {json.dumps(name)}\n'
-        f'description = {json.dumps(description)}\n'
+        f'name = {json.dumps(role["canonical_name"])}\n'
+        f'description = {json.dumps(role["description"])}\n'
         f'model = {json.dumps(selected["model"])}\n'
         f'model_reasoning_effort = {json.dumps(effort)}\n'
         f'sandbox_mode = {json.dumps(role["sandbox_mode"])}\n'
         f'developer_instructions = """\n{native_launcher_instructions(role["developer_instructions"].strip())}\n"""\n'
-    )
-
-
-def render_generic_agent(registry: Mapping, runtime_name: str, tier: str) -> str:
-    runtime = registry["runtimes"][runtime_name]
-    launcher = registry["launchers"]["generic"][tier]
-    selected = route(registry, runtime_name, tier)
-    effort = effective_effort(runtime, tier, launcher["effort"])
-    instructions = (
-        "Work only from the parent lead's handoff. The handoff defines the "
-        "outcome, constraints, context, authorization, and verification; do "
-        "not infer a role-specific purpose or expand that scope. Use the "
-        "parent-provided sandbox and approval boundary exactly as inherited; "
-        "never broaden it or request a stronger boundary. Preserve the parent "
-        "lead's stopping condition and return concise evidence, blockers, or "
-        "the requested result. Do not message or coordinate with peer agents, "
-        "discover peer IDs, spawn descendants, or declare overall completion."
-    )
-    return (
-        f'name = {json.dumps(f"spawn-subagent-{tier}")}\n'
-        f'description = {json.dumps(launcher["description"])}\n'
-        f'model = {json.dumps(selected["model"])}\n'
-        f'model_reasoning_effort = {json.dumps(effort)}\n'
-        f'developer_instructions = """\n{native_launcher_instructions(instructions)}\n"""\n'
     )
 
 
@@ -364,20 +300,6 @@ def render_nix(registry: Mapping) -> str:
         }
 
     document = {
-        "launchers": {
-            "generic": {
-                tier: {
-                    "approval_policy": registry["launchers"]["generic"][tier][
-                        "approval_policy"
-                    ],
-                    "effort": registry["launchers"]["generic"][tier]["effort"],
-                    "sandbox_mode": registry["launchers"]["generic"][tier][
-                        "sandbox_mode"
-                    ],
-                }
-                for tier in REQUIRED_TIERS
-            }
-        },
         "profiles": profiles,
         "runtimes": runtimes,
         "schema_version": registry["schema_version"],
@@ -391,105 +313,53 @@ def render_reference(registry: Mapping) -> str:
     lines = [
         "# Capability routing",
         "",
-        "Select a capability tier first, then resolve it through the active",
-        "Codex runtime in `nix/data/agent-routing.toml`. Resolve the concrete model",
-        "and model label through that runtime; never promote a blocked route to a",
-        "more expensive tier.",
+        "Generated from `nix/data/agent-routing.toml` by `agent-routing-generate`.",
+        "Pick a role by what the work may touch; the registry resolves its tier,",
+        "model, and effort for the active runtime. Never promote a blocked route",
+        "to a more expensive tier.",
         "",
         "## Tiers",
         "",
         "| Tier | Use when |",
         "|---|---|",
         "| `economy` | Bounded, objectively checkable work. |",
-        "| `balanced` | Exploration, synthesis, correctness review, or evidence work. |",
-        "| `frontier` | Deep ambiguity or exceptional judgment remaining after decomposition. |",
+        "| `balanced` | Exploration, synthesis, or correctness review. |",
+        "| `frontier` | The lead: deep ambiguity and integration judgment. |",
         "",
-        "## Runtime resolution",
-        "",
-        "Resolve the selected tier/model label through the active Codex runtime;",
-        "keep requested/effective effort separate and exact IDs in runtime fields.",
-        "",
-        "## Native-subagent launchers",
-        "",
-        "Stable `@spawn-subagent-*` names mean native spawning, never",
-        "visible tasks, with no concrete model.",
-        "",
-        "Generic tier launchers (parent outcome/constraints; inherited boundary):",
+        "## Native-subagent roles",
         "",
     ]
-    for tier in REQUIRED_TIERS:
-        launcher = registry["launchers"]["generic"][tier]
-        lines.append(
-            f"- `@spawn-subagent-{tier}` -> `{tier}`, `{launcher['effort']}`, "
-            "inherit parent sandbox and approval."
-        )
-    lines.extend(
-        [
-            "",
-            "Specialized tier launchers (fixed role contracts):",
-            "",
-        ]
-    )
-    for role_name in ("utility", "worker", "explorer", "reviewer", "evidence-auditor"):
+    for role_name in ("explorer", "worker", "reviewer"):
         role = registry["roles"][role_name]
         lines.append(
-            f"- `@{role['canonical_name']}` -> `{role_name}`, `{role['tier']}`, "
-            f"`{role['effort']}`."
+            f"- `@{role['canonical_name']}` -> `{role['tier']}`, `{role['effort']}`, "
+            f"`{role['sandbox_mode']}`: {role['description']}"
         )
     lines.extend(
         [
             "",
-            "Legacy aliases remain generated: "
-            + ", ".join(f"`@{name}`" for name in sorted(EXPECTED_ROLES))
-            + "; new instructions use canonical launchers.",
+            "An unnamed spawn uses the profile default route (`economy`) and inherits",
+            "the parent sandbox; use it for a bounded batch of procedural commands.",
             "",
-            "Generic launchers have no role contract and omit sandbox/approval "
-            "fields so the native subagent inherits the parent boundary.",
-        ]
-    )
-
-    lines.extend(
-        [
+            "## How many agents",
             "",
-            "## Scorecard",
+            "- A lookup or one-step check stays in the lead.",
+            "- Independent reads fan out, one explorer per unit (service, repo, area).",
+            "- Each write set gets exactly one implementer; never run parallel writers on shared files.",
+            "- Review is one independent pass before publication.",
             "",
-            "For every delegated unit, record:",
-            "",
-            "```text",
-            "Routing scorecard",
-            "- Work unit and expected output:",
-            "- Scope: local | bounded multi-component | cross-system",
-            "- Ambiguity: low | medium | high",
-            "- Judgment: procedural | synthesis | adversarial | exceptional",
-            "- Verification: objective | partial | subjective/unknown",
-            "- Adaptivity: bounded | iterative | open-ended",
-            "- Consequence if wrong: low | material | high",
-            "- Tier:",
-            "- Runtime:",
-            "- Resolved model label:",
-            "- Requested effort:",
-            "- Effective effort:",
-            "- Cheapest capable route:",
-            "- Why cheaper routes are insufficient:",
-            "- Escalate when:",
-            "```",
+            "## Naming",
             "",
             "Spawned instances use `<key>_<tier>_<model-label>_<effort-code>_<role>_<slice>`;",
             "visible task titles use `<state-prefix> [<key>] <tier>-<model-label>-<effort-code> <action> <object>`.",
             "The `task-coordinator` skill defines the allowed visible-task status prefixes.",
             "",
-            "## Gates and follow-ups",
+            "## Gates",
             "",
-            "- A one-step status check stays in the lead.",
-            "- Bounded inventory -> `@spawn-subagent-economy-check`; implementation -> `@spawn-subagent-economy-implement`.",
-            "- Ownership mapping -> `@spawn-subagent-balanced-explore`; review -> `@spawn-subagent-balanced-review`; lifecycle audit -> `@spawn-subagent-balanced-audit`.",
-            "- Exceptional unresolved judgment after decomposition crosses the frontier gate.",
             "- Reclassify a materially different follow-up instead of inheriting its route.",
             "- Authentication, access, approval, or tool failure is blocked, not escalation.",
             "- Never repeat a side-effectful action as a routing retry; reconstruct state and authority first.",
-            "- High consequence alone does not select premium model.",
-            "",
-            "Use named roles only when their fixed route matches the scorecard.",
+            "- High consequence alone does not select a premium tier.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -502,21 +372,11 @@ def build_outputs(registry: Mapping) -> dict[pathlib.Path, str]:
     }
     for profile_name in sorted(EXPECTED_PROFILES):
         runtime_name = registry["profiles"][profile_name]["codex_runtime"]
-        for launcher_name in GENERIC_LAUNCHERS:
-            tier = launcher_name.removeprefix("spawn-subagent-")
-            outputs[
-                CODEX_OUTPUT_ROOT / profile_name / f"{launcher_name}.toml"
-            ] = render_generic_agent(registry, runtime_name, tier)
         for role_name in sorted(EXPECTED_ROLES):
-            role = registry["roles"][role_name]
-            canonical_name = role["canonical_name"]
+            canonical_name = registry["roles"][role_name]["canonical_name"]
             outputs[
                 CODEX_OUTPUT_ROOT / profile_name / f"{canonical_name}.toml"
-            ] = render_codex_agent(registry, runtime_name, role_name, canonical_name)
-            for alias in role["legacy_aliases"]:
-                outputs[
-                    CODEX_OUTPUT_ROOT / profile_name / f"{alias}.toml"
-                ] = render_codex_agent(registry, runtime_name, role_name, alias)
+            ] = render_codex_agent(registry, runtime_name, role_name)
     return outputs
 
 

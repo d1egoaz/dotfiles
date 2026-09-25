@@ -40,4 +40,5 @@ Read first: <2-5 paths>
 Confidence: <what history cannot prove>
 ```
 
-Use `$repo-research` for requested follow-up inspection.
+For requested follow-up inspection, read the "Read first" paths or fan out
+explore subagents.

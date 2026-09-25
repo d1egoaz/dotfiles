@@ -26,11 +26,9 @@ XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 PI_NIX = REPO_ROOT / "nix/home-manager/config/apps/pi.nix"
 
 EXPECTED_ROLES = {
-    "utility": {"tier": "economy", "effort": "xhigh", "sandbox_mode": "read-only"},
     "worker": {"tier": "economy", "effort": "xhigh", "sandbox_mode": "workspace-write"},
     "explorer": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
     "reviewer": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
-    "evidence-auditor": {"tier": "balanced", "effort": "low", "sandbox_mode": "read-only"},
 }
 EXPECTED_AGENT_KEYS = {
     "name",
@@ -40,26 +38,11 @@ EXPECTED_AGENT_KEYS = {
     "sandbox_mode",
     "developer_instructions",
 }
-EXPECTED_GENERIC_AGENT_KEYS = {
-    "name",
-    "description",
-    "model",
-    "model_reasoning_effort",
-    "developer_instructions",
-}
 EXPECTED_CANONICAL = {
-    "spawn-subagent-economy-check": "utility",
-    "spawn-subagent-economy-implement": "worker",
-    "spawn-subagent-balanced-explore": "explorer",
-    "spawn-subagent-balanced-review": "reviewer",
-    "spawn-subagent-balanced-audit": "evidence-auditor",
+    "spawn-subagent-explore": "explorer",
+    "spawn-subagent-implement": "worker",
+    "spawn-subagent-review": "reviewer",
 }
-EXPECTED_GENERIC = {
-    "economy": "xhigh",
-    "balanced": "low",
-    "frontier": "high",
-}
-
 
 def load_registry():
     with REGISTRY.open("rb") as registry_file:
@@ -96,17 +79,7 @@ class CodexAgentsTest(unittest.TestCase):
             },
             {role: launcher for launcher, role in EXPECTED_CANONICAL.items()},
         )
-        self.assertEqual(
-            {
-                tier: self.registry["launchers"]["generic"][tier]["effort"]
-                for tier in self.registry["tiers"]
-            },
-            EXPECTED_GENERIC,
-        )
-        for tier in self.registry["tiers"]:
-            generic = self.registry["launchers"]["generic"][tier]
-            self.assertEqual(generic["sandbox_mode"], "inherit")
-            self.assertEqual(generic["approval_policy"], "inherit")
+        self.assertNotIn("launchers", self.registry)
 
     def test_registry_runtime_models_are_provider_specific(self):
         office = self.registry["runtimes"]["office_codex"]["tiers"]
@@ -126,53 +99,21 @@ class CodexAgentsTest(unittest.TestCase):
             ("personal", "personal_opencode_go"),
         ):
             paths = set((AGENT_ROOT / profile).glob("*.toml"))
-            self.assertEqual(
-                {path.stem for path in paths},
-                set(EXPECTED_ROLES) | set(EXPECTED_CANONICAL) | {
-                    f"spawn-subagent-{tier}" for tier in self.registry["tiers"]
-                },
-            )
+            self.assertEqual({path.stem for path in paths}, set(EXPECTED_CANONICAL))
             for name, expected in EXPECTED_ROLES.items():
                 role = self.registry["roles"][name]
                 selected = self.registry["runtimes"][runtime]["tiers"][role["tier"]]
-                generated = {}
-                for launcher_name in (role["canonical_name"], *role["legacy_aliases"]):
-                    with (AGENT_ROOT / profile / f"{launcher_name}.toml").open("rb") as agent_file:
-                        agent = tomllib.load(agent_file)
-                    generated[launcher_name] = agent
-                    self.assertEqual(set(agent), EXPECTED_AGENT_KEYS)
-                    self.assertEqual(agent["name"], launcher_name)
-                    self.assertEqual(agent["model"], selected["model"])
-                    self.assertEqual(agent["model_reasoning_effort"], expected["effort"])
-                    self.assertEqual(agent["sandbox_mode"], expected["sandbox_mode"])
-                    self.assertTrue(agent["developer_instructions"].strip())
-                    self.assertIn("parent lead", agent["developer_instructions"])
-                    self.assertIn("native-subagent launcher", agent["developer_instructions"])
-                canonical = generated[role["canonical_name"]]
-                for alias in role["legacy_aliases"]:
-                    alias_agent = generated[alias].copy()
-                    alias_agent.pop("name")
-                    self.assertIn(f"@{role['canonical_name']}", alias_agent["description"])
-                    alias_agent.pop("description")
-                    canonical_agent = canonical.copy()
-                    canonical_agent.pop("name")
-                    canonical_agent.pop("description")
-                    self.assertEqual(alias_agent, canonical_agent)
-
-            for tier, expected_effort in EXPECTED_GENERIC.items():
-                launcher_name = f"spawn-subagent-{tier}"
-                with (AGENT_ROOT / profile / f"{launcher_name}.toml").open("rb") as agent_file:
+                with (AGENT_ROOT / profile / f"{role['canonical_name']}.toml").open("rb") as agent_file:
                     agent = tomllib.load(agent_file)
-                selected = self.registry["runtimes"][runtime]["tiers"][tier]
-                self.assertEqual(set(agent), EXPECTED_GENERIC_AGENT_KEYS)
-                self.assertEqual(agent["name"], launcher_name)
+                self.assertEqual(set(agent), EXPECTED_AGENT_KEYS)
+                self.assertEqual(agent["name"], role["canonical_name"])
                 self.assertEqual(agent["model"], selected["model"])
-                self.assertEqual(agent["model_reasoning_effort"], expected_effort)
-                self.assertNotIn("sandbox_mode", agent)
-                self.assertNotIn("approval_policy", agent)
-                self.assertIn("parent lead's handoff", agent["developer_instructions"])
-                self.assertIn("inherited", agent["developer_instructions"])
+                self.assertEqual(agent["model_reasoning_effort"], expected["effort"])
+                self.assertEqual(agent["sandbox_mode"], expected["sandbox_mode"])
+                self.assertIn("parent lead", agent["developer_instructions"])
                 self.assertIn("native-subagent launcher", agent["developer_instructions"])
+                if expected["sandbox_mode"] == "read-only":
+                    self.assertIn("couldn't confirm", agent["developer_instructions"])
 
     def test_global_config_keeps_limits_but_not_hand_maintained_route_ids(self):
         with CONFIG_TOML.open("rb") as config_file:
@@ -205,13 +146,13 @@ class CodexAgentsTest(unittest.TestCase):
                 self.assertNotIn(model_id, contents, path.name)
 
     def test_documentation_is_provider_neutral_and_has_runtime_fields(self):
-        for document in (AGENTS_MD, TASK_COORDINATOR_SKILL, CAPABILITY_ROUTING):
-            contents = document.read_text()
-            for token in ("economy", "balanced", "frontier", "effective effort"):
-                self.assertIn(token, contents)
         routing = CAPABILITY_ROUTING.read_text()
-        for token in ("Tier:", "Runtime:", "Resolved model label:", "Requested effort:", "Effective effort:"):
+        for token in ("economy", "balanced", "frontier", *EXPECTED_CANONICAL):
             self.assertIn(token, routing)
+        self.assertNotIn("scorecard", routing.lower())
+        skill = TASK_COORDINATOR_SKILL.read_text()
+        for launcher in EXPECTED_CANONICAL:
+            self.assertIn(f"@{launcher}", skill)
 
     def test_shared_routing_instructions_use_tiers_not_concrete_routes(self):
         shared_skills = sorted(
@@ -240,7 +181,6 @@ class CodexAgentsTest(unittest.TestCase):
 
     def test_routing_names_include_tier_and_model_label(self):
         documents = (
-            AGENTS_MD.read_text(),
             TASK_COORDINATOR_SKILL.read_text(),
             CAPABILITY_ROUTING.read_text(),
             (TASK_COORDINATOR_SKILL.parent / "references/codex-task-creation.md").read_text(),
@@ -258,12 +198,12 @@ class CodexAgentsTest(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("28 files", result.stdout)
+        self.assertIn("8 files", result.stdout)
 
     def test_launcher_names_remain_stable_when_model_mapping_changes(self):
         before = self.generator.build_outputs(copy.deepcopy(self.registry))
         after_registry = copy.deepcopy(self.registry)
-        route = after_registry["runtimes"]["office_codex"]["tiers"]["frontier"]
+        route = after_registry["runtimes"]["office_codex"]["tiers"]["balanced"]
         route["model"] = "gpt-6.0-astra"
         route["label"] = "astra"
         after = self.generator.build_outputs(after_registry)
@@ -276,22 +216,12 @@ class CodexAgentsTest(unittest.TestCase):
         self.assertTrue(
             all("astra" not in path.name and "sol" not in path.name for path in launcher_paths)
         )
-        frontier_path = next(
+        review_path = next(
             path
             for path in launcher_paths
-            if path.name == "spawn-subagent-frontier.toml" and "office" in path.parts
+            if path.name == "spawn-subagent-review.toml" and "office" in path.parts
         )
-        self.assertIn('model = "gpt-6.0-astra"', after[frontier_path])
-
-    def test_generic_rendering_omits_boundary_overrides(self):
-        outputs = self.generator.build_outputs(self.registry)
-        for path, content in outputs.items():
-            if "spawn-subagent-" not in path.name:
-                continue
-            if path.name.removesuffix(".toml") in EXPECTED_CANONICAL:
-                continue
-            self.assertNotIn("sandbox_mode", content)
-            self.assertNotIn("approval_policy", content)
+        self.assertIn('model = "gpt-6.0-astra"', after[review_path])
 
     def test_registry_rejects_invalid_provider(self):
         source = REGISTRY.read_text()
@@ -327,7 +257,7 @@ class CodexAgentsTest(unittest.TestCase):
                 ),
                 "tiers must be exactly",
             ),
-            (source.replace("[roles.utility]", "[roles.unexpected]", 1), "roles must be exactly"),
+            (source.replace("[roles.explorer]", "[roles.unexpected]", 1), "roles must be exactly"),
             (
                 source.replace("[runtimes.personal_opencode_go]", "[runtimes.unexpected]", 1),
                 "runtimes must be exactly",

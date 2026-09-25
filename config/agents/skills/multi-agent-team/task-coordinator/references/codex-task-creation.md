@@ -1,57 +1,40 @@
-# Visible task creation
+# Visible tasks
 
-Create one task per independent outcome. Split by repository only for separate
-write ownership or delivery lifecycles. Keep reference reads in the owning task.
+Create one task per outcome with its own repository, PR, or delivery
+lifecycle. Visible tasks may use native subagents but cannot create more
+visible tasks. Each outcome and write set has one owner.
 
-## Project and handoff
+## Project and runtime
 
-Resolve the lead's exact `projectId` from metadata, not its label or cwd.
-Non-repository children inherit that project and local environment. Use
-projectless only for a projectless lead unless the user selects a project.
+- Use the lead's exact `projectId` from metadata, not its label or cwd. Pick
+  another project only for its saved Git repository or at the user's request;
+  saved Git uses an app worktree unless the user asks for local.
+- For an unsaved nested repository, keep the umbrella project and pass the
+  exact path and checkout workflow. Verify the child's `projectId` after setup.
+- Set the registry-resolved model ID and effort in host runtime fields.
+- Pass the handoff, key, parent identity, project ID, and exact checkout.
+- A setup timeout alone does not justify another task; refresh and inspect
+  existing tasks before any retry, and never leave two owners for one outcome.
 
-Select another project for its saved Git repository or at the user's request.
-Inspect `isGitRepository`: saved Git uses an app worktree unless the user requests
-local; non-Git uses local. For unsaved nested repositories, retain the umbrella
-project and pass the exact path and checkout workflow. Follow host restrictions.
-Verify the child's `projectId` after setup; pause and report a mismatch.
-
-Pass the entrypoint's handoff, key, parent identity, project ID, and exact checkout.
-Set the exact registry-resolved model ID and effort in host runtime fields; put
-the selected tier and resolved model label in the title and handoff metadata.
-Visible tasks may use bounded native subagents, but cannot create more visible
-tasks. Use only the canonical `@spawn-subagent-*` launchers for those native
-subagents; never present a launcher as a visible task type. Include the shared
-native naming rule in their handoff. Each outcome/write set has one owner.
-
-## Naming
-
-Reuse the issue key or choose a short descriptive key. Inspect existing tasks;
-one active lead owns each key. Report ownership conflicts before creation.
+## Titles
 
 - Lead: `🤖 [<key>] <goal>`
 - Visible: `<state-prefix> [<key>] <tier>-<model-label>-<effort-code> <action> <object>[: <outcome>]`
 
-Display the selected tier (`economy`, `balanced`, or `frontier`) and the
-runtime-resolved `<model-label>`; exact model IDs remain runtime fields. Effort
-codes: `n`=none,
-`min`=minimal, `lo`=low, `med`=medium, `hi`=high, `xh`=xhigh, `max`=max,
-`ult`=ultra. Only use supported pairs and host-valid names.
+Reuse the issue key or a short descriptive key. Effort codes: `n` none,
+`min` minimal, `lo` low, `med` medium, `hi` high, `xh` xhigh, `max` max,
+`ult` ultra. Aim for 72 characters, for example
+`🆕 [IC-563] balanced-<model-label>-lo Verify remaining rollout gaps`.
 
-Use the state-prefix vocabulary from the parent `task-coordinator` skill. New
-visible tasks start `🆕`; for example:
-`🆕 [IC-563] balanced-<model-label>-xh Verify remaining rollout gaps`.
+| Prefix | State | Use when |
+| --- | --- | --- |
+| `🆕` | spawned | Created or completing setup; no work evidence yet. |
+| `🔄` | in progress | Doing authorized work or safely retrying after recovery. |
+| `⛔` | blocked | Access, approval, or an external dependency stops all authorized work. |
+| `❌` | error | An unexpected failure has no safe in-scope recovery yet. |
+| `❓` | needs info | A specific user decision is required; the task asks the user directly. |
+| `✅` | done | Acceptance criteria are verified, not merely attempted or reported. |
 
-Aim for 72 characters, preserving state, action, object, and useful context.
-Pass the `🆕` title at creation, then rename once addressable only when its
-semantic state changes.
-
-## Setup and retries
-
-- `threadId`: addressable task; check setup before writes.
-- `clientThreadId`: setup pending. Wait and refresh; a timeout or missing
-  `threadId` alone does not justify another attempt.
-- Retry only after confirmed creation/setup failure. Add `(retry N)` using one
-  more than the highest existing attempt number for that outcome.
-- For duplicate owners, keep the earliest `createdAt`, breaking ties by lexical
-  `threadId`. Pause later tasks and mark `(superseded)`; preserve and reconcile
-  their writes before proceeding.
+Create with `🆕`. The owner renames its own title at each state change; the
+lead reconciles a stale title from evidence. Do not rename for routine
+progress. A retry returns to `🔄` without erasing the earlier error evidence.

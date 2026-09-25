@@ -5,39 +5,34 @@ description: Sign commits and publish GitHub changes with exact AI attribution. 
 
 # Signed PR Publish
 
-Use for authorized commits/publication; preserve unrelated work.
-Assign the economy `worker` at xhigh once scope, checked diff, and objective
-checks are clear. Include `<model-label>` after the selected tier in native and
-visible task names; keep the exact model ID in runtime fields.
-
-Read [`references/commands.md`](references/commands.md) for templates/handoff.
+Use for authorized commits and publication; preserve unrelated work. Commands
+and templates: [`references/commands.md`](references/commands.md).
 
 ## Commit
 
-1. Inspect status/diffs; stage exact files; “commit staged files” adds nothing
-   else; identify generated files.
-2. Run `$HOME/dotfiles/bin/files/codex-current-model`; retry with scoped read
-   access; stop if unknown. Never shorten or guess. The actor uses its own
-   current model for new attribution, retains prior attribution, and never
-   invents switching.
-3. Use a Conventional Commit with this footer:
-
-```text
-Assisted-by: [Exact model identifier] via [Tool]
-```
-
-4. Use `git commit -S` with the profile OpenSSH key. Never bypass signing.
-5. Verify signature, scope, and exact footer before publication; regex alone is
-   insufficient.
+1. Inspect status and diffs; stage exact files only. "Commit staged files"
+   adds nothing else. Note generated files.
+2. Resolve the exact model: in Codex run
+   `$HOME/dotfiles/bin/files/codex-current-model`; elsewhere use the ID the
+   host reports. Stop if unknown; never shorten or guess.
+3. Write a Conventional Commit ending with
+   `Assisted-by: [Exact model identifier] via [Tool]` for the model making
+   this commit. Keep earlier footers unchanged.
+4. Sign with `git commit -S`; never bypass signing or change the signer. If it
+   asks for a passphrase, follow "Signing fails" in the reference.
+5. Before publishing, confirm `git verify-commit HEAD` reports a good
+   signature, the commit holds only the intended files, and the footer names
+   the exact model.
 
 Office repos stay on HTTPS; keep the credential helper unchanged.
 
 ## Publish
 
-- Recheck remote state/exact head before pushing.
-- Push only when authorized. Open new PRs as drafts; use the template.
-- Explain problem, change, validation, risk, and artifacts.
-- Re-fetch and verify draft state, head, files, checks, and attribution.
+- Re-fetch and confirm the base and exact head before pushing.
+- Push only when authorized, naming the branch: `git push -u origin <branch>`.
+- Open new PRs as drafts. Body: problem, change, validation, risk, follow-up,
+  and the `Assisted-by` footer.
+- Re-fetch and verify draft state, head, files, checks, and footer.
 
 Do not infer push, PR, ready-for-review, merge, deployment, or production
 authority from another lifecycle step.
