@@ -87,6 +87,7 @@ OPENROUTER_VISIBLE_MODELS = (
     ("z-ai/glm-5.3-flash", "GLM 5.3 Flash", 1310720),
     ("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", 1048576),
     ("xiaomi/mimo-v2.6-flash", "MiMo V2.6 Flash", 1048576),
+    ("xiaomi/mimo-v2.6-pro", "MiMo V2.6 Pro", 1048576),
     ("stealth/space-bunny-alpha", "Space Bunny Alpha", 1000000),
 )
 # Written outside the repository on purpose: the entries embed the prompt text
