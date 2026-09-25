@@ -116,6 +116,34 @@ model = "deepseek-v4.1-flash"
 label = "deepseek"
 supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
 
+# Home machines only (personal profile), harness-neutral: the same tier layers
+# apply whether the home harness is Codex, OpenCode, or another client. Not yet
+# generated into any harness config. `verified = false` marks a model whose ID
+# and route have not been probed on a home machine; see
+# bin/files/codex-opencode-go-catalog for the routes known to work.
+[runtimes.personal_home]
+display_name = "Home tiers, any harness (not wired yet)"
+provider = "neutral"
+lead_tier = "frontier"
+default_tier = "economy"
+opencode_go = false
+
+[runtimes.personal_home.tiers.economy]
+model = "deepseek-v4.1-flash"
+label = "deepseek"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.personal_home.tiers.balanced]
+model = "deepseek-v4-pro"
+label = "deepseek-pro"
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
+[runtimes.personal_home.tiers.frontier]
+model = "mimo-v2.6-pro"
+label = "mimo"
+verified = false
+supported_efforts = ["none", "low", "medium", "high", "xhigh", "max", "ultra"]
+
 [profiles.office]
 codex_runtime = "office_codex"
 claude_runtime = "office_claude"
@@ -131,6 +159,9 @@ pi_effort = "high"
 
 [profiles.personal]
 codex_runtime = "personal_opencode_go"
+home_runtime = "personal_home"
+home_lead_effort = "high"
+home_default_effort = "xhigh"
 codex_lead_tier = "frontier"
 codex_lead_effort = "high"
 codex_default_tier = "economy"
