@@ -16,8 +16,7 @@ Roles: `spawn-subagent-explore` (read-only, balanced), `spawn-subagent-implement
 
 | Harness | Lead | `spawn-subagent-explore` | `spawn-subagent-implement` | `spawn-subagent-review` | Unnamed spawn |
 |---|---|---|---|---|---|
-| Codex (Personal Codex via OpenCode Go) | `deepseek-v4.1-flash` / high | `deepseek-v4.1-flash` / low | `deepseek-v4.1-flash` / xhigh | `deepseek-v4.1-flash` / low | `deepseek-v4.1-flash` / xhigh |
-| Home tiers, any harness (not wired yet) | `mimo-v2.6-pro` (unverified) / high | `deepseek-v4-pro` / low | `deepseek-v4.1-flash` / xhigh | `deepseek-v4-pro` / low | `deepseek-v4.1-flash` / xhigh |
+| Codex (Personal Codex home tiers) | `xiaomi/mimo-v2.6-pro` / high | `deepseek-v4-pro` / low | `deepseek-v4.1-flash` / xhigh | `deepseek-v4-pro` / low | `deepseek-v4.1-flash` / xhigh |
 
 ## Claude Code notes
 
@@ -33,7 +32,6 @@ Roles: `spawn-subagent-explore` (read-only, balanced), `spawn-subagent-implement
 ## Home tier notes
 
 - Home tiers belong to the `personal` profile only; office machines never use them.
-- They are harness-neutral and not generated into any harness yet. The personal
-  Codex row is what home Codex runs today.
-- `(unverified)` marks a model whose ID and route have not been probed on a home
-  machine. OpenCode Go returns 500 for MiMo on the Responses wire that Codex uses.
+- Personal Codex consumes them through the local gateway.
+- Bare model IDs route through OpenCode Go; vendor-prefixed IDs route through
+  OpenRouter.

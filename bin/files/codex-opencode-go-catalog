@@ -74,10 +74,11 @@ VISIBLE_MODELS = (
 # Go block. Slugs use the full vendor/model id so the gateway can route them by
 # exact id without colliding with the plan's own models.
 #
-# Verified 2026-09-23 against that endpoint through the local gateway: all five
-# answer on the Responses wire and complete a real function call. Re-probe
-# before adding anything here; OpenRouter supports the Responses API across its
-# catalog, but per-model behavior is not guaranteed.
+# The first five entries were verified 2026-09-23 against that endpoint through
+# the local gateway. MiMo V2.6 Pro joined last and completed a real Codex tool
+# turn on a home machine on 2026-09-25. Re-probe before adding anything here;
+# OpenRouter supports the Responses API across its catalog, but per-model
+# behavior is not guaranteed.
 #
 # `stealth/space-bunny-alpha` is OpenRouter's free-priced Space Bunny. OpenCode
 # Go also lists a `space-bunny-free`, but requests there return 402 Insufficient
