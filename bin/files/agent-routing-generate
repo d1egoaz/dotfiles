@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
+import re
 import sys
 import tomllib
 from collections.abc import Mapping
@@ -22,21 +23,14 @@ ROUTING_REFERENCE = (
     / "config/agents/skills/multi-agent-team/task-coordinator/references/capability-routing.md"
 )
 
-EXPECTED_ROLES = {"explorer", "reviewer", "worker"}
 EXPECTED_RUNTIMES = {"office_codex", "office_claude", "personal_home"}
 # `neutral` runtimes keep model IDs independent of a particular client.
 # Personal Codex consumes the home runtime through its local gateway.
 PROVIDERS = {"codex", "claude", "neutral"}
 # Claude Code has no sandbox_mode; read-only roles deny the file-editing tools.
 CLAUDE_READ_ONLY_DISALLOWED = ("Edit", "Write", "NotebookEdit")
-ROLE_ORDER = ("explorer", "worker", "reviewer")
 EXPECTED_PROFILES = {"office", "personal"}
 REQUIRED_TIERS = ("economy", "balanced", "frontier")
-EXPECTED_CANONICAL_LAUNCHERS = {
-    "spawn-subagent-explore": "explorer",
-    "spawn-subagent-implement": "worker",
-    "spawn-subagent-review": "reviewer",
-}
 
 
 class RoutingError(ValueError):
@@ -58,10 +52,13 @@ def read_registry() -> dict:
         fail("agent-routing.toml must declare schema_version = 1")
     if registry.get("tiers") != list(REQUIRED_TIERS):
         fail(f"tiers must be exactly {list(REQUIRED_TIERS)!r}")
+    efforts = registry.get("efforts")
+    if not isinstance(efforts, list) or not efforts or not all(isinstance(effort, str) for effort in efforts):
+        fail("efforts must be a non-empty list of names")
 
     roles = registry.get("roles")
-    if not isinstance(roles, Mapping) or set(roles) != EXPECTED_ROLES:
-        fail(f"roles must be exactly {sorted(EXPECTED_ROLES)!r}")
+    if not isinstance(roles, Mapping) or not roles:
+        fail("roles must be a non-empty table")
     runtimes = registry.get("runtimes")
     if not isinstance(runtimes, Mapping) or set(runtimes) != EXPECTED_RUNTIMES:
         fail(f"runtimes must be exactly {sorted(EXPECTED_RUNTIMES)!r}")
@@ -70,6 +67,8 @@ def read_registry() -> dict:
         fail(f"profiles must be exactly {sorted(EXPECTED_PROFILES)!r}")
 
     for role_name, role in roles.items():
+        if not re.fullmatch(r"[a-z][a-z0-9-]*", role_name):
+            fail(f"roles.{role_name} has an invalid launcher name")
         if not isinstance(role, Mapping):
             fail(f"roles.{role_name} must be a table")
         for key in (
@@ -77,8 +76,6 @@ def read_registry() -> dict:
             "tier",
             "effort",
             "sandbox_mode",
-            "canonical_name",
-            "capabilities",
             "developer_instructions",
         ):
             if key not in role:
@@ -89,18 +86,8 @@ def read_registry() -> dict:
             fail(f"roles.{role_name}.effort is not a known effort")
         if role["sandbox_mode"] not in {"read-only", "workspace-write"}:
             fail(f"roles.{role_name}.sandbox_mode is invalid")
-        if role["canonical_name"] not in EXPECTED_CANONICAL_LAUNCHERS:
-            fail(f"roles.{role_name}.canonical_name is invalid")
-        if EXPECTED_CANONICAL_LAUNCHERS[role["canonical_name"]] != role_name:
-            fail(f"roles.{role_name}.canonical_name maps to the wrong role")
-        if not isinstance(role["capabilities"], list) or not role["capabilities"]:
-            fail(f"roles.{role_name}.capabilities must be a non-empty list")
         if not isinstance(role.get("claude_omit_claude_md", False), bool):
             fail(f"roles.{role_name}.claude_omit_claude_md must be a boolean")
-
-    canonical_names = [role["canonical_name"] for role in roles.values()]
-    if len(set(canonical_names)) != len(canonical_names):
-        fail("roles.canonical_name values must be unique")
 
     if "launchers" in registry:
         fail("launchers are not supported; unnamed spawns use the profile default route")
@@ -121,9 +108,6 @@ def read_registry() -> dict:
             route = runtime_tiers[tier]
             if not isinstance(route, Mapping) or not route.get("model") or not route.get("label"):
                 fail(f"runtimes.{runtime_name}.tiers.{tier} needs model and label")
-            supported = route.get("supported_efforts")
-            if not isinstance(supported, list):
-                fail(f"runtimes.{runtime_name}.tiers.{tier}.supported_efforts must be a list")
             if "fallback_effort" in route:
                 fail(f"Codex tier {runtime_name}.{tier} must not define fallback_effort")
             if not isinstance(route.get("verified", True), bool):
@@ -199,10 +183,13 @@ def route(registry: Mapping, runtime_name: str, tier: str) -> Mapping:
     return registry["runtimes"][runtime_name]["tiers"][tier]
 
 
-def effective_effort(runtime: Mapping, tier: str, requested: str) -> str:
-    selected = runtime["tiers"][tier]
-    if requested not in selected["supported_efforts"]:
-        fail(f"Codex route {tier} does not support requested effort {requested}")
+def canonical_name(role_name: str) -> str:
+    return f"spawn-subagent-{role_name}"
+
+
+def effective_effort(registry: Mapping, requested: str) -> str:
+    if requested not in registry["efforts"]:
+        fail(f"routing policy does not allow requested effort {requested}")
     return requested
 
 
@@ -217,11 +204,10 @@ def native_launcher_instructions(extra: str) -> str:
 
 def render_codex_agent(registry: Mapping, runtime_name: str, role_name: str) -> str:
     role = registry["roles"][role_name]
-    runtime = registry["runtimes"][runtime_name]
     selected = route(registry, runtime_name, role["tier"])
-    effort = effective_effort(runtime, role["tier"], role["effort"])
+    effort = effective_effort(registry, role["effort"])
     return (
-        f'name = {json.dumps(role["canonical_name"])}\n'
+        f'name = {json.dumps(canonical_name(role_name))}\n'
         f'description = {json.dumps(role["description"])}\n'
         f'model = {json.dumps(selected["model"])}\n'
         f'model_reasoning_effort = {json.dumps(effort)}\n'
@@ -232,12 +218,11 @@ def render_codex_agent(registry: Mapping, runtime_name: str, role_name: str) -> 
 
 def render_claude_agent(registry: Mapping, runtime_name: str, role_name: str) -> str:
     role = registry["roles"][role_name]
-    runtime = registry["runtimes"][runtime_name]
     selected = route(registry, runtime_name, role["tier"])
-    effort = effective_effort(runtime, role["tier"], role["effort"])
+    effort = effective_effort(registry, role["effort"])
     lines = [
         "---",
-        f"name: {role['canonical_name']}",
+        f"name: {canonical_name(role_name)}",
         f"description: {json.dumps(role['description'])}",
         f"model: {selected['model']}",
         f"effort: {effort}",
@@ -295,12 +280,9 @@ def render_nix(registry: Mapping) -> str:
         for tier in REQUIRED_TIERS:
             selected = route(registry, runtime_name, tier)
             tiers[tier] = {
-                "effective_efforts": selected["supported_efforts"],
                 "label": selected["label"],
                 "model": selected["model"],
             }
-            if "fallback_effort" in selected:
-                tiers[tier]["fallback_effort"] = selected["fallback_effort"]
         runtimes[runtime_name] = {
             "default_tier": runtime["default_tier"],
             "display_name": runtime["display_name"],
@@ -320,22 +302,14 @@ def render_nix(registry: Mapping) -> str:
             "codex": {
                 "agent_directory": profile_name,
                 "default": {
-                    "effort": effective_effort(
-                        registry["runtimes"][codex_runtime],
-                        profile["codex_default_tier"],
-                        profile["codex_default_effort"],
-                    ),
+                    "effort": effective_effort(registry, profile["codex_default_effort"]),
                     "label": codex_default["label"],
                     "model": codex_default["model"],
                     "runtime": runtime_slug(codex_runtime),
                     "tier": profile["codex_default_tier"],
                 },
                 "lead": {
-                    "effort": effective_effort(
-                        registry["runtimes"][codex_runtime],
-                        profile["codex_lead_tier"],
-                        profile["codex_lead_effort"],
-                    ),
+                    "effort": effective_effort(registry, profile["codex_lead_effort"]),
                     "label": codex_lead["label"],
                     "model": codex_lead["model"],
                     "runtime": runtime_slug(codex_runtime),
@@ -348,8 +322,8 @@ def render_nix(registry: Mapping) -> str:
                     "claude": {
                         "agent_directory": profile_name,
                         "agents": [
-                            registry["roles"][role_name]["canonical_name"]
-                            for role_name in ROLE_ORDER
+                            canonical_name(role_name)
+                            for role_name in registry["roles"]
                         ],
                         "runtime": runtime_slug(profile["claude_runtime"]),
                     }
@@ -358,11 +332,7 @@ def render_nix(registry: Mapping) -> str:
                 else {}
             ),
             "pi": {
-                "effort": effective_effort(
-                    registry["runtimes"][profile["pi_runtime"]],
-                    profile["pi_tier"],
-                    profile["pi_effort"],
-                ),
+                "effort": effective_effort(registry, profile["pi_effort"]),
                 "label": pi["label"],
                 "model": pi["model"],
                 "provider": "openai-codex",
@@ -401,10 +371,10 @@ def render_reference(registry: Mapping) -> str:
         "## Native-subagent roles",
         "",
     ]
-    for role_name in ("explorer", "worker", "reviewer"):
+    for role_name in registry["roles"]:
         role = registry["roles"][role_name]
         lines.append(
-            f"- `@{role['canonical_name']}` -> `{role['tier']}`, `{role['effort']}`, "
+            f"- `@{canonical_name(role_name)}` -> `{role['tier']}`, `{role['effort']}`, "
             f"`{role['sandbox_mode']}`: {role['description']}"
         )
     lines.extend(
@@ -416,7 +386,8 @@ def render_reference(registry: Mapping) -> str:
             "## How many agents",
             "",
             "- A lookup or one-step check stays in the lead.",
-            "- Independent reads fan out, one explorer per unit (service, repo, area).",
+            "- Bounded reads from named sources fan out to gatherers when parallel work helps.",
+            "- Open-ended reads fan out to explorers, one per independent area.",
             "- Each write set gets exactly one implementer; never run parallel writers on shared files.",
             "- Review is one independent pass before publication.",
             "",
@@ -438,20 +409,19 @@ def render_reference(registry: Mapping) -> str:
 
 
 def matrix_cell(registry: Mapping, runtime_name: str, tier: str, effort: str) -> str:
-    runtime = registry["runtimes"][runtime_name]
     selected = route(registry, runtime_name, tier)
     model = f"`{selected['model']}`"
     if "resolves_to" in selected:
         model += f" (`{selected['resolves_to']}`)"
     if selected.get("verified") is False:
         model += " (unverified)"
-    return f"{model} / {effective_effort(runtime, tier, effort)}"
+    return f"{model} / {effective_effort(registry, effort)}"
 
 
 def render_matrix(registry: Mapping) -> str:
     roles = registry["roles"]
     header = ["Harness", "Lead"]
-    header += [f"`{roles[name]['canonical_name']}`" for name in ROLE_ORDER]
+    header += [f"`{canonical_name(name)}`" for name in roles]
     header.append("Unnamed spawn")
     lines = [
         "# Agent routing matrix",
@@ -461,9 +431,9 @@ def render_matrix(registry: Mapping) -> str:
         "",
         "Roles: "
         + ", ".join(
-            f"`{roles[name]['canonical_name']}` ({roles[name]['sandbox_mode']}, "
+            f"`{canonical_name(name)}` ({roles[name]['sandbox_mode']}, "
             f"{roles[name]['tier']})"
-            for name in ROLE_ORDER
+            for name in roles
         )
         + ".",
     ]
@@ -485,7 +455,7 @@ def render_matrix(registry: Mapping) -> str:
         ]
         row += [
             matrix_cell(registry, codex_runtime, roles[name]["tier"], roles[name]["effort"])
-            for name in ROLE_ORDER
+            for name in roles
         ]
         row.append(
             matrix_cell(
@@ -509,7 +479,7 @@ def render_matrix(registry: Mapping) -> str:
             ]
             row += [
                 matrix_cell(registry, claude_runtime, roles[name]["tier"], roles[name]["effort"])
-                for name in ROLE_ORDER
+                for name in roles
             ]
             default = route(registry, claude_runtime, registry["runtimes"][claude_runtime]["default_tier"])
             row.append(f"`{default['model']}` (`{default['resolves_to']}`) / session effort")
@@ -523,7 +493,7 @@ def render_matrix(registry: Mapping) -> str:
             ]
             row += [
                 matrix_cell(registry, home_runtime, roles[name]["tier"], roles[name]["effort"])
-                for name in ROLE_ORDER
+                for name in roles
             ]
             row.append(
                 matrix_cell(registry, home_runtime, home["default_tier"], profile["home_default_effort"])
@@ -568,17 +538,17 @@ def build_outputs(registry: Mapping) -> dict[pathlib.Path, str]:
     }
     for profile_name in sorted(EXPECTED_PROFILES):
         runtime_name = registry["profiles"][profile_name]["codex_runtime"]
-        for role_name in sorted(EXPECTED_ROLES):
-            canonical_name = registry["roles"][role_name]["canonical_name"]
+        for role_name in registry["roles"]:
+            launcher_name = canonical_name(role_name)
             outputs[
-                CODEX_OUTPUT_ROOT / profile_name / f"{canonical_name}.toml"
+                CODEX_OUTPUT_ROOT / profile_name / f"{launcher_name}.toml"
             ] = render_codex_agent(registry, runtime_name, role_name)
         claude_runtime = claude_runtime_for(registry, profile_name)
         if claude_runtime:
-            for role_name in sorted(EXPECTED_ROLES):
-                canonical_name = registry["roles"][role_name]["canonical_name"]
+            for role_name in registry["roles"]:
+                launcher_name = canonical_name(role_name)
                 outputs[
-                    CLAUDE_OUTPUT_ROOT / profile_name / f"{canonical_name}.md"
+                    CLAUDE_OUTPUT_ROOT / profile_name / f"{launcher_name}.md"
                 ] = render_claude_agent(registry, claude_runtime, role_name)
     return outputs
 

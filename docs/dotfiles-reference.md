@@ -57,15 +57,20 @@ each role's resolved model, reasoning effort, sandbox, and lead-mediated
 communication. Change the registry and run `just agent-routing-generate`; do not
 edit generated files. Changing these files does not retier a running task.
 
-Three roles are generated: `spawn-subagent-explore` (read-only),
-`spawn-subagent-implement` (workspace-write), and `spawn-subagent-review`
-(read-only). Each role's tier and effort live in the registry, so retiering a
-role never renames it. An unnamed spawn uses the profile default route
-(`default_subagent_model`) and inherits the parent sandbox. Deep judgment stays
-with the frontier lead. Use the roles only for native subagents, not visible
-tasks; spawned instance names retain the resolved model label.
+Four roles are generated: `spawn-subagent-gather` (read-only),
+`spawn-subagent-explore` (read-only), `spawn-subagent-implement`
+(workspace-write), and `spawn-subagent-review` (read-only). Each role's tier
+and effort live in the registry, so retiering a role never renames it. An
+unnamed spawn uses the profile default route (`default_subagent_model`) and
+inherits the parent sandbox. Deep judgment stays with the frontier lead. Use
+the roles only for native subagents, not visible tasks; spawned instance names
+retain the resolved model label.
 
-Profiles with a `claude_runtime` also get the same three roles as Claude Code
+Role keys are the launcher suffix: `roles.gather` generates
+`spawn-subagent-gather`. The top-level `efforts` list is a routing policy, not
+a claim about every provider's full supported range.
+
+Profiles with a `claude_runtime` also get the same four roles as Claude Code
 subagents in `config/claude/agents/generated/<profile>/*.md`, linked file by
 file into `~/.claude/agents/` so hand-made agents stay untouched. Each file sets
 the Claude `model` alias and `effort` from the role's tier and effort; read-only

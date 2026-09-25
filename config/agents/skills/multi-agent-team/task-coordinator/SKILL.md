@@ -13,10 +13,12 @@ and naming live in [capability-routing.md](references/capability-routing.md).
 ## Pattern
 
 1. Define the goal, the independent outcomes, and what done means for each.
-2. Fan out independent reads, one `@spawn-subagent-explore` per unit. Give
-   each write set one `@spawn-subagent-implement`. Run one
-   `@spawn-subagent-review` before publication. Use an unnamed spawn for a
-   bounded batch of procedural commands, never for one trivial command.
+2. Keep small lookups in the lead. Fan out bounded reads from named sources
+   with `@spawn-subagent-gather`; use `@spawn-subagent-explore` for open-ended
+   research, one per independent area. The lead checks sources and owns
+   cross-source synthesis. Give each write set one `@spawn-subagent-implement`.
+   Run one `@spawn-subagent-review` before publication. Use an unnamed spawn
+   for a bounded batch of procedural commands, never for one trivial command.
 3. Use a visible task only for an outcome with its own repository, PR, or
    long-running follow-up. Read
    [codex-task-creation.md](references/codex-task-creation.md) first and

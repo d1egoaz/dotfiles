@@ -2,7 +2,7 @@
 """Invariant tests for the agent routing registry and its generated outputs.
 
 Expected values come from the registry itself; the generator's --check covers
-exact output drift. Only policy (who may write, which models are banned) is
+exact output drift. Policy for writable roles, allowed efforts, and banned models is
 pinned here.
 """
 
@@ -35,9 +35,10 @@ PI_NIX = REPO_ROOT / "nix/home-manager/config/apps/pi.nix"
 
 # Policy: only the implementer may write.
 ROLE_SANDBOX = {
-    "explorer": "read-only",
-    "reviewer": "read-only",
-    "worker": "workspace-write",
+    "gather": "read-only",
+    "explore": "read-only",
+    "review": "read-only",
+    "implement": "workspace-write",
 }
 # Policy: never route Claude work to Haiku.
 BANNED_CLAUDE_MODELS = {"haiku"}
@@ -69,7 +70,7 @@ class AgentRoutingTest(unittest.TestCase):
         cls.registry = load_registry()
         cls.generator = load_generator_module()
         cls.roles = cls.registry["roles"]
-        cls.canonical = {role["canonical_name"] for role in cls.roles.values()}
+        cls.canonical = {cls.generator.canonical_name(name) for name in cls.roles}
 
     def route(self, runtime_name: str, role_name: str) -> dict:
         tier = self.roles[role_name]["tier"]
@@ -91,13 +92,25 @@ class AgentRoutingTest(unittest.TestCase):
             ROLE_SANDBOX,
         )
 
+    def test_bounded_gatherer_uses_economy_low(self):
+        gatherer = self.roles["gather"]
+        self.assertIn("spawn-subagent-gather", self.canonical)
+        self.assertEqual((gatherer["tier"], gatherer["effort"]), ("economy", "low"))
+        self.assertEqual(gatherer["sandbox_mode"], "read-only")
+
+    def test_effort_policy_excludes_unused_extremes(self):
+        self.assertEqual(self.registry["efforts"], ["low", "medium", "high", "xhigh"])
+        for runtime in self.registry["runtimes"].values():
+            for route in runtime["tiers"].values():
+                self.assertNotIn("supported_efforts", route)
+
     def test_codex_agents_follow_registry(self):
         for profile_name, profile in self.registry["profiles"].items():
             runtime_name = profile["codex_runtime"]
             directory = CODEX_AGENT_ROOT / profile_name
             self.assertEqual({path.stem for path in directory.glob("*.toml")}, self.canonical)
             for role_name, role in self.roles.items():
-                with (directory / f"{role['canonical_name']}.toml").open("rb") as agent_file:
+                with (directory / f"{self.generator.canonical_name(role_name)}.toml").open("rb") as agent_file:
                     agent = tomllib.load(agent_file)
                 self.assertEqual(agent["model"], self.route(runtime_name, role_name)["model"])
                 self.assertEqual(agent["model_reasoning_effort"], role["effort"])
@@ -117,7 +130,7 @@ class AgentRoutingTest(unittest.TestCase):
             self.assertFalse(models & BANNED_CLAUDE_MODELS)
             self.assertEqual({path.stem for path in directory.glob("*.md")}, self.canonical)
             for role_name, role in self.roles.items():
-                fields, body = claude_frontmatter(directory / f"{role['canonical_name']}.md")
+                fields, body = claude_frontmatter(directory / f"{self.generator.canonical_name(role_name)}.md")
                 self.assertEqual(fields["model"], self.route(runtime_name, role_name)["model"])
                 self.assertEqual(fields["effort"], role["effort"])
                 if ROLE_SANDBOX[role_name] == "read-only":
@@ -242,7 +255,7 @@ class RegistryValidationTest(unittest.TestCase):
             ('tier = "economy"', 'tier = "unknown"', "not a known tier"),
             ('effort = "xhigh"', 'effort = "impossible"', "not a known effort"),
             ('tiers = ["economy", "balanced", "frontier"]', 'tiers = ["economy", "balanced"]', "tiers must be exactly"),
-            ("[roles.explorer]", "[roles.unexpected]", "roles must be exactly"),
+            ("[roles.explore]", '[roles."../bad"]', "invalid launcher name"),
             ("[runtimes.personal_home]", "[runtimes.unexpected]", "runtimes must be exactly"),
             ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
             ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
@@ -259,8 +272,8 @@ class RegistryValidationTest(unittest.TestCase):
 
     def test_rejects_unsupported_efforts(self):
         registry = load_registry()
-        registry["runtimes"]["office_codex"]["tiers"]["frontier"]["supported_efforts"] = ["low"]
-        with self.assertRaisesRegex(self.generator.RoutingError, "does not support requested effort"):
+        registry["efforts"] = ["low"]
+        with self.assertRaisesRegex(self.generator.RoutingError, "does not allow requested effort"):
             self.generator.render_nix(registry)
 
 

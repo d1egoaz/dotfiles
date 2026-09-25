@@ -15,9 +15,10 @@ to a more expensive tier.
 
 ## Native-subagent roles
 
+- `@spawn-subagent-gather` -> `economy`, `low`, `read-only`: Use for bounded read-only fact collection from named sources. Return source links and dates; leave ranking and synthesis to the lead.
 - `@spawn-subagent-explore` -> `balanced`, `low`, `read-only`: Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area.
-- `@spawn-subagent-implement` -> `economy`, `xhigh`, `workspace-write`: Use for a bounded implementation or fix once scope, owned files, and the finish line are clear.
 - `@spawn-subagent-review` -> `balanced`, `low`, `read-only`: Use for one independent read-only review before publishing: merge-blocking correctness, security, and regression problems only.
+- `@spawn-subagent-implement` -> `economy`, `xhigh`, `workspace-write`: Use for a bounded implementation or fix once scope, owned files, and the finish line are clear.
 
 An unnamed spawn uses the profile default route (`economy`) and inherits
 the parent sandbox; use it for a bounded batch of procedural commands.
@@ -25,7 +26,8 @@ the parent sandbox; use it for a bounded batch of procedural commands.
 ## How many agents
 
 - A lookup or one-step check stays in the lead.
-- Independent reads fan out, one explorer per unit (service, repo, area).
+- Bounded reads from named sources fan out to gatherers when parallel work helps.
+- Open-ended reads fan out to explorers, one per independent area.
 - Each write set gets exactly one implementer; never run parallel writers on shared files.
 - Review is one independent pass before publication.
 
