@@ -18,3 +18,4 @@ cask "protonvpn" # VPN client
 cask "plex" # Media server app
 cask "plexamp" # Music player focusing on visuals
 cask "zoom" # Video conferencing
+cask "1password" # Password manager

@@ -7,10 +7,9 @@ brew "gh" # GitHub CLI
 brew "libvterm" # Terminal emulator library for Emacs vterm
 brew "pi-coding-agent"
 brew "sops" # Encrypted secrets editor for dotfiles
-cask "1password" # Password manager
 cask "1password-cli"
 cask "alfred" # App launcher and workflows
-cask "claude-code" # Claude Code editor/CLI
+cask "claude-code@latest" # Claude Code editor/CLI
 cask "codex" # Coding assistant CLI
 cask "cursor" # AI-first IDE
 cask "cursor-cli" # AI-first IDE
