@@ -55,7 +55,6 @@ Office-only endpoints, trust entries, hooks, approval rules, and skills must sta
 
 ## Repository Rules
 
-- Keep the primary checkout on `main`; use a linked worktree for feature work.
 - Preserve unrelated dirty changes and stage exact files only.
 - Do not add `--impure` to Nix commands.
 - Homebrew owns packages declared in Brewfiles. Nix owns packages declared in profiles and modules.
