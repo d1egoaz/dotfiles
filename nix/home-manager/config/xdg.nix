@@ -233,6 +233,7 @@ in
     CODEX_DEFAULT_MODEL="${codex.default.model}"
     CODEX_DEFAULT_REASONING_EFFORT="${codex.default.effort}"
     CODEX_OPENCODE_GO="${if codex.opencode_go then "1" else "0"}"
+    CODEX_DROP_NOTIFY="${if host == "personal-mini" then "1" else "0"}"
     SHARED="$HOME/dotfiles/config/codex/config.toml"
     PROFILE_FILE="$HOME/dotfiles/config/codex/profiles/${codex.profileFile}"
     TARGET="$HOME/.codex/config.toml"
@@ -294,7 +295,14 @@ in
       # The shared source owns the [agents] table and its limits. Inject the
       # registry-selected fallback route into that table without duplicating
       # provider-specific model IDs in the hand-edited TOML.
-      "$AWK" -v default_model="$CODEX_DEFAULT_MODEL" -v default_effort="$CODEX_DEFAULT_REASONING_EFFORT" '
+      #
+      # notify is not set on personal-mini: it only plays a sound, and there is
+      # nobody at the server to hear it.
+      "$AWK" -v default_model="$CODEX_DEFAULT_MODEL" -v default_effort="$CODEX_DEFAULT_REASONING_EFFORT" \
+        -v drop_notify="$CODEX_DROP_NOTIFY" '
+        drop_notify == "1" && $0 ~ /^notify = \[/ { skipping = 1; next }
+        skipping && $0 ~ /^\]/ { skipping = 0; next }
+        skipping { next }
         { print }
         $0 == "[agents]" && !inserted {
           print "default_subagent_model = \"" default_model "\""
