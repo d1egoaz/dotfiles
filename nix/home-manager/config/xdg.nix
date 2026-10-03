@@ -170,6 +170,8 @@ in
     # that provider, so neither the tool nor its route lands there.
     ".local/bin/codex-opencode-go-catalog".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/codex-opencode-go-catalog";
+    ".local/bin/codex-native-runtime".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/bin/files/codex-native-runtime";
   };
 
   xdg = {
@@ -329,6 +331,16 @@ in
       mv "$TMP" "$TARGET"
     fi
   '';
+
+  # Profile generation replaces config.toml, including app-added MCP settings.
+  # Re-register the installed native runtime through Codex's versioned API.
+  home.activation.codexNativeRuntime = lib.mkIf (profile != "office") (
+    config.lib.dag.entryAfter [ "codexConfigProfile" ] ''
+      if [ -x /Applications/Codex.app/Contents/Resources/cua_node/bin/node_repl ]; then
+        ${pkgs.python3}/bin/python3 "$HOME/dotfiles/bin/files/codex-native-runtime" --apply
+      fi
+    ''
+  );
 
   # Keep shared hooks portable while allowing an ignored work-only hook file on
   # the office machine. Missing local hooks fall back to the tracked shared file.
