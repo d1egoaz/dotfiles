@@ -337,7 +337,7 @@ in
   home.activation.codexNativeRuntime = lib.mkIf (profile != "office") (
     config.lib.dag.entryAfter [ "codexConfigProfile" ] ''
       if [ -x /Applications/Codex.app/Contents/Resources/cua_node/bin/node_repl ]; then
-        ${pkgs.python3}/bin/python3 "$HOME/dotfiles/bin/files/codex-native-runtime" --apply
+        ${pkgs.python3}/bin/python3 "$HOME/dotfiles/bin/files/codex-native-runtime" --apply --skip-unavailable
       fi
     ''
   );

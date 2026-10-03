@@ -120,11 +120,31 @@ def contains_config(actual, expected):
     return actual == expected
 
 
+def runtime_explicitly_disabled(profile):
+    plugins = profile.get("plugins", {})
+    return any(
+        plugins.get(name, {}).get("enabled") is False
+        for name in ("chrome@openai-bundled", "browser@openai-bundled", "computer-use@openai-bundled")
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true", help="Apply the bounded native MCP registration")
+    parser.add_argument("--skip-unavailable", action="store_true", help="For activation: report missing app/cache prerequisites without aborting the activation")
     args = parser.parse_args()
-    config = runtime_config(pathlib.Path.home() / ".codex", pathlib.Path("/Applications/Codex.app/Contents/Resources"))
+    home = pathlib.Path.home() / ".codex"
+    profile = home / "config.toml"
+    if profile.exists() and runtime_explicitly_disabled(tomllib.loads(profile.read_text())):
+        print("Native runtime explicitly disabled in profile; registration unchanged")
+        return
+    try:
+        config = runtime_config(home, pathlib.Path("/Applications/Codex.app/Contents/Resources"))
+    except (OSError, RuntimeError) as error:
+        if not args.skip_unavailable:
+            raise
+        print(f"Native runtime unavailable; registration unchanged. Complete Codex app/plugin setup: {error}")
+        return
     if args.apply:
         register(config)
     else:

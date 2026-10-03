@@ -3,13 +3,27 @@ import pathlib
 import runpy
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = pathlib.Path(__file__).resolve().parents[1] / "bin/files/codex-native-runtime"
 runtime_config = runpy.run_path(str(SCRIPT))["runtime_config"]
 contains_config = runpy.run_path(str(SCRIPT))["contains_config"]
+runtime_explicitly_disabled = runpy.run_path(str(SCRIPT))["runtime_explicitly_disabled"]
 
 
 class NativeRuntimeTest(unittest.TestCase):
+    def test_explicit_plugin_disable_is_respected(self):
+        self.assertFalse(runtime_explicitly_disabled({}))
+        for name in ("chrome@openai-bundled", "browser@openai-bundled", "computer-use@openai-bundled"):
+            self.assertTrue(runtime_explicitly_disabled({"plugins": {name: {"enabled": False}}}))
+
+    def test_activation_skips_missing_prerequisites_without_config_writes(self):
+        namespace = runpy.run_path(str(SCRIPT))
+        main = namespace["main"]
+        with tempfile.TemporaryDirectory() as directory, patch("pathlib.Path.home", return_value=pathlib.Path(directory)), patch("sys.argv", [str(SCRIPT), "--apply", "--skip-unavailable"]):
+            with patch.dict(main.__globals__, {"runtime_config": lambda *_: (_ for _ in ()).throw(RuntimeError("missing cache")), "register": lambda *_: self.fail("must not write unavailable runtime")}):
+                main()
+
     def test_readback_accepts_defaults_but_rejects_missing_or_changed_values(self):
         self.assertTrue(contains_config({"enabled": True, "env": {"a": "1", "policy": "keep"}}, {"env": {"a": "1"}}))
         self.assertFalse(contains_config({"env": {"a": "2"}}, {"env": {"a": "1"}}))
