@@ -1,6 +1,6 @@
 name = "spawn-subagent-implement"
 description = "Use for a bounded implementation or fix once scope, owned files, and the finish line are clear."
-model = "deepseek-v4.1-flash"
+model = "gpt-6-luna"
 model_reasoning_effort = "xhigh"
 sandbox_mode = "workspace-write"
 developer_instructions = """
