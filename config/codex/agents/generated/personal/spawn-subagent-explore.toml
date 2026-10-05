@@ -1,6 +1,6 @@
 name = "spawn-subagent-explore"
 description = "Use for read-only research: trace code paths, build inventories, and gather evidence with file references. Run one per independent area."
-model = "deepseek-v4-pro"
+model = "gpt-6-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """

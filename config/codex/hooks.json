@@ -35,28 +35,6 @@
           }
         ]
       }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/diegoalvarez/code/codex-relay/tools/relay-trusted/relay-trusted-ensure.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "/Users/diegoalvarez/code/codex-relay-matrix/tools/relay-trusted/relay-trusted-ensure.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "/Users/diegoalvarez/code/codex-relay/tools/relay-trusted/relay-trust-watch-ensure.sh",
-            "timeout": 10
-          }
-        ]
-      }
     ]
   }
 }

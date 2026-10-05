@@ -39,19 +39,19 @@
         agent_directory = "personal";
         default = {
           effort = "xhigh";
-          label = "deepseek";
-          model = "deepseek-v4.1-flash";
-          runtime = "personal-home";
+          label = "luna";
+          model = "gpt-6-luna";
+          runtime = "office-codex";
           tier = "economy";
                 };
         lead = {
           effort = "high";
-          label = "mimo";
-          model = "xiaomi/mimo-v2.6-pro";
-          runtime = "personal-home";
+          label = "sol";
+          model = "gpt-6-sol";
+          runtime = "office-codex";
           tier = "frontier";
                 };
-        opencode_go = true;
+        opencode_go = false;
             };
       pi = {
         effort = "high";
