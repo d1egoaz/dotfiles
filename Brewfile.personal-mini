@@ -1,12 +1,10 @@
 # -*- mode: ruby; -*-
 
-brew "gemini-cli" # Google Gemini CLI
 brew "tailscale" # WireGuard-based mesh VPN
 brew "opencode"
 
 cask "chatgpt" # ChatGPT desktop client
 cask "cloudflare-warp"
-cask "codex-app"
 cask "discord" # Community chat/voice
 cask "excalidrawz" # Excalidraw whiteboard
 cask "grandperspective" # Graphically shows disk usage within a file system
