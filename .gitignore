@@ -14,6 +14,3 @@ alfred/Alfred.alfredpreferences/workflows/user.workflow.5B413B71-5DB9-4870-BC84-
 # Nix build artifacts
 result
 result-*
-
-# Flake lock is machine-local state, not shared between machines
-nix/flake.lock
