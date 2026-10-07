@@ -60,11 +60,11 @@ model = "gpt-6-luna"
 label = "luna"
 
 [runtimes.office_codex.tiers.balanced]
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 label = "sol"
 
 [runtimes.office_codex.tiers.frontier]
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 label = "sol"
 
 [runtimes.office_claude]
@@ -108,12 +108,12 @@ model = "deepseek-v4.1-flash"
 label = "deepseek"
 
 [runtimes.personal_home.tiers.balanced]
-model = "deepseek-v4-pro"
-label = "deepseek-pro"
+model = "deepseek-v4.1-flash"
+label = "deepseek"
 
 [runtimes.personal_home.tiers.frontier]
-model = "xiaomi/mimo-v2.6-pro"
-label = "mimo"
+model = "openai/gpt-6.1-sol"
+label = "sol"
 
 [profiles.office]
 codex_runtime = "office_codex"
