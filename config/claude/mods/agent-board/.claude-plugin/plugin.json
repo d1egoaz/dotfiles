@@ -1,0 +1,6 @@
+{
+  "name": "agent-board",
+  "version": "0.1.0",
+  "description": "Live board of this session's subagents: role, model, effort, context, tokens and time. /agent-board toggles it.",
+  "types": "./types/index.d.ts"
+}
