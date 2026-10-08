@@ -84,7 +84,7 @@ opencode_go = false
 [runtimes.office_claude.tiers.economy]
 model = "sonnet"
 label = "sonnet"
-resolves_to = "claude-sonnet-5"
+resolves_to = "claude-sonnet-5-5"
 
 [runtimes.office_claude.tiers.balanced]
 model = "opus"
@@ -122,8 +122,8 @@ label = "sol"
 [profiles.office]
 codex_runtime = "office_codex"
 claude_runtime = "office_claude"
-# Matches effortLevel in config/claude/settings.json.
-claude_lead_effort = "high"
+# Matches modelSettings.<lead model>.effortLevel in config/claude/settings.json.
+claude_lead_effort = "medium"
 codex_lead_tier = "frontier"
 codex_lead_effort = "high"
 codex_default_tier = "economy"
