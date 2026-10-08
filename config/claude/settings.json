@@ -1,6 +1,7 @@
 {
   "env": {
     "CLAUDE_CODE_PLUGIN_DIRS": "~/dotfiles/config/claude/mods/agent-board",
+    "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-5-5",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5-5",
