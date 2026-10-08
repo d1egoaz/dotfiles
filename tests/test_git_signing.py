@@ -11,6 +11,11 @@ MK_DARWIN_SYSTEM = ROOT / "nix/lib/mkDarwinSystem.nix"
 GIT_NIX = ROOT / "nix/home-manager/config/apps/git.nix"
 PROGRAMS_NIX = ROOT / "nix/home-manager/config/programs.nix"
 XDG_NIX = ROOT / "nix/home-manager/config/xdg.nix"
+ENROLLMENT_DOCS = (
+    ROOT / "AGENTS.md",
+    ROOT / "docs/dotfiles-reference.md",
+    ROOT / "config/agents/skills/multi-agent-team/signed-pr-publish/references/commands.md",
+)
 
 
 class GitSigningConfigurationTest(unittest.TestCase):
@@ -67,6 +72,13 @@ class GitSigningConfigurationTest(unittest.TestCase):
         self.assertIn("signingPrivateKey", programs_nix)
         self.assertNotIn("ssh-agent -D", programs_nix)
         self.assertNotIn('"codex-signing-key"', XDG_NIX.read_text(encoding="utf-8"))
+
+    def test_enrollment_docs_match_the_login_loader(self):
+        # The loader sets no lifetime, so an enrollment with one would expire mid-session.
+        for doc in ENROLLMENT_DOCS:
+            text = doc.read_text(encoding="utf-8")
+            self.assertIn("ssh-add --apple-use-keychain", text, doc)
+            self.assertNotIn("-t 86400", text, doc)
 
     def test_office_publication_keeps_https(self):
         git_nix = GIT_NIX.read_text(encoding="utf-8")
