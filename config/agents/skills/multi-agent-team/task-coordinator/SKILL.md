@@ -39,6 +39,9 @@ Send one message with:
   mock, or guess.
 - Owned files or resources (no concurrent writers) and authorization.
 
+Use these labels verbatim; routed children block on a missing one. On Codex,
+spawn with `fork_turns` `none` and put all context in the message.
+
 Native subagents return results or blockers only to their parent; they do not
 peer-coordinate, spawn descendants, or declare overall completion. Visible
 tasks own their outcome through verification and ask the user directly for
@@ -46,7 +49,9 @@ missing approval. Creating a task adds no authorization.
 
 ## Track and finish
 
-For more than one outcome, keep one table: outcome, owner, evidence, and state
-(verified, blocked, unverified). On long runs keep it in the host task list or
-an untracked checklist file and update it as children report. End with
-**Blocked on me**, **Changed**, and **Found**.
+With 3+ outcomes or any spawned subagent, keep one table: outcome, owner,
+evidence, and state (verified, blocked, unverified). Keep it in the host task
+list or the shared checklist fallback and update it as children report. Wait
+for every writer to report before finishing. List any child that stopped
+early under **Found** with its last known state. End with **Blocked on me**,
+**Changed**, and **Found**.

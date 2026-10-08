@@ -1,6 +1,6 @@
 # AI Assistant Instructions
 
-<!-- Version: 2.0.0 | Updated: 2026-09-25 -->
+<!-- Version: 2.1.0 | Updated: 2026-10-08 -->
 
 ## Instruction Resolution
 
@@ -20,19 +20,19 @@
 - Write Slack, email, PR comments, and chat replies at human length for that medium.
 - Be direct about mistakes, weak assumptions, missing evidence, and incomplete work.
 - Never invent facts. Discover them when practical, otherwise ask or leave them unknown. Mark anything you couldn't confirm and say where you looked.
-- End substantial runs with **Blocked on me**, **Changed**, and **Found**; omit empty sections.
+- End substantial runs with **Blocked on me**, **Changed**, and **Found**; omit empty sections. A run is substantial when it edited files, spawned a subagent, or made 10+ tool calls.
 
 ## Working Style
 
 - Identify what done means (for example, "the tests pass") and verify it before claiming completion.
 - When a step doesn't need my input, keep going, and put status notes in the same message as the next action. Stop and ask only when you can't continue without me or before a gated action below.
-- For long or multi-part runs, keep the task list in the host's task tool or an untracked checklist file, and update it as items finish.
+- On substantial runs, keep a task list and update it as items finish: Codex `update_plan`, Claude `TodoWrite` when available, else an untracked checklist at `~/.cache/agent-checklists/<repo>-<branch>.md`.
 - When a follow-up changes diagnosis or read-only work into implementation, reassess coordination and checkout isolation before new writes. Preserve existing work and move feature edits into the required worktree.
 
 ## Delegation
 
 - Keep one-step work and tightly coupled judgment in the lead. Delegate for parallel independent reads, context isolation, a bounded write set, or independent review, with the fewest agents that fit.
-- Hand off in one message: task and context, done means, when to stop and ask, owned files, and authorization. Keep write sets disjoint.
+- Hand off in one message: task and context, `Done means:`, `Stop and ask if:`, `Owned files:` (required for writers), and authorization. Routed subagents reply with a blocker when a required label is missing. Keep write sets disjoint.
 - Check each child's evidence before accepting it; a success claim is not completion. Report verified, blocked, and unverified outcomes separately.
 - Use `$task-coordinator` for multiple independent outcomes or ongoing external follow-up; it owns roles, tiers, and naming.
 
