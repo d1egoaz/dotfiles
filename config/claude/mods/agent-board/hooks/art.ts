@@ -290,6 +290,32 @@ export const headerSvg = (W: number, tiles: [string, string][]): string => {
   return svg(W, headerHeight(W, tiles.length), body)
 }
 
+// Cost by model: a title row, then one row per model and effort, money right-aligned
+// in main / agents / total columns. A row with `isMuted` (the untracked rest) is grey.
+export type CostRow = { label: string; main: string; agents: string; total: string; isMuted?: boolean }
+
+const COST_ROW_H = 20
+const COST_COL_W = 64
+
+export const costTableHeight = (rows: number): number => (rows + 1) * COST_ROW_H + 6
+
+export const costTableSvg = (W: number, rows: CostRow[]): string => {
+  const cols = [W - 2 * COST_COL_W, W - COST_COL_W, W]
+  const labelW = W - 3 * COST_COL_W - 6
+  const cell = (x: number, y: number, s: string, cls: string, weight = 400) =>
+    `<text class="${cls}" x="${x}" y="${y}" text-anchor="end" font-family="${FONT}" font-size="11" font-weight="${weight}" font-variant-numeric="tabular-nums">${xml(s)}</text>`
+  const head = `<text class="s" x="0" y="14" font-family="${FONT}" font-size="11">Cost by model</text>${['main', 'agents', 'total'].map((h, i) => cell(cols[i] ?? W, 14, h, 's')).join('')}
+<line class="ln" x1="0" y1="${COST_ROW_H - 0.5}" x2="${W}" y2="${COST_ROW_H - 0.5}"/>`
+  const body = rows
+    .map((r, i) => {
+      const y = (i + 1) * COST_ROW_H + 14
+      const cls = r.isMuted ? 's' : 't'
+      return `<text class="${cls}" x="0" y="${y}" font-family="${FONT}" font-size="11">${xml(fitText(r.label, 11, labelW))}</text>${cell(cols[0] ?? W, y, r.main, cls)}${cell(cols[1] ?? W, y, r.agents, cls)}${cell(W, y, r.total, cls, 600)}`
+    })
+    .join('')
+  return svg(W, costTableHeight(rows.length), head + body)
+}
+
 export const COMPACT_H = 32
 
 // Compact view: one crab per agent (running first, walking), then the totals on the right.
