@@ -113,10 +113,11 @@ Office uses `~/.ssh/codex-signing-office-ed25519.pub`; `personal-mbp` uses
 `~/.ssh/codex-signing-personal-ed25519.pub`. The `personal-mini` automation host
 uses `~/.ssh/r2claw2-bot.pub` with the R2-Claw2 bot identity. Private keys stay
 local. After activation, enroll a passphrase-protected key once with `ssh-add
---apple-use-keychain -t 86400 <private-key>`; macOS restores Keychain-backed SSH
-keys at login. The key must already exist and its public key must be registered
-in GitHub as a signing key. In the UI, paste the `.pub` file contents beginning
-with `ssh-ed25519`, not its `SHA256:` fingerprint or private key.
+--apple-use-keychain <private-key>`; the login loader restores the active
+profile key from Keychain without a fixed expiry. The key must already exist,
+and its public key must be registered in GitHub as a signing key. In the UI,
+paste the `.pub` file contents beginning with `ssh-ed25519`, not its `SHA256:`
+fingerprint or private key.
 
 Office `~/work` keeps HTTPS remotes and uses the GitHub credential helper. Do
 not expose or broaden its `repo`/`workflow` credential, or rewrite it to SSH.
@@ -128,7 +129,7 @@ Use this after the signing configuration is available in `~/dotfiles`:
 ```zsh
 cd ~/dotfiles && just switch
 test -e ~/.ssh/codex-signing-personal-ed25519 && echo "Signing key already exists" || ssh-keygen -t ed25519 -a 100 -f ~/.ssh/codex-signing-personal-ed25519 -C "personal-mac-git-signing"
-ssh-add --apple-use-keychain -t 86400 ~/.ssh/codex-signing-personal-ed25519
+ssh-add --apple-use-keychain ~/.ssh/codex-signing-personal-ed25519
 ```
 
 The user must enter the non-empty key passphrase. Do not overwrite an existing
@@ -139,7 +140,8 @@ gh ssh-key add ~/.ssh/codex-signing-personal-ed25519.pub --type signing --title 
 ```
 
 That command writes to GitHub and needs explicit authorization. At future
-logins, macOS loads all Keychain-backed SSH keys into its native agent.
+logins, the login loader adds the active profile key to the native agent from
+Keychain.
 
 ## Adding Packages And Configuration
 

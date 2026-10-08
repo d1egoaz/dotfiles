@@ -1,0 +1,159 @@
+#!/usr/bin/env -S python3 -I
+"""Stop hook: ask the lead to close a substantial run with the shared sections.
+
+Shared by Claude Code and Codex: `agent-closeout-check claude|codex`. Reads the
+hook payload on stdin and this turn's tool activity from the transcript. When
+the turn edited files, spawned a subagent, or made 10+ tool calls, and the last
+assistant message has none of **Blocked on me**, **Changed**, or **Found**, it
+blocks once with a reason; both harnesses then continue the turn with that
+reason as the next prompt. Otherwise it prints nothing. Any error exits 0
+quietly, so a broken transcript never traps a session.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import sys
+
+SUBSTANTIAL_TOOL_CALLS = 10
+# Turns can be long; read a bounded tail. A turn longer than this is
+# substantial anyway, so a missing boundary only undercounts a large turn.
+TAIL_BYTES = 8 * 1024 * 1024
+
+CLAUDE_EDIT_TOOLS = {"Edit", "MultiEdit", "NotebookEdit", "Write"}
+CLAUDE_SPAWN_TOOLS = {"Agent", "Task"}
+# Codex `item_completed` kinds that are not tool calls.
+CODEX_NON_TOOL_ITEMS = {"AgentMessage", "ContextCompaction", "Reasoning", "SubAgentActivity", "UserMessage"}
+
+CLOSING = re.compile(r"(?m)^[ \t>]*(?:#{1,6}[ \t]*)?(?:\*\*|__)?(?:Blocked on me|Changed|Found)\b")
+
+REASON = (
+    "This run {why}, so close it with the sections that apply: **Blocked on me**, "
+    "**Changed**, and **Found** (omit empty ones; list any subagent that stopped "
+    "early under **Found** with its last known state). Then stop."
+)
+
+
+class Turn:
+    def __init__(self) -> None:
+        self.tool_calls = 0
+        self.edited = False
+        self.spawned = False
+
+    def why(self) -> str | None:
+        if self.edited:
+            return "edited files"
+        if self.spawned:
+            return "spawned a subagent"
+        if self.tool_calls >= SUBSTANTIAL_TOOL_CALLS:
+            return f"made {self.tool_calls} tool calls"
+        return None
+
+
+def tail_records(path: str):
+    with open(path, "rb") as transcript:
+        transcript.seek(0, os.SEEK_END)
+        size = transcript.tell()
+        transcript.seek(max(0, size - TAIL_BYTES))
+        if size > TAIL_BYTES:
+            transcript.readline()  # drop the partial first line
+        for line in transcript:
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(record, dict):
+                yield record
+
+
+def is_claude_prompt(record: dict) -> bool:
+    if record.get("type") != "user" or record.get("isSidechain"):
+        return False
+    if record.get("isMeta") or record.get("isCompactSummary") or "toolUseResult" in record:
+        return False
+    content = (record.get("message") or {}).get("content")
+    if isinstance(content, list):
+        return not any(isinstance(block, dict) and block.get("type") == "tool_result" for block in content)
+    return isinstance(content, str)
+
+
+def claude_turn(path: str) -> Turn:
+    turn = Turn()
+    for record in tail_records(path):
+        if is_claude_prompt(record):
+            turn = Turn()
+            continue
+        if record.get("type") != "assistant" or record.get("isSidechain"):
+            continue
+        for block in (record.get("message") or {}).get("content") or []:
+            if not isinstance(block, dict) or block.get("type") != "tool_use":
+                continue
+            turn.tool_calls += 1
+            turn.edited |= block.get("name") in CLAUDE_EDIT_TOOLS
+            turn.spawned |= block.get("name") in CLAUDE_SPAWN_TOOLS
+    return turn
+
+
+def codex_turn(path: str, turn_id: str) -> Turn | None:
+    """Return the turn's activity, or None for a subagent thread."""
+    with open(path, "rb") as transcript:
+        meta = json.loads(transcript.readline() or b"{}")
+    source = (meta.get("payload") or {}).get("source")
+    if isinstance(source, dict) and "subagent" in source:
+        return None
+    turn = Turn()
+    inside = False
+    for record in tail_records(path):
+        payload = record.get("payload") or {}
+        kind = payload.get("type")
+        if kind == "task_started":
+            inside = payload.get("turn_id") == turn_id
+            continue
+        if not inside:
+            continue
+        if kind == "item_completed":
+            item_kind = (payload.get("item") or {}).get("type")
+            if item_kind and item_kind not in CODEX_NON_TOOL_ITEMS:
+                turn.tool_calls += 1
+                turn.edited |= item_kind == "FileChange"
+        elif kind == "function_call" and payload.get("name") == "spawn_agent":
+            turn.spawned = True
+    return turn
+
+
+def decide(harness: str, payload: dict) -> str | None:
+    if payload.get("stop_hook_active"):
+        return None
+    message = payload.get("last_assistant_message")
+    path = payload.get("transcript_path")
+    if not isinstance(message, str) or not isinstance(path, str) or not os.path.isfile(path):
+        return None
+    if CLOSING.search(message):
+        return None
+    if harness == "claude":
+        turn = claude_turn(path)
+    else:
+        turn_id = payload.get("turn_id")
+        turn = codex_turn(path, turn_id) if isinstance(turn_id, str) else None
+    why = turn.why() if turn else None
+    return REASON.format(why=why) if why else None
+
+
+def main() -> int:
+    try:
+        harness = sys.argv[1] if len(sys.argv) > 1 else ""
+        if harness not in {"claude", "codex"}:
+            return 0
+        payload = json.load(sys.stdin)
+        reason = decide(harness, payload) if isinstance(payload, dict) else None
+    except Exception:  # noqa: BLE001 - a hook must never fail the session
+        return 0
+    if reason:
+        print(json.dumps({"decision": "block", "reason": reason}))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

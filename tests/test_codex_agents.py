@@ -151,6 +151,10 @@ class AgentRoutingTest(unittest.TestCase):
                     role.get("claude_omit_claude_md", False),
                 )
                 self.assertIn("parent lead", body)
+                # Children refuse a handoff without the labels the lead must send.
+                self.assertIn('"Done means"', body)
+                self.assertIn('"Stop and ask if"', body)
+                self.assertEqual('"Owned files"' in body, ROLE_SANDBOX[role_name] == "workspace-write")
 
     def test_claude_settings_match_registry(self):
         settings = json.loads(CLAUDE_SETTINGS.read_text())
@@ -161,11 +165,21 @@ class AgentRoutingTest(unittest.TestCase):
                 runtime = self.registry["runtimes"][runtime_name]
                 default = runtime["tiers"][runtime["default_tier"]]["model"]
                 self.assertEqual(env["CLAUDE_CODE_SUBAGENT_MODEL"], default)
-                self.assertEqual(settings["model"], runtime["tiers"][runtime["lead_tier"]]["model"])
-                self.assertEqual(settings["effortLevel"], profile["claude_lead_effort"])
+                # The lead may name the alias or the model ID that alias is pinned to.
+                lead = runtime["tiers"][runtime["lead_tier"]]
+                self.assertIn(settings["model"], {lead["model"], lead["resolves_to"]})
+                # Per-model effort wins over the global effortLevel.
+                lead_effort = settings.get("modelSettings", {}).get(settings["model"], {}).get(
+                    "effortLevel", settings.get("effortLevel")
+                )
+                self.assertEqual(lead_effort, profile["claude_lead_effort"])
                 for tier in runtime["tiers"].values():
                     pin = f"ANTHROPIC_DEFAULT_{tier['model'].upper()}_MODEL"
                     self.assertEqual(env[pin], tier["resolves_to"], pin)
+                # Built-in agents request `haiku`; policy routes it to a registry tier instead.
+                haiku = runtime["tiers"][runtime["haiku_tier"]]["resolves_to"]
+                self.assertEqual(env["ANTHROPIC_DEFAULT_HAIKU_MODEL"], haiku)
+                self.assertNotIn("haiku", haiku)
         # A full-ID override would bypass the alias pins above.
         self.assertNotIn("ANTHROPIC_MODEL", env)
         # Same policy as Codex max_depth = 1: subagents cannot spawn descendants.
@@ -269,8 +283,8 @@ class RegistryValidationTest(unittest.TestCase):
             ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
             ('role_efforts = { explore = "high", review = "high" }', 'role_efforts = { missing = "high" }', "role_efforts.missing is invalid"),
             ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
-            ('resolves_to = "claude-sonnet-5"', 'resolves_to = "sonnet-5"', "needs a claude-\\* resolves_to"),
-            ('claude_lead_effort = "high"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
+            ('resolves_to = "claude-sonnet-5-5"', 'resolves_to = "sonnet-5-5"', "needs a claude-\\* resolves_to"),
+            ('claude_lead_effort = "medium"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
             ('provider = "neutral"', 'provider = "codex"', "must use the neutral provider"),
             ("\nopencode_go = true\n", '\nopencode_go = "yes"\n', "opencode_go must be a boolean"),
         )

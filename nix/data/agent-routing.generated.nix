@@ -19,7 +19,7 @@
         lead = {
           effort = "high";
           label = "sol";
-          model = "gpt-6-sol";
+          model = "gpt-6.1-sol";
           runtime = "office-codex";
           tier = "frontier";
                 };
@@ -28,7 +28,7 @@
       pi = {
         effort = "high";
         label = "sol";
-        model = "gpt-6-sol";
+        model = "gpt-6.1-sol";
         provider = "openai-codex";
         runtime = "office-codex";
         tier = "frontier";
@@ -46,8 +46,8 @@
                 };
         lead = {
           effort = "high";
-          label = "mimo";
-          model = "xiaomi/mimo-v2.6-pro";
+          label = "sol";
+          model = "openai/gpt-6.1-sol";
           runtime = "personal-home";
           tier = "frontier";
                 };
@@ -56,7 +56,7 @@
       pi = {
         effort = "high";
         label = "sol";
-        model = "gpt-6-sol";
+        model = "gpt-6.1-sol";
         provider = "openai-codex";
         runtime = "office-codex";
         tier = "frontier";
@@ -92,7 +92,7 @@
       tiers = {
         balanced = {
           label = "sol";
-          model = "gpt-6-sol";
+          model = "gpt-6.1-sol";
                 };
         economy = {
           label = "luna";
@@ -100,7 +100,7 @@
                 };
         frontier = {
           label = "sol";
-          model = "gpt-6-sol";
+          model = "gpt-6.1-sol";
                 };
             };
         };
@@ -111,16 +111,16 @@
       provider = "neutral";
       tiers = {
         balanced = {
-          label = "deepseek-pro";
-          model = "deepseek-v4-pro";
+          label = "deepseek";
+          model = "deepseek-v4.1-flash";
                 };
         economy = {
           label = "deepseek";
           model = "deepseek-v4.1-flash";
                 };
         frontier = {
-          label = "mimo";
-          model = "xiaomi/mimo-v2.6-pro";
+          label = "sol";
+          model = "openai/gpt-6.1-sol";
                 };
             };
         };

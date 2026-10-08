@@ -1,8 +1,10 @@
 {
   "env": {
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/dotfiles/config/claude/mods/agent-board",
+    "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-5-5",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "400000",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5-5",
     "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "true",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
@@ -105,6 +107,11 @@
           {
             "type": "command",
             "command": "afplay -v 15 /System/Library/Sounds/Hero.aiff"
+          },
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/files/agent-closeout-check\" claude",
+            "timeout": 10
           }
         ]
       }
@@ -146,6 +153,13 @@
       "  Turning to the Dark Side  "
     ]
   },
-  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    },
+    "claude-sonnet-5-5": {
+      "effortLevel": "medium"
+    }
+  },
   "showThinkingSummaries": true
 }

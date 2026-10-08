@@ -40,7 +40,7 @@ If the key is missing from the native agent, the user enrolls it once
 (interactive passphrase):
 
 ```bash
-SSH_AUTH_SOCK="$(launchctl getenv SSH_AUTH_SOCK)" ssh-add --apple-use-keychain -t 86400 ~/.ssh/codex-signing-${PROFILE}-ed25519
+SSH_AUTH_SOCK="$(launchctl getenv SSH_AUTH_SOCK)" ssh-add --apple-use-keychain ~/.ssh/codex-signing-${PROFILE}-ed25519
 ```
 
 Then sign through the native agent for that command only:
