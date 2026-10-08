@@ -245,5 +245,7 @@ codex-catalog:
     fi
     codex app-server daemon restart
 
+# Update, activate, clean up, then print the read-only agent scorecard (never fails sync).
 sync:
 	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew
+	-just agent-audit
