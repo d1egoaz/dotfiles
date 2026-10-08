@@ -168,7 +168,11 @@ class AgentRoutingTest(unittest.TestCase):
                 # The lead may name the alias or the model ID that alias is pinned to.
                 lead = runtime["tiers"][runtime["lead_tier"]]
                 self.assertIn(settings["model"], {lead["model"], lead["resolves_to"]})
-                self.assertEqual(settings["effortLevel"], profile["claude_lead_effort"])
+                # Per-model effort wins over the global effortLevel.
+                lead_effort = settings.get("modelSettings", {}).get(settings["model"], {}).get(
+                    "effortLevel", settings.get("effortLevel")
+                )
+                self.assertEqual(lead_effort, profile["claude_lead_effort"])
                 for tier in runtime["tiers"].values():
                     pin = f"ANTHROPIC_DEFAULT_{tier['model'].upper()}_MODEL"
                     self.assertEqual(env[pin], tier["resolves_to"], pin)
@@ -279,8 +283,8 @@ class RegistryValidationTest(unittest.TestCase):
             ('claude_runtime = "office_claude"', 'claude_runtime = "office_codex"', "must use the claude provider"),
             ('role_efforts = { explore = "high", review = "high" }', 'role_efforts = { missing = "high" }', "role_efforts.missing is invalid"),
             ("claude_omit_claude_md = true", 'claude_omit_claude_md = "yes"', "must be a boolean"),
-            ('resolves_to = "claude-sonnet-5"', 'resolves_to = "sonnet-5"', "needs a claude-\\* resolves_to"),
-            ('claude_lead_effort = "high"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
+            ('resolves_to = "claude-sonnet-5-5"', 'resolves_to = "sonnet-5-5"', "needs a claude-\\* resolves_to"),
+            ('claude_lead_effort = "medium"', 'claude_lead_effort = "loud"', "claude_lead_effort is invalid"),
             ('provider = "neutral"', 'provider = "codex"', "must use the neutral provider"),
             ("\nopencode_go = true\n", '\nopencode_go = "yes"\n', "opencode_go must be a boolean"),
         )
