@@ -29,6 +29,8 @@ Office repos stay on HTTPS; keep the credential helper unchanged.
 ## Publish
 
 - Re-fetch and confirm the base and exact head before pushing.
+- Before opening a PR or marking it ready, run one independent review pass
+  (`@spawn-subagent-review`) on the diff; fix or list its blockers in the PR.
 - Push only when authorized, naming the branch: `git push -u origin <branch>`.
 - Open new PRs as drafts. Body: problem, change, validation, risk, follow-up,
   and the `Assisted-by` footer.
