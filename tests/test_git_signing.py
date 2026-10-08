@@ -60,9 +60,10 @@ class GitSigningConfigurationTest(unittest.TestCase):
 
         self.assertIn("launchd.agents.codexSigningKeychainLoader", programs_nix)
         self.assertIn("enable = machineConfig.git_signing_use_keychain;", programs_nix)
-        self.assertIn('"--apple-load-keychain"', programs_nix)
-        self.assertIn('"-t"', programs_nix)
-        self.assertIn('"86400"', programs_nix)
+        self.assertIn('"--apple-use-keychain"', programs_nix)
+        self.assertNotIn('"--apple-load-keychain"', programs_nix)
+        self.assertNotIn('"-t"', programs_nix)
+        self.assertIn("RunAtLoad = true;", programs_nix)
         self.assertIn("signingPrivateKey", programs_nix)
         self.assertNotIn("ssh-agent -D", programs_nix)
         self.assertNotIn('"codex-signing-key"', XDG_NIX.read_text(encoding="utf-8"))

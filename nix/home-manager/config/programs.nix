@@ -17,9 +17,7 @@ in
     config = {
       ProgramArguments = [
         "/usr/bin/ssh-add"
-        "--apple-load-keychain"
-        "-t"
-        "86400"
+        "--apple-use-keychain"
         signingPrivateKey
       ];
       RunAtLoad = true;

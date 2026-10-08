@@ -113,9 +113,9 @@ Office uses `~/.ssh/codex-signing-office-ed25519.pub`; `personal-mbp` uses
 `~/.ssh/codex-signing-personal-ed25519.pub`. The `personal-mini` automation host
 uses `~/.ssh/r2claw2-bot.pub` with the R2-Claw2 bot identity. Private keys stay
 local. After activation, enroll a passphrase-protected key once with `ssh-add
---apple-use-keychain -t 86400 <private-key>`; macOS restores Keychain-backed SSH
-keys at login. The key must already exist and its public key must be registered
-in GitHub as a signing key. In the UI, paste the `.pub` file contents beginning
+--apple-use-keychain <private-key>`; the login loader restores the active
+profile key from Keychain without a fixed expiry. The key must already exist,
+and its public key must be registered in GitHub as a signing key. In the UI, paste the `.pub` file contents beginning
 with `ssh-ed25519`, not its `SHA256:` fingerprint or private key.
 
 Office `~/work` keeps HTTPS remotes and uses the GitHub credential helper. Do
