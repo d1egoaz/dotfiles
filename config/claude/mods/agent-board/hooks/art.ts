@@ -180,6 +180,76 @@ export const crab = (x: number, y: number, costume: string, isWalking: boolean, 
   return `<g transform="translate(${x},${y}) scale(${scale})" shape-rendering="crispEdges"><g class="c-${costume}${isWalking ? ' run' : ''}">${body}${group('la')}${group('lb')}</g></g>`
 }
 
+// --- terminal crabs: the same costumes as RGBA pixels for the terminal's Image
+// (kitty graphics in Ghostty or kitty; its `alt` text where the terminal cannot).
+
+const ART_W = 30
+const ART_H = 28
+const PX = 4 // nearest-neighbour upscale, so the terminal's own scaling stays crisp
+
+// `#rgb`, `#rrggbb` or `rgba(r,g,b,a)` as [r, g, b, a in 0..1]; null for anything else.
+const rgbaOf = (c: string): [number, number, number, number] | null => {
+  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c)?.[1]
+  if (hex) {
+    const n = parseInt(hex.length === 3 ? [...hex].map(d => d + d).join('') : hex, 16)
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 1]
+  }
+  const m = /^rgba\((\d+),(\d+),(\d+),([\d.]+)\)$/.exec(c.replace(/\s/g, ''))
+  return m ? [Number(m[1]), Number(m[2]), Number(m[3]), Math.min(1, Number(m[4]))] : null
+}
+
+const imageCache = new Map<string, string>()
+
+/** Width and height of `crabRgba`'s picture, in pixels. */
+export const CRAB_IMAGE = { width: ART_W * PX, height: ART_H * PX } as const
+
+// `raised` lifts one leg pair 1px; drawing `la` then `lb` on alternate frames walks.
+export const crabRgba = (costume: string, raised: 'la' | 'lb' | null): string => {
+  const cacheKey = `${costume}:${raised ?? ''}`
+  const hit = imageCache.get(cacheKey)
+  if (hit) return hit
+
+  // Paint at art scale with "over" compositing, as the SVG paints its rects in order.
+  const art = new Float32Array(ART_W * ART_H * 4)
+  const f: Fill = (x, y, w, h, c, cls) => {
+    const src = rgbaOf(c)
+    if (!src) return
+    const [r, g, b, a] = src
+    const lift = cls !== undefined && cls === raised ? 1 : 0
+    for (let dy = 0; dy < h; dy++)
+      for (let dx = 0; dx < w; dx++) {
+        const X = x + dx
+        const Y = y + dy - lift
+        if (X < 0 || X >= ART_W || Y < 0 || Y >= ART_H) continue
+        const i = (Y * ART_W + X) * 4
+        const da = art[i + 3] ?? 0
+        const oa = a + da * (1 - a)
+        if (oa === 0) continue
+        art[i] = (r * a + (art[i] ?? 0) * da * (1 - a)) / oa
+        art[i + 1] = (g * a + (art[i + 1] ?? 0) * da * (1 - a)) / oa
+        art[i + 2] = (b * a + (art[i + 2] ?? 0) * da * (1 - a)) / oa
+        art[i + 3] = oa
+      }
+  }
+  const draw = Object.hasOwn(COSTUMES, costume) ? COSTUMES[costume] : undefined
+  if (draw) draw(f, colorOf(costume))
+  else crabBody(f)
+
+  const out = new Uint8Array(CRAB_IMAGE.width * CRAB_IMAGE.height * 4)
+  for (let y = 0; y < CRAB_IMAGE.height; y++)
+    for (let x = 0; x < CRAB_IMAGE.width; x++) {
+      const s = (Math.floor(y / PX) * ART_W + Math.floor(x / PX)) * 4
+      const o = (y * CRAB_IMAGE.width + x) * 4
+      out[o] = Math.round(art[s] ?? 0)
+      out[o + 1] = Math.round(art[s + 1] ?? 0)
+      out[o + 2] = Math.round(art[s + 2] ?? 0)
+      out[o + 3] = Math.round((art[s + 3] ?? 0) * 255)
+    }
+  const rgba = out.toBase64()
+  imageCache.set(cacheKey, rgba)
+  return rgba
+}
+
 const BASE_CSS = `<style>
 .t{fill:#1f1f1f}.s{fill:#6b6b68}.k{fill:#ecebe8}.ln{stroke:#e4e4e1}.tile{fill:#f4f3f0}
 @media (prefers-color-scheme: dark){.t{fill:#ececec}.s{fill:#a8a8a4}.k{fill:#2c2c2b}.ln{stroke:#333331}.tile{fill:#262625}}
@@ -197,36 +267,77 @@ const statusMark = (x: number, y: number, status: RunStatus, color: string): str
   return `<path d="M${x - 4} ${y - 4}l8 8M${x + 4} ${y - 4}l-8 8" stroke="#D0453F" stroke-width="1.8" stroke-linecap="round"/>`
 }
 
-export const HEADER_H = 44
+// Tiles wrap: four a row where the pane is wide, three where it is narrow.
+const TILE_H = 40
+const TILE_GAP = 6
+const perRow = (W: number): number => (W >= 520 ? 4 : 3)
+
+export const headerHeight = (W: number, tiles: number): number =>
+  Math.ceil(tiles / perRow(W)) * (TILE_H + TILE_GAP) - TILE_GAP + 4
 
 export const headerSvg = (W: number, tiles: [string, string][]): string => {
-  const gap = 6
-  const tw = (W - gap * (tiles.length - 1)) / tiles.length
+  const n = perRow(W)
+  const tw = (W - TILE_GAP * (n - 1)) / n
   const body = tiles
-    .map(
-      ([k, v], i) => `<rect class="tile" x="${i * (tw + gap)}" width="${tw}" height="40" rx="8"/>
-<text class="s" x="${i * (tw + gap) + 9}" y="16" font-family="${FONT}" font-size="11">${xml(k)}</text>
-<text class="t" x="${i * (tw + gap) + 9}" y="33" font-family="${FONT}" font-size="15" font-weight="600" font-variant-numeric="tabular-nums">${xml(v)}</text>`,
-    )
+    .map(([k, v], i) => {
+      const x = (i % n) * (tw + TILE_GAP)
+      const y = Math.floor(i / n) * (TILE_H + TILE_GAP)
+      return `<rect class="tile" x="${x}" y="${y}" width="${tw}" height="${TILE_H}" rx="8"/>
+<text class="s" x="${x + 9}" y="${y + 16}" font-family="${FONT}" font-size="11">${xml(fitText(k, 11, tw - 14))}</text>
+<text class="t" x="${x + 9}" y="${y + 33}" font-family="${FONT}" font-size="15" font-weight="600" font-variant-numeric="tabular-nums">${xml(fitText(v, 15, tw - 14))}</text>`
+    })
     .join('')
-  return svg(W, HEADER_H, body)
+  return svg(W, headerHeight(W, tiles.length), body)
+}
+
+export const COMPACT_H = 32
+
+// Compact view: one crab per agent (running first, walking), then the totals on the right.
+export const compactSvg = (W: number, roles: { role: string; isRunning: boolean }[], totals: string): string => {
+  const room = Math.max(1, Math.floor((W - textWidth(totals, 12) - 24) / 34))
+  const shown = roles.slice(0, room)
+  const more = roles.length - shown.length
+  const crabs = shown
+    .map(({ role, isRunning }, i) => {
+      const costume = costumeOf(role)
+      const live = isRunning ? `<circle class="live" cx="${i * 34 + 31}" cy="4" r="3" fill="${colorOf(costume)}"/>` : ''
+      return `<g opacity="${isRunning ? 1 : 0.55}">${crab(i * 34, 2, costume, isRunning, 1)}</g>${live}`
+    })
+    .join('')
+  const plus = more ? `<text class="s" x="${shown.length * 34 + 4}" y="21" font-family="${FONT}" font-size="12">+${more}</text>` : ''
+  return svg(
+    W,
+    COMPACT_H,
+    `${crabs}${plus}<text class="s" x="${W}" y="21" text-anchor="end" font-family="${FONT}" font-size="12" font-variant-numeric="tabular-nums">${xml(totals)}</text>`,
+  )
 }
 
 export const ROW_H = 66
 
-// One subagent: its crab, what it does, who it is, and a bar of its share of the session's tokens.
-export const runSvg = (W: number, r: Run, role: string, line2: string, stats: string, share: number): string => {
+// One subagent: its crab, what it does, who it is and what it cost, and a bar of
+// its share of the session's tokens.
+export const runSvg = (
+  W: number,
+  r: Run,
+  role: string,
+  line2: string,
+  cost: string,
+  stats: string,
+  share: number,
+): string => {
   const costume = costumeOf(role)
   const color = colorOf(costume)
   const textW = W - 42 - 22
+  const costW = textWidth(cost, 11) + 10
   const fillW = Math.round(textW * Math.max(0, Math.min(1, share)))
   return svg(
     W,
     ROW_H,
     `${crab(0, 14, costume, r.status === 'running')}
 <text class="t" x="42" y="18" font-family="${FONT}" font-size="13" font-weight="600">${xml(fitText(r.description || r.type, 13, textW))}</text>
-<text x="42" y="34" font-family="${FONT}" font-size="11" fill="${color}">${xml(fitText(line2, 11, textW))}</text>
-<text class="s" x="${42 + textW}" y="49" text-anchor="end" font-family="${FONT}" font-size="11" font-variant-numeric="tabular-nums">${xml(stats)}</text>
+<text x="42" y="34" font-family="${FONT}" font-size="11" fill="${color}">${xml(fitText(line2, 11, textW - costW))}</text>
+<text class="t" x="${42 + textW}" y="34" text-anchor="end" font-family="${FONT}" font-size="11" font-weight="600" font-variant-numeric="tabular-nums">${xml(cost)}</text>
+<text class="s" x="${42 + textW}" y="49" text-anchor="end" font-family="${FONT}" font-size="11" font-variant-numeric="tabular-nums">${xml(fitText(stats, 11, textW))}</text>
 <rect class="k" x="42" y="55" width="${textW}" height="4" rx="2"/><rect x="42" y="55" width="${fillW}" height="4" rx="2" fill="${color}"/>
 ${statusMark(W - 8, 16, r.status, color)}
 <line class="ln" x1="0" y1="65.5" x2="${W}" y2="65.5"/>`,

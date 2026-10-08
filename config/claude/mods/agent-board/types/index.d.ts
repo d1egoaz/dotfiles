@@ -14,7 +14,22 @@ export type Run = {
   contextTokens: number
   /** Running total across the subagent's requests, as `tokensOf` counts them. */
   tokens: number
+  /** Cache reads across the subagent's requests: the cached prefix each request re-read. */
+  cacheReadTokens: number
+  /** Estimated USD across the subagent's requests (see hooks/models.ts). */
+  costUsd: number
+  /** Some request ran on a model the price table does not know: the cost is a floor. */
+  isCostPartial?: boolean
   steps: number
+  /** 2 and up when the same task was delegated again (a retry after review). */
+  round?: number
+}
+
+export type Panel = {
+  isCompact: boolean
+  isDoneCollapsed: boolean
+  /** The pane opens by itself once per session, on the first subagent. */
+  hasAutoOpened: boolean
 }
 
 declare module 'claude-code' {
@@ -22,6 +37,7 @@ declare module 'claude-code' {
     'agent-board': {
       runs: Run[]
       now: number
+      panel: Panel
     }
   }
 }
