@@ -62,10 +62,11 @@ Office-only endpoints, trust entries, hooks, approval rules, and skills must sta
 - Direct symlinks from `config/` update immediately. Nix-managed files require `just switch`.
 - Scripts in `bin/files/` must also be listed in `nix/home-manager/config/xdg.nix` when they should appear under `~/.local/bin`.
 - Git commits use the active profile's standard OpenSSH key. After activation,
-  enroll it once with `ssh-add --apple-use-keychain -t 86400
-  ~/.ssh/codex-signing-${PROFILE}-ed25519`; macOS restores all Keychain-backed
-  SSH keys at login. The machine signature is machine-key provenance, not
-  per-commit human review; retain `Assisted-by` for AI attribution. Office
+  enroll it once with `ssh-add --apple-use-keychain
+  ~/.ssh/codex-signing-${PROFILE}-ed25519`; the login loader restores that key
+  from Keychain without a fixed expiry. The machine signature is machine-key
+  provenance, not per-commit human review; retain `Assisted-by` for AI
+  attribution. Office
   `~/work` stays HTTPS through the GitHub credential helper. Do not expose or
   broaden its `repo`/`workflow` credential, or restore an HTTPS-to-SSH rewrite.
 - Use `$codex-config-maintenance` for Codex configuration, skill, hook, rule, and AI-instruction changes.
