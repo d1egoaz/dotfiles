@@ -51,6 +51,8 @@ test('a finished subagent shows on the board, control characters stripped', asyn
   expect(alts).toContain('Map auth flow: explore · Opus 5.5, done')
   const header = String(svgs[0]?.props.source)
   expect(header).toMatch(/>Agents<.*>1<.*>Running<.*>0</s)
+  // No ledger and no priced request: nothing to estimate.
+  expect(header).toMatch(/>Session cost<.*>—</s)
   expect(svgs.every(s => !String(s.props.source).includes('\u001b'))).toBe(true)
 })
 
@@ -138,12 +140,15 @@ test('tokens count new work, not cache reads; context counts everything', async 
   expect(await ui.find({ text: /1 agents · ≈\$0\.02 · 4k tokens · 40k cached/ })).toBeDefined()
 
   const desk = await $.ui.mount({ plugin: 'agent-board', surface: 'desktop', component: 'Pane', requestId: 'agent-board', props: PANE_PROPS })
-  const [header, row] = (await desk.findAll({ type: 'Svg' })).map(s => String(s.props.source))
+  const svgs = await desk.findAll({ type: 'Svg' })
+  const header = String(svgs[0]?.props.source)
+  const row = String(svgs.find(s => String(s.props.alt).startsWith('Map auth flow'))?.props.source)
   expect(header).toMatch(/>Cache reads<.*>40k</s)
   expect(row).toContain('4k tok · 40k cached')
   expect(row).toContain('≈$0.02')
   expect(header).toMatch(/>Agents cost<.*>≈\$0\.02</s)
-  expect(header).toMatch(/>Session cost<.*>—</s)
+  // No engine ledger here: the session tile falls back to our API-rate estimate.
+  expect(header).toMatch(/>Session cost<.*>≈\$0\.02</s)
 })
 
 const USAGE = { input_tokens: 1_000_000, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 }
@@ -224,4 +229,73 @@ test('a task delegated again is round 2; the session total is the engine figure'
   expect(alts.some(a => a.includes('round 3'))).toBe(false)
   const header = String((await ui.findAll({ type: 'Svg' }))[0]?.props.source)
   expect(header).toMatch(/>Session cost<.*>\$1\.23</s)
+})
+
+test('cost by model groups every request by model and effort, main and agents apart', async ($, on) => {
+  mock.clock(on)
+  on('agent.spawn', async () => ({ model: 'claude-sonnet-5-5', agentId: 'a9' }))
+  on('session.end', async ($, e) => ({ sessionId: e.sessionId }))
+  on('turn.step', async function* ($, e) {
+    return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'end_turn' as const, usage: { model: e.model, ...USAGE } }
+  })
+  const step = async (model: string, effort: 'medium' | 'xhigh' | number, agentId?: string) => {
+    const s = $.turn.step({ turnId: 't9', index: 0, model, effort, messageCount: 1, agentId })
+    for await (const _ of s);
+    return s.result
+  }
+
+  await $.agent.spawn(SPAWN)
+  await step('claude-opus-5-5', 'xhigh')
+  await step('claude-opus-5-5', 'xhigh')
+  await step('claude-opus-5-5', 32_000)
+  await step('claude-sonnet-5-5', 'medium', 'a9')
+  await step('claude-opus-5-5', 'xhigh', 'a9')
+
+  const term = await $.ui.mount({ plugin: 'agent-board', surface: 'terminal', component: 'Pane', requestId: 'agent-board', props: PANE_PROPS })
+  expect(await term.find({ text: /Opus 5\.5 · xhigh · ≈\$8\.00 \/ ≈\$4\.00 \/ ≈\$12\.0/ })).toBeDefined()
+  expect(await term.find({ text: /Opus 5\.5 · budget 32k · ≈\$4\.00 \/ — \/ ≈\$4\.00/ })).toBeDefined()
+  expect(await term.find({ text: /Sonnet 5\.5 · medium · — \/ ≈\$2\.00 \/ ≈\$2\.00/ })).toBeDefined()
+
+  const desk = await $.ui.mount({ plugin: 'agent-board', surface: 'desktop', component: 'Pane', requestId: 'agent-board', props: PANE_PROPS })
+  const table = (await desk.findAll({ type: 'Svg' })).find(s => String(s.props.alt).startsWith('Cost by model'))
+  // Dearest first.
+  expect(String(table?.props.alt)).toBe('Cost by model: Opus 5.5 · xhigh ≈$12.0, Opus 5.5 · budget 32k ≈$4.00, Sonnet 5.5 · medium ≈$2.00')
+  expect(String(table?.props.source)).toMatch(/>main<.*>agents<.*>total</s)
+
+  // A /clear starts the engine's cost over, and ours with it.
+  await term.unmount()
+  await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } })
+  const cleared = await $.ui.mount({ plugin: 'agent-board', surface: 'terminal', component: 'Pane', requestId: 'agent-board', props: PANE_PROPS })
+  expect(await cleared.find({ text: /Cost by model/ })).toBeUndefined()
+})
+
+test('the engine total beyond our rows shows as Not tracked, unless it is noise', async ($, on) => {
+  mock.clock(on)
+  let usd: number | undefined = 6.5
+  on('session.usage', async () => ({
+    value: { startedAt: 0, context: { window: 1_000_000 }, rateLimits: [], ...(usd === undefined ? {} : { cost: { usd } }) },
+  }))
+  on('turn.step', async function* ($, e) {
+    return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'end_turn' as const, usage: { model: e.model, ...USAGE } }
+  })
+  const s = $.turn.step({ turnId: 't10', index: 0, model: 'claude-opus-5-5', effort: 'high', messageCount: 1 })
+  for await (const _ of s);
+
+  const pane = async (text = /Not tracked/) => {
+    const ui = await $.ui.mount({ plugin: 'agent-board', surface: 'terminal', component: 'Pane', requestId: 'agent-board', props: PANE_PROPS })
+    const row = await ui.find({ text })
+    await ui.unmount()
+    return row
+  }
+  // $4.00 ours against the engine's $6.50: $2.50 we did not see.
+  usd = 6.5
+  expect(await pane(/Not tracked · ≈\$2\.50/)).toBeDefined()
+  // Under 2% of the session, or ours above the engine's: price noise, no row.
+  usd = 4.05
+  expect(await pane()).toBeUndefined()
+  usd = 3.9
+  expect(await pane()).toBeUndefined()
+  // No ledger, nothing to compare.
+  usd = undefined
+  expect(await pane()).toBeUndefined()
 })

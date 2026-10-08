@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, ModelUsage, Register } from 'claude-code'
 
-import type { Panel, Run, RunStatus } from '../types'
+import type { Panel, Run, RunStatus, Spend } from '../types'
 import {
   BAND_H,
   COMPACT_H,
@@ -9,12 +9,15 @@ import {
   ROW_H,
   bandSvg,
   compactSvg,
+  costTableHeight,
+  costTableSvg,
   costumeOf,
   crabRgba,
   headerHeight,
   headerSvg,
   runSvg,
 } from './art'
+import type { CostRow } from './art'
 import { costOf, fmtCost, windowOf } from './models'
 
 // A rewrite of johnnyvizz/claude-kit's savvy-progress with a smaller footprint:
@@ -29,6 +32,8 @@ const panel = atom({ plugin: 'agent-board', key: 'panel' } as const, {
   isDoneCollapsed: false,
   hasAutoOpened: false,
 } satisfies Panel)
+// Every priced request of the session, main loop included, by model, effort and where it ran.
+const spend = atom({ plugin: 'agent-board', key: 'spend' } as const, [])
 
 const PANE = 'agent-board'
 const MAX_RUNS = 100
@@ -96,6 +101,58 @@ const fmtTime = (ms: number): string => {
 const legsAt = (r: Run, at: number): 'la' | 'lb' | null =>
   r.status !== 'running' ? null : Math.floor(at / 1000) % 2 ? 'la' : 'lb'
 
+// A named effort as is; a raw thinking budget as `budget 32k`.
+const effortOf = (effort: unknown): string | undefined =>
+  typeof effort === 'string' ? clean(effort) : typeof effort === 'number' ? `budget ${fmtTokens(effort)}` : undefined
+
+const addSpend = (list: Spend[], model: string, effort: string | undefined, scope: Spend['scope'], u: ModelUsage): Spend[] => {
+  const cost = costOf(model, u)
+  const at = list.findIndex(s => s.model === model && s.effort === effort && s.scope === scope)
+  const prev = list[at] ?? { model, effort, scope, costUsd: 0, steps: 0 }
+  const next: Spend = {
+    ...prev,
+    costUsd: prev.costUsd + (cost ?? 0),
+    isCostPartial: prev.isCostPartial || cost === null,
+    steps: prev.steps + 1,
+  }
+  return at < 0 ? [...list, next] : list.map((s, i) => (i === at ? next : s))
+}
+
+// What the engine's total holds that our rows do not: requests from before this mod
+// loaded, calls outside turn.step, and any gap between our price table and the bill.
+// `null` hides the row: no ledger to compare with, or a gap under a cent and 2% of
+// the session, which is price-table noise. Ours above the engine's is that noise too
+// (a 5-minute cache write priced at the 1-hour rate), never a negative row.
+const untrackedOf = (sessionUsd: number | undefined, trackedUsd: number): number | null => {
+  if (sessionUsd === undefined) return null
+  const gap = sessionUsd - trackedUsd
+  return gap >= Math.max(0.01, sessionUsd * 0.02) ? gap : null
+}
+
+// One row per model and effort, main and agents side by side, dearest first; then the rest.
+const costRows = (list: Spend[], sessionUsd: number | undefined): CostRow[] => {
+  const groups = new Map<string, { label: string; main?: Spend; agents?: Spend }>()
+  for (const s of list) {
+    const key = `${s.model}\u0000${s.effort ?? ''}`
+    const g = groups.get(key) ?? { label: `${modelName(s.model)}${s.effort ? ` · ${s.effort}` : ''}` }
+    g[s.scope] = s
+    groups.set(key, g)
+  }
+  const cell = (s?: Spend) => (s ? showCost(s.costUsd, s.isCostPartial) : '—')
+  const sum = (g: { main?: Spend; agents?: Spend }) => (g.main?.costUsd ?? 0) + (g.agents?.costUsd ?? 0)
+  const rows: CostRow[] = [...groups.values()]
+    .sort((a, b) => sum(b) - sum(a))
+    .map(g => ({
+      label: g.label,
+      main: cell(g.main),
+      agents: cell(g.agents),
+      total: showCost(sum(g), g.main?.isCostPartial || g.agents?.isCostPartial),
+    }))
+  const rest = untrackedOf(sessionUsd, list.reduce((s, x) => s + x.costUsd, 0))
+  if (rest !== null) rows.push({ label: 'Not tracked', main: '', agents: '', total: showCost(rest), isMuted: true })
+  return rows
+}
+
 const elapsed = (r: Run, at: number): number => (r.endedAt ?? Math.max(at, r.startedAt)) - r.startedAt
 
 async function togglePane($: EngineInterface): Promise<boolean> {
@@ -129,6 +186,12 @@ export const register: Register = on => {
       })()
     })
     return started
+  })
+
+  // The engine's session cost starts over at a /clear (no session.start follows): so do ours.
+  on('session.end', async ($, e, next) => {
+    if (e.reason === 'clear') await update($, spend, () => [])
+    return next(e)
   })
 
   on('command.run', { command: 'agent-board' }, async $ => ({
@@ -167,14 +230,18 @@ export const register: Register = on => {
     return started
   })
 
-  // Each model request inside a subagent: live context and totals.
+  // Each model request: the session's spend by model; inside a subagent, its run too.
   on('turn.step', async function* ($, e, next) {
     const result = yield* next(e)
     const usage = result.usage
-    const id = e.agentId
-    if (!id || !usage) return result
+    if (!usage) return result
 
+    const id = e.agentId
     const model = clean(usage.model || e.model)
+    const effort = effortOf(e.effort)
+    await update($, spend, list => addSpend(list, model, effort, id ? 'agents' : 'main', usage))
+    if (!id) return result
+
     const cost = costOf(model, usage)
     await update($, runs, list =>
       list.map(r =>
@@ -183,7 +250,7 @@ export const register: Register = on => {
           : {
               ...r,
               model,
-              effort: typeof e.effort === 'string' ? e.effort : r.effort,
+              effort: effort ?? r.effort,
               // A resumed subagent runs again.
               status: 'running',
               endedAt: undefined,
@@ -204,6 +271,10 @@ export const register: Register = on => {
     if (id) {
       const at = await $.clock.now()
       const usage = e.usage
+      const unseen = (await read($, runs)).find(r => r.id === id && r.steps === 0)
+      if (unseen && usage) {
+        await update($, spend, list => addSpend(list, clean(usage.model || unseen.model), unseen.effort, 'agents', usage))
+      }
       await update($, runs, list =>
         list.map(r => {
           if (r.id !== id) return r
@@ -247,7 +318,16 @@ export const register: Register = on => {
       .usage()
       .then(u => u.cost?.usd)
       .catch(() => undefined)
-    const sessionCost = sessionUsd === undefined ? '—' : fmtCost(sessionUsd)
+    const spent = await read($, spend)
+    // No ledger on this host: what the requests we saw would cost at Anthropic API rates,
+    // marked `≈` like every other estimate; the engine's own figure is the bare `$`.
+    const sessionCost =
+      sessionUsd !== undefined
+        ? fmtCost(sessionUsd)
+        : spent.length
+          ? showCost(spent.reduce((s, x) => s + x.costUsd, 0), spent.some(x => x.isCostPartial))
+          : '—'
+    const byModel = costRows(spent, sessionUsd)
     const compactButton = (
       <Button
         key="compact"
@@ -322,6 +402,14 @@ export const register: Register = on => {
             width={W}
             height={headerHeight(W, tiles.length)}
           />
+          {byModel.length > 0 && (
+            <Svg
+              source={costTableSvg(W, byModel)}
+              alt={`Cost by model: ${byModel.map(r => `${r.label} ${r.total}`).join(', ')}`}
+              width={W}
+              height={costTableHeight(byModel.length)}
+            />
+          )}
           {compactButton}
           {list.length === 0 && <Text dimColor>No subagents yet.</Text>}
           {running.length > 0 && <Text dimColor>Running · {running.length}</Text>}
@@ -383,6 +471,18 @@ export const register: Register = on => {
         <Text dimColor>
           {list.length} agents · {showCost(cost, isCostPartial)} · {fmtTokens(total)} tokens · {fmtTokens(cached)} cached · session {sessionCost}
         </Text>
+        {byModel.length > 0 && (
+          <Box flexDirection="column" marginBottom={1}>
+            <Text dimColor>Cost by model · main / agents / total</Text>
+            {byModel.map(r => (
+              <Text key={`cost-${r.label}`} dimColor={r.isMuted} wrap="truncate-end">
+                {'  '}
+                {r.label} · {r.main ? `${r.main} / ${r.agents} / ` : ''}
+                {r.total}
+              </Text>
+            ))}
+          </Box>
+        )}
         {list.length === 0 && <Text dimColor>No subagents yet.</Text>}
         {running.length > 0 && <Text bold>Running · {running.length}</Text>}
         {running.map(row)}

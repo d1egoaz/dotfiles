@@ -25,6 +25,18 @@ export type Run = {
   round?: number
 }
 
+/** One (model, effort, where) bucket of the session's requests, priced by hooks/models.ts. */
+export type Spend = {
+  model: string
+  effort?: string
+  /** `main`: the main loop's requests; `agents`: any subagent's. */
+  scope: 'main' | 'agents'
+  costUsd: number
+  /** Some request ran on a model the price table does not know: the cost is a floor. */
+  isCostPartial?: boolean
+  steps: number
+}
+
 export type Panel = {
   isCompact: boolean
   isDoneCollapsed: boolean
@@ -38,6 +50,7 @@ declare module 'claude-code' {
       runs: Run[]
       now: number
       panel: Panel
+      spend: Spend[]
     }
   }
 }
