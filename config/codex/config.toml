@@ -7,8 +7,8 @@ allow_login_shell = false
 approval_policy = "on-request"
 # Route eligible interactive approval requests through automatic review.
 approvals_reviewer = "auto_review"
-file_opener = "cursor"
-model_context_window = 1050000
+# file_opener = "cursor"
+# model_context_window = 1050000
 model_verbosity = "medium"
 # Notification sounds are handled by this helper; hook sounds live in hooks.json.
 notify = [
