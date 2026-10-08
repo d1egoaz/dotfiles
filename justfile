@@ -89,13 +89,18 @@ agent-routing-check:
     PYTHONDONTWRITEBYTECODE=1 python3 bin/files/agent-routing-generate --check
 
 # Check nix flake
-check: fmt agent-routing-check check-skills audit-test codex-agents-test codex-context-test codex-current-model-test codex-model-usage-test git-signing-test
+check: fmt agent-routing-check check-skills audit-test agent-closeout-test codex-agents-test codex-context-test codex-current-model-test codex-model-usage-test git-signing-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
 [private]
 audit-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_dotfiles_audit.py
+
+# Test the shared Stop hook and agent audit with synthetic transcripts only.
+[private]
+agent-closeout-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_agent_closeout.py
 
 # Test exact current-thread Codex model detection without reading real sessions.
 [private]
@@ -174,6 +179,10 @@ dry-run:
 audit:
     ./bin/files/dotfiles-audit summary
 
+# Score routing, handoffs, closeouts, and task tracking from local transcripts; metadata only.
+agent-audit *args:
+    python3 -I bin/files/agent-audit {{ args }}
+
 # Report model-visible skill and AGENTS sizes without printing prompt content.
 codex-context-audit:
     ./bin/files/codex-context-audit
@@ -236,5 +245,7 @@ codex-catalog:
     fi
     codex app-server daemon restart
 
+# Update, activate, clean up, then print the read-only agent scorecard (never fails sync).
 sync:
 	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew
+	-just agent-audit

@@ -1,0 +1,371 @@
+#!/usr/bin/env -S python3 -I
+"""Read-only scorecard for the multi-agent setup across Claude Code and Codex.
+
+Reads local transcripts (~/.claude/projects and ~/.codex/sessions) and prints
+metadata only: routed-role model/effort against the registry, spawn depth,
+children that stopped early, skill and task-tool usage, handoff labels,
+closing-format compliance, and Codex fork_turns. It never prints message,
+prompt, or tool content; content is only matched against fixed patterns.
+"""
+
+from __future__ import annotations
+
+import argparse
+import collections
+import datetime as dt
+import getpass
+import glob
+import importlib.machinery
+import importlib.util
+import json
+import os
+import pathlib
+import re
+import sys
+import tomllib
+
+HERE = pathlib.Path(__file__).resolve().parent
+REGISTRY = HERE.parents[1] / "nix/data/agent-routing.toml"
+CLAUDE_ROOT = pathlib.Path.home() / ".claude/projects"
+CODEX_ROOT = pathlib.Path.home() / ".codex/sessions"
+
+SKILL_PATH = re.compile(r"skills/(?:[^/\s\"']+/)*?([A-Za-z0-9_.-]+)/SKILL\.md")
+SLASH = re.compile(r"<command-name>/?([^<]+)</command-name>")
+LABELS = {"done": "Done means", "stop": "Stop and ask if", "owned": "Owned files"}
+CLAUDE_TASK_TOOLS = {"TodoWrite", "TaskCreate", "TaskUpdate", "TaskList"}
+CODEX_TASK_TOOLS = {"update_plan"}
+
+
+def load_closeout():
+    # One definition of "substantial" and the closing pattern, shared with the Stop hook.
+    sys.dont_write_bytecode = True  # keep bin/files free of __pycache__
+    loader = importlib.machinery.SourceFileLoader("agent_closeout_check", str(HERE / "agent-closeout-check"))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+closeout = load_closeout()
+
+
+def records(path: str):
+    try:
+        with open(path, "rb") as handle:
+            for line in handle:
+                try:
+                    record = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(record, dict):
+                    yield record
+    except OSError:
+        return
+
+
+def recent(path: str, since: float) -> bool:
+    try:
+        return os.path.getmtime(path) >= since
+    except OSError:
+        return False
+
+
+class Expectations:
+    """Expected (model, effort) per role for one profile, from the registry."""
+
+    def __init__(self, profile_name: str) -> None:
+        with REGISTRY.open("rb") as handle:
+            registry = tomllib.load(handle)
+        profile = registry["profiles"][profile_name]
+        self.roles = registry["roles"]
+        efforts = profile.get("role_efforts", {})
+        self.effort = {name: efforts.get(name, role["effort"]) for name, role in self.roles.items()}
+        self.claude: dict[str, tuple[str, str | None]] = {}
+        claude_runtime = registry["runtimes"].get(profile.get("claude_runtime") or "")
+        if claude_runtime:
+            tiers = claude_runtime["tiers"]
+            for name, role in self.roles.items():
+                self.claude[f"spawn-subagent-{name}"] = (tiers[role["tier"]]["resolves_to"], self.effort[name])
+            self.claude["general-purpose"] = (tiers[claude_runtime["default_tier"]]["resolves_to"], None)
+        codex_tiers = registry["runtimes"][profile["codex_runtime"]]["tiers"]
+        self.codex: dict[str, tuple[str, str | None]] = {
+            f"spawn-subagent-{name}": (codex_tiers[role["tier"]]["model"], self.effort[name])
+            for name, role in self.roles.items()
+        }
+        self.codex["default"] = (
+            codex_tiers[profile["codex_default_tier"]]["model"],
+            profile["codex_default_effort"],
+        )
+
+
+def matches(served: tuple, expected: tuple | None) -> bool | None:
+    if expected is None:
+        return None
+    model, effort = expected
+    return served[0] == model and (effort is None or served[1] == effort)
+
+
+def handoff_labels(text: str, role: str) -> bool:
+    needed = ["done", "stop"] + (["owned"] if role.endswith("implement") else [])
+    lowered = text.lower()
+    return all(LABELS[key].lower() in lowered for key in needed)
+
+
+class Scorecard:
+    def __init__(self) -> None:
+        self.leads = 0
+        self.routes: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+        self.mismatches: collections.Counter = collections.Counter()
+        self.depth: collections.Counter = collections.Counter()
+        self.endings: collections.Counter = collections.Counter()
+        self.skills: collections.Counter = collections.Counter()
+        self.task_tools: collections.Counter = collections.Counter()
+        self.task_tool_leads = 0
+        self.spawning_leads = 0
+        self.handoffs = collections.Counter()
+        self.substantial = 0
+        self.closed = 0
+        self.fork_turns: collections.Counter = collections.Counter()
+        self.haiku: collections.Counter = collections.Counter()
+
+    def route(self, role: str, served: tuple, expected: tuple | None) -> None:
+        verdict = matches(served, expected)
+        bucket = self.routes[role]
+        bucket["runs"] += 1
+        bucket[{True: "ok", False: "mismatch", None: "unrouted"}[verdict]] += 1
+        if verdict is False:
+            self.mismatches[(role, served, expected)] += 1
+
+    def closing(self, substantial: bool, text: str | None) -> None:
+        if substantial:
+            self.substantial += 1
+            self.closed += bool(text and closeout.CLOSING.search(text))
+
+
+# Claude Code
+
+
+def claude_lead(path: str, card: Scorecard) -> None:
+    turn = closeout.Turn()
+    last_text: str | None = None
+    used_task_tool = spawned = False
+    for record in records(path):
+        if closeout.is_claude_prompt(record):
+            card.closing(bool(turn.why()), last_text)
+            content = (record.get("message") or {}).get("content")
+            if isinstance(content, str):
+                card.skills.update(f"/{name}" for name in SLASH.findall(content))
+            turn, last_text = closeout.Turn(), None
+            continue
+        if record.get("type") != "assistant" or record.get("isSidechain"):
+            continue
+        for block in (record.get("message") or {}).get("content") or []:
+            if not isinstance(block, dict):
+                continue
+            if block.get("type") == "text" and str(block.get("text", "")).strip():
+                last_text = block["text"]
+            if block.get("type") != "tool_use":
+                continue
+            name = block.get("name")
+            tool_input = block.get("input") if isinstance(block.get("input"), dict) else {}
+            turn.tool_calls += 1
+            turn.edited |= name in closeout.CLAUDE_EDIT_TOOLS
+            if name == "Skill":
+                card.skills[str(tool_input.get("skill"))] += 1
+            if name in CLAUDE_TASK_TOOLS:
+                card.task_tools[f"claude:{name}"] += 1
+                used_task_tool = True
+            if name in closeout.CLAUDE_SPAWN_TOOLS:
+                turn.spawned = spawned = True
+                role = tool_input.get("subagent_type") or "general-purpose"
+                card.handoffs[(role, handoff_labels(str(tool_input.get("prompt", "")), role))] += 1
+    card.closing(bool(turn.why()), last_text)
+    card.leads += 1
+    card.task_tool_leads += used_task_tool
+    card.spawning_leads += spawned
+
+
+def claude_child(path: str, card: Scorecard, expect: Expectations) -> None:
+    meta_path = path[: -len(".jsonl")] + ".meta.json"
+    try:
+        meta = json.loads(pathlib.Path(meta_path).read_text())
+    except (OSError, ValueError):
+        meta = {}
+    served = collections.Counter()
+    last_stop = None
+    for record in records(path):
+        message = record.get("message") or {}
+        if record.get("type") == "assistant" and str(message.get("model", "")).startswith("claude"):
+            served[(message["model"], record.get("effort"))] += 1
+            last_stop = message.get("stop_reason")
+    if not served:
+        return
+    role = meta.get("agentType") or "general-purpose"
+    model_effort = served.most_common(1)[0][0]
+    card.route(f"claude:{role}", model_effort, expect.claude.get(role))
+    if "haiku" in model_effort[0]:
+        card.haiku[role] += 1
+    card.depth[f"claude:{meta.get('spawnDepth', '?')}"] += 1
+    card.endings[f"claude:{'pending tool_use' if last_stop == 'tool_use' else 'finished'}"] += 1
+
+
+def audit_claude(card: Scorecard, expect: Expectations, since: float) -> None:
+    for path in glob.glob(str(CLAUDE_ROOT / "*" / "*.jsonl")):
+        if recent(path, since):
+            claude_lead(path, card)
+    for path in glob.glob(str(CLAUDE_ROOT / "**" / "subagents" / "*.jsonl"), recursive=True):
+        if recent(path, since):
+            claude_child(path, card, expect)
+
+
+# Codex
+
+
+def codex_effort(payload: dict) -> str | None:
+    settings = (payload.get("collaboration_mode") or {}).get("settings") or {}
+    return payload.get("effort") or settings.get("reasoning_effort")
+
+
+def audit_codex_thread(path: str, card: Scorecard, expect: Expectations) -> None:
+    thread_records = list(records(path))
+    if not thread_records or thread_records[0].get("type") != "session_meta":
+        return
+    meta = thread_records[0].get("payload") or {}
+    thread_id = meta.get("id")
+    source = meta.get("source")
+    spawn = (source.get("subagent") or {}) if isinstance(source, dict) else {}
+    is_child = isinstance(source, dict) and "subagent" in source
+    turn_routes: dict[str, tuple] = {}
+    served_turns: set[str] = set()
+    last_turn_state = None
+    used_task_tool = spawned = False
+    turn: closeout.Turn | None = None
+    last_text: str | None = None
+    for record in thread_records:
+        payload = record.get("payload") or {}
+        kind = payload.get("type")
+        if record.get("type") == "turn_context":
+            turn_routes[payload.get("turn_id")] = (payload.get("model"), codex_effort(payload))
+        elif record.get("type") == "token_usage_record":
+            # Forked children copy the parent's turn_context, so trust only turns
+            # this thread was billed for.
+            if payload.get("thread_id") == thread_id:
+                served_turns.add(payload.get("turn_id"))
+        elif kind == "task_started":
+            if turn is not None and not is_child:
+                card.closing(bool(turn.why()), last_text)
+            turn, last_text, last_turn_state = closeout.Turn(), None, "no task_complete"
+        elif kind == "task_complete":
+            last_turn_state = "finished"
+            last_text = payload.get("last_agent_message")
+        elif kind == "turn_aborted":
+            last_turn_state = "turn_aborted"
+        elif kind == "item_completed" and turn is not None:
+            item_kind = (payload.get("item") or {}).get("type")
+            if item_kind and item_kind not in closeout.CODEX_NON_TOOL_ITEMS:
+                turn.tool_calls += 1
+                turn.edited |= item_kind == "FileChange"
+            if item_kind == "Plan" and not is_child:
+                card.task_tools["codex:Plan item"] += 1
+                used_task_tool = True
+        elif kind in {"function_call", "custom_tool_call"} and not is_child:
+            # A forked child replays the parent's calls, so only leads count here.
+            name = payload.get("name")
+            arguments = payload.get("arguments") or payload.get("input") or ""
+            text = arguments if isinstance(arguments, str) else json.dumps(arguments)
+            card.skills.update(SKILL_PATH.findall(text))
+            if name in CODEX_TASK_TOOLS or "tools.update_plan" in text:
+                card.task_tools["codex:update_plan"] += 1
+                used_task_tool = True
+            if name == "spawn_agent":
+                spawned = True
+                if turn is not None:
+                    turn.spawned = True
+                try:
+                    spawn_args = json.loads(text)
+                except ValueError:
+                    spawn_args = {}
+                role = str(spawn_args.get("agent_type") or "default")
+                card.fork_turns[str(spawn_args.get("fork_turns", "<absent>"))] += 1
+                card.handoffs[(role, handoff_labels(str(spawn_args.get("message", "")), role))] += 1
+    if is_child:
+        thread_spawn = spawn.get("thread_spawn") or {}
+        if not thread_spawn:
+            return  # internal subagents (for example, approval reviewers) are not routed
+        role = meta.get("agent_role") or thread_spawn.get("agent_role") or "default"
+        served = collections.Counter(turn_routes[t] for t in served_turns if t in turn_routes)
+        if served:
+            card.route(f"codex:{role}", served.most_common(1)[0][0], expect.codex.get(role))
+        card.depth[f"codex:{thread_spawn.get('depth', '?')}"] += 1
+        card.endings[f"codex:{last_turn_state or 'never started'}"] += 1
+        return
+    if turn is not None:
+        card.closing(bool(turn.why()), last_text)
+    card.leads += 1
+    card.task_tool_leads += used_task_tool
+    card.spawning_leads += spawned
+
+
+def audit_codex(card: Scorecard, expect: Expectations, since: float) -> None:
+    for path in glob.glob(str(CODEX_ROOT / "**" / "*.jsonl"), recursive=True):
+        if recent(path, since):
+            audit_codex_thread(path, card, expect)
+
+
+# Report
+
+
+def pct(part: int, whole: int) -> str:
+    return f"{part}/{whole}" + (f" ({100 * part // whole}%)" if whole else "")
+
+
+def report(name: str, card: Scorecard) -> None:
+    print(f"\n## {name}: {card.leads} lead sessions")
+    print("\nRouted children (served model/effort vs registry):")
+    if not card.routes:
+        print("  none")
+    for role, counts in sorted(card.routes.items()):
+        print(f"  {role:40} runs={counts['runs']:3} ok={counts['ok']:3} mismatch={counts['mismatch']:3} unrouted={counts['unrouted']:3}")
+    for (role, served, expected), count in card.mismatches.most_common(8):
+        print(f"    mismatch x{count}: {role} served={served[0]}/{served[1]} expected={expected[0]}/{expected[1] or 'any'}")
+    if card.haiku:
+        print(f"  Haiku-served children by role: {dict(card.haiku)} (policy: never)")
+    print(f"\nSpawn depth: {dict(sorted(card.depth.items())) or 'none'}  (expected: 1)")
+    print(f"Child endings: {dict(sorted(card.endings.items())) or 'none'}")
+    labelled = collections.Counter()
+    for (role, ok), count in card.handoffs.items():
+        labelled[ok] += count
+    print(f"Handoffs with required labels: {pct(labelled[True], labelled[True] + labelled[False])}")
+    if card.fork_turns:
+        print(f"Codex fork_turns: {dict(card.fork_turns)}  (expected: none)")
+    print(f"Leads that spawned: {card.spawning_leads}; leads using a task tool: {card.task_tool_leads}")
+    print(f"Task tools: {dict(card.task_tools) or 'none'}")
+    print(f"Closing sections on substantial turns: {pct(card.closed, card.substantial)}")
+    top = ", ".join(f"{name}={count}" for name, count in card.skills.most_common(12))
+    print(f"Skill invocations: {top or 'none'}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--days", type=float, default=7, help="look back this many days (default 7)")
+    parser.add_argument(
+        "--profile",
+        choices=("office", "personal"),
+        default="office" if getpass.getuser() == "diego.alvarez" else "personal",
+        help="registry profile for expected routes",
+    )
+    args = parser.parse_args()
+    since = (dt.datetime.now() - dt.timedelta(days=args.days)).timestamp()
+    expect = Expectations(args.profile)
+    print(f"# Agent setup audit: profile={args.profile}, last {args.days:g} days (metadata only)")
+    claude, codex = Scorecard(), Scorecard()
+    audit_claude(claude, expect, since)
+    audit_codex(codex, expect, since)
+    report("Claude Code", claude)
+    report("Codex", codex)
+    print("\nRoutes are compared with the current registry; runs before a registry change can show as mismatches.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

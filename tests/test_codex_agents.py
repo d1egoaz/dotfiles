@@ -151,6 +151,10 @@ class AgentRoutingTest(unittest.TestCase):
                     role.get("claude_omit_claude_md", False),
                 )
                 self.assertIn("parent lead", body)
+                # Children refuse a handoff without the labels the lead must send.
+                self.assertIn('"Done means"', body)
+                self.assertIn('"Stop and ask if"', body)
+                self.assertEqual('"Owned files"' in body, ROLE_SANDBOX[role_name] == "workspace-write")
 
     def test_claude_settings_match_registry(self):
         settings = json.loads(CLAUDE_SETTINGS.read_text())
@@ -161,11 +165,17 @@ class AgentRoutingTest(unittest.TestCase):
                 runtime = self.registry["runtimes"][runtime_name]
                 default = runtime["tiers"][runtime["default_tier"]]["model"]
                 self.assertEqual(env["CLAUDE_CODE_SUBAGENT_MODEL"], default)
-                self.assertEqual(settings["model"], runtime["tiers"][runtime["lead_tier"]]["model"])
+                # The lead may name the alias or the model ID that alias is pinned to.
+                lead = runtime["tiers"][runtime["lead_tier"]]
+                self.assertIn(settings["model"], {lead["model"], lead["resolves_to"]})
                 self.assertEqual(settings["effortLevel"], profile["claude_lead_effort"])
                 for tier in runtime["tiers"].values():
                     pin = f"ANTHROPIC_DEFAULT_{tier['model'].upper()}_MODEL"
                     self.assertEqual(env[pin], tier["resolves_to"], pin)
+                # Built-in agents request `haiku`; policy routes it to a registry tier instead.
+                haiku = runtime["tiers"][runtime["haiku_tier"]]["resolves_to"]
+                self.assertEqual(env["ANTHROPIC_DEFAULT_HAIKU_MODEL"], haiku)
+                self.assertNotIn("haiku", haiku)
         # A full-ID override would bypass the alias pins above.
         self.assertNotIn("ANTHROPIC_MODEL", env)
         # Same policy as Codex max_depth = 1: subagents cannot spawn descendants.
