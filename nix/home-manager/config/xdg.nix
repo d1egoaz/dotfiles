@@ -140,6 +140,8 @@ in
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
         ",,"
+        "agent-audit"
+        "agent-closeout-check"
         "agent-routing-generate"
         "codex-context-audit"
         "codex-current-model"
