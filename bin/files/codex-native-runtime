@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+"""Register the installed Codex app's native MCP runtime through its config API."""
+
+import argparse
+import json
+import pathlib
+import selectors
+import subprocess
+import time
+import tomllib
+
+
+def runtime_config(home, resources):
+    root = resources / "cua_node"
+    modules = root / "lib/node_modules"
+    manifest = resources / "plugins/openai-bundled/plugins/chrome/.codex-plugin/plugin.json"
+    version = json.loads(manifest.read_text())["version"]
+    browser = home / "plugins/cache/openai-bundled/chrome" / version / "scripts/browser-service.mjs"
+    sky = modules / "@oai/sky/Codex Computer Use.app"
+    browser_settings = home / "browser/config.toml"
+    cdp_enabled = browser_settings.exists() and tomllib.loads(browser_settings.read_text()).get("full_cdp_access_enabled") is True
+    for path in (root / "bin/node_repl", root / "bin/node", browser, sky):
+        if not path.exists():
+            raise RuntimeError(f"Installed native runtime component missing: {path}")
+    return {
+        "command": str(root / "bin/node_repl"),
+        "startup_timeout_sec": 120,
+        "env": {
+            "CODEX_HOME": str(home),
+            "CODEX_CLI_PATH": "/opt/homebrew/bin/codex",
+            "NODE_REPL_NODE_PATH": str(root / "bin/node"),
+            "NODE_REPL_NODE_MODULE_DIRS": str(modules),
+            "NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS": "1000",
+            "NODE_REPL_TRUSTED_CODE_PATHS": ":".join([str(home), str(modules)]),
+            "NODE_REPL_TRUSTED_SERVICES": json.dumps({"browser": str(browser), "sky": "@oai/sky/service"}),
+            "BROWSER_USE_AVAILABLE_BACKENDS": "chrome,cdp" if cdp_enabled else "chrome",
+            "SKY_CUA_SERVICE_PATH": str(sky),
+        },
+    }
+
+
+def register(config):
+    process = subprocess.Popen(
+        ["/opt/homebrew/bin/codex", "app-server", "--stdio"],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+        text=True, bufsize=1,
+    )
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ)
+    request_id = 0
+
+    def call(method, params):
+        nonlocal request_id
+        request_id += 1
+        process.stdin.write(json.dumps({"id": request_id, "method": method, "params": params}) + "\n")
+        process.stdin.flush()
+        deadline = time.monotonic() + 30
+        while time.monotonic() < deadline:
+            if not selector.select(1):
+                continue
+            line = process.stdout.readline()
+            if not line:
+                raise RuntimeError("App Server exited during config operation")
+            response = json.loads(line)
+            if response.get("id") != request_id:
+                continue
+            if "error" in response:
+                raise RuntimeError(str(response["error"]))
+            return response["result"]
+        raise RuntimeError(f"Unconfirmed config operation: {method}; do not blindly retry")
+
+    try:
+        call("initialize", {"clientInfo": {"name": "codex-native-runtime", "version": "1"}, "capabilities": {"experimentalApi": True}})
+        process.stdin.write('{"method":"initialized"}\n')
+        process.stdin.flush()
+        before = call("config/read", {"includeLayers": True})
+        # Do not replace app-managed policy overrides, tokens, or pipe settings.
+        # The repair is needed only when the managed profile erased registration.
+        existing = before["config"].get("mcp_servers", {}).get("node_repl")
+        if existing and "/Applications/Codex.app/Contents/Resources/plugins/" in existing.get("env", {}).get("NODE_REPL_TRUSTED_SERVICES", ""):
+            edits = [{"keyPath": "mcp_servers.node_repl.env.NODE_REPL_TRUSTED_SERVICES", "mergeStrategy": "replace", "value": config["env"]["NODE_REPL_TRUSTED_SERVICES"]}]
+        elif existing and existing.get("command") == config["command"] and existing.get("env", {}).get("BROWSER_USE_AVAILABLE_BACKENDS") == "chrome" and config["env"]["BROWSER_USE_AVAILABLE_BACKENDS"] == "chrome,cdp":
+            edits = [{"keyPath": "mcp_servers.node_repl.env.BROWSER_USE_AVAILABLE_BACKENDS", "mergeStrategy": "replace", "value": "chrome,cdp"}]
+        elif existing:
+            print("Native runtime registration already present; unchanged")
+            return
+        else:
+            edits = [{"keyPath": "mcp_servers.node_repl", "mergeStrategy": "replace", "value": config}]
+        origin = before.get("origins", {}).get("approval_policy", {})
+        user_layer = next((layer for layer in before.get("layers", []) if layer.get("name", {}).get("type") == "user"), None)
+        version = user_layer.get("version") if user_layer else origin.get("version")
+        if not version:
+            raise RuntimeError("Cannot identify user config version; refusing unversioned write")
+        call("config/batchWrite", {"edits": edits, "expectedVersion": version, "filePath": None, "reloadUserConfig": True})
+        after = call("config/read", {"includeLayers": False})
+        for edit in edits:
+            actual = after["config"]
+            for key in edit["keyPath"].split("."):
+                actual = actual.get(key, {}) if isinstance(actual, dict) else None
+            if not contains_config(actual, edit["value"]):
+                raise RuntimeError("Runtime registration write returned, but verification differs")
+        print("Native runtime registration written and verified")
+    finally:
+        selector.close()
+        process.terminate()
+        try:
+            process.wait(5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+
+
+def contains_config(actual, expected):
+    """Readback can normalize defaults; verify every requested value, not extras."""
+    if isinstance(expected, dict):
+        return isinstance(actual, dict) and all(
+            key in actual and contains_config(actual[key], value)
+            for key, value in expected.items()
+        )
+    return actual == expected
+
+
+def runtime_explicitly_disabled(profile):
+    plugins = profile.get("plugins", {})
+    return any(
+        plugins.get(name, {}).get("enabled") is False
+        for name in ("chrome@openai-bundled", "browser@openai-bundled", "computer-use@openai-bundled")
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--apply", action="store_true", help="Apply the bounded native MCP registration")
+    parser.add_argument("--skip-unavailable", action="store_true", help="For activation: report missing app/cache prerequisites without aborting the activation")
+    args = parser.parse_args()
+    home = pathlib.Path.home() / ".codex"
+    profile = home / "config.toml"
+    if profile.exists() and runtime_explicitly_disabled(tomllib.loads(profile.read_text())):
+        print("Native runtime explicitly disabled in profile; registration unchanged")
+        return
+    try:
+        config = runtime_config(home, pathlib.Path("/Applications/Codex.app/Contents/Resources"))
+    except (OSError, RuntimeError) as error:
+        if not args.skip_unavailable:
+            raise
+        print(f"Native runtime unavailable; registration unchanged. Complete Codex app/plugin setup: {error}")
+        return
+    if args.apply:
+        register(config)
+    else:
+        print(json.dumps(config, indent=2))
+
+
+if __name__ == "__main__":
+    main()
