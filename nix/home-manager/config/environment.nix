@@ -30,6 +30,9 @@
     # User-writable npm global installs for Nix-managed Node.js
     NPM_CONFIG_PREFIX = "$HOME/.local/share/npm-global";
 
+    # T3 Code
+    T3CODE_TELEMETRY_ENABLED = "false";
+
     # Kubernetes
     KUBECONFIG = "$HOME/.kube/config";
 
