@@ -27,6 +27,11 @@ CLAUDE_SPAWN_TOOLS = {"Agent", "Task"}
 # Codex `item_completed` kinds that are not tool calls.
 CODEX_NON_TOOL_ITEMS = {"AgentMessage", "ContextCompaction", "Reasoning", "SubAgentActivity", "UserMessage"}
 
+# Matrix relay room turns run with a room workspace here as their cwd. Their
+# replies are chat messages to the owner, where a forced "Blocked on me" section
+# turns into an invented approval request.
+RELAY_ROOM_WORKSPACES = os.path.join(os.path.expanduser("~"), "code", "codex-relay-data", "workspaces") + os.sep
+
 CLOSING = re.compile(r"(?m)^[ \t>]*(?:#{1,6}[ \t]*)?(?:\*\*|__)?(?:Blocked on me|Changed|Found)\b")
 
 REASON = (
@@ -97,11 +102,15 @@ def claude_turn(path: str) -> Turn:
 
 
 def codex_turn(path: str, turn_id: str) -> Turn | None:
-    """Return the turn's activity, or None for a subagent thread."""
+    """Return the turn's activity, or None for a subagent thread or a relay room turn."""
     with open(path, "rb") as transcript:
         meta = json.loads(transcript.readline() or b"{}")
-    source = (meta.get("payload") or {}).get("source")
+    session = meta.get("payload") or {}
+    source = session.get("source")
     if isinstance(source, dict) and "subagent" in source:
+        return None
+    cwd = session.get("cwd")
+    if isinstance(cwd, str) and (cwd.rstrip(os.sep) + os.sep).startswith(RELAY_ROOM_WORKSPACES):
         return None
     turn = Turn()
     inside = False

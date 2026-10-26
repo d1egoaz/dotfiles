@@ -37,8 +37,8 @@ def codex_items(turn_id: str, *kinds: str) -> list[dict]:
     ]
 
 
-def codex_thread(source, turns: list[tuple[str, list[dict]]]) -> list[dict]:
-    records = [{"type": "session_meta", "payload": {"id": "thread-1", "source": source}}]
+def codex_thread(source, turns: list[tuple[str, list[dict]]], cwd: str = "/tmp/project") -> list[dict]:
+    records = [{"type": "session_meta", "payload": {"id": "thread-1", "source": source, "cwd": cwd}}]
     for turn_id, body in turns:
         records.append({"type": "event_msg", "payload": {"type": "task_started", "turn_id": turn_id}})
         records.extend(body)
@@ -113,6 +113,19 @@ class CloseoutHookTest(unittest.TestCase):
         child = codex_thread({"subagent": {"thread_spawn": {"depth": 1}}}, turns)
         path = write_jsonl(self.root / "child.jsonl", child)
         self.assert_quiet(self.run_hook("codex", {**base, "transcript_path": str(path), "turn_id": "t1"}))
+
+    def test_codex_relay_room_turns_stay_quiet(self):
+        rooms = pathlib.Path.home() / "code/codex-relay-data/workspaces"
+        turns = [("t1", codex_items("t1", "FileChange"))]
+        base = {"last_assistant_message": "ok", "stop_hook_active": False, "turn_id": "t1"}
+        for cwd, quiet in ((rooms / "main", True), (rooms, True), (rooms.with_name("workspaces-old") / "main", False)):
+            with self.subTest(cwd=cwd):
+                path = write_jsonl(self.root / "room.jsonl", codex_thread("vscode", turns, cwd=str(cwd)))
+                result = self.run_hook("codex", {**base, "transcript_path": str(path)})
+                if quiet:
+                    self.assert_quiet(result)
+                else:
+                    self.assert_blocks(result, "edited files")
 
     def test_bad_input_exits_quietly(self):
         for harness, payload in (("claude", "not json"), ("claude", "[]"), ("other", "{}"), ("codex", "{}")):
