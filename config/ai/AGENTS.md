@@ -25,7 +25,7 @@
 ## Working Style
 
 - Identify what done means (for example, "the tests pass") and verify it before claiming completion.
-- When a step doesn't need my input, keep going, and put status notes in the same message as the next action. Stop and ask only when you can't continue without me or before a gated action below.
+- When a step doesn't need my input, keep going, and put status notes in the same message as the next action. Stop and ask only when you can't continue without me or before a gated action below that I have not authorized.
 - On substantial runs, keep a task list and update it as items finish: Codex `update_plan`, Claude `TodoWrite` when available, else an untracked checklist at `~/.cache/agent-checklists/<repo>-<branch>.md`.
 - When a follow-up changes diagnosis or read-only work into implementation, reassess coordination and checkout isolation before new writes. Preserve existing work and move feature edits into the required worktree.
 
@@ -38,7 +38,7 @@
 
 ## Non-Negotiable Gates
 
-- Production is read-only unless the user authorizes the exact mutation. A request to inspect, prepare, validate, commit, or publish does not authorize merge, apply, deployment, or live changes.
+- Production is read-only unless the user authorizes the exact mutation. A request to inspect, prepare, validate, commit, or publish does not authorize merge, apply, deployment, or live changes. A given authorization stands: once the user names merge, deploy, apply, or ship for a piece of work, it covers that work and its follow-up fixes for the session. Do not ask again; ask only before a destructive step or work outside the grant.
 - Confirm before destructive changes (deleting data, force-pushing, changes outside the repository) and resolve exact targets first. For destructive, escalated, forced, or live-state commands, state Why, What, Expect, and Risk.
 - Never bypass or disable commit signing or change the signer. Use `$signed-pr-publish` for commits and publication.
 - AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Use the exact model the host reports (Codex: `$HOME/dotfiles/bin/files/codex-current-model`); stop if it remains unknown.

@@ -35,4 +35,6 @@ Office repos stay on HTTPS; keep the credential helper unchanged.
 - Re-fetch and verify draft state, head, files, checks, and footer.
 
 Do not infer push, PR, ready-for-review, merge, deployment, or production
-authority from another lifecycle step.
+authority from another lifecycle step. Authority the user already gave in this
+session stands: carry every step they named for that work and its follow-ups
+without asking again. When merge is authorized, mark the draft ready and merge.
