@@ -182,6 +182,10 @@ if.app-id = "com.anthropic.claudefordesktop"
 run = "move-node-to-workspace AI"
 
 [[on-window-detected]]
+if.app-id = "com.t3tools.t3code"
+run = "move-node-to-workspace AI"
+
+[[on-window-detected]]
 if.app-name-regex-substring = "ChatGPT"
 run = "move-node-to-workspace AI"
 
@@ -191,6 +195,10 @@ run = "move-node-to-workspace AI"
 
 [[on-window-detected]]
 if.app-name-regex-substring = "Claude"
+run = "move-node-to-workspace AI"
+
+[[on-window-detected]]
+if.app-name-regex-substring = "T3 Code"
 run = "move-node-to-workspace AI"
 
 [[on-window-detected]]
