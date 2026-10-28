@@ -53,8 +53,8 @@ Targets:
 
 Send these labels verbatim:
 
-- Task and context: objective, the approved plan slice, decisions already
-  made, repository paths, and what the lead already knows.
+- Task and context: the user's goal in their words, the approved plan slice,
+  decisions already made, repository paths, and what the lead already knows.
 - Owned files: the exact write set; everything else is read-only.
 - Depends on: inputs and their current state.
 - Done means: acceptance criteria and the exact commands to run.

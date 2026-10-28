@@ -8,7 +8,16 @@
 | Transient child failure | 1 retry of the same contract | escalate |
 | Repair per finding | 2 fix-and-revalidate cycles | escalate |
 
-Never raise effort or switch model as a retry.
+Never raise effort or switch model as a retry. Before a second repair cycle
+on the same finding, write down the premise both fixes share and test it
+directly; another fix on an untested premise is not a repair.
+
+## Questions
+
+Before asking the user which approach to take, check whether running
+something answers it: a probe, a test, or a measurement. If it does, have a
+worker run it and let the result decide. Ask only for product, preference,
+or authorization calls.
 
 ## Failures
 

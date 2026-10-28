@@ -34,7 +34,9 @@ Use `high` for validators with security, data, or migration risk.
 
 ## Lifecycle
 
-1. Define the objective, success criteria, write sets, and dependencies.
+1. Restate the user's goal in their words, then define success criteria,
+   write sets, and dependencies. Open every brief and the final report with
+   that goal.
 2. Substantial only: run [council.md](references/council.md) to an agreed or
    escalated plan.
 3. Delegate one worker per disjoint write set; launch independent sets in one
@@ -48,7 +50,8 @@ Use `high` for validators with security, data, or migration risk.
 For delegated work, keep one table in
 `~/.cache/agent-checklists/<repo>-<branch>.md` so it outlives the session:
 key, seat, route, title, taskId, threadId, write set, state, evidence. Title
-every child `[cos:<key>] <seat> <slice>`; titles are the recovery index.
+every child `[cos:<key>] <seat> <slice>`; titles are the recovery index. A
+lifecycle step you skip stays in the ledger as `skip: <reason>`.
 
 ## Limits
 
