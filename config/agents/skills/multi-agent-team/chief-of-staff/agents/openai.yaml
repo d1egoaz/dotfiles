@@ -1,0 +1,7 @@
+interface:
+  display_name: "Chief of Staff"
+  short_description: "Plan, council, delegate, and dual-validate T3 work"
+  default_prompt: "Use $chief-of-staff to size the work, run the council for substantial changes, delegate execution to Codex workers, and validate with both providers. Keep one-step work in the lead."
+
+policy:
+  allow_implicit_invocation: false

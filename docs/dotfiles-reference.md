@@ -33,11 +33,10 @@ The profile and machine configuration are passed to Home Manager modules as `spe
 
 ## Codex Configuration And Hooks
 
-Shared Codex configuration lives in `config/codex/config.toml`. The canonical
-model routing registry is `nix/data/agent-routing.toml`; the generator renders
-profile-specific roles, runtime defaults, and the capability reference. Home
-Manager prepends the selected lead route and injects the selected fallback route
-before appending one profile fragment:
+Shared Codex configuration lives in `config/codex/config.toml`. Codex lead and
+default subagent models per profile live inline in
+`nix/home-manager/config/xdg.nix`. Home Manager composes these defaults with the
+shared config and one profile fragment:
 
 - Office uses ignored `config/codex/profiles/work.local.toml` when present and otherwise warns before using shared config only.
 - Personal uses tracked `config/codex/profiles/personal.toml` and treats it as required.
@@ -52,35 +51,9 @@ The catalog entry also carries the tool plumbing Codex uses for that model, and 
 
 Because a model entry carries no provider, the gateway decides the route from the model id: the OpenCode Go ids are listed in its `DEFAULT_OPENCODE_MODELS` and everything else is passed through to ChatGPT with the caller's own credentials. That keeps one picker for both providers, so no switching or config reload is needed.
 
-Generated native roles under `config/codex/agents/generated/<profile>/` define
-each role's resolved model, reasoning effort, sandbox, and lead-mediated
-communication. Change the registry and run `just agent-routing-generate`; do not
-edit generated files. Changing these files does not retier a running task.
-
-Four roles are generated: `spawn-subagent-gather` (read-only),
-`spawn-subagent-explore` (read-only), `spawn-subagent-implement`
-(workspace-write), and `spawn-subagent-review` (read-only). Each role's tier
-and default effort live in the registry; profiles may override effort without
-renaming the role. An unnamed spawn uses the profile default route
-(`default_subagent_model`) and inherits the parent sandbox. Deep judgment
-stays with the frontier lead. Use the roles only for native subagents, not
-visible tasks; spawned instance names retain the resolved model label.
-
-Role keys are the launcher suffix: `roles.gather` generates
-`spawn-subagent-gather`. The top-level `efforts` list is a routing policy, not
-a claim about every provider's full supported range.
-
-Profiles with a `claude_runtime` also get the same four roles as Claude Code
-subagents in `config/claude/agents/generated/<profile>/*.md`, linked file by
-file into `~/.claude/agents/` so hand-made agents stay untouched. Each file sets
-the Claude `model` alias and `effort` from the role's tier and effort; read-only
-roles deny `Edit`, `Write`, and `NotebookEdit`, and the explorer skips user and
-project `CLAUDE.md` (`omitClaudeMd`). `config/claude/settings.json` sets the
-unnamed-spawn model (`CLAUDE_CODE_SUBAGENT_MODEL`, the runtime's default tier),
-turns off nesting (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`), and denies the
-built-in `Explore` agent; the tests keep those values in step with the registry.
-The generated `docs/agent-routing-matrix.md` lists every profile, harness, and
-role route.
+Set Claude models in `config/claude/settings.json`. Office T3 orchestration uses
+the explicit seats in `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md`.
+Invoke that skill only at the office.
 
 Shared hooks live in `config/codex/hooks.json`; office may select ignored `config/codex/hooks.work.local.json`. Keep hooks out of `config.toml` because Codex loads both representations when both exist.
 
@@ -177,8 +150,6 @@ nix/
   flake-modules/darwin.nix
   lib/mkDarwinSystem.nix
   profiles/{base,office,personal,machines}.nix
-  data/agent-routing.toml
-  data/agent-routing.generated.nix
   home-manager/
     default.nix
     packages.nix

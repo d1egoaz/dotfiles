@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Tests for the shared Stop hook and the agent audit, with synthetic transcripts only."""
+"""Tests for the shared Stop hook, with synthetic transcripts only."""
 
 import json
-import os
 import pathlib
 import subprocess
 import tempfile
@@ -11,7 +10,6 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 HOOK = REPO_ROOT / "bin/files/agent-closeout-check"
-AUDIT = REPO_ROOT / "bin/files/agent-audit"
 SECRET = "private-transcript-content"
 
 
@@ -134,69 +132,10 @@ class CloseoutHookTest(unittest.TestCase):
         self.assert_quiet(self.run_hook("claude", {"transcript_path": "/nonexistent", "last_assistant_message": "x"}))
 
 
-class AgentAuditTest(unittest.TestCase):
-    def test_scorecard_prints_metadata_but_never_content(self):
-        with tempfile.TemporaryDirectory() as home:
-            project = pathlib.Path(home) / ".claude/projects/demo"
-            spawn = {
-                "type": "tool_use",
-                "id": "a1",
-                "name": "Agent",
-                "input": {"subagent_type": "spawn-subagent-gather", "prompt": f"{SECRET} Done means: x. Stop and ask if: y."},
-            }
-            write_jsonl(
-                project / "s1.jsonl",
-                [
-                    claude_prompt(),
-                    {"type": "assistant", "message": {"content": [spawn, {"type": "tool_use", "name": "Edit", "input": {}}]}},
-                    {"type": "assistant", "message": {"content": [{"type": "text", "text": f"{SECRET}\n\n**Changed**"}]}},
-                ],
-            )
-            child = project / "s1/subagents/agent-1.jsonl"
-            write_jsonl(
-                child,
-                [{"type": "assistant", "message": {"model": "claude-x", "stop_reason": "tool_use", "content": SECRET}}],
-            )
-            (child.parent / "agent-1.meta.json").write_text(json.dumps({"agentType": "spawn-subagent-gather", "spawnDepth": 1}))
-            codex = pathlib.Path(home) / ".codex/sessions/2026/10/08/rollout.jsonl"
-            fork = json.dumps({"agent_type": "spawn-subagent-review", "fork_turns": "all", "message": SECRET})
-            write_jsonl(
-                codex,
-                codex_thread(
-                    "vscode",
-                    [
-                        (
-                            "t1",
-                            [
-                                {"type": "response_item", "payload": {"type": "function_call", "name": "spawn_agent", "arguments": fork}},
-                                {"type": "event_msg", "payload": {"type": "task_complete", "last_agent_message": SECRET}},
-                            ],
-                        )
-                    ],
-                ),
-            )
-            env = {**os.environ, "HOME": home}
-            result = subprocess.run(
-                ["python3", "-I", str(AUDIT), "--profile", "office", "--days", "1"],
-                capture_output=True,
-                text=True,
-                env=env,
-                timeout=30,
-            )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertNotIn(SECRET, result.stdout + result.stderr)
-        self.assertIn("## Claude Code: 1 lead sessions", result.stdout)
-        self.assertIn("claude:spawn-subagent-gather", result.stdout)
-        self.assertIn("'claude:pending tool_use': 1", result.stdout)
-        self.assertIn("Handoffs with required labels: 1/1", result.stdout)
-        self.assertIn("Closing sections on substantial turns: 1/1", result.stdout)
-        self.assertIn("Codex fork_turns: {'all': 1}", result.stdout)
-
-
 class WiringTest(unittest.TestCase):
     def test_scripts_are_executable_linked_and_hooked(self):
         xdg = (REPO_ROOT / "nix/home-manager/config/xdg.nix").read_text()
-        for script in (HOOK, AUDIT):
+        for script in (HOOK,):
             self.assertTrue(script.stat().st_mode & 0o100, script.name)
             self.assertIn(f'"{script.name}"', xdg)
         claude = json.loads((REPO_ROOT / "config/claude/settings.json").read_text())
@@ -205,7 +144,6 @@ class WiringTest(unittest.TestCase):
             commands = [hook["command"] for group in config["hooks"]["Stop"] for hook in group["hooks"]]
             self.assertTrue(any(c.endswith(f"agent-closeout-check\" {harness}") for c in commands), harness)
             self.assertTrue(any("afplay" in c for c in commands), harness)
-        self.assertIn("agent-audit *args:", (REPO_ROOT / "justfile").read_text())
 
 
 if __name__ == "__main__":

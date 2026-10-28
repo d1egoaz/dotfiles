@@ -9,13 +9,34 @@
 }:
 
 let
-  routing = import ../../data/agent-routing.generated.nix;
-  profileRouting = routing.profiles.${profile};
-  codex = profileRouting.codex // {
+  codexProfiles = {
+    office = {
+      lead = {
+        model = "gpt-6.1-sol";
+        effort = "high";
+      };
+      default = {
+        model = "gpt-6-luna";
+        effort = "xhigh";
+      };
+      opencode_go = false;
+    };
+    personal = {
+      lead = {
+        model = "openai/gpt-6.1-sol";
+        effort = "high";
+      };
+      default = {
+        model = "deepseek-v4.1-flash";
+        effort = "xhigh";
+      };
+      opencode_go = true;
+    };
+  };
+  codex = codexProfiles.${profile} // {
     profile = if profile == "office" then "work" else "personal";
     profileFile = if profile == "office" then "work.local.toml" else "personal.toml";
   };
-  codexAgentsDir = "${config.home.homeDirectory}/dotfiles/config/codex/agents/generated/${codex.agent_directory}";
 in
 {
   # ============================================================================
@@ -36,7 +57,6 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/claude/settings.json";
     ".codex/AGENTS.md".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/ai/AGENTS.md";
-    ".codex/agents".source = config.lib.file.mkOutOfStoreSymlink codexAgentsDir;
     ".codex/rules/10-shared.rules".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/rules/10-shared.rules";
     ".codex/themes".source =
@@ -106,12 +126,12 @@ in
     let
       skillsDir = "${config.home.homeDirectory}/dotfiles/config/agents/skills/multi-agent-team";
       claudeSkills = [
+        "chief-of-staff"
         "codex-config-maintenance"
         "git-history-orientation"
         "git-worktree-flow"
         "scratch-log"
         "signed-pr-publish"
-        "task-coordinator"
         "tfctl"
       ];
     in
@@ -122,30 +142,13 @@ in
       }) claudeSkills
     )
   )
-  // lib.optionalAttrs (profileRouting ? claude) (
-    # Generated Claude Code subagents. Per-file links keep any hand-made agents
-    # in ~/.claude/agents untouched; the list comes from the routing registry.
-    let
-      claudeAgentsDir = "${config.home.homeDirectory}/dotfiles/config/claude/agents/generated/${profileRouting.claude.agent_directory}";
-    in
-    lib.listToAttrs (
-      map (name: {
-        name = ".claude/agents/${name}.md";
-        value.source = config.lib.file.mkOutOfStoreSymlink "${claudeAgentsDir}/${name}.md";
-      }) profileRouting.claude.agents
-    )
-  )
   // (
     let
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
-        ",,"
-        "agent-audit"
         "agent-closeout-check"
-        "agent-routing-generate"
         "codex-context-audit"
         "codex-current-model"
-        "codex-model-usage"
         "dotfiles-audit"
         "dotfiles-local-state"
         "ediff"
@@ -295,7 +298,7 @@ in
       fi
       printf '\n'
       # The shared source owns the [agents] table and its limits. Inject the
-      # registry-selected fallback route into that table without duplicating
+      # profile-selected fallback model into that table without duplicating
       # provider-specific model IDs in the hand-edited TOML.
       #
       # notify is not set on personal-mini: it only plays a sound, and there is

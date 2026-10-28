@@ -890,7 +890,6 @@ def collect_symlinks(
         (home / ".claude", 4),
         (home / ".codex", 4),
         (home / ".agents", 5),
-        (home / ".pi", 4),
     )
     records: dict[str, dict[str, str]] = {}
     for root, depth in roots:

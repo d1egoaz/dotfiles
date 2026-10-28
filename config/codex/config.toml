@@ -1,5 +1,5 @@
 # Shared cross-laptop defaults, safe to sync between personal and work laptops.
-# Home Manager injects the registry-selected lead and default route fields and
+# Home Manager injects the per-profile lead and default subagent model fields and
 # composes this with config/codex/profiles/<profile>.toml into ~/.codex/config.toml.
 allow_login_shell = false
 

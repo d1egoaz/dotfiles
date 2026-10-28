@@ -32,9 +32,9 @@
 ## Delegation
 
 - Keep one-step work and tightly coupled judgment in the lead. Delegate for parallel independent reads, context isolation, a bounded write set, or independent review, with the fewest agents that fit.
-- Hand off in one message: task and context, `Done means:`, `Stop and ask if:`, `Owned files:` (required for writers), and authorization. Routed subagents reply with a blocker when a required label is missing. Keep write sets disjoint.
+- Hand off in one message: task and context, `Done means:`, `Stop and ask if:`, `Owned files:` (required for writers), and authorization. Keep write sets disjoint.
 - Check each child's evidence before accepting it; a success claim is not completion. Report verified, blocked, and unverified outcomes separately.
-- Use `$task-coordinator` for multiple independent outcomes or ongoing external follow-up; it owns roles, tiers, and naming.
+- Use `$chief-of-staff` for substantial multi-agent work in T3 Code at the office.
 
 ## Non-Negotiable Gates
 

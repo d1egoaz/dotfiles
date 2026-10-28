@@ -5,8 +5,8 @@ permissions:
   contents: read
 
 jobs:
-  # Python tests and generated-file checks; no Nix and no secrets, so these
-  # results stay visible even when the Nix job cannot reach the fonts repo.
+  # Python tests; no Nix and no secrets, so these results stay visible even
+  # when the Nix job cannot reach the fonts repo.
   tests:
     runs-on: macos-latest
     env:
@@ -16,8 +16,6 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
-      - name: Agent routing outputs are current
-        run: python3 bin/files/agent-routing-generate --check
       - name: Python tests
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
 

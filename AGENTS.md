@@ -21,11 +21,11 @@ Run commands from the repository root with `just`.
 
 ## Profiles
 
-| Username | Host | Profile | Codex lead route |
+| Username | Host | Profile | Codex lead source |
 |---|---|---|---|
-| `diego.alvarez` | `office-mbp` | office | frontier / high |
-| `diego` | `personal-mbp` | personal | frontier / high (OpenCode Go) |
-| `diegoalvarez` | `personal-mini` | personal | frontier / high (OpenCode Go) |
+| `diego.alvarez` | `office-mbp` | office | `nix/home-manager/config/xdg.nix` (office) |
+| `diego` | `personal-mbp` | personal | `nix/home-manager/config/xdg.nix` (personal) |
+| `diegoalvarez` | `personal-mini` | personal | `nix/home-manager/config/xdg.nix` (personal) |
 
 Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profile settings live in `nix/profiles/`, and host-specific applications live in `Brewfile.<host>`.
 
@@ -38,10 +38,9 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Personal Codex profile | `config/codex/profiles/personal.toml` |
 | Office Codex profile | ignored `config/codex/profiles/work.local.toml` |
 | OpenCode Go picker models | `bin/files/codex-opencode-go-catalog` |
-| Agent routing registry | `nix/data/agent-routing.toml` |
-| Generated Codex roles | `config/codex/agents/generated/<profile>/*.toml` |
-| Generated Claude agents | `config/claude/agents/generated/<profile>/*.md` |
-| Agent routing matrix (generated) | `docs/agent-routing-matrix.md` |
+| Codex lead and default subagent per profile | `nix/home-manager/config/xdg.nix` |
+| Claude models | `config/claude/settings.json` |
+| Office T3 seats | `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md` |
 | Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
 | Shared skills | `config/agents/skills/multi-agent-team/` |
 | Office-only skills | ignored `config/agents/skills/work.local/` |
@@ -49,7 +48,7 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Home Manager links and generated Codex config | `nix/home-manager/config/xdg.nix` |
 | Encrypted local state | `secrets/local-state.yaml` |
 
-Edit source files, not generated targets. Home Manager composes `~/.codex/config.toml` from the shared config, the selected profile fragment, and the registry-selected lead route. Do not overwrite that generated file directly.
+Edit source files, not generated targets. Home Manager composes `~/.codex/config.toml` from the shared config, the selected profile fragment, and the inline profile model defaults. Do not overwrite that generated file directly.
 
 Office-only endpoints, trust entries, hooks, approval rules, and skills must stay out of tracked shared files. `just switch` restores missing local state but does not encrypt edits. Use `just local-state-sync` when ignored office state changes.
 

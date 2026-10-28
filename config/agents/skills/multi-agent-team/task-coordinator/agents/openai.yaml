@@ -1,7 +1,0 @@
-interface:
-  display_name: "Task Coordinator"
-  short_description: "Fan out independent work and verify each result"
-  default_prompt: "Use $task-coordinator to split independent outcomes, fan out reads, give each write set one owner, check every child's evidence, and finish with one outcome table. Keep one-step or tightly coupled judgment in the lead."
-
-policy:
-  allow_implicit_invocation: true

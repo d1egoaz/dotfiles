@@ -80,16 +80,8 @@ fix-nix-cache:
 fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
-# Render the provider-neutral agent routes from the canonical TOML registry.
-agent-routing-generate:
-    PYTHONDONTWRITEBYTECODE=1 python3 bin/files/agent-routing-generate
-
-# Verify routing outputs without changing the worktree.
-agent-routing-check:
-    PYTHONDONTWRITEBYTECODE=1 python3 bin/files/agent-routing-generate --check
-
 # Check nix flake
-check: fmt agent-routing-check check-skills audit-test agent-closeout-test codex-agents-test codex-context-test codex-current-model-test codex-model-usage-test git-signing-test
+check: fmt check-skills audit-test agent-closeout-test codex-agents-test codex-context-test codex-current-model-test git-signing-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -107,17 +99,12 @@ agent-closeout-test:
 codex-current-model-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_current_model.py
 
-# Test routing audit counts and scheduled summaries with synthetic metadata only.
-[private]
-codex-model-usage-test:
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_model_usage.py
-
 # Verify profile-specific Git signing, local verification, and HTTPS publication wiring.
 [private]
 git-signing-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_git_signing.py
 
-# Verify hardcoded Codex subagent roles, routing defaults, and Home Manager wiring.
+# Verify independent Codex and Claude subagent spawn-depth limits.
 [private]
 codex-agents-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_agents.py
@@ -178,10 +165,6 @@ dry-run:
 # Compare this Mac with the selected dotfiles profile without changing either
 audit:
     ./bin/files/dotfiles-audit summary
-
-# Score routing, handoffs, closeouts, and task tracking from local transcripts; metadata only.
-agent-audit *args:
-    python3 -I bin/files/agent-audit {{ args }}
 
 # Report model-visible skill and AGENTS sizes without printing prompt content.
 codex-context-audit:
@@ -245,7 +228,6 @@ codex-catalog:
     fi
     codex app-server daemon restart
 
-# Update, activate, clean up, then print the read-only agent scorecard (never fails sync).
+# Update, activate, and clean up.
 sync:
 	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew
-	-just agent-audit

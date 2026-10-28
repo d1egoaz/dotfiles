@@ -72,21 +72,11 @@ just --list        # See all available commands
 
 ** Model routing
 
-Model tiers and profile mappings live in =nix/data/agent-routing.toml=, the only
-hand-edited routing source. After changing it, regenerate the Codex roles and
-runtime data, then verify there is no generated drift:
-
-#+begin_src bash
-just agent-routing-generate
-just agent-routing-check
-#+end_src
-
-The native-subagent roles are =@spawn-subagent-explore= (read-only),
-=@spawn-subagent-implement= (workspace-write), and =@spawn-subagent-review=
-(read-only). The registry sets each role's tier and effort, so names stay
-stable when routing changes; spawned instance names include the resolved model
-label for historical traceability. These are native subagent types, not visible
-child tasks.
+Set Codex lead and default subagent models per profile inline in
+=nix/home-manager/config/xdg.nix=. Set Claude models in
+=config/claude/settings.json=. Office T3 orchestration seats live directly in
+=config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md=; invoke that
+skill only at the office.
 
 * How It Works
 

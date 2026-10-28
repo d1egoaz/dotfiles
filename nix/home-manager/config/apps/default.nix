@@ -9,7 +9,6 @@
     ./fzf.nix
     ./gh.nix
     ./git.nix
-    ./pi.nix
     ./starship.nix
     ./vim.nix
     ./zsh.nix
