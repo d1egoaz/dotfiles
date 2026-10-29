@@ -71,6 +71,7 @@ Handle terminal state before anything else: when `state` is `MERGED`,
 finish as in Merge; when it is `CLOSED`, `unwatch_pull_request` and report.
 Only an open PR goes on. If `autoMergeRequest` is set, turn it off with
 `gh pr merge <PR URL> --disable-auto` and confirm it is off.
+Use `gh pr merge` command using a Codex subtask, as codex is configured to do additional reviews.
 
 Items are review threads, review bodies (including changes requested), and
 top-level comments, from bots (`__typename: Bot`) and people alike. The
