@@ -5,6 +5,10 @@ approved interface, data model, dependency, or module boundary. During a
 substantial run, a routine choice the approved plan does not cover may get
 one peer pass and no further rounds. Routine work has no council.
 
+For a new interface, both plans start from usage: two or three real call
+sites first, then types derived from them. When the types and the call
+sites disagree, change the types, not the usage.
+
 ## Protocol
 
 1. Lead plan: write the lead's plan into the ledger before contacting the

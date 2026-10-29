@@ -32,6 +32,9 @@ Targets:
   requirements can reject an inherited `full-access`. Omit it when the lead
   runs a narrower mode; T3 rejects a child mode above the parent's. Claude
   children omit `runtimeMode` unless the user asks for a supervised child.
+- With several near-identical slices, pilot one through worker, checks, and
+  validation, then launch the rest in one message, so a flawed contract
+  costs one run.
 - Never steer or re-check with `t3_thread_send`. Each new round is a new
   `delegate_task` carrying the brief, prior findings, and objections.
 
@@ -57,12 +60,14 @@ Send these labels verbatim:
   decisions already made, repository paths, and what the lead already knows.
 - Owned files: the exact write set; everything else is read-only.
 - Depends on: inputs and their current state.
-- Done means: acceptance criteria and the exact commands to run.
+- Done means: the observable result, the exact commands with their expected
+  output, and where the proof will live. If you cannot name the evidence,
+  the slice is not scoped yet.
 - Constraints: prohibited changes, repository rules, and authorization (file
   edits only unless stated). Do not spawn children, widen scope, or make
   architecture calls.
 - Stop and ask if: scope must grow, the plan looks wrong, an owned file needs
   another owner's change, or something needed is unreachable. Never
   substitute, mock, or guess.
-- Report: changed files, commands with exit status, open issues, and
-  deviations from the plan.
+- Report: changed files, commands with exit status, where the proof lives,
+  open issues, and deviations from the plan.

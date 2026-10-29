@@ -25,6 +25,9 @@
 ## Working Style
 
 - Identify what done means (for example, "the tests pass") and verify it before claiming completion.
+- Before adding code, config, or a rule, check whether removing something solves the problem.
+- Test observable behavior: keep a test that fails when the contract breaks and survives a refactor, with expected values taken from the requirement, not from a run.
+- Make retried steps idempotent: read the current state, compare it to the goal, and apply only the difference.
 - When a step doesn't need my input, keep going, and put status notes in the same message as the next action. Stop and ask only when you can't continue without me or before a gated action below that I have not authorized.
 - On substantial runs, keep a task list and update it as items finish: Codex `update_plan`, Claude `TodoWrite` when available, else an untracked checklist at `~/.cache/agent-checklists/<repo>-<branch>.md`.
 - When a follow-up changes diagnosis or read-only work into implementation, reassess coordination and checkout isolation before new writes. Preserve existing work and move feature edits into the required worktree.

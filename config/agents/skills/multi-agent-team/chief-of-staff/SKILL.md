@@ -43,7 +43,8 @@ Use `high` for validators with security, data, or migration risk.
    message; serialize or isolate overlaps.
 4. Integrate: check each report against the diff and checks, not its summary.
 5. Validate with [validation.md](references/validation.md); send defects back.
-6. Finish, retry, or escalate per [escalation.md](references/escalation.md).
+6. Finish, retry, escalate, pause, or resume per
+   [escalation.md](references/escalation.md).
 
 ## Ledger
 

@@ -39,6 +39,14 @@ or authorization calls.
   quiet async child is not a stall: follow `next` and end the turn.
 - Failed acceptance: a repair cycle, not a retry.
 
+## Pause
+
+Only on an explicit pause request; "keep going" is not one. Finish the
+current step or stop it without discarding edits, start nothing new, and
+`task_cancel` running children. Commit and push nothing to pause. Record in
+the ledger each child's state, what is verified, uncommitted paths, and the
+first action on resume.
+
 ## Recovery
 
 T3 keeps child threads and results after the lead stops. On resume:
@@ -52,6 +60,10 @@ T3 keeps child threads and results after the lead stops. On resume:
 4. `task_cancel` duplicates or orphans so one owner remains per write set. A
    child with no recorded `taskId` is reported to the user by thread link,
    not guessed at.
+5. Compare done with pending and name the resume point. Redo nothing the
+   rebuilt ledger records as verified; recheck only evidence a later change
+   could have invalidated. The ledger, child results, and git are the
+   trail; do not read local session transcripts.
 
 ## Finish
 
