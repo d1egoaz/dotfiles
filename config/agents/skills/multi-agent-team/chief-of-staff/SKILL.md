@@ -45,6 +45,8 @@ Use `high` for validators with security, data, or migration risk.
 5. Validate with [validation.md](references/validation.md); send defects back.
 6. Finish, retry, escalate, pause, or resume per
    [escalation.md](references/escalation.md).
+7. Ship: once the user approves the result and names a Slack channel, run
+   [shipping.md](references/shipping.md) through merge.
 
 ## Ledger
 
