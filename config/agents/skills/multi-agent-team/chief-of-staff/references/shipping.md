@@ -1,8 +1,10 @@
 # Shipping
 
 Run when the user approves the finished work, or an existing PR, for
-shipping and names a Slack channel. That approval is the grant below; a PR
-link or channel mentioned for any other purpose grants nothing. The lead
+shipping. Post to the channel the user names, else to the office default in
+the ignored `chime-pr-followup` skill; with neither, ask. That approval is
+the grant below; a PR link or channel mentioned for any other purpose
+grants nothing. The lead
 thread owns the PR until it merges or shipping stops; children never watch.
 Record the PR URL, the post link, and each item, fix SHA, reply,
 re-request, and rerun by ID in the ledger, so no wake repeats one.
@@ -82,7 +84,8 @@ text.
 
 - Confirmed defect: fix it, small fixes in the lead and others as a worker
   contract ([delegation.md](delegation.md)), run the deterministic checks,
-  then commit and push through `$signed-pr-publish`.
+  then commit and push through `$signed-pr-publish`. Fetch the PR branch
+  first, since CI may push to it, and replay unpushed commits onto it.
 - Bot false positive: reply with the evidence in one sentence and resolve
   the thread.
 - A human question about intent, a request that changes scope or design, or
@@ -93,7 +96,7 @@ text.
   that none of its failed jobs or their dependencies apply, deploy, or touch
   production. A repeat failure or an unsafe rerun is a decision.
 - Conflict, or a base the branch must catch up with: merge the base in with
-  a signed merge commit. Never rebase or force-push.
+  a signed merge commit. Never rewrite pushed commits or force-push.
 
 Reply to each item you fix or decline: in its thread with the
 `addPullRequestReviewThreadReply` mutation, or with `gh pr comment` for a
@@ -119,8 +122,9 @@ declined finding, is a decision.
 A wake is not a merge decision. Merge only when, on a complete read, the PR
 is open and not a draft, `reviewDecision` is `APPROVED`, an approval's
 `commit.oid` is the current head or every commit after it is a
-conflict-free merge of the base, every required check passes, no item waits
-on a fix or an answer, no decision is pending, and the PR is mergeable.
+conflict-free merge of the base or a CI bot commit that only regenerates
+files, every required check passes, no item waits on a fix or an answer, no
+decision is pending, and the PR is mergeable.
 If `repository{mergeQueue(branch: "<baseRefName>"){id}}` returns a queue,
 enqueue with `enqueuePullRequest(input: {pullRequestId: <PR id>,
 expectedHeadOid: <headRefOid>})` and never `jump`; `gh pr merge` would turn
