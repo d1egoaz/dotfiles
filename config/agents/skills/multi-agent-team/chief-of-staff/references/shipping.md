@@ -4,21 +4,21 @@ Run when the user approves the finished work, or an existing PR, for
 shipping. Post to the channel the user names, else to the office default in
 the ignored `chime-pr-followup` skill; with neither, ask. That approval is
 the grant below; a PR link or channel mentioned for any other purpose
-grants nothing. The lead
-thread owns the PR until it merges or shipping stops; children never watch.
-Record the PR URL, the post link, and each item, fix SHA, reply,
+grants nothing. The lead thread owns the PR until it merges or shipping
+stops; children never watch. Record the PR URL, the post's channel ID,
+timestamp, and link, the reaction, and each item, fix SHA, reply,
 re-request, and rerun by ID in the ledger, so no wake repeats one.
 
 ## Grant
 
-For that PR only: marking it ready, one channel post, signed fix commits
-pushed to its branch, short replies on its review items, resolving threads
-as below, re-requesting reviewers, one rerun per failed CI run, turning off
-auto-merge, pulling it from a merge queue, and the merge once approved,
-including repositories that deploy on merge. Nothing else. Never approve or
-dismiss a review, enable auto-merge, merge with `--admin` or otherwise
-bypass branch protection, force-push, confirm a Terraform apply, sync Argo
-CD, or deploy after the merge.
+For that PR only: marking it ready, one channel post and one `:thank-you:`
+reaction on it, signed fix commits pushed to its branch, short replies on
+its review items, resolving threads as below, re-requesting reviewers, one
+rerun per failed CI run, turning off auto-merge, pulling it from a merge
+queue, and the merge once approved, including repositories that deploy on
+merge. Nothing else. Never approve or dismiss a review, enable auto-merge,
+merge with `--admin` or otherwise bypass branch protection, force-push,
+confirm a Terraform apply, sync Argo CD, or deploy after the merge.
 
 ## Start
 
@@ -117,6 +117,11 @@ push, re-request every approver and changes-requested reviewer once for the
 new head. A finding that returns after two fixes, or a bot that repeats a
 declined finding, is a decision.
 
+When a person's approval first appears, react to the post once with
+`slack_add_reaction` and `emoji: "thank-you"`, using the channel ID and
+timestamp from the ledger. Approvers usually mark the post with a check
+mark; the GitHub review is the trigger, since Slack never wakes the thread.
+
 ## Merge
 
 A wake is not a merge decision. Merge only when, on a complete read, the PR
@@ -125,13 +130,15 @@ is open and not a draft, `reviewDecision` is `APPROVED`, an approval's
 conflict-free merge of the base or a CI bot commit that only regenerates
 files, every required check passes, no item waits on a fix or an answer, no
 decision is pending, and the PR is mergeable.
-If `repository{mergeQueue(branch: "<baseRefName>"){id}}` returns a queue,
-enqueue with `enqueuePullRequest(input: {pullRequestId: <PR id>,
-expectedHeadOid: <headRefOid>})` and never `jump`; `gh pr merge` would turn
-on auto-merge there when checks lag. Otherwise merge with
-`gh pr merge <PR URL> --match-head-commit <headRefOid>` and a method the
-repository allows. Read any rejection from fresh state; one that state does
-not explain is a decision, never a retry.
+Merge with `gh pr merge <PR URL> --match-head-commit <headRefOid>` as a
+command on its own, with a method the repository allows. When
+`repository{mergeQueue(branch: "<baseRefName>"){id}}` returns a queue, omit
+the method; because required checks pass, `gh` adds the PR to the queue.
+Office managed policy asks before every `gh pr merge`, and that prompt is
+the user's merge confirmation: never merge or enqueue another way, such as
+through the API or a delegate. If the command turns on auto-merge instead,
+turn it off as in Each wake and keep watching. Read any rejection from
+fresh state; one that state does not explain is a decision, never a retry.
 
 A queued PR merges later; keep the watch until it lands. If a blocker or
 decision appears while `mergeQueueEntry` is set, first dequeue it with
