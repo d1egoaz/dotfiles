@@ -9,6 +9,7 @@ brew "sops" # Encrypted secrets editor for dotfiles
 cask "1password-cli"
 cask "alfred" # App launcher and workflows
 cask "claude-code@latest" # Claude Code editor/CLI
+cask "t3-code"
 cask "codex" # Coding assistant CLI
 cask "d12frosted/emacs-plus/emacs-plus-app" # Emacs with macOS enhancements (pre-built binary)
 cask "font-sf-pro" # Apple SF Pro font
