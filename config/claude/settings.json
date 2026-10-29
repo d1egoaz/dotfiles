@@ -78,7 +78,6 @@
       "Bash(tfctl run status:*)"
     ],
     "deny": [
-      "Agent(Explore)",
       "Bash(curl:*)",
       "Read(./.env)",
       "Read(./.env.*)",
