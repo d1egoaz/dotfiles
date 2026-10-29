@@ -230,4 +230,4 @@ codex-catalog:
 
 # Update, activate, and clean up.
 sync:
-	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just gc && just brew
+	HOMEBREW_BUNDLE_CASK_SKIP=1password just update && just switch && just local-state-sync && just gc && just brew
