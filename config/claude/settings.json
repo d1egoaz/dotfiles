@@ -84,7 +84,7 @@
       "Read(./build)"
     ]
   },
-  "model": "claude-opus-5-5",
+  "model": "opus",
   "hooks": {
     "Notification": [
       {
@@ -127,6 +127,7 @@
   },
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true,
+    "archie-cc@chime-claude-plugins": true,
     "infra@infra-skills": true
   },
   "extraKnownMarketplaces": {
@@ -140,6 +141,12 @@
       "source": {
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "infra-skills": {
+      "source": {
+        "source": "github",
+        "repo": "1debit/infra-agent-skills"
       }
     }
   },
