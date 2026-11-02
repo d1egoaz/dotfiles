@@ -32,7 +32,7 @@ let
       timeMachine = "hidden";
       userSwitcher = "hidden";
       vpn = "hidden";
-      weather = "always";
+      weather = "hidden";
       wifi = "always";
       showBatteryPercentage = true;
     };
