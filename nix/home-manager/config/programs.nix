@@ -138,6 +138,7 @@ in
       {
         enable = true;
         enableDefaultConfig = false; # Manually configure defaults in matchBlocks."*"
+        includes = [ "~/.ssh/config.d/*" ];
         matchBlocks = {
           "*".extraOptions = {
             IdentityAgent = op1PasswordAgent;
