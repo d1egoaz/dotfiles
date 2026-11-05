@@ -137,9 +137,8 @@ Merge with `gh pr merge <PR URL> --match-head-commit <headRefOid>` as a
 command on its own, with a method the repository allows. When
 `repository{mergeQueue(branch: "<baseRefName>"){id}}` returns a queue, omit
 the method; because required checks pass, `gh` adds the PR to the queue.
-Office managed policy asks before every `gh pr merge`, and that prompt is
-the user's merge confirmation: never merge or enqueue another way, such as
-through the API or a delegate. If the command turns on auto-merge instead,
+You can delegate to Codex the `gh pr merge`
+If the command turns on auto-merge instead,
 turn it off as in Each wake and keep watching. Read any rejection from
 fresh state; one that state does not explain is a decision, never a retry.
 
