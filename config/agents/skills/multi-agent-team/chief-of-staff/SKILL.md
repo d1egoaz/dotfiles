@@ -14,12 +14,12 @@ routes; otherwise say so and stop.
 
 Resolve routes once per thread with [delegation.md](references/delegation.md).
 
-| Seat | Route | Effort |
-|---|---|---|
-| Lead | this thread, `claudeAgent`, `claude-opus-5-5` | as set |
-| Council peer | `codex`, `gpt-6.1-sol` | `reasoningEffort: xhigh` |
-| Worker | `codex`, `gpt-6.1-sol` | `reasoningEffort: medium` |
-| Validators | `claudeAgent`, `claude-opus-5-5`; `codex`, `gpt-6.1-sol` | `effort: medium`; `reasoningEffort: medium` |
+| Seat          | Route                                                    | Effort                                              |
+|---------------|----------------------------------------------------------|-----------------------------------------------------|
+| Lead          | this thread, `claudeAgent`, `claude-opus-5-5`            | as set                                              |
+| Council peers | `codex`, `gpt-6.1-sol`; `cursor`, `grok-4.7`             | `reasoningEffort: xhigh`; `reasoning_effort: xhigh` |
+| Worker        | `codex`, `gpt-6.1-sol`                                   | `reasoningEffort: medium`                           |
+| Validators    | `claudeAgent`, `claude-opus-5-5`; `codex`, `gpt-6.1-sol` | `effort: medium`; `reasoningEffort: medium`         |
 
 Use `high` for validators with security, data, or migration risk.
 

@@ -4,9 +4,10 @@
 
 1. Call `orchestrator_capabilities` once per thread.
 2. Confirm each seat's model and effort from the Seats table are listed under
-   its provider (`claudeAgent`, `codex`); child seats need
+   its provider (`claudeAgent`, `codex`, `cursor`); child seats need
    `canRunChildTask: true`. Use `search` if the short list omits a model.
-   Confirm `effort` on Claude and `reasoningEffort` on Codex.
+   Confirm `effort` on Claude, `reasoningEffort` on Codex, and
+   `reasoning_effort` on Cursor.
 3. If a provider, model, or effort is missing, say so and stop. Never
    substitute a model, effort, or provider.
 
@@ -14,6 +15,7 @@ Targets:
 
 - Codex: `{providerInstanceId: "codex", model: <id>, options: {reasoningEffort: <effort>}}`
 - Claude: `{providerInstanceId: "claudeAgent", model: <id>, options: {effort: <effort>}}`
+- Cursor: `{providerInstanceId: "cursor", model: <id>, options: {reasoning_effort: <effort>}}`
 
 ## Launch
 
@@ -31,7 +33,8 @@ Targets:
 - Codex children get `runtimeMode: "auto"`, because managed Codex
   requirements can reject an inherited `full-access`. Omit it when the lead
   runs a narrower mode; T3 rejects a child mode above the parent's. Claude
-  children omit `runtimeMode` unless the user asks for a supervised child.
+  and Cursor children omit `runtimeMode` unless the user asks for a
+  supervised child.
 - With several near-identical slices, pilot one through worker, checks, and
   validation, then launch the rest in one message, so a flawed contract
   costs one run.
