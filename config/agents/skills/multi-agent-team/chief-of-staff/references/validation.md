@@ -13,7 +13,8 @@
    decision record, changed paths or branch and SHA, and the check commands.
    Withhold worker summaries and the other validator's findings. Each
    inspects the diff and reruns checks itself, and must not edit files; T3
-   cannot enforce read-only.
+   cannot enforce read-only. A validator does a one-shot check and returns;
+   the lead does any waiting with `t3_background_wait`.
 
 ## Evidence
 

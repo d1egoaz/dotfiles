@@ -29,7 +29,8 @@ sites disagree, change the types, not the usage.
    disagreements. Ask each peer to critique the lead plan and the other
    peer's, defend or revise its own, and mark each disagreement resolved or
    open, with evidence.
-5. Round 2, only if disagreements remain: a new `delegate_task` to each peer
+5. Round 2, only if round 1 left a material disagreement (a conceded point
+   or a peer's acceptance is not one): a new `delegate_task` to each peer
    that still holds one, with the narrowed list and new evidence. There is
    no round 3.
 6. Agreement requires each peer's latest response to accept the plan

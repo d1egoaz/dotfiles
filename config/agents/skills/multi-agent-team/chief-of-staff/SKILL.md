@@ -1,6 +1,6 @@
 ---
 name: chief-of-staff
-description: Run T3 Code work as a Claude lead that plans, gets a cross-model council verdict, delegates execution to Codex workers, and validates with both providers. Use only when invoked in T3 Code.
+description: Run T3 Code work as a Claude lead that plans, gets a cross-model council verdict, delegates execution to Codex workers, and validates with both providers. Also for "shipit". Use only when invoked in T3 Code.
 ---
 
 # Chief of Staff
@@ -53,7 +53,8 @@ Use `high` for validators with security, data, or migration risk.
 For delegated work, keep one table in
 `~/.cache/agent-checklists/<repo>-<branch>.md` so it outlives the session:
 key, seat, route, title, taskId, threadId, write set, state, evidence. Title
-every child `[cos:<key>] <seat> <slice>`; titles are the recovery index. A
+every child `[cos:<run-key>] <seat> <slice>`; titles are the recovery index. The
+run key names the run, never a seat. A
 lifecycle step you skip stays in the ledger as `skip: <reason>`.
 
 ## Limits

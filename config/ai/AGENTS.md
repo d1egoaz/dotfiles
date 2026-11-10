@@ -5,28 +5,29 @@
 ## Instruction Resolution
 
 - Trust the instruction chain supplied by the current agent host. Do not reread instruction content already present in the prompt.
-- Read a repository's alternate instruction family only when the host did not load it; `AGENTS.local.md` and `CLAUDE.local.md` override their base file. Skip import-only, symlinked, or content-identical aliases.
+- Read a repository's alternate instruction family only when the host did not load it; `AGENTS.local.md` and `CLAUDE.local.md` override their base file. Skip import-only, symlinked, or identical aliases.
 
 ## Environment
 
-- macOS with BSD coreutils; interactive shell zsh. Prefer CLI and make each user-facing command copy-paste-ready.
-- Run shell-neutral commands directly; name a shell only when required.
-- Inspect processes by name or a specific PID; never dump all process arguments or environments, which can hold unrelated transcript data or secrets.
+- macOS, zsh. Prefer CLI; make user-facing commands copy-paste-ready. Run shell-neutral commands directly; name a shell only when required.
+- Nix GNU coreutils (`date`, `df`, `mktemp`) lead PATH; `grep` is `ugrep`; `cd` is zoxide. Use `/bin/` or `/usr/bin/` for BSD behavior.
+- zsh: quote every `$VAR`; put multi-line Python or jq in a script file (`python3 -I script.py args`).
+- Inspect processes by name or PID; never dump all process arguments or environments, which can hold secrets.
 
 ## Communication
 
 - Lead with the concrete answer. Add detail only when it changes a decision, proves a claim, captures risk, or was requested.
 - Never use the em dash character.
-- Write Slack, email, PR comments, and chat replies at human length for that medium.
+- Write Slack, email, PR comments, and chat replies at human length. Messages for people: first person, short, end with the call to action.
 - Be direct about mistakes, weak assumptions, missing evidence, and incomplete work.
-- Never invent facts. Discover them when practical, otherwise ask or leave them unknown. Mark anything you couldn't confirm and say where you looked.
+- Never invent facts. Discover them when practical, otherwise ask or leave them unknown. Mark what you couldn't confirm and where you looked.
 - End substantial runs with **Blocked on me**, **Changed**, and **Found**; omit empty sections. A run is substantial when it edited files, spawned a subagent, or made 10+ tool calls.
 
 ## Working Style
 
-- Identify what done means (for example, "the tests pass") and verify it before claiming completion.
+- Identify what done means and verify it before claiming completion.
 - Before adding code, config, or a rule, check whether removing something solves the problem.
-- Test observable behavior: keep a test that fails when the contract breaks and survives a refactor, with expected values taken from the requirement, not from a run.
+- Test observable behavior: keep a test that fails when the contract breaks and survives a refactor, with expected values from the requirement, not a run.
 - Make retried steps idempotent: read the current state, compare it to the goal, and apply only the difference.
 - When a step doesn't need my input, keep going, and put status notes in the same message as the next action. Stop and ask only when you can't continue without me or before a gated action below that I have not authorized.
 - On substantial runs, keep a task list and update it as items finish: Codex `update_plan`, Claude `TodoWrite` when available, else an untracked checklist at `~/.cache/agent-checklists/<repo>-<branch>.md`.
@@ -34,7 +35,7 @@
 
 ## Delegation
 
-- Keep one-step work and tightly coupled judgment in the lead. Delegate for parallel independent reads, context isolation, a bounded write set, or independent review, with the fewest agents that fit.
+- Keep one-step work and coupled judgment in the lead. Delegate for parallel independent reads, context isolation, a bounded write set, or independent review, with the fewest agents that fit.
 - Hand off in one message: task and context, `Done means:`, `Stop and ask if:`, `Owned files:` (required for writers), and authorization. Keep write sets disjoint.
 - Check each child's evidence before accepting it; a success claim is not completion. Report verified, blocked, and unverified outcomes separately.
 - Use `$chief-of-staff` for substantial multi-agent work in T3 Code at the office.
