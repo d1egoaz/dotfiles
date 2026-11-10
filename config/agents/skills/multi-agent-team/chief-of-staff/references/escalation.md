@@ -8,7 +8,11 @@
 | Transient child failure | 1 retry of the same contract | escalate |
 | Repair per finding | 2 fix-and-revalidate cycles | escalate |
 
-Never raise effort or switch model as a retry. Before a second repair cycle
+A transient retry keeps the same contract, model, and effort. A repair cycle
+or a scout miss climbs one step: raise effort on the same seat first (scout
+`high` to `xhigh`, worker `medium` to `high`), and move the slice up a tier
+(scout to worker, worker to lead) only after the raised effort fails. Record
+each step in the ledger. Before a second repair cycle
 on the same finding, write down the premise both fixes share and test it
 directly; another fix on an untested premise is not a repair.
 

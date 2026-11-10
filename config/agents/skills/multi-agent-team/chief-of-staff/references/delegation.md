@@ -24,8 +24,9 @@ Targets:
   `childThreadId` in the ledger. Resending the same ID and payload returns the
   existing task without a new run; bump the attempt only for a deliberate
   retry.
-- Roles: council `design`; worker `implementation`, `test`, or `research`;
-  validator `review`.
+- Roles: council `design`; scout `research`; worker `implementation` or
+  `test`; validator `review`. Research that must judge or design goes to a
+  worker.
 - Default `mode: "async"`. Do not poll `task_status`; follow each returned
   `next` and read results when completion wakes you. Use `mode: "wait"` only
   when the next step needs that result now; a wait timeout does not cancel

@@ -16,12 +16,24 @@ Resolve routes once per thread with [delegation.md](references/delegation.md).
 
 | Seat          | Route                                                    | Effort                                              |
 |---------------|----------------------------------------------------------|-----------------------------------------------------|
-| Lead          | this thread, `claudeAgent`, `claude-opus-5-5`            | as set                                              |
+| Lead          | this thread, `claudeAgent`, `claude-opus-5-5`            | `effort: medium`                                    |
 | Council peers | `codex`, `gpt-6.1-sol`; `cursor`, `grok-4.7`             | `reasoningEffort: xhigh`; `reasoning_effort: xhigh` |
+| Scout         | `claudeAgent`, `claude-haiku-5-5`                        | `effort: high`                                      |
 | Worker        | `codex`, `gpt-6.1-sol`                                   | `reasoningEffort: medium`                           |
 | Validators    | `claudeAgent`, `claude-opus-5-5`; `codex`, `gpt-6.1-sol` | `effort: medium`; `reasoningEffort: medium`         |
 
-Use `high` for validators with security, data, or migration risk.
+Use `high` for validators with security, data, or migration risk. Run the
+lead thread at `high` only for council synthesis or hard debugging.
+
+Match the seat to the work, and judge cost per accepted slice, not per token:
+
+- Scout: read, find, extract, summarize. Read-only, no judgment calls.
+- Worker: implement, modify, analyze, test.
+- Validators: review.
+- Lead and council: plan, architect, debug hard failures, decide.
+
+Route scouts through `delegate_task`, never native `Agent` with `haiku`:
+Claude settings map that alias to Sonnet.
 
 ## Size the work
 
