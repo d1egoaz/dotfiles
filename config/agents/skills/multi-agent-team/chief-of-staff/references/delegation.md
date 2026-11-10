@@ -44,6 +44,7 @@ Targets:
 ## Isolation
 
 - A child sees only `task`. Put every needed fact in it; never "see above".
+  Point to repo `AGENTS.md` or project README facts instead of retyping them.
 - `shared` (default) uses the parent checkout. Use it when write sets are
   disjoint.
 - `worktree` starts a new checkout from the parent commit; uncommitted parent
@@ -67,10 +68,14 @@ Send these labels verbatim:
   output, and where the proof will live. If you cannot name the evidence,
   the slice is not scoped yet.
 - Constraints: prohibited changes, repository rules, and authorization (file
-  edits only unless stated). Do not spawn children, widen scope, or make
+  edits only unless stated; writer briefs say "no commit, push, or merge"
+  unless granted). Do not spawn children, widen scope, or make
   architecture calls.
 - Stop and ask if: scope must grow, the plan looks wrong, an owned file needs
   another owner's change, or something needed is unreachable. Never
   substitute, mock, or guess.
+- After any child touches a repo, the lead checks that repo's git state:
+  primary checkout branch, worktree, and remote. A worker once pushed to
+  `main`.
 - Report: changed files, commands with exit status, where the proof lives,
   open issues, and deviations from the plan.

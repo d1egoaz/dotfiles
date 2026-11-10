@@ -1,6 +1,6 @@
 # Shipping
 
-Run when the user approves the finished work, or an existing PR, for
+Run on "shipit" or when the user approves the finished work, or an existing PR, for
 shipping. Post to the channel the user names, else to the office default in
 the ignored `chime-pr-followup` skill; with neither, ask. That approval is
 the grant below; a PR link or channel mentioned for any other purpose
@@ -71,7 +71,8 @@ Handle terminal state before anything else: when `state` is `MERGED`,
 finish as in Merge; when it is `CLOSED`, `unwatch_pull_request` and report.
 Only an open PR goes on. If `autoMergeRequest` is set, turn it off with
 `gh pr merge <PR URL> --disable-auto` and confirm it is off.
-Use `gh pr merge` command using a Codex subtask, as codex is configured to do additional reviews.
+Run `gh pr merge` through a Codex subtask, as codex is configured to do
+additional reviews, under the Codex merge policy in Merge.
 
 Items are review threads, review bodies (including changes requested), and
 top-level comments, from bots (`__typename: Bot`) and people alike. The
@@ -137,7 +138,11 @@ Merge with `gh pr merge <PR URL> --match-head-commit <headRefOid>` as a
 command on its own, with a method the repository allows. When
 `repository{mergeQueue(branch: "<baseRefName>"){id}}` returns a queue, omit
 the method; because required checks pass, `gh` adds the PR to the queue.
-You can delegate to Codex the `gh pr merge`
+Delegate the `gh pr merge` to Codex under this policy. The `auto` sandbox can
+block GitHub writes while `gh pr view` works. The brief names the exact
+`gh pr merge` command. The child requests sandbox escalation on the first
+network failure and never retries unescalated. If escalation is denied, it
+stops and reports the command, and the lead runs it.
 If the command turns on auto-merge instead,
 turn it off as in Each wake and keep watching. Read any rejection from
 fresh state; one that state does not explain is a decision, never a retry.
