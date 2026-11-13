@@ -30,9 +30,10 @@ confirm a Terraform apply, sync Argo CD, or deploy after the merge.
 2. Find the channel with `slack_search_channels` and read its topic and
    purpose. Never post to a channel shared outside the company. If the
    topic or purpose routes this kind of post elsewhere, ask the user. Post
-   once with `slack_send_message` and `unfurl_app_links: true` as a new
-   channel message, never a thread reply: leave `thread_ts` unset, even
-   when the PR follows up an earlier post. The message:
+   once with `slack_send_message` and `unfurl_app_links: false`, so the
+   post is only the summary and link, without the GitHub app's PR preview,
+   as a new channel message, never a thread reply: leave `thread_ts` unset,
+   even when the PR follows up an earlier post. The message:
 
    ```text
    [<repo>#<n>: <title>](<PR URL>)
