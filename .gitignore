@@ -13,3 +13,7 @@ alfred/Alfred.alfredpreferences/workflows/user.workflow.5B413B71-5DB9-4870-BC84-
 # Nix build artifacts
 result
 result-*
+
+# Python bytecode
+__pycache__/
+*.pyc
