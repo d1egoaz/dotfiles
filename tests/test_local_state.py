@@ -55,6 +55,9 @@ class IncludeAllTest(unittest.TestCase):
     def run_state(self, action):
         env = {
             "PATH": os.environ["PATH"],
+            # A real locale: comm must not depend on the caller's collation.
+            "LANG": "en_US.UTF-8",
+            "LC_ALL": "en_US.UTF-8",
             "HOME": str(self.home),
             "DOTFILES_LOCAL_STATE_PROFILE": "office",
             "DOTFILES_LOCAL_STATE_SOPS_FILE": str(self.sops_file),
@@ -73,9 +76,13 @@ class IncludeAllTest(unittest.TestCase):
 
     def test_new_files_are_untracked_until_sync(self):
         self.write("a/SKILL.md", "a\n")
+        self.write("B-upper/SKILL.md", "b\n")
+        self.write(".hidden", "h\n")
         result = self.run_state("check")
         self.assertEqual(result.returncode, 1)
-        self.assertIn(f"untracked: {self.root}/a/SKILL.md", result.stderr)
+        self.assertNotIn("not in sorted order", result.stderr)
+        for rel in ("a/SKILL.md", "B-upper/SKILL.md", ".hidden"):
+            self.assertIn(f"untracked: {self.root}/{rel}", result.stderr)
 
         self.assertEqual(self.run_state("sync").returncode, 0)
         self.assertEqual(self.run_state("check").returncode, 0)

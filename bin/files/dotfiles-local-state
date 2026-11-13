@@ -346,7 +346,7 @@ check_resource() {
 
   drift="$(drifted_paths "$resource_file")"
   if include_all "$resource_file"; then
-    drift="$drift$(comm -13 <(listed_files "$resource_file") <(disk_files "$resource_file") | sed 's/^/untracked: /')"
+    drift="$drift$(LC_ALL=C comm -13 <(listed_files "$resource_file") <(disk_files "$resource_file") | sed 's/^/untracked: /')"
   fi
   if [[ -z "$drift" ]]; then
     echo "$prog: $resource matches encrypted state"
