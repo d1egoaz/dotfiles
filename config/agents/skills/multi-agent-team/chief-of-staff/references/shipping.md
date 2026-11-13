@@ -25,6 +25,8 @@ confirm a Terraform apply, sync Argo CD, or deploy after the merge.
 1. For an existing PR, read its state first (Each wake) and stop there if
    it is not open. Otherwise open the PR as a draft through
    `$signed-pr-publish`. Then `link_pull_request` and `gh pr ready`.
+   You may wait for required checks first, but not for your own or bot
+   reviews. Merging still waits for a person's approval (Merge).
 2. Find the channel with `slack_search_channels` and read its topic and
    purpose. Never post to a channel shared outside the company. If the
    topic or purpose routes this kind of post elsewhere, ask the user. Post

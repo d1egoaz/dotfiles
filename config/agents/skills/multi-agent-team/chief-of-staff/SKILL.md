@@ -61,7 +61,9 @@ PR, skill) already covers it; if so, use it and stop.
 6. Finish, retry, escalate, pause, or resume per
    [escalation.md](references/escalation.md).
 7. Ship: once the user approves the result, run
-   [shipping.md](references/shipping.md) through merge.
+   [shipping.md](references/shipping.md) through merge. A ship request
+   made before the work is done approves it in advance: start shipping as
+   soon as validation finds no blockers.
 
 ## Ledger
 

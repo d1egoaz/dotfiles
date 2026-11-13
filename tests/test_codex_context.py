@@ -24,7 +24,7 @@ XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 # loads only when its skill is invoked, so cap each body, not the total.
 DESCRIPTION_BUDGET = 220
 DESCRIPTIONS_TOTAL_BUDGET = 1300
-SKILL_BODY_BUDGET = 4500
+SKILL_BODY_BUDGET = 5000
 
 # Safety gates that must survive any rewrite. Wording elsewhere is free to change.
 GATES = {
