@@ -47,5 +47,6 @@ user before execution.
 
 ## Decision record
 
-Keep it in the ledger and pass the relevant slice to each worker: decision,
-rationale, rejected alternatives, open risks, and what reopens the council.
+Keep it in the ledger's Decisions section and pass the relevant slice to each
+worker: decision, rationale, rejected alternatives, open risks, and what
+reopens the council.

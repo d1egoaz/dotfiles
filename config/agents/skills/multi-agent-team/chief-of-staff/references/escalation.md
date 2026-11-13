@@ -55,8 +55,10 @@ first action on resume.
 
 T3 keeps child threads and results after the lead stops. On resume:
 
-1. Read the ledger file. Then `t3_thread_list` with `includeSubagents: true`
-   and `titleContains: "[cos:<key>]"`, or `"[cos:"` when the key is lost.
+1. Read the ledger's Goal, Children, and Decisions; search Log only as
+   needed. If the key is lost, list `~/.cache/agent-checklists/cos-*.md`.
+   Then `t3_thread_list` with `includeSubagents: true` and
+   `titleContains: "[cos:<key>]"`, or `"[cos:"` when the key is still lost.
 2. `t3_thread_read` each child's final result, or `task_status` for a known
    finished `taskId`.
 3. Rebuild the ledger; check `git status` and branches before trusting any

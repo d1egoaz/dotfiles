@@ -65,12 +65,24 @@ PR, skill) already covers it; if so, use it and stop.
 
 ## Ledger
 
-For delegated work, keep one table in
-`~/.cache/agent-checklists/<repo>-<branch>.md` so it outlives the session:
-key, seat, route, title, taskId, threadId, write set, state, evidence. Title
-every child `[cos:<run-key>] <seat> <slice>`; titles are the recovery index. The
-run key names the run, never a seat. A
-lifecycle step you skip stays in the ledger as `skip: <reason>`.
+For delegated work, keep one ledger per idea at
+`~/.cache/agent-checklists/cos-<run-key>.md` so it outlives the session and
+spans every repo and branch the idea touches. The run key names the idea,
+never a seat or branch. Four sections:
+
+- Goal: the user's goal in their words and the success criteria. Change it
+  only when the user changes the goal.
+- Children: one table, rewritten in place to current truth: key, seat, route,
+  title, taskId, threadId, repo, write set, state, evidence. A lifecycle step
+  you skip stays here as `skip: <reason>`.
+- Decisions: append-only rows (date, decision, why, who). Add a row in the
+  same step the user or council decides; mark a reversed row
+  `superseded <date>`, never delete it.
+- Log: dated, append-only. Move finished or replaced children here. Search
+  it; don't reread it whole.
+
+Title every child `[cos:<run-key>] <seat> <slice>`; titles are the recovery
+index.
 
 ## Limits
 
