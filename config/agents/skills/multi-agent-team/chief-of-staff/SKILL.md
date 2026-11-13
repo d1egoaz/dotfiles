@@ -1,6 +1,6 @@
 ---
 name: chief-of-staff
-description: Run T3 Code work as a Claude lead that plans, gets a cross-model council verdict, delegates execution to Codex workers, and validates with both providers. Also for "shipit". Use only when invoked in T3 Code.
+description: Run T3 Code work as a Claude lead that plans, gets a cross-model council verdict, delegates to Codex workers, and validates with both providers. Also for "shipit" or "ship it". Use only in T3 Code.
 ---
 
 # Chief of Staff
@@ -36,6 +36,9 @@ Route scouts through `delegate_task`, never native `Agent` with `haiku`:
 Claude settings map that alias to Sonnet.
 
 ## Size the work
+
+First check whether an existing mechanism (an already-enabled auto-merge, open
+PR, skill) already covers it; if so, use it and stop.
 
 - Direct: one-step change or lookup with a deterministic check. The lead does
   it and runs the check. Small review fixes stay here too.

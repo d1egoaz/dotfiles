@@ -20,9 +20,11 @@ AUDIT_SCRIPT = REPO_ROOT / "bin/files/codex-context-audit"
 JUSTFILE = REPO_ROOT / "justfile"
 XDG_NIX = REPO_ROOT / "nix/home-manager/config/xdg.nix"
 
-# One budget for every always-discoverable SKILL.md; descriptions load every turn.
-SKILLS_TOTAL_BUDGET = 12000
+# Descriptions load every turn, so cap each one and their sum. A SKILL.md body
+# loads only when its skill is invoked, so cap each body, not the total.
 DESCRIPTION_BUDGET = 220
+DESCRIPTIONS_TOTAL_BUDGET = 1300
+SKILL_BODY_BUDGET = 4500
 
 # Safety gates that must survive any rewrite. Wording elsewhere is free to change.
 GATES = {
@@ -84,9 +86,11 @@ class CodexContextPolicyTest(unittest.TestCase):
 
     def test_skill_budgets(self):
         skills = sorted(SKILL_ROOT.glob("*/SKILL.md"))
-        self.assertLessEqual(sum(len(path.read_text()) for path in skills), SKILLS_TOTAL_BUDGET)
-        for path in skills:
-            self.assertLessEqual(len(frontmatter_description(path)), DESCRIPTION_BUDGET, path.parent.name)
+        descriptions = [frontmatter_description(path) for path in skills]
+        self.assertLessEqual(sum(map(len, descriptions)), DESCRIPTIONS_TOTAL_BUDGET)
+        for path, description in zip(skills, descriptions):
+            self.assertLessEqual(len(description), DESCRIPTION_BUDGET, path.parent.name)
+            self.assertLessEqual(len(path.read_text()), SKILL_BODY_BUDGET, path.parent.name)
 
     def test_safety_gates_survive(self):
         for path, gates in GATES.items():

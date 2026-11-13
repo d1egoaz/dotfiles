@@ -1,6 +1,6 @@
 # AI Assistant Instructions
 
-<!-- Version: 2.1.0 | Updated: 2026-10-08 -->
+<!-- Version: 2.2.0 | Updated: 2026-11-13 -->
 
 ## Instruction Resolution
 
@@ -9,7 +9,7 @@
 
 ## Environment
 
-- macOS, zsh. Prefer CLI; make user-facing commands copy-paste-ready. Run shell-neutral commands directly; name a shell only when required.
+- macOS. Prefer CLI. Agents run zsh; I paste into fish: give copy-paste-ready, fish-safe commands (`set V (cmd)`, not `V=$(cmd)`).
 - Nix GNU coreutils (`date`, `df`, `mktemp`) lead PATH; `grep` is `ugrep`; `cd` is zoxide. Use `/bin/` or `/usr/bin/` for BSD behavior.
 - zsh: quote every `$VAR`; put multi-line Python or jq in a script file (`python3 -I script.py args`).
 - Inspect processes by name or PID; never dump all process arguments or environments, which can hold secrets.
