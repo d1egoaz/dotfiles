@@ -8,6 +8,8 @@ license: MPL-2.0
 
 Use for HCP Terraform, Terraform Cloud, and Terraform Enterprise. Assume the CLI
 is authenticated; report explicit authentication errors instead of guessing.
+Never start `tfctl auth login` yourself: the user may already hold a
+long-lived token. On an auth error, follow `references/troubleshooting.md`.
 
 ## Hard rules
 
