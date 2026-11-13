@@ -116,7 +116,7 @@ in
   }
   // lib.optionalAttrs (profile == "office") {
     ".agents/skills/work-local".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/agents/skills/work.local";
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/work/agent-skills";
   }
   // (
     # Claude Code discovers skills exactly one level below ~/.claude/skills and
@@ -214,12 +214,40 @@ in
     mkdir -p "$HOME/.local/share/npm-global/bin"
   '';
 
-  # Keep work-only skills out of tracked dotfiles while still giving office
-  # machines a stable symlink target for local runbooks. This intentionally
-  # creates an ignored directory inside the repo so SOPS can restore into it.
+  # Office-only skills live outside this public repo in ~/work/agent-skills.
+  # Their encrypted backup is the include_all `codex-work-skills` resource in
+  # secrets/local-state.yaml; create the directory so the links have a target.
   home.activation.workLocalAgentSkills = lib.mkIf (profile == "office") (
     config.lib.dag.entryBetween [ "linkGeneration" ] [ "writeBoundary" ] ''
-      mkdir -p "$HOME/dotfiles/config/agents/skills/work.local"
+      mkdir -p "$HOME/work/agent-skills"
+    ''
+  );
+
+  # Claude Code loads skills one level below ~/.claude/skills and does not
+  # follow the ~/.agents group link, so link each office skill individually.
+  # This runs at activation so their names stay out of this public file; links
+  # whose target in the office skill directory is gone are removed.
+  home.activation.workLocalClaudeSkills = lib.mkIf (profile == "office") (
+    config.lib.dag.entryAfter [ "linkGeneration" ] ''
+      WORK_SKILLS="$HOME/work/agent-skills"
+      mkdir -p "$HOME/.claude/skills"
+      for dir in "$WORK_SKILLS"/*/; do
+        [ -f "$dir/SKILL.md" ] || continue
+        target="$HOME/.claude/skills/$(basename "$dir")"
+        if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+          ln -s "''${dir%/}" "$target"
+        elif [ -L "$target" ]; then
+          case "$(readlink "$target")" in
+            "$WORK_SKILLS"/*) ln -sfn "''${dir%/}" "$target" ;;
+            *) echo "workLocalClaudeSkills: skipping $target, owned by another source" >&2 ;;
+          esac
+        fi
+      done
+      for link in "$HOME/.claude/skills"/*; do
+        if [ -L "$link" ] && [ ! -e "$link" ]; then
+          case "$(readlink "$link")" in "$WORK_SKILLS"/*) rm "$link" ;; esac
+        fi
+      done
     ''
   );
 

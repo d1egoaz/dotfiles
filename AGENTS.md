@@ -43,7 +43,7 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Office T3 seats | `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md` |
 | Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
 | Shared skills | `config/agents/skills/multi-agent-team/` |
-| Office-only skills | ignored `config/agents/skills/work.local/` |
+| Office-only skills | `~/work/agent-skills/`, outside this repo; encrypted backup: the include_all `codex-work-skills` resource in `secrets/local-state.yaml` |
 | Shared approval rules | `config/codex/rules/10-shared.rules` |
 | Home Manager links and generated Codex config | `nix/home-manager/config/xdg.nix` |
 | Encrypted local state | `secrets/local-state.yaml` |

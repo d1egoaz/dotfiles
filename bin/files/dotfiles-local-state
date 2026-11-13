@@ -170,11 +170,69 @@ all_files_exist() {
   return 0
 }
 
+# A resource with "include_all": true backs up every file under its "root";
+# sync rebuilds the file list from disk, so new files need no manual listing.
+include_all() {
+  [[ "$("$jq_bin" -r '.include_all // false' "$1")" == "true" ]]
+}
+
+resource_root() {
+  local root
+  root="$("$jq_bin" -r '.root // ""' "$1")"
+  [[ -n "$root" ]] || die "include_all requires a root"
+  expand_path "$root"
+}
+
+disk_files() {
+  local root
+  root="$(resource_root "$1")"
+  [[ -d "$root" ]] || return 0
+  find "$root" -type f ! -name .DS_Store -print | LC_ALL=C sort
+}
+
+listed_files() {
+  local count index
+  count="$(file_count "$1")"
+  for ((index = 0; index < count; index++)); do
+    expand_path "$(file_path_at "$1" "$index")"
+  done | LC_ALL=C sort
+}
+
+# Replace .files with the files now under root, keeping stored content for known paths.
+rebuild_file_list() {
+  local resource_file="$1"
+  local entries_file updated_file path stored mode empty
+
+  entries_file="$(mktemp)"
+  track_tmp "$entries_file"
+  while IFS= read -r path; do
+    [[ -n "$path" ]] || continue
+    # Store $HOME literally; expand_path resolves it (it does not resolve "~/").
+    stored="$path"
+    # shellcheck disable=SC2016
+    [[ "$path" == "$HOME"/* ]] && stored='$HOME/'"${path#"$HOME"/}"
+    mode="$(stat -c '%a' "$path" 2>/dev/null || /usr/bin/stat -f '%Lp' "$path")"
+    empty=false
+    [[ -s "$path" ]] || empty=true
+    "$jq_bin" -nc --arg path "$stored" --arg mode "$(printf '%04o' "$((8#$mode))")" \
+      --argjson empty "$empty" '{path: $path, mode: $mode, allow_empty: $empty}' >> "$entries_file"
+  done < <(disk_files "$resource_file")
+
+  updated_file="$(mktemp)"
+  track_tmp "$updated_file"
+  "$jq_bin" --slurpfile entries "$entries_file" '
+    (.files | map({key: .path, value: .content}) | from_entries) as $old
+    | .files = [$entries[] | . + (if $old[.path] != null then {content: $old[.path]} else {} end)]
+  ' "$resource_file" > "$updated_file"
+  mv "$updated_file" "$resource_file"
+}
+
 guard_unlisted_files() {
   local resource="$1"
   local resource_file="$2"
   local root allow count index path allowed unexpected
 
+  include_all "$resource_file" && return 0
   allow="$("$jq_bin" -r '.allow_unlisted_files // true' "$resource_file")"
   [[ "$allow" == "false" ]] || return 0
 
@@ -240,7 +298,15 @@ sync_resource() {
   resource_json_file "$resource" "$resource_file"
   guard_unlisted_files "$resource" "$resource_file"
 
-  if resource_is_synced "$resource_file"; then
+  local before="" after=""
+  if include_all "$resource_file"; then
+    before="$(listed_files "$resource_file")"
+    rebuild_file_list "$resource_file"
+    [[ "$(file_count "$resource_file")" -gt 0 ]] || die "$resource root has no files to back up"
+    after="$(listed_files "$resource_file")"
+  fi
+
+  if [[ "$before" == "$after" ]] && resource_is_synced "$resource_file"; then
     echo "$prog: $resource already matches local files"
     return
   fi
@@ -279,6 +345,9 @@ check_resource() {
   guard_unlisted_files "$resource" "$resource_file"
 
   drift="$(drifted_paths "$resource_file")"
+  if include_all "$resource_file"; then
+    drift="$drift$(comm -13 <(listed_files "$resource_file") <(disk_files "$resource_file") | sed 's/^/untracked: /')"
+  fi
   if [[ -z "$drift" ]]; then
     echo "$prog: $resource matches encrypted state"
     return 0

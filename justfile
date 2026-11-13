@@ -81,7 +81,7 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills audit-test agent-closeout-test codex-agents-test codex-context-test codex-current-model-test git-signing-test
+check: fmt check-skills audit-test agent-closeout-test codex-agents-test codex-context-test codex-current-model-test git-signing-test local-state-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -113,6 +113,11 @@ codex-agents-test:
 [private]
 codex-context-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_context.py
+
+# Test include_all local-state resources with a throwaway age key and SOPS file.
+[private]
+local-state-test:
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_local_state.py
 
 # Verify the shared skill directories agree with the explicit Claude links in xdg.nix.
 check-skills:
