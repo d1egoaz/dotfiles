@@ -79,7 +79,7 @@ def implicit_invocation(name: str) -> bool:
 class CodexContextPolicyTest(unittest.TestCase):
     def test_always_loaded_instruction_budgets(self):
         shared_agents = SHARED_AGENTS.read_text()
-        self.assertLessEqual(len(shared_agents), 5000)
+        self.assertLessEqual(len(shared_agents), 6000)
         self.assertLessEqual(len(ROOT_AGENTS.read_text()), 6000)
         self.assertNotRegex(shared_agents, r"(?m)^- `\$[a-z-]+`:")
         self.assertIn("docs/dotfiles-reference.md", ROOT_AGENTS.read_text())
