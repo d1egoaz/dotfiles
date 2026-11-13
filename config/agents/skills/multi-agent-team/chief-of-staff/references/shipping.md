@@ -25,8 +25,9 @@ confirm a Terraform apply, sync Argo CD, or deploy after the merge.
 1. For an existing PR, read its state first (Each wake) and stop there if
    it is not open. Otherwise open the PR as a draft through
    `$signed-pr-publish`. Then `link_pull_request` and `gh pr ready`.
-   You may wait for required checks first, but not for your own or bot
-   reviews. Merging still waits for a person's approval (Merge).
+   Mark it ready and post once it is in good shape, without waiting for CI
+   or bots to finish, so the approval arrives while they run. Merge waits
+   for all of them (Merge).
 2. Find the channel with `slack_search_channels` and read its topic and
    purpose. Never post to a channel shared outside the company. If the
    topic or purpose routes this kind of post elsewhere, ask the user. Post
@@ -67,7 +68,7 @@ nodes{id author{login __typename} body url}}
 reviewThreads(last:50){pageInfo{hasPreviousPage startCursor}
 nodes{id isResolved path line
 comments(last:20){totalCount nodes{author{login __typename} body url}}}}}}}'
-gh pr checks <n> --required
+gh pr checks <n>
 ```
 
 Handle terminal state before anything else: when `state` is `MERGED`,
@@ -137,8 +138,10 @@ A wake is not a merge decision. Merge only when, on a complete read, the PR
 is open and not a draft, `reviewDecision` is `APPROVED`, an approval's
 `commit.oid` is the current head or every commit after it is a
 conflict-free merge of the base or a CI bot commit that only regenerates
-files, every required check passes, no item waits on a fix or an answer, no
-decision is pending, and the PR is mergeable.
+files, every check has finished and passed (optional ones and bot reviews
+such as Cursor Bugbot included), no item waits on a fix or an answer, no
+decision is pending, and the PR is mergeable. A failing optional check is a
+decision, never a merge.
 Merge with `gh pr merge <PR URL> --match-head-commit <headRefOid>` as a
 command on its own, with a method the repository allows. When
 `repository{mergeQueue(branch: "<baseRefName>"){id}}` returns a queue, omit
