@@ -1,4 +1,9 @@
 {
+  "enabledPlugins": {
+    "archie-cc@chime-claude-plugins": true,
+    "infra@infra-skills": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
   "env": {
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-5-5",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
@@ -17,7 +22,72 @@
     "TFCTL_VCS_REPO": "github.com/1debit/chime-tf",
     "USE_BUILTIN_RIPGREP": "0"
   },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "repo": "anthropics/skills",
+        "source": "github"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "repo": "anthropics/claude-plugins-official",
+        "source": "github"
+      }
+    },
+    "infra-skills": {
+      "source": {
+        "repo": "1debit/infra-agent-skills",
+        "source": "github"
+      }
+    }
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "command": "afplay -v 15 /System/Library/Sounds/Bottle.aiff",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [],
+        "matcher": "startup"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "afplay -v 15 /System/Library/Sounds/Hero.aiff",
+            "type": "command"
+          },
+          {
+            "command": "\"$HOME/dotfiles/bin/files/agent-closeout-check\" claude",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ]
+  },
   "includeCoAuthoredBy": false,
+  "model": "opus",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    },
+    "claude-sonnet-5-5": {
+      "effortLevel": "medium"
+    }
+  },
+  "outputStyle": "Learning",
   "permissions": {
     "allow": [
       "Bash(pbcopy:*)",
@@ -84,86 +154,16 @@
       "Read(./build)"
     ]
   },
-  "model": "opus",
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay -v 15 /System/Library/Sounds/Bottle.aiff"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay -v 15 /System/Library/Sounds/Hero.aiff"
-          },
-          {
-            "type": "command",
-            "command": "\"$HOME/dotfiles/bin/files/agent-closeout-check\" claude",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": []
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/code/oss/claude-status-line/target/release/statusline",
-    "padding": 0
-  },
-  "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "archie-cc@chime-claude-plugins": true,
-    "infra@infra-skills": true
-  },
-  "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
-    "claude-plugins-official": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/claude-plugins-official"
-      }
-    },
-    "infra-skills": {
-      "source": {
-        "source": "github",
-        "repo": "1debit/infra-agent-skills"
-      }
-    }
-  },
-  "outputStyle": "Learning",
+  "showThinkingSummaries": true,
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [
       "  Turning to the Dark Side  "
     ]
   },
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "medium"
-    },
-    "claude-sonnet-5-5": {
-      "effortLevel": "medium"
-    }
-  },
-  "showThinkingSummaries": true
+  "statusLine": {
+    "command": "~/code/oss/claude-status-line/target/release/statusline",
+    "padding": 0,
+    "type": "command"
+  }
 }
