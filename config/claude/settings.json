@@ -43,17 +43,6 @@
     }
   },
   "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "command": "afplay -v 15 /System/Library/Sounds/Bottle.aiff",
-            "type": "command"
-          }
-        ],
-        "matcher": ""
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [],
@@ -64,7 +53,7 @@
       {
         "hooks": [
           {
-            "command": "afplay -v 15 /System/Library/Sounds/Hero.aiff",
+            "command": "afplay -v 15 /System/Library/Sounds/Purr.aiff",
             "type": "command"
           },
           {
