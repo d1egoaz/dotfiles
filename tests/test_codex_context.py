@@ -46,9 +46,6 @@ GATES = {
         "--no-track",
         "Never remove a worktree, delete a branch, or reset",
     ),
-    SKILL_ROOT / "tfctl/SKILL.md": (
-        "Every delete and production mutation requires direct current-task approval",
-    ),
 }
 
 def load_audit_module():

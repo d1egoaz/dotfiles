@@ -132,7 +132,6 @@ in
         "git-worktree-flow"
         "scratch-log"
         "signed-pr-publish"
-        "tfctl"
       ];
     in
     lib.listToAttrs (
