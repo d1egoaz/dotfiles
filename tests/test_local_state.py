@@ -98,6 +98,24 @@ class IncludeAllTest(unittest.TestCase):
         self.assertEqual((self.root / "b/run.sh").stat().st_mode & 0o777, 0o755)
         self.assertFalse((self.home / "old/SKILL.md").exists())
 
+    def test_git_history_stays_out_of_the_backup(self):
+        self.write("a/SKILL.md", "a\n")
+        self.write(".git/HEAD", "ref: refs/heads/main\n")
+        self.write(".git/objects/ab/cdef", "blob\n")
+        self.write(".gitignore", ".DS_Store\n")
+        result = self.run_state("check")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn(f"untracked: {self.root}/.gitignore", result.stderr)
+        self.assertNotIn(f"{self.root}/.git/", result.stderr)
+
+        self.assertEqual(self.run_state("sync").returncode, 0)
+        self.assertEqual(self.run_state("check").returncode, 0)
+        shutil.rmtree(self.root)
+        self.assertEqual(self.run_state("restore-if-missing").returncode, 0)
+        self.assertEqual((self.root / "a/SKILL.md").read_text(), "a\n")
+        self.assertTrue((self.root / ".gitignore").exists())
+        self.assertFalse((self.root / ".git").exists())
+
     def test_deleted_files_leave_the_backup(self):
         self.write("a/SKILL.md", "a\n")
         self.write("b/SKILL.md", "b\n")

@@ -187,7 +187,8 @@ disk_files() {
   local root
   root="$(resource_root "$1")"
   [[ -d "$root" ]] || return 0
-  find "$root" -type f ! -name .DS_Store -print | LC_ALL=C sort
+  # A root under Git keeps its history local; the backup holds only content.
+  find "$root" -name .git -prune -o -type f ! -name .DS_Store -print | LC_ALL=C sort
 }
 
 listed_files() {
