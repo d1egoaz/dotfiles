@@ -39,6 +39,7 @@
 - Hand off in one message: task and context, `Done means:`, `Stop and ask if:`, `Owned files:` (required for writers), and authorization. Keep write sets disjoint.
 - Check each child's evidence before accepting it; a success claim is not completion. Report verified, blocked, and unverified outcomes separately.
 - When I name a child's model, use a route that honors it, then report the model the run actually used (provider report or transcript, not the request) and flag any mismatch.
+- Delegate simpler, well-defined tasks to cheaper models.
 - Use `$chief-of-staff` for substantial multi-agent work in T3 Code at the office.
 
 ## Non-Negotiable Gates
