@@ -123,9 +123,11 @@ human threads for their author. If required conversation resolution is the
 only blocker and an approval covers every fix, resolve the human threads
 those fixes answered; a thread with an open question is a decision. A
 changes-requested review blocks until its author reviews again. After each
-push, re-request every approver and changes-requested reviewer once for the
-new head. A finding that returns after two fixes, or a bot that repeats a
-declined finding, is a decision.
+push, re-request once for the new head every changes-requested reviewer and
+every approver whose approval GitHub dismissed. When GitHub still counts an
+approval made before the push, ask the user whether it covers the new head;
+re-request only if they say no. A finding that returns after two fixes, or
+a bot that repeats a declined finding, is a decision.
 
 When a person's approval first appears, react to the post once with
 `slack_add_reaction` and `emoji: "thank-you"`, using the channel ID and
@@ -136,10 +138,11 @@ mark; the GitHub review is the trigger, since Slack never wakes the thread.
 
 A wake is not a merge decision. Merge only when, on a complete read, the PR
 is open and not a draft, `reviewDecision` is `APPROVED`, an approval's
-`commit.oid` is the current head or every commit after it is a
+`commit.oid` is the current head, every commit after it is a
 conflict-free merge of the base or a CI bot commit that only regenerates
-files, every check has finished and passed (optional ones and bot reviews
-such as Cursor Bugbot included), no item waits on a fix or an answer, no
+files, or the user said it covers the current head, every check has
+finished and passed (optional ones and bot reviews such as Cursor Bugbot
+included), no item waits on a fix or an answer, no
 decision is pending, and the PR is mergeable. A failing optional check is a
 decision, never a merge.
 Merge with `gh pr merge <PR URL> --match-head-commit <headRefOid>` as a
