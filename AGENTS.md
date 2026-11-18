@@ -37,7 +37,6 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Shared Codex config | `config/codex/config.toml` |
 | Personal Codex profile | `config/codex/profiles/personal.toml` |
 | Office Codex profile | ignored `config/codex/profiles/work.local.toml` |
-| OpenCode Go picker models | `bin/files/codex-opencode-go-catalog` |
 | Codex lead and default subagent per profile | `nix/home-manager/config/xdg.nix` |
 | Claude models | `config/claude/settings.json` |
 | Office T3 seats | `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md` |
