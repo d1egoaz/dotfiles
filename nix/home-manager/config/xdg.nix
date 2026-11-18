@@ -59,6 +59,10 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/rules/10-shared.rules";
     ".codex/themes".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/codex/themes";
+    # Link the whole directory: T3 publishes a theme by renaming a staged file
+    # over <themeId>.json, which would replace a per-file symlink.
+    ".t3/userdata/themes".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/t3/themes";
     ".agents/skills/multi-agent-team".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/config/agents/skills/multi-agent-team";
 
