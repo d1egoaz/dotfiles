@@ -62,6 +62,7 @@ Validate configuration using the runbook referenced by `$codex-config-maintenanc
 
 - The `css` field is copied from `default-approval-buttons.json`.
 - The light variant's `secondary` is `#dadce3` (upstream `#707280`) and `secondaryForeground` is `#343b59` (upstream `#ffffff`). The upstream gray rendered the changed-files card as a dark slab.
+- The light variant's `surfaceOverlay` is `#eff0f4` (upstream `#ffffff`), so popovers and the thread details card sit one soft step above the canvas, as they do in dark.
 
 To compare with upstream, fetch the raw file with `gh api repos/SunkenInTime/t3-themes/contents/themes/tokyo-night.json -H "Accept: application/vnd.github.raw"`, then diff its `colors` and `variants` with `jq -S`.
 
