@@ -16,8 +16,7 @@ Edit dotfiles sources, never generated targets or installed copies.
 
 Keep work-only state ignored and encrypted; never print decrypted content. Use
 documented hook events only: `Stop`, `PermissionRequest`, `UserPromptSubmit`,
-and `SessionStart`. Keep output quiet or valid JSON; notifications use top-level
-`notify`.
+and `SessionStart`. Keep output quiet or valid JSON.
 
 Keep model IDs and effort at those sources. Changes affect new work only. Preserve signing, approval, and production gates.
 

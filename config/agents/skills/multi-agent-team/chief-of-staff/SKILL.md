@@ -32,9 +32,6 @@ Match the seat to the work, and judge cost per accepted slice, not per token:
 - Validators: review.
 - Lead and council: plan, architect, debug hard failures, decide.
 
-Route scouts through `delegate_task`, never native `Agent` with `haiku`:
-Claude settings map that alias to Sonnet.
-
 ## Size the work
 
 First check whether an existing mechanism (an already-enabled auto-merge, open

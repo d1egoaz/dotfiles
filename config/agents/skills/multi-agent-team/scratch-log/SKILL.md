@@ -1,6 +1,7 @@
 ---
 name: scratch-log
-description: Keep a local decision log for substantial work when the user explicitly asks for audit notes or a scratch log. Do not invoke automatically.
+description: Keep a local decision log when the user asks for audit notes or a scratch log.
+disable-model-invocation: true
 ---
 
 # Scratch Log
