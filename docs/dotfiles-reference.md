@@ -54,6 +54,17 @@ Supported hook events in this setup are `Stop`, `PermissionRequest`, `UserPrompt
 
 Validate configuration using the runbook referenced by `$codex-config-maintenance`.
 
+## T3 Code Themes
+
+`~/.t3/userdata/themes` links to `config/t3/themes`. Publish theme changes through T3 (`t3_theme_set`), which writes `<themeId>.json` there.
+
+`tokyo-night-approval-buttons.json` is based on [SunkenInTime/t3-themes `themes/tokyo-night.json`](https://github.com/SunkenInTime/t3-themes/blob/main/themes/tokyo-night.json), imported at upstream commit `57a681245f98e47542bf6016f4e6d005cf7a9a03`. Local changes:
+
+- The `css` field is copied from `default-approval-buttons.json`.
+- The light variant's `secondary` is `#dadce3` (upstream `#707280`) and `secondaryForeground` is `#343b59` (upstream `#ffffff`). The upstream gray rendered the changed-files card as a dark slab.
+
+To compare with upstream, fetch the raw file with `gh api repos/SunkenInTime/t3-themes/contents/themes/tokyo-night.json -H "Accept: application/vnd.github.raw"`, then diff its `colors` and `variants` with `jq -S`.
+
 ## Local And Encrypted State
 
 Work-only Codex profiles, hooks, approvals, and skills are ignored plaintext files backed by encrypted `local_state` entries in `secrets/local-state.yaml`.
