@@ -10,7 +10,7 @@ Edit dotfiles sources, never generated targets or installed copies.
 - Shared instructions/config: `config/ai/AGENTS.md`, `config/codex/config.toml`
 - Codex lead and default subagent per profile: `nix/home-manager/config/xdg.nix`
 - Claude models: `config/claude/settings.json`
-- Office T3 seats: `chief-of-staff/SKILL.md` beside this skill
+- Office T3 seats: `~/work/agent-skills/chief-of-staff/SKILL.md` (office-only)
 - Hooks/rules: `config/codex/hooks.json`, `config/codex/rules/10-shared.rules`
 - Skills: `config/agents/skills/multi-agent-team/`
 

@@ -39,7 +39,7 @@ Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profi
 | Office Codex profile | ignored `config/codex/profiles/work.local.toml` |
 | Codex lead and default subagent per profile | `nix/home-manager/config/xdg.nix` |
 | Claude models | `config/claude/settings.json` |
-| Office T3 seats | `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md` |
+| Office T3 seats | `~/work/agent-skills/chief-of-staff/SKILL.md` (office-only) |
 | Shared and office hooks | `config/codex/hooks.json`, ignored `config/codex/hooks.work.local.json` |
 | Shared skills | `config/agents/skills/multi-agent-team/` |
 | Office-only skills | `~/work/agent-skills/`, outside this repo, a local-only Git repository (commit edits there, signed); encrypted backup of its content, not its history: the include_all `codex-work-skills` resource in `secrets/local-state.yaml` |

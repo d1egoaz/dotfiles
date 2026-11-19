@@ -74,9 +74,8 @@ just --list        # See all available commands
 
 Set Codex lead and default subagent models per profile inline in
 =nix/home-manager/config/xdg.nix=. Set Claude models in
-=config/claude/settings.json=. Office T3 orchestration seats live directly in
-=config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md=; invoke that
-skill only at the office.
+=config/claude/settings.json=. Office T3 orchestration seats live in the office-only
+=~/work/agent-skills/chief-of-staff/SKILL.md=.
 
 * How It Works
 

@@ -22,4 +22,4 @@ not replace encrypted state or make plaintext files runtime-decrypted.
 
 Model IDs and effort live inline with their consumers: Codex lead and default
 subagent per profile in `nix/home-manager/config/xdg.nix`, Claude in
-`config/claude/settings.json`, and office T3 seats in `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md`.
+`config/claude/settings.json`, and office T3 seats in `~/work/agent-skills/chief-of-staff/SKILL.md` (office-only).

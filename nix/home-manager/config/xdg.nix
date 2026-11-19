@@ -121,29 +121,6 @@ in
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/work/agent-skills";
   }
   // (
-    # Claude Code discovers skills exactly one level below ~/.claude/skills and
-    # does not recurse through a directory symlink (unlike the ~/.agents group
-    # symlink above), so each skill needs its own entry. The list is explicit
-    # because config/ sits outside the flake root and pure eval cannot readDir it.
-    let
-      skillsDir = "${config.home.homeDirectory}/dotfiles/config/agents/skills/multi-agent-team";
-      claudeSkills = [
-        "chief-of-staff"
-        "codex-config-maintenance"
-        "git-history-orientation"
-        "git-worktree-flow"
-        "scratch-log"
-        "signed-pr-publish"
-      ];
-    in
-    lib.listToAttrs (
-      map (name: {
-        name = ".claude/skills/${name}";
-        value.source = config.lib.file.mkOutOfStoreSymlink "${skillsDir}/${name}";
-      }) claudeSkills
-    )
-  )
-  // (
     let
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
@@ -216,32 +193,33 @@ in
   );
 
   # Claude Code loads skills one level below ~/.claude/skills and does not
-  # follow the ~/.agents group link, so link each office skill individually.
-  # This runs at activation so their names stay out of this public file; links
-  # whose target in the office skill directory is gone are removed.
-  home.activation.workLocalClaudeSkills = lib.mkIf (profile == "office") (
-    config.lib.dag.entryAfter [ "linkGeneration" ] ''
-      WORK_SKILLS="$HOME/work/agent-skills"
-      mkdir -p "$HOME/.claude/skills"
-      for dir in "$WORK_SKILLS"/*/; do
+  # follow the ~/.agents group links, so link each skill directory here.
+  # Running at activation picks up new skills without a hand-kept list (pure
+  # eval cannot read config/) and keeps office skill names out of this file.
+  # Dangling links into these sources are removed.
+  home.activation.claudeSkills = config.lib.dag.entryAfter [ "linkGeneration" ] ''
+    mkdir -p "$HOME/.claude/skills"
+    for src in "$HOME/dotfiles/config/agents/skills/multi-agent-team" "$HOME/work/agent-skills"; do
+      [ -d "$src" ] || continue
+      for dir in "$src"/*/; do
         [ -f "$dir/SKILL.md" ] || continue
         target="$HOME/.claude/skills/$(basename "$dir")"
         if [ ! -e "$target" ] && [ ! -L "$target" ]; then
           ln -s "''${dir%/}" "$target"
         elif [ -L "$target" ]; then
           case "$(readlink "$target")" in
-            "$WORK_SKILLS"/*) ln -sfn "''${dir%/}" "$target" ;;
-            *) echo "workLocalClaudeSkills: skipping $target, owned by another source" >&2 ;;
+            "$src"/*) ln -sfn "''${dir%/}" "$target" ;;
+            *) echo "claudeSkills: skipping $target, owned by another source" >&2 ;;
           esac
         fi
       done
       for link in "$HOME/.claude/skills"/*; do
         if [ -L "$link" ] && [ ! -e "$link" ]; then
-          case "$(readlink "$link")" in "$WORK_SKILLS"/*) rm "$link" ;; esac
+          case "$(readlink "$link")" in "$src"/*) rm "$link" ;; esac
         fi
       done
-    ''
-  );
+    done
+  '';
 
   # Codex 0.134+ removed the top-level `profile = "name"` selector. Compose
   # the default config from the shared file and the Nix-selected machine profile.

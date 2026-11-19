@@ -45,9 +45,8 @@ Profile fragments must be empty, comment-only, or begin with a TOML section head
 
 The resulting `~/.codex/config.toml` is generated. The activation validates the temporary TOML before replacing it and backs up a pre-existing hand-written target once during migration.
 
-Set Claude models in `config/claude/settings.json`. Office T3 orchestration uses
-the explicit seats in `config/agents/skills/multi-agent-team/chief-of-staff/SKILL.md`.
-Invoke that skill only at the office.
+Set Claude models in `config/claude/settings.json`. Office T3 orchestration seats
+live in `~/work/agent-skills/chief-of-staff/SKILL.md` (office-only).
 
 Shared hooks live in `config/codex/hooks.json`; office may select ignored `config/codex/hooks.work.local.json`. Keep hooks out of `config.toml` because Codex loads both representations when both exist.
 
