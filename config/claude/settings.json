@@ -2,7 +2,7 @@
   "enabledPlugins": {
     "archie-cc@chime-claude-plugins": false,
     "infra@infra-skills": true,
-    "typescript-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": false
   },
   "env": {
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
@@ -12,7 +12,6 @@
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
     "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
     "CLAUDE_CODE_NO_FLICKER": "1",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "opus",
     "CLAUDE_CODE_USE_BEDROCK": "false",
     "DISABLE_TELEMETRY": "1",
     "TFCTL_HOSTNAME": "tfe.hub.chmfin.com",
@@ -46,6 +45,7 @@
       {
         "hooks": [
           {
+            "async": true,
             "command": "afplay -v 15 /System/Library/Sounds/Purr.aiff",
             "type": "command"
           }
@@ -66,6 +66,7 @@
   },
   "outputStyle": "Learning",
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Bash(pbcopy:*)",
       "Bash(gh pr view:*)",
@@ -132,6 +133,12 @@
     ]
   },
   "showThinkingSummaries": true,
+  "skillOverrides": {
+    "chime-infra-change-evidence": "off",
+    "chime-worktree-audit": "off",
+    "git-history-orientation": "off",
+    "scratch-log": "off"
+  },
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [
