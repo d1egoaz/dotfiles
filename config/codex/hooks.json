@@ -8,11 +8,6 @@
             "type": "command",
             "command": "/usr/bin/afplay -v 15 /System/Library/Sounds/Purr.aiff >/dev/null 2>&1",
             "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "\"$HOME/dotfiles/bin/files/agent-closeout-check\" codex",
-            "timeout": 10
           }
         ]
       }

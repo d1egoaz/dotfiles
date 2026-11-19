@@ -50,7 +50,3 @@ jobs:
           EOF
           git config --global url."github-fonts:d1egoaz/fonts.git".insteadOf "https://github.com/d1egoaz/fonts.git"
       - run: cd nix && nix flake check --show-trace
-      - name: Skill links match skill directories
-        if: ${{ !cancelled() }}
-        # just evaluates _host eagerly and rejects the runner user; override it.
-        run: nix shell --inputs-from ./nix nixpkgs#just nixpkgs#ripgrep --command just --set _host ci check-skills

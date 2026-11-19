@@ -81,7 +81,7 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt check-skills audit-test agent-closeout-test codex-agents-test codex-context-test codex-current-model-test git-signing-test local-state-test
+check: fmt audit-test git-signing-test local-state-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -89,46 +89,15 @@ check: fmt check-skills audit-test agent-closeout-test codex-agents-test codex-c
 audit-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_dotfiles_audit.py
 
-# Test the shared Stop hook and agent audit with synthetic transcripts only.
-[private]
-agent-closeout-test:
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_agent_closeout.py
-
-# Test exact current-thread Codex model detection without reading real sessions.
-[private]
-codex-current-model-test:
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_current_model.py
-
 # Verify profile-specific Git signing, local verification, and HTTPS publication wiring.
 [private]
 git-signing-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_git_signing.py
 
-# Verify independent Codex and Claude subagent spawn-depth limits.
-[private]
-codex-agents-test:
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_agents.py
-
-# Enforce concise Codex instructions, selective skills, and prompt-size auditing.
-[private]
-codex-context-test:
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_codex_context.py
-
 # Test include_all local-state resources with a throwaway age key and SOPS file.
 [private]
 local-state-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_local_state.py
-
-# Verify the shared skill directories agree with the explicit Claude links in xdg.nix.
-check-skills:
-    #!/usr/bin/env bash
-    set -uo pipefail
-    dirs="$(cd config/agents/skills/multi-agent-team && for d in */; do printf '%s\n' "${d%/}"; done | sort)"
-    nix="$(sed -n '/claudeSkills = \[/,/\];/p' nix/home-manager/config/xdg.nix | rg -o '"([a-z-]+)"' -r '$1' | sort)"
-    rc=0
-    if [ "$dirs" != "$nix" ]; then echo "DRIFT: nix/home-manager/config/xdg.nix claudeSkills != skill dirs"; diff <(printf '%s\n' "$dirs") <(printf '%s\n' "$nix") || true; rc=1; fi
-    if [ "$rc" -eq 0 ]; then echo "skills in sync ($(printf '%s ' $dirs))"; fi
-    exit "$rc"
 
 # Quick format and check
 lint: check
@@ -170,10 +139,6 @@ dry-run:
 # Compare this Mac with the selected dotfiles profile without changing either
 audit:
     ./bin/files/dotfiles-audit summary
-
-# Report model-visible skill and AGENTS sizes without printing prompt content.
-codex-context-audit:
-    ./bin/files/codex-context-audit
 
 # Write a sanitized comparison snapshot to the Desktop for sharing
 audit-export:

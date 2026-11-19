@@ -53,7 +53,7 @@ Shared hooks live in `config/codex/hooks.json`; office may select ignored `confi
 
 Supported hook events in this setup are `Stop`, `PermissionRequest`, `UserPromptSubmit`, and `SessionStart`. Hook commands should exit successfully without output or emit valid JSON. Notification payloads use top-level `notify` in `config.toml`, not a `Notification` hook.
 
-Validate configuration using the runbook referenced by `$codex-config-maintenance`. To test the existing notification helper directly, run `/bin/sh -c '$HOME/dotfiles/bin/files/codex-notify.sh "$1"' codex-notify '{"type":"agent-turn-complete"}'`.
+Validate configuration using the runbook referenced by `$codex-config-maintenance`.
 
 ## Local And Encrypted State
 

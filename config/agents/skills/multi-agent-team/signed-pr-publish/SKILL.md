@@ -12,9 +12,8 @@ and templates: [`references/commands.md`](references/commands.md).
 
 1. Inspect status and diffs; stage exact files only. "Commit staged files"
    adds nothing else. Note generated files.
-2. Resolve the exact model: in Codex run
-   `$HOME/dotfiles/bin/files/codex-current-model`; elsewhere use the ID the
-   host reports. Stop if unknown; never shorten or guess.
+2. Use the exact model ID the host reports. Stop if unknown; never shorten
+   or guess.
 3. Write a Conventional Commit ending with
    `Assisted-by: [Exact model identifier] via [Tool]` for the model making
    this commit. Keep earlier footers unchanged.

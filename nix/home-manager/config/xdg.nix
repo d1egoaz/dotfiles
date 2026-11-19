@@ -114,7 +114,7 @@ in
     # Custom utility scripts from bin/files/ symlinked to ~/.local/bin/
     # To add a new script: drop it in bin/files/ and append the filename here.
     # .sh suffix is stripped from the symlink name.
-    # Excluded: awsprofile.fish (sourced by fish), codex-notify.sh (invoked by absolute path).
+    # Excluded: awsprofile.fish (sourced by fish).
   }
   // lib.optionalAttrs (profile == "office") {
     ".agents/skills/work-local".source =
@@ -147,9 +147,6 @@ in
     let
       binDir = "${config.home.homeDirectory}/dotfiles/bin/files";
       scripts = [
-        "agent-closeout-check"
-        "codex-context-audit"
-        "codex-current-model"
         "dotfiles-audit"
         "dotfiles-local-state"
         "ediff"
@@ -260,7 +257,6 @@ in
     CODEX_LEAD_REASONING_EFFORT="${codex.lead.effort}"
     CODEX_DEFAULT_MODEL="${codex.default.model}"
     CODEX_DEFAULT_REASONING_EFFORT="${codex.default.effort}"
-    CODEX_DROP_NOTIFY="${if host == "personal-mini" then "1" else "0"}"
     SHARED="$HOME/dotfiles/config/codex/config.toml"
     PROFILE_FILE="$HOME/dotfiles/config/codex/profiles/${codex.profileFile}"
     TARGET="$HOME/.codex/config.toml"
@@ -308,14 +304,7 @@ in
       # The shared source owns the [agents] table and its limits. Inject the
       # profile-selected fallback model into that table without duplicating
       # provider-specific model IDs in the hand-edited TOML.
-      #
-      # notify is not set on personal-mini: it only plays a sound, and there is
-      # nobody at the server to hear it.
-      "$AWK" -v default_model="$CODEX_DEFAULT_MODEL" -v default_effort="$CODEX_DEFAULT_REASONING_EFFORT" \
-        -v drop_notify="$CODEX_DROP_NOTIFY" '
-        drop_notify == "1" && $0 ~ /^notify = \[/ { skipping = 1; next }
-        skipping && $0 ~ /^\]/ { skipping = 0; next }
-        skipping { next }
+      "$AWK" -v default_model="$CODEX_DEFAULT_MODEL" -v default_effort="$CODEX_DEFAULT_REASONING_EFFORT" '
         { print }
         $0 == "[agents]" && !inserted {
           print "default_subagent_model = \"" default_model "\""

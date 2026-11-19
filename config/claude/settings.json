@@ -43,22 +43,11 @@
     }
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [],
-        "matcher": "startup"
-      }
-    ],
     "Stop": [
       {
         "hooks": [
           {
             "command": "afplay -v 15 /System/Library/Sounds/Purr.aiff",
-            "type": "command"
-          },
-          {
-            "command": "\"$HOME/dotfiles/bin/files/agent-closeout-check\" claude",
-            "timeout": 10,
             "type": "command"
           }
         ],
@@ -147,7 +136,7 @@
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [
-      "  Turning to the Dark Side  "
+      "\uf1d1  Turning to the Dark Side \uf1d1 "
     ]
   },
   "statusLine": {

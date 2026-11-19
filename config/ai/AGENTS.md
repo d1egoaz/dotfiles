@@ -1,6 +1,6 @@
 # AI Assistant Instructions
 
-<!-- Version: 2.2.0 | Updated: 2026-11-13 -->
+<!-- Version: 2.3.0 | Updated: 2026-11-18 -->
 
 ## Instruction Resolution
 
@@ -21,7 +21,7 @@
 - Write Slack, email, PR comments, and chat replies at human length. Messages for people: first person, short, end with the call to action.
 - Be direct about mistakes, weak assumptions, missing evidence, and incomplete work.
 - Never invent facts. Discover them when practical, otherwise ask or leave them unknown. Mark what you couldn't confirm and where you looked.
-- End substantial runs with **Blocked on me**, **Changed**, and **Found**; omit empty sections. A run is substantial when it edited files, spawned a subagent, or made 10+ tool calls.
+- End runs that changed files or delegated work with **Blocked on me**, **Changed**, and **Found**; omit empty sections.
 
 ## Working Style
 
@@ -30,7 +30,7 @@
 - Test observable behavior: keep a test that fails when the contract breaks and survives a refactor, with expected values from the requirement, not a run.
 - Make retried steps idempotent: read the current state, compare it to the goal, and apply only the difference.
 - When a step doesn't need my input, keep going, and put status notes in the same message as the next action. Stop and ask only when you can't continue without me or before a gated action below that I have not authorized.
-- On substantial runs, keep a task list and update it as items finish: Codex `update_plan`, Claude `TodoWrite` when available, else an untracked checklist at `~/.cache/agent-checklists/<repo>-<branch>.md`.
+- On multi-step runs, keep a task list and update it as items finish: Codex `update_plan`, Claude `TodoWrite` when available, else an untracked checklist at `~/.cache/agent-checklists/<repo>-<branch>.md`.
 - When a follow-up changes diagnosis or read-only work into implementation, reassess coordination and checkout isolation before new writes. Preserve existing work and move feature edits into the required worktree.
 
 ## Delegation
@@ -47,7 +47,7 @@
 - Production is read-only unless the user authorizes the exact mutation. A request to inspect, prepare, validate, commit, or publish does not authorize merge, apply, deployment, or live changes. A given authorization stands: once the user names merge, deploy, apply, or ship for a piece of work, it covers that work and its follow-up fixes for the session. Do not ask again; ask only before a destructive step or work outside the grant.
 - Confirm before destructive changes (deleting data, force-pushing, changes outside the repository) and resolve exact targets first. For destructive, escalated, forced, or live-state commands, state Why, What, Expect, and Risk.
 - Never bypass or disable commit signing or change the signer. Use `$signed-pr-publish` for commits and publication.
-- AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Use the exact model the host reports (Codex: `$HOME/dotfiles/bin/files/codex-current-model`); stop if it remains unknown.
+- AI commits and PRs require `Assisted-by: [Exact model identifier] via [Tool]`. Use the exact model the host reports; stop if it remains unknown.
 - Open new PRs in draft mode.
 - Keep primary checkouts on `main`; use `$git-worktree-flow` for feature work. For multi-repository work, run Git in each repository's directory; avoid `git -C` unless requested.
 - Office `~/work` stays HTTPS through the GitHub credential helper. Do not expose or broaden its `repo`/`workflow` credential, or restore an HTTPS-to-SSH rewrite.
