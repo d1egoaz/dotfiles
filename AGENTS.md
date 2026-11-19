@@ -4,28 +4,9 @@ This repository manages macOS configuration with nix-darwin, Home Manager, and H
 
 ## Core Commands
 
-Run commands from the repository root with `just`.
-
-| Command | Purpose |
-|---|---|
-| `just switch` | Activate the current machine configuration |
-| `just check` | Format and validate the full Nix configuration |
-| `just fmt` | Format Nix files |
-| `just dry-run` | Preview the current host configuration |
-| `just audit` | Compare live macOS state with dotfiles, read-only |
-| `just local-state-sync` | Encrypt current office-only local state |
-| `just update` | Update routine flake inputs |
-| `just brew` | Update Homebrew and apply the selected Brewfiles |
-
-`just check` runs the formatter first. Protect unrelated dirty files before using it, and verify afterward that their content did not change.
+Run commands from the repository root with `just` (`just --list` describes each recipe). `just switch` activates the current machine; `just check` runs the formatter first. Protect unrelated dirty files before using it, and verify afterward that their content did not change.
 
 ## Profiles
-
-| Username | Host | Profile | Codex lead source |
-|---|---|---|---|
-| `diego.alvarez` | `office-mbp` | office | `nix/home-manager/config/xdg.nix` (office) |
-| `diego` | `personal-mbp` | personal | `nix/home-manager/config/xdg.nix` (personal) |
-| `diegoalvarez` | `personal-mini` | personal | `nix/home-manager/config/xdg.nix` (personal) |
 
 Host selection lives in `justfile` and `nix/flake-modules/darwin.nix`. Per-profile settings live in `nix/profiles/`, and host-specific applications live in `Brewfile.<host>`.
 
@@ -66,9 +47,7 @@ Office-only endpoints, trust entries, hooks, approval rules, and skills must sta
   ~/.ssh/codex-signing-${PROFILE}-ed25519`; the login loader restores that key
   from Keychain without a fixed expiry. The machine signature is machine-key
   provenance, not per-commit human review; retain `Assisted-by` for AI
-  attribution. Office `~/work` stays HTTPS through the GitHub credential
-  helper. Do not expose or broaden its `repo`/`workflow` credential, or
-  restore an HTTPS-to-SSH rewrite.
+  attribution.
 - Use `$codex-config-maintenance` for Codex configuration, skill, hook, rule, and AI-instruction changes.
 - Use the targeted validators from that skill before `just check`.
 - If activation needs sudo or another interactive boundary, report it as incomplete. Never replace generated files to bypass activation.
