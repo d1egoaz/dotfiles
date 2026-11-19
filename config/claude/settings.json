@@ -1,6 +1,6 @@
 {
   "enabledPlugins": {
-    "archie-cc@chime-claude-plugins": true,
+    "archie-cc@chime-claude-plugins": false,
     "infra@infra-skills": true,
     "typescript-lsp@claude-plugins-official": true
   },
