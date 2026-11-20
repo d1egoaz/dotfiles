@@ -42,12 +42,7 @@ Office-only endpoints, trust entries, hooks, approval rules, and skills must sta
 - Homebrew owns packages declared in Brewfiles. Nix owns packages declared in profiles and modules.
 - Direct symlinks from `config/` update immediately. Nix-managed files require `just switch`.
 - Scripts in `bin/files/` must also be listed in `nix/home-manager/config/xdg.nix` when they should appear under `~/.local/bin`.
-- Git commits use the active profile's standard OpenSSH key. After activation,
-  enroll it once with `ssh-add --apple-use-keychain
-  ~/.ssh/codex-signing-${PROFILE}-ed25519`; the login loader restores that key
-  from Keychain without a fixed expiry. The machine signature is machine-key
-  provenance, not per-commit human review; retain `Assisted-by` for AI
-  attribution.
+- Git commits are signed with the active profile's OpenSSH key (machine-key provenance, not per-commit review; keep `Assisted-by`). Enrollment steps: `docs/dotfiles-reference.md`.
 - Use `$codex-config-maintenance` for Codex configuration, skill, hook, rule, and AI-instruction changes.
 - Use the targeted validators from that skill before `just check`.
 - If activation needs sudo or another interactive boundary, report it as incomplete. Never replace generated files to bypass activation.

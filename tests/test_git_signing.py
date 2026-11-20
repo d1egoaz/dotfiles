@@ -12,7 +12,6 @@ GIT_NIX = ROOT / "nix/home-manager/config/apps/git.nix"
 PROGRAMS_NIX = ROOT / "nix/home-manager/config/programs.nix"
 XDG_NIX = ROOT / "nix/home-manager/config/xdg.nix"
 ENROLLMENT_DOCS = (
-    ROOT / "AGENTS.md",
     ROOT / "docs/dotfiles-reference.md",
     ROOT / "config/agents/skills/multi-agent-team/signed-pr-publish/references/commands.md",
 )
