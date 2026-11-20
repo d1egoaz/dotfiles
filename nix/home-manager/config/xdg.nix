@@ -84,6 +84,16 @@ in
       '';
     };
 
+    # Custom utility scripts from bin/files/ symlinked to ~/.local/bin/
+    # To add a new script: drop it in bin/files/ and append the filename here.
+    # .sh suffix is stripped from the symlink name.
+    # Excluded: awsprofile.fish (sourced by fish).
+  }
+  // lib.optionalAttrs (profile == "office") {
+    ".agents/skills/work-local".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/work/agent-skills";
+
+    # Cursor agent CLI with its API key from 1Password; Cursor is office-only.
     ".local/bin/aa" = {
       executable = true;
       text = ''
@@ -110,15 +120,6 @@ in
         exec agent "$@"
       '';
     };
-
-    # Custom utility scripts from bin/files/ symlinked to ~/.local/bin/
-    # To add a new script: drop it in bin/files/ and append the filename here.
-    # .sh suffix is stripped from the symlink name.
-    # Excluded: awsprofile.fish (sourced by fish).
-  }
-  // lib.optionalAttrs (profile == "office") {
-    ".agents/skills/work-local".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/work/agent-skills";
   }
   // (
     let

@@ -70,12 +70,12 @@
       # bat everywhere
       b = "command bat";
       man = "command batman";
-      # 1Password secret aliases (--account ensures correct vault regardless of active session)
-      op-cursor = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Cursor api key/API_KEY'";
     }
     // (
+      # 1Password secret aliases (--account ensures correct vault regardless of active session)
       if profile == "office" then
         {
+          op-cursor = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Cursor api key/API_KEY'";
           op-homebrew = "op read --account ${machineConfig.op_account} 'op://${machineConfig.op_vault}/Homebrew GitHub Token/credential'";
         }
       else

@@ -3,13 +3,11 @@
 tap "nikitabobko/tap" # Tap for AeroSpace window manager
 
 brew "tailscale" # WireGuard-based mesh VPN
-brew "opencode"
 
 cask "aerospace" # Window manager
 cask "chatgpt" # ChatGPT desktop client
 cask "cloudflare-warp"
 cask "codex-app"
-cask "cursor-cli"
 cask "discord" # Community chat/voice
 cask "excalidrawz" # Excalidraw whiteboard
 cask "grandperspective" # Graphically shows disk usage within a file system

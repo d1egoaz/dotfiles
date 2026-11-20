@@ -122,7 +122,7 @@ AWS helpers (=awsprofile=) are sourced directly by Fish config as shell function
 
 Secrets follow an on-demand model — nothing is exported into every shell at startup.
 
-- *1Password CLI* is the source of truth for raw secrets. Fish exposes on-demand aliases (=op-cursor=, and =op-homebrew= on office machines); =just brew= / =just update= read the Homebrew GitHub token directly from 1Password when needed.
+- *1Password CLI* is the source of truth for raw secrets. Fish exposes on-demand aliases (=op-cursor= and =op-homebrew= on office machines); =just brew= / =just update= read the Homebrew GitHub token directly from 1Password when needed.
 - *=op-env-cache=* caches 1Password reads on disk (0600, default 8h TTL) for hot paths like the Alfred LLM workflows. The =op://= item references it resolves live encrypted in =secrets/op-env-cache.yaml= under =op_env_cache_specs=.
 - *SOPS (age)* encrypts =secrets/*.yaml=; the age key lives at =~/Library/Application Support/sops/age/keys.txt= and is backed up in 1Password. Work-only ignored files (Codex work profile, hooks, rules, skills) are persisted as encrypted =local_state= entries in =secrets/local-state.yaml= and restored by =just switch= on office machines; push local edits back with =just local-state-sync=.
 
