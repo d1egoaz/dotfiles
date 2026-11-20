@@ -12,7 +12,7 @@ let
   codexProfiles = {
     office = {
       lead = {
-        model = "gpt-6.1-sol";
+        model = "gpt-6.2-sol";
         effort = "high";
       };
       default = {
@@ -22,11 +22,11 @@ let
     };
     personal = {
       lead = {
-        model = "gpt-6.1-sol";
+        model = "gpt-6.2-sol";
         effort = "high";
       };
       default = {
-        model = "gpt-6.1-sol";
+        model = "gpt-6.2-sol";
         effort = "xhigh";
       };
     };
