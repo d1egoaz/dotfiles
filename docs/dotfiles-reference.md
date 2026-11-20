@@ -56,11 +56,13 @@ Validate configuration using the runbook referenced by `$codex-config-maintenanc
 
 ## T3 Code Themes
 
-`~/.t3/userdata/themes` links to `config/t3/themes`. Publish theme changes through T3 (`t3_theme_set`), which writes `<themeId>.json` there.
+`~/.t3/userdata/themes` links to `config/t3/themes`. Publish color changes through T3 (`t3_theme_set`), which writes `<themeId>.json` there.
 
-`tokyo-night-approval-buttons.json` is based on [SunkenInTime/t3-themes `themes/tokyo-night.json`](https://github.com/SunkenInTime/t3-themes/blob/main/themes/tokyo-night.json), imported at upstream commit `57a681245f98e47542bf6016f4e6d005cf7a9a03`. Local changes:
+T3 has no global stylesheet, so custom CSS lives in each theme's `css` field. `config/t3/features.css` is the source of truth for that CSS: approval buttons, the sidebar Settle button, and the background-work card under the thread details panel. Edit it, run `just t3-theme-features` to copy it into every theme (or `just t3-theme-features <themeId>`), then switch to another theme and back in T3 to reload. `just check` fails when a theme's `css` drifts from the file. To port the features to a new theme, add its JSON to `config/t3/themes` and run the recipe.
 
-- The `css` field is copied from `default-approval-buttons.json`.
+`tokyo-night-approval-buttons.json` is the only theme in use. It is based on [SunkenInTime/t3-themes `themes/tokyo-night.json`](https://github.com/SunkenInTime/t3-themes/blob/main/themes/tokyo-night.json), imported at upstream commit `57a681245f98e47542bf6016f4e6d005cf7a9a03`. Local changes:
+
+- The `css` field comes from `config/t3/features.css`.
 - The light variant's `secondary` is `#dadce3` (upstream `#707280`) and `secondaryForeground` is `#343b59` (upstream `#ffffff`). The upstream gray rendered the changed-files card as a dark slab.
 - The light variant's `surfaceOverlay` is `#eff0f4` (upstream `#ffffff`), so popovers and the thread details card sit one soft step above the canvas, as they do in dark.
 

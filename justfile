@@ -81,7 +81,7 @@ fmt:
     nix run ./nix#formatter.aarch64-darwin -- -C nix
 
 # Check nix flake
-check: fmt audit-test git-signing-test local-state-test
+check: fmt audit-test git-signing-test local-state-test t3-theme-test
     nix flake check ./nix --show-trace
 
 # Test the read-only macOS audit collector without inspecting live machine state
@@ -98,6 +98,15 @@ git-signing-test:
 [private]
 local-state-test:
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_local_state.py
+
+# Fail when a T3 theme's css differs from config/t3/features.css.
+[private]
+t3-theme-test:
+    python3 -I scripts/t3-theme-features.py --check
+
+# Copy config/t3/features.css into T3 themes (all, or the given ids); then reselect the theme in T3
+t3-theme-features *theme_ids:
+    python3 -I scripts/t3-theme-features.py {{ theme_ids }}
 
 # Quick format and check
 lint: check

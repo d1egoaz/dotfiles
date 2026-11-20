@@ -1,0 +1,100 @@
+/* T3 Code theme features, shared by every theme in dotfiles config/t3/themes. */
+/* Source of truth: config/t3/features.css. Edit there, then run `just t3-theme-features`. */
+
+/* Approval row: turn the inline Approve / Decline text links into tinted buttons. */
+/* Approve = inline-button with tone=default (.text-foreground). */
+/* Decline = the muted inline-button that precedes Approve. */
+[data-v2-item-type="approval_request"] [data-slot="inline-button"].text-foreground {
+  --ab-bg: #dcfce7; --ab-bg-hover: #bbf7d0; --ab-fg: #166534; --ab-border: #86efac;
+}
+[data-v2-item-type="approval_request"] [data-slot="inline-button"].text-muted-foreground:has(~ [data-slot="inline-button"].text-foreground) {
+  --ab-bg: #fee2e2; --ab-bg-hover: #fecaca; --ab-fg: #991b1b; --ab-border: #fca5a5;
+}
+.dark [data-v2-item-type="approval_request"] [data-slot="inline-button"].text-foreground {
+  --ab-bg: rgb(34 197 94 / 0.16); --ab-bg-hover: rgb(34 197 94 / 0.28); --ab-fg: #4ade80; --ab-border: rgb(34 197 94 / 0.40);
+}
+.dark [data-v2-item-type="approval_request"] [data-slot="inline-button"].text-muted-foreground:has(~ [data-slot="inline-button"].text-foreground) {
+  --ab-bg: rgb(239 68 68 / 0.16); --ab-bg-hover: rgb(239 68 68 / 0.28); --ab-fg: #f87171; --ab-border: rgb(239 68 68 / 0.40);
+}
+[data-v2-item-type="approval_request"] [data-slot="inline-button"].text-foreground,
+[data-v2-item-type="approval_request"] [data-slot="inline-button"].text-muted-foreground:has(~ [data-slot="inline-button"].text-foreground) {
+  padding: 2px 12px !important;
+  border: 1px solid var(--ab-border) !important;
+  border-radius: 6px !important;
+  background-color: var(--ab-bg) !important;
+  color: var(--ab-fg) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+[data-v2-item-type="approval_request"] [data-slot="inline-button"].text-foreground:hover:not(:disabled),
+[data-v2-item-type="approval_request"] [data-slot="inline-button"].text-muted-foreground:has(~ [data-slot="inline-button"].text-foreground):hover:not(:disabled) {
+  background-color: var(--ab-bg-hover) !important;
+  color: var(--ab-fg) !important;
+}
+
+/* Sidebar: the thread row's Settle action becomes a tinted violet button on hover, */
+/* matching the merged-PR icon (Tailwind violet) and the Approve/Decline button style. */
+/* Matches both the full row (icon + "Settle") and the compact row (icon only). */
+/* The edge is an inset box-shadow, not a border, so hovering doesn't resize the button. */
+[data-thread-item] button[aria-label="Settle thread"] {
+  --sb-bg: #ede9fe; --sb-bg-active: #ddd6fe; --sb-fg: #6d28d9; --sb-border: #c4b5fd;
+}
+.dark [data-thread-item] button[aria-label="Settle thread"] {
+  --sb-bg: rgb(139 92 246 / 0.16); --sb-bg-active: rgb(139 92 246 / 0.28); --sb-fg: #c4b5fd; --sb-border: rgb(139 92 246 / 0.40);
+}
+[data-thread-item] button[aria-label="Settle thread"]:hover {
+  background-color: var(--sb-bg) !important;
+  color: var(--sb-fg) !important;
+  box-shadow: inset 0 0 0 1px var(--sb-border) !important;
+}
+[data-thread-item] button[aria-label="Settle thread"]:active {
+  background-color: var(--sb-bg-active) !important;
+}
+
+/* Background work: move the "Running / Waiting on N ..." line (Details · Stop) from above the composer */
+/* into the right column, pinned under the thread details panel at the same width, as a small card. */
+/* Only while the details panel is open inline; otherwise the line stays above the composer. */
+/* The line is [data-thread-now-line]; the background-work one carries the lucide terminal icon */
+/* (commands, monitors) or circle-dashed (subagents). Uses CSS anchor positioning. */
+/* Card layout: icon beside the title, task list on its own line, Details · Stop on a bottom row. */
+[data-thread-details-panel="inline"] {
+  anchor-name: --t3-thread-details;
+}
+body:has([data-thread-details-panel="inline"]) [data-thread-now-line]:has(> span:first-child > :is(svg.lucide-terminal, svg.lucide-circle-dashed)) {
+  position: fixed !important;
+  position-anchor: --t3-thread-details;
+  top: calc(anchor(bottom) + 12px) !important;
+  left: anchor(left) !important;
+  width: anchor-size(width) !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px !important;
+  row-gap: 8px;
+  align-items: start !important;
+  border: 1px solid var(--app-theme-border);
+  border-radius: 1rem;
+  background: var(--app-theme-surface-overlay);
+  z-index: 20;
+}
+body:has([data-thread-details-panel="inline"]) [data-thread-now-line]:has(> span:first-child > :is(svg.lucide-terminal, svg.lucide-circle-dashed)) > span:first-child {
+  align-self: start !important;
+  height: 1lh !important;
+}
+body:has([data-thread-details-panel="inline"]) [data-thread-now-line]:has(> span:first-child > :is(svg.lucide-terminal, svg.lucide-circle-dashed)) > span:nth-child(2) {
+  grid-column: 2;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+body:has([data-thread-details-panel="inline"]) [data-thread-now-line]:has(> span:first-child > :is(svg.lucide-terminal, svg.lucide-circle-dashed)) > span:nth-child(2) > span[class*="text-muted-foreground"] {
+  display: block;
+  margin: 2px 0 0 !important;
+}
+body:has([data-thread-details-panel="inline"]) [data-thread-now-line]:has(> span:first-child > :is(svg.lucide-terminal, svg.lucide-circle-dashed)) > span:nth-child(3) {
+  grid-column: 2;
+  justify-self: end;
+  margin: 0 !important;
+}
